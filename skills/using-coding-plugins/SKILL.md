@@ -25,6 +25,7 @@ description: 开始任何任务时使用；建立 Coding Plugins 技能选择、
 - 收到评审意见后：`receiving-code-review`。
 - 准备结束分支或交付：`finishing-a-development-branch`。
 - 准备宣称完成：`verification-before-completion`。
+- 用户要求提交、提到 commit/提交/`/commit`，或完成阶段需要创建提交：`git-commit`。
 - 多分支或并行改动可能互相影响：`using-git-worktrees`。
 - 需要创建或改造技能：`writing-skills`。
 

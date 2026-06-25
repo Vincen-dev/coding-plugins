@@ -32,7 +32,7 @@ Task tool (general-purpose):
     1. 精确实现任务指定内容。
     2. 编写测试；如果任务要求 TDD，则遵守 TDD。
     3. 验证实现可用。
-    4. 提交你的工作。
+    4. 如任务要求提交，使用 `git-commit` 规则提交你的工作：中文 Conventional Commit，禁止 AI 作者、AI co-author 或 AI 生成声明。
     5. 自审。
     6. 回报结果。
 
@@ -92,6 +92,7 @@ Task tool (general-purpose):
     - 实现了什么（若阻塞则说明尝试了什么）
     - 测试内容和结果
     - 修改文件
+    - 提交 SHA（如果本任务创建了提交）
     - 自审发现
     - 问题或担忧
 

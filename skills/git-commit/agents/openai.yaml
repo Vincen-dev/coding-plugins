@@ -1,0 +1,3 @@
+interface:
+  display_name: "中文 Git 提交"
+  short_description: "生成中文 Conventional Commit，并禁止 AI 作者"
