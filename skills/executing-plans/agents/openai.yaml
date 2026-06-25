@@ -1,0 +1,3 @@
+interface:
+  display_name: "执行计划"
+  short_description: "按书面计划在当前会话分步实现"

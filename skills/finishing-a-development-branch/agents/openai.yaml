@@ -1,0 +1,3 @@
+interface:
+  display_name: "完成开发分支"
+  short_description: "验证、选择 merge/PR/保留/丢弃并收尾"

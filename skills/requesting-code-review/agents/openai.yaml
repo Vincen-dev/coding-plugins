@@ -1,0 +1,3 @@
+interface:
+  display_name: "请求代码评审"
+  short_description: "派发聚焦需求和质量的代码评审"

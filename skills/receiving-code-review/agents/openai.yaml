@@ -1,0 +1,3 @@
+interface:
+  display_name: "接收代码评审"
+  short_description: "先验证评审反馈，再实现或反驳"

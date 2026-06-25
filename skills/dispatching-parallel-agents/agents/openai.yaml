@@ -1,0 +1,3 @@
+interface:
+  display_name: "并行代理派发"
+  short_description: "把独立问题域拆给并行代理处理"
