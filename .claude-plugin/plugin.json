@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "coding-plugins",
+  "displayName": "Coding Plugins",
+  "version": "0.4.0",
+  "description": "Superpowers 风格的中文编码工作流插件，提供规划、TDD、调试、评审、中文 Git 提交和分支收尾技能。",
+  "author": {
+    "name": "Vincen",
+    "email": "hx001007@gmail.com",
+    "url": "https://github.com/Vincen-dev"
+  },
+  "homepage": "https://github.com/Vincen-dev/coding-plugins",
+  "repository": "https://github.com/Vincen-dev/coding-plugins",
+  "license": "MIT",
+  "keywords": [
+    "coding",
+    "skills",
+    "planning",
+    "tdd",
+    "debugging",
+    "code-review",
+    "git",
+    "commit",
+    "workflow",
+    "chinese",
+    "claude-code",
+    "codex"
+  ]
+}

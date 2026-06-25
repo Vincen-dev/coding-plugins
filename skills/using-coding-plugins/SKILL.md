@@ -1,6 +1,6 @@
 ---
 name: using-coding-plugins
-description: 开始任何任务时使用；建立 Coding Plugins 技能选择、优先级和 Codex 工具映射规则。
+description: 开始任何任务时使用；建立 Coding Plugins 技能选择、优先级和 Codex 或 Claude Code 平台规则。
 ---
 
 <SUBAGENT-STOP>
@@ -29,9 +29,11 @@ description: 开始任何任务时使用；建立 Coding Plugins 技能选择、
 - 多分支或并行改动可能互相影响：`using-git-worktrees`。
 - 需要创建或改造技能：`writing-skills`。
 
-## Codex 工具映射
+## 平台工具映射
 
-见 `references/codex-tools.md`。如果技能中提到其他平台工具名，按 Codex 等价能力执行，不机械照搬工具名。
+- 在 Codex 中，见 `references/codex-tools.md`。如果技能中提到 Claude Code、Copilot 或 Gemini 工具名，按 Codex 等价能力执行。
+- 在 Claude Code 中，见 `references/claude-tools.md`。插件技能以 `/coding-plugins:<skill-name>` 命名空间出现；Claude Code 原生工具名可直接使用。
+- 不机械照搬工具名；始终按当前平台实际可用能力执行。
 
 ## 执行方式
 

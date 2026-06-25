@@ -1,9 +1,9 @@
 {
   "name": "coding-plugins",
-  "version": "0.3.2",
-  "description": "中文版 Coding Superpowers：面向编码代理的规划、TDD、调试、评审和交付工作流。",
+  "version": "0.4.0",
+  "description": "中文版 Coding Superpowers：面向 Codex 和 Claude Code 的规划、TDD、调试、评审和交付工作流。",
   "author": {
-    "name": "Local developer"
+    "name": "Vincen"
   },
   "license": "MIT",
   "keywords": [
@@ -16,14 +16,16 @@
     "git",
     "commit",
     "workflow",
-    "chinese"
+    "chinese",
+    "claude-code",
+    "codex"
   ],
   "skills": "./skills/",
   "interface": {
     "displayName": "Coding Plugins",
     "shortDescription": "中文版编码工作流：规划、TDD、调试、评审与收尾",
-    "longDescription": "Coding Plugins 是 Superpowers 风格的完整中文本地插件，提供需求澄清、方案设计、计划编写、测试驱动开发、系统化调试、并行代理协作、代码评审、带 Authored-by footer 的中文 Git 提交、技能编写和分支收尾工作流，并补齐原版 supporting references 与 prompts。",
-    "developerName": "Local developer",
+    "longDescription": "Coding Plugins 是 Superpowers 风格的完整中文本地插件，支持 Codex 和 Claude Code，提供需求澄清、方案设计、计划编写、测试驱动开发、系统化调试、并行代理协作、代码评审、带 Authored-by footer 的中文 Git 提交、技能编写和分支收尾工作流，并补齐原版 supporting references 与 prompts。",
+    "developerName": "Vincen",
     "category": "Developer Tools",
     "capabilities": [
       "Interactive",
@@ -35,7 +37,7 @@
       "帮我按测试驱动方式修这个问题。",
       "请检查这次改动是否可以收尾。"
     ],
-    "websiteURL": "https://github.com/obra/superpowers",
+    "websiteURL": "https://github.com/Vincen-dev/coding-plugins",
     "privacyPolicyURL": "https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement",
     "termsOfServiceURL": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service",
     "brandColor": "#F59E0B",
