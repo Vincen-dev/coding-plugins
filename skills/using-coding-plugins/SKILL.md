@@ -15,7 +15,7 @@ description: 开始任何任务时使用；建立 Coding Plugins 技能选择、
 
 ## 技能选择
 
-- 新需求、功能构想、产品方向不清：`brainstorming`。
+- 新需求、功能构想、产品方向、接口契约或验收标准不清：`spec-driven-development`。
 - 已有规格，需要落地步骤：`writing-plans`。
 - 已有计划，需要实现：`subagent-driven-development` 或 `executing-plans`。
 - 写功能或修 bug 且可测试：`test-driven-development`。

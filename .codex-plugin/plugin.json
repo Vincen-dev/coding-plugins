@@ -1,7 +1,7 @@
 {
   "name": "coding-plugins",
-  "version": "0.4.0",
-  "description": "中文版 Coding Superpowers：面向 Codex 和 Claude Code 的规划、TDD、调试、评审和交付工作流。",
+  "version": "0.5.0",
+  "description": "面向 Codex 和 Claude Code 的中文 SDD/TDD 编码工作流插件。",
   "author": {
     "name": "Vincen"
   },
@@ -10,6 +10,9 @@
     "coding",
     "skills",
     "planning",
+    "sdd",
+    "specification",
+    "contract",
     "tdd",
     "debugging",
     "code-review",
@@ -24,7 +27,7 @@
   "interface": {
     "displayName": "Coding Plugins",
     "shortDescription": "中文版编码工作流：规划、TDD、调试、评审与收尾",
-    "longDescription": "Coding Plugins 是 Superpowers 风格的完整中文本地插件，支持 Codex 和 Claude Code，提供需求澄清、方案设计、计划编写、测试驱动开发、系统化调试、并行代理协作、代码评审、带 Authored-by footer 的中文 Git 提交、技能编写和分支收尾工作流，并补齐原版 supporting references 与 prompts。",
+    "longDescription": "Coding Plugins 是面向 Codex 和 Claude Code 的中文本地插件，提供规格驱动开发、计划编写、测试驱动开发、系统化调试、并行代理协作、代码评审、带 Authored-by footer 的中文 Git 提交、技能编写和分支收尾工作流。",
     "developerName": "Vincen",
     "category": "Developer Tools",
     "capabilities": [
@@ -33,7 +36,7 @@
       "Write"
     ],
     "defaultPrompt": [
-      "我有一个功能想实现，帮我梳理方案。",
+      "我有一个功能想实现，先帮我写清楚规格。",
       "帮我按测试驱动方式修这个问题。",
       "请检查这次改动是否可以收尾。"
     ],

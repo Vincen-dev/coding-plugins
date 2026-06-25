@@ -1,6 +1,6 @@
 # Claude Code 工具映射
 
-Claude Code 是 Superpowers 风格技能的原生目标环境之一。技能文本中出现 Claude Code 工具名时，直接使用当前 Claude Code 提供的能力，不需要转换。
+Claude Code 可直接执行本插件中的 Claude 工具语义。技能文本中出现 Claude Code 工具名时，直接使用当前 Claude Code 提供的能力，不需要转换。
 
 | 意图 | Claude Code 做法 |
 | --- | --- |
