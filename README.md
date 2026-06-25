@@ -38,7 +38,7 @@ Coding Plugins 是中文编码代理方法论插件，支持 Codex 和 Claude Co
 
 **协作**
 
-- `spec-driven-development`：规格驱动开发，把需求收敛为可测试契约。
+- `spec-driven-development`：规格驱动开发，把需求收敛为可测试契约，并提供规格质量校验脚本。
 - `writing-plans`：详细实现计划。
 - `executing-plans`：带检查点的批次执行。
 - `dispatching-parallel-agents`：并行子代理工作流。
