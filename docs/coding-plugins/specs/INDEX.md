@@ -2,6 +2,7 @@
 
 | Area | Capability | Type | Status | Spec | Tags | Updated |
 | --- | --- | --- | --- | --- | --- | --- |
+| plugin | marketplace | feature | approved | `docs/coding-plugins/specs/plugin/marketplace/feature.md` | marketplace, installation, distribution, codex, claude-code | 2026-06-26 |
 | plugin | preflight | feature | approved | `docs/coding-plugins/specs/plugin/preflight/feature.md` | ci, validation, release-gate | 2026-06-26 |
 
 Rules:

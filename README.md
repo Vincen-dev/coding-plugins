@@ -23,7 +23,7 @@ Coding Plugins 是中文编码代理方法论插件，支持 Codex 和 Claude Co
 9. **git-commit** - 用户要求提交或完成阶段需要提交时，生成中文 Conventional Commit，在 footer 添加本人 `Authored-by` 署名，并禁止 AI 作者或 AI 生成声明。
 10. **finishing-a-development-branch** - 所有任务完成后验证测试、提示是否提交、提出合并/PR/保留/丢弃选项并清理。
 
-完整链路说明见 [docs/workflow-chain.md](docs/workflow-chain.md)。
+完整链路说明见 [docs/workflow-chain.md](docs/workflow-chain.md)。安装方式见 [docs/installation.md](docs/installation.md)。
 
 ## 技能库
 
@@ -62,9 +62,41 @@ Coding Plugins 是中文编码代理方法论插件，支持 Codex 和 Claude Co
 - **降低复杂度**：简单性是首要设计目标。
 - **证据胜过声明**：完成前必须验证。
 
-## 本地使用说明
+## 安装说明
 
-当前目录是插件源码目录，不会自动注册到 marketplace。需要在 Codex App 中展示时，再把它加入个人 marketplace。
+本仓库已经包含 Codex marketplace 元数据：
+
+```text
+.agents/plugins/marketplace.json
+```
+
+从 GitHub 安装：
+
+```bash
+codex plugin marketplace add https://github.com/Vincen-dev/coding-plugins.git
+codex plugin add coding-plugins@coding-plugins
+```
+
+从本地仓库安装：
+
+```bash
+codex plugin marketplace add /Users/vincen/workspace/plugins/coding-plugins
+codex plugin add coding-plugins@coding-plugins
+```
+
+本机个人安装使用 `/Users/vincen/.agents/plugins/marketplace.json` 和 `/Users/vincen/plugins/coding-plugins`，安装命令：
+
+```bash
+codex plugin add coding-plugins@personal
+```
+
+Claude Code 不使用 Codex marketplace，直接加载插件目录：
+
+```bash
+claude --plugin-dir /Users/vincen/workspace/plugins/coding-plugins
+```
+
+详细步骤见 [docs/installation.md](docs/installation.md)。
 
 ### 发布前检查
 

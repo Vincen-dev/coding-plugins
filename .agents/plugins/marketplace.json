@@ -1,0 +1,20 @@
+{
+  "name": "coding-plugins",
+  "interface": {
+    "displayName": "Coding Plugins"
+  },
+  "plugins": [
+    {
+      "name": "coding-plugins",
+      "source": {
+        "source": "local",
+        "path": "."
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}
