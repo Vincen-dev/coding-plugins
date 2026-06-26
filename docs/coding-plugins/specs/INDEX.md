@@ -4,6 +4,7 @@
 | --- | --- | --- | --- | --- | --- | --- |
 | plugin | marketplace | feature | approved | `docs/coding-plugins/specs/plugin/marketplace/feature.md` | marketplace, installation, distribution, codex, claude-code | 2026-06-26 |
 | plugin | preflight | feature | approved | `docs/coding-plugins/specs/plugin/preflight/feature.md` | ci, validation, release-gate | 2026-06-26 |
+| plugin | session-start-hook | feature | approved | `docs/coding-plugins/specs/plugin/session-start-hook/feature.md` | codex, hook, session-start, bootstrap, workflow | 2026-06-26 |
 | plugin | tdd-evidence-path | feature | approved | `docs/coding-plugins/specs/plugin/tdd-evidence-path/feature.md` | tdd, evidence, traceability, validation | 2026-06-26 |
 
 Rules:

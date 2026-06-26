@@ -14,6 +14,7 @@ tags:
 related_code:
   - scripts/preflight.py
   - .github/workflows/ci.yml
+  - tests/hooks/test-session-start.sh
 related_specs: []
 ---
 
@@ -45,6 +46,7 @@ related_specs: []
 | REQ-003 | 必须 | preflight 命令拒绝 Codex 和 Claude 插件 manifest 版本不一致的仓库状态。 | 单测 `test_manifest_version_check_rejects_mismatched_versions`。 |
 | REQ-004 | 必须 | preflight 命令拒绝 Git 内部目录之外仍引用已移除旧入口的仓库状态。 | 单测 `test_removed_entry_scan_ignores_git_and_detects_active_references`。 |
 | REQ-005 | 必须 | GitHub Actions 在 push 到 `main` 和面向 `main` 的 pull request 中运行同一个 preflight 命令。 | 追踪矩阵中的 workflow 文件检查和命令执行。 |
+| REQ-006 | 必须 | preflight 命令运行 Codex SessionStart hook 测试，防止入口注入链路发布时失效。 | 单测 `test_build_commands_include_core_validation_steps` 和 hook 测试命令。 |
 
 ## 错误和边界情况
 
@@ -70,6 +72,7 @@ related_specs: []
 | REQ-003 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
 | REQ-004 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
 | REQ-005 | workflow 检查 | `.github/workflows/ci.yml` 包含 `python3 scripts/preflight.py` | Task 2 | 已覆盖 |
+| REQ-006 | hook 测试 | `bash tests/hooks/test-session-start.sh` | Task 2 | 已覆盖 |
 | ERR-001 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
 | ERR-002 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
 | ERR-003 | 手工验证 | 在临时 checkout 删除一个 manifest 后运行 `python3 scripts/preflight.py` | Task 1 | 计划中 |

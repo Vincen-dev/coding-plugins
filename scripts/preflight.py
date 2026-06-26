@@ -88,6 +88,12 @@ def check_manifest_versions(root: Path) -> None:
         raise PreflightError(f"Manifest versions differ: Codex={codex_version}, Claude={claude_version}.")
 
 
+def check_codex_hook_config_declared(root: Path) -> None:
+    codex_manifest = read_json(root / ".codex-plugin" / "plugin.json")
+    if codex_manifest.get("hooks") != "./hooks/hooks-codex.json":
+        raise PreflightError("Codex manifest must declare hooks: ./hooks/hooks-codex.json.")
+
+
 def iter_text_files(root: Path) -> list[Path]:
     files: list[Path] = []
     for path in root.rglob("*"):
@@ -165,6 +171,7 @@ def build_validation_commands(
         [python, "-m", "unittest", "scripts/test_preflight.py"],
         [python, "-m", "unittest", "skills/spec-driven-development/scripts/test_validate_spec.py"],
         [python, "-m", "unittest", "skills/test-driven-development/scripts/test_validate_tdd_evidence.py"],
+        ["bash", "tests/hooks/test-session-start.sh"],
     ]
 
     if spec_files:
@@ -199,6 +206,7 @@ def run_commands(root: Path, commands: list[list[str]]) -> None:
 def run_static_checks(root: Path) -> None:
     check_required_plugin_files(root)
     check_manifest_versions(root)
+    check_codex_hook_config_declared(root)
     check_removed_entry_references(root)
     check_sdd_templates_are_chinese(root)
 

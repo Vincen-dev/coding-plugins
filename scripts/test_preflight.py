@@ -97,6 +97,7 @@ class PreflightTests(unittest.TestCase):
 
         self.assertIn("test_validate_spec.py", command_text)
         self.assertIn("test_validate_tdd_evidence.py", command_text)
+        self.assertIn("tests/hooks/test-session-start.sh", command_text)
         self.assertIn("validate_spec.py", command_text)
         self.assertIn("--strict docs/coding-plugins/evidence/plugin/preflight/tdd-evidence.md", command_text)
 
@@ -112,6 +113,29 @@ class PreflightTests(unittest.TestCase):
 
             with self.assertRaisesRegex(preflight.PreflightError, "SDD template still contains English structure"):
                 preflight.check_sdd_templates_are_chinese(root)
+
+    def test_codex_manifest_declares_hook_config(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / ".codex-plugin").mkdir()
+            (root / ".codex-plugin" / "plugin.json").write_text(
+                json.dumps({"hooks": "./hooks/hooks-codex.json"}),
+                encoding="utf-8",
+            )
+
+            preflight.check_codex_hook_config_declared(root)
+
+    def test_codex_manifest_rejects_missing_hook_config(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / ".codex-plugin").mkdir()
+            (root / ".codex-plugin" / "plugin.json").write_text(
+                json.dumps({}),
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Codex manifest must declare hooks"):
+                preflight.check_codex_hook_config_declared(root)
 
 
 if __name__ == "__main__":

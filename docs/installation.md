@@ -8,6 +8,8 @@
 
 ```text
 .agents/plugins/marketplace.json
+.codex-plugin/plugin.json
+hooks/hooks-codex.json
 ```
 
 该 marketplace 是单插件仓库布局，`coding-plugins` 的 source path 指向仓库根目录 `.`。因此可以把本仓库根目录直接注册为 marketplace。
@@ -33,7 +35,7 @@ codex plugin list
 codex plugin marketplace list
 ```
 
-新建或重开 Codex 会话后，技能会以 `coding-plugins:<skill-name>` 形式出现在可用技能列表中。
+新建或重开 Codex 会话后，技能会以 `coding-plugins:<skill-name>` 形式出现在可用技能列表中。Codex 会在 `startup`、`resume` 和 `clear` 的 SessionStart 阶段运行 `hooks/run-hook.cmd session-start-codex`，自动注入 `coding-plugins:using-coding-plugins` 入口提示。
 
 ## 个人 Marketplace 安装
 
@@ -94,6 +96,6 @@ claude --plugin-dir /Users/vincen/workspace/plugins/coding-plugins
 
 ```bash
 python3 scripts/preflight.py
-PYTHONPATH=/private/tmp/codex-yaml-shim python3 /Users/vincen/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py /Users/vincen/workspace/plugins/coding-plugins
+codex plugin add coding-plugins@personal
 claude plugin validate /Users/vincen/workspace/plugins/coding-plugins --strict
 ```

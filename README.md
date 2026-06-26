@@ -4,6 +4,8 @@ Coding Plugins 是中文编码代理方法论插件，支持 Codex 和 Claude Co
 
 本插件以 SDD（Specification-Driven Development）和 TDD（Test-Driven Development）为主链路。默认文档路径使用 `docs/coding-plugins/`；如果项目或用户已有约定，以用户约定为准。
 
+Codex 侧包含 SessionStart hook，新建、恢复或清空会话时会注入 `coding-plugins:using-coding-plugins` 入口提示，降低入口技能漏用概率。Claude Code 侧仍通过 `/coding-plugins:<skill-name>` 命名空间手动或按描述触发。
+
 ## 工作方式
 
 当代理看到你要构建或修改东西时，它不应该直接写代码。它会先把需求收敛成可追踪、可测试、可评审的规格。规格通过后，它会写出足够具体的实现计划：文件、代码、测试、命令、预期结果都要写清楚。
@@ -68,6 +70,8 @@ Coding Plugins 是中文编码代理方法论插件，支持 Codex 和 Claude Co
 
 ```text
 .agents/plugins/marketplace.json
+.codex-plugin/plugin.json
+hooks/hooks-codex.json
 ```
 
 从 GitHub 安装：
@@ -113,7 +117,8 @@ python3 scripts/preflight.py
 Codex 侧通过 `.codex-plugin/plugin.json` 识别插件，并使用 `skills/*/agents/openai.yaml` 提供展示元数据。插件结构校验：
 
 ```bash
-PYTHONPATH=/private/tmp/codex-yaml-shim python3 /Users/vincen/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py /Users/vincen/workspace/plugins/coding-plugins
+codex plugin add coding-plugins@personal
+bash tests/hooks/test-session-start.sh
 ```
 
 ### Claude Code
