@@ -75,6 +75,7 @@ docs/coding-plugins/specs/YYYY-MM-DD-<topic>-spec.md
 - 项目上下文。
 - 用户目标、非目标和成功标准。
 - 规格类型选择：feature、API contract、schema、state machine、acceptance criteria。
+- 无新增需求时，只有维护、基线、回归、迁移或可观测性风险需要维护规格。
 - 稳定 Spec ID：`REQ/API/SCHEMA/STATE/ERR/AC/NFR/MIG/OBS/NON`。
 - 外部契约示例：请求/响应、schema 样例、状态迁移或错误样例。
 - Traceability Matrix 初稿。
