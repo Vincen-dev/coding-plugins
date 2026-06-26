@@ -1,6 +1,6 @@
 {
   "name": "coding-plugins",
-  "version": "0.6.11",
+  "version": "0.6.12",
   "description": "面向 Codex 和 Claude Code 的中文 SDD/TDD 编码工作流插件。",
   "author": {
     "name": "Vincen"
@@ -45,7 +45,7 @@
     "termsOfServiceURL": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service",
     "brandColor": "#F59E0B",
     "composerIcon": "./assets/coding-plugins.svg",
-    "logo": "./assets/app-icon.png",
+    "logo": "./assets/coding-plugins.svg",
     "screenshots": []
   }
 }
