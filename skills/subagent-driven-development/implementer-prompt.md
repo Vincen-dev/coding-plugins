@@ -30,7 +30,7 @@ Task tool (general-purpose):
 
     明确需求后：
     1. 精确实现任务指定内容。
-    2. 编写测试；如果任务要求 TDD，则遵守 TDD。
+    2. 对任何功能、bugfix、重构或行为变更，默认使用 TDD：先写来自 Spec ID、bug 复现或验收标准的失败测试，确认 RED，再写最小实现。
     3. 验证实现可用。
     4. 如任务要求提交，使用 `git-commit` 规则提交你的工作：中文 Conventional Commit，禁止 AI 作者、AI co-author 或 AI 生成声明。
     5. 自审。
@@ -81,7 +81,8 @@ Task tool (general-purpose):
 
     **测试：**
     - 测试是否验证真实行为？
-    - 需要 TDD 时是否遵守？
+    - 是否留下 TDD Evidence，证明先 RED 后 GREEN？
+    - 如果没有 TDD Evidence，是否有用户同意的 TDD Exception Record 和替代验证？
     - 测试是否足够？
 
     自审发现问题时，先修复再回报。
@@ -90,6 +91,8 @@ Task tool (general-purpose):
 
     - **Status:** DONE | DONE_WITH_CONCERNS | BLOCKED | NEEDS_CONTEXT
     - 实现了什么（若阻塞则说明尝试了什么）
+    - TDD Evidence（功能、bugfix、重构或行为变更必须提供）
+    - TDD Exception Record（仅在用户同意跳过 TDD 时提供）
     - 测试内容和结果
     - 修改文件
     - 提交 SHA（如果本任务创建了提交）

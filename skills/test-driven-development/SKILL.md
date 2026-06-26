@@ -105,6 +105,73 @@ npm test path/to/test.test.ts
 
 保持测试一直为 green，不添加新行为。
 
+## 测试层级选择
+
+测试层级由规格或 bug 复现决定，不由实现方便程度决定。
+
+| 来源 | 首选测试 | 补充测试 |
+| --- | --- | --- |
+| 函数逻辑、业务规则、边界条件 | 单元测试 | 少量集成测试 |
+| API、SDK、协议、schema | 契约测试或集成测试 | 单元测试覆盖分支 |
+| 状态机、生命周期、异步流程 | 状态转换测试 | 端到端关键路径 |
+| UI 行为 | 组件/交互测试 | 截图或人工验收证据 |
+| bug 修复 | 失败复现测试 | 回归测试覆盖邻近边界 |
+| 纯重构 | 现有测试或 characterization test | 行为不变的快照/金样本测试 |
+
+如果无法写自动测试，必须先记录 TDD Exception Record，并获得用户同意，再使用最接近的替代验证。
+
+## TDD Evidence
+
+每个会改变行为的实现任务，回报时必须包含一个 TDD Evidence 块。字段名保持英文，便于脚本检查：
+
+```markdown
+## TDD Evidence
+
+- **Spec/Bug/AC:** REQ-001 或 bug 复现链接/明确验收标准
+- **RED test:** `tests/path/test_file.py::test_specific_behavior`
+- **RED command:** `pytest tests/path/test_file.py::test_specific_behavior -v`
+- **RED failure:** 失败信息摘要，说明它因缺失行为失败，而不是导入、拼写或环境问题
+- **GREEN change:** 最小实现摘要
+- **GREEN command:** `pytest tests/path/test_file.py::test_specific_behavior -v`
+- **REFACTOR command:** `pytest tests/path/test_file.py -v`，没有重构也写明重跑命令
+- **Final verification:** 最终相关测试/构建命令和结果
+```
+
+纯重构没有新增行为时，`RED failure` 字段写 existing green baseline 或 characterization test 的基线结果，并说明为什么 RED 不适用。发现真实 bug 时不要混在重构里修，拆出 bugfix 并走标准 RED。
+
+可以用脚本检查证据：
+
+```bash
+python3 skills/test-driven-development/scripts/validate_tdd_evidence.py path/to/report.md
+```
+
+严格检查用于发布前或 CI：
+
+```bash
+python3 skills/test-driven-development/scripts/validate_tdd_evidence.py --strict path/to/report.md
+```
+
+## TDD Exception Record
+
+跳过先写失败测试不是默认选项。只有确实无法 TDD 时，先问用户，并记录：
+
+```markdown
+## TDD Exception Record
+
+- **Reason:** 为什么无法先写失败测试
+- **User approval:** 用户同意的原话或明确说明
+- **Alternative verification:** 替代验证命令、日志、截图或人工验收步骤
+- **Risk:** 剩余风险和后续补测试计划
+```
+
+以下情况也需要 Exception Record：
+
+- 第三方生成代码无法提前写测试。
+- 纯文档、manifest 或配置修改没有可执行行为。
+- 环境缺失导致自动测试无法运行。
+
+如果只是“赶时间”“改动很小”“写测试麻烦”，不是例外。
+
 ## 好测试标准
 
 | 质量 | 好 | 坏 |
@@ -140,12 +207,23 @@ npm test path/to/test.test.ts
 - 只为了覆盖率写断言。
 - 没有先验证失败。
 
+## 压力场景
+
+遇到以下场景时，先读对应参考，避免在压力下绕过 TDD：
+
+- `test-pressure-simple-change.md`：小改动也要留下 RED 证据。
+- `test-pressure-bugfix-urgent.md`：紧急 bugfix 先复现失败，再修复。
+- `test-pressure-refactor-no-behavior-change.md`：纯重构用现有测试或 characterization test 保护行为。
+
 ## 完成标准
 
-最终报告必须说明：
+最终报告必须包含 TDD Evidence，说明：
 
 - 写了哪个失败测试。
 - 它对应哪个 Spec ID、bug 复现或验收标准。
 - 它初始如何失败。
 - 写了什么最小实现。
+- 是否重构，以及重构后运行了什么测试。
 - 最终运行了哪些测试，结果如何。
+
+若没有 TDD Evidence，必须有 TDD Exception Record；否则不能声称任务完成。

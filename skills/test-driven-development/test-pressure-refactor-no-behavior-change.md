@@ -1,0 +1,22 @@
+# 纯重构压力场景
+
+纯重构的目标是行为不变。TDD 在这里的重点不是新增行为测试，而是先建立行为保护。
+
+## 操作顺序
+
+1. 查找已有自动测试。
+2. 如果已有测试覆盖重构边界，先运行并记录基线。
+3. 如果没有覆盖，先写 characterization test，锁定当前外部行为。
+4. 确认测试 green 后再重构。
+5. 每次小步重构后重跑相关测试。
+6. 回报 TDD Evidence；RED 不适用时说明使用的是 existing green baseline 或 characterization test。
+
+## Characterization Test 要求
+
+- 测外部可观察行为，不测私有实现细节。
+- 保留当前行为，即使当前行为看起来不理想。
+- 如果发现当前行为本身有 bug，不要在同一任务中混合修复；先拆出 bugfix 任务并走 RED。
+
+## 例外
+
+纯格式化、注释整理、文档移动、manifest 元数据调整可以使用 TDD Exception Record。仍需提供替代验证，例如格式化检查、插件校验或文档链接检查。
