@@ -13,6 +13,16 @@ related_plans:
 
 # 技术设计产物独立维护技术设计
 
+## 文档信息
+
+| 字段 | 内容 |
+| --- | --- |
+| 状态 | 已批准 |
+| 领域 | plugin |
+| 能力 | technical-design-artifacts |
+| 规格 | `docs/coding-plugins/specs/plugin/technical-design-artifacts/feature.md` |
+| 计划 | `docs/coding-plugins/plans/plugin/technical-design-artifacts/implementation.md` |
+
 ## Design Summary
 
 新增 `docs/coding-plugins/technical/` 作为独立技术设计层，位于 Spec 和 Plan 之间。`writing-technical-design` 负责把批准规格转成 `technical-design.md`，`writing-plans` 只引用技术设计并拆解 TDD 任务。preflight 统一校验 technical 索引、总索引、Spec 引用、Plan 引用和 Spec ID 追踪。

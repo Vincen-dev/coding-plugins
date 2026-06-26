@@ -4,6 +4,7 @@
 | --- | --- | --- | --- | --- | --- | --- |
 | plugin | artifact-index | feature | approved | `docs/coding-plugins/specs/plugin/artifact-index/feature.md` | index, retrieval, traceability, preflight | 2026-06-26 |
 | plugin | behavior-tests | feature | approved | `docs/coding-plugins/specs/plugin/behavior-tests/feature.md` | testing, routing, hooks, claude-code | 2026-06-26 |
+| plugin | document-metadata | feature | approved | `docs/coding-plugins/specs/plugin/document-metadata/feature.md` | metadata, chinese, plan, preflight | 2026-06-26 |
 | plugin | marketplace | feature | approved | `docs/coding-plugins/specs/plugin/marketplace/feature.md` | marketplace, installation, distribution, codex, claude-code | 2026-06-26 |
 | plugin | preflight | feature | approved | `docs/coding-plugins/specs/plugin/preflight/feature.md` | ci, validation, release-gate | 2026-06-26 |
 | plugin | preflight-hardening | feature | approved | `docs/coding-plugins/specs/plugin/preflight-hardening/feature.md` | preflight, validation, manifest, traceability, docs-sync | 2026-06-26 |

@@ -16,6 +16,15 @@ related_specs: []
 
 # <API 或 SDK 名称>契约规格
 
+## 文档信息
+
+| 字段 | 内容 |
+| --- | --- |
+| 状态 | 草稿 |
+| 领域 | <area> |
+| 能力 | <capability> |
+| 规格类型 | api-contract |
+
 ## 目标
 
 <说明该 API/SDK 契约解决什么问题。>

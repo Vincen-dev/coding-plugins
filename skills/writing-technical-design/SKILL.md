@@ -70,7 +70,7 @@ docs/coding-plugins/INDEX.md
 1. 读取批准规格和相关现有代码。
 2. 确认 area/capability，并检查是否已有技术设计。
 3. 创建或更新 `technical-design.md`。
-4. 在规格 metadata 或正文中引用 technical design 路径。
+4. 在规格 metadata 或正文中引用 technical design 路径；metadata key 保持英文，正文使用 `## 文档信息` 展示中文摘要。
 5. 更新 `docs/coding-plugins/technical/INDEX.md` 和 `docs/coding-plugins/INDEX.md`。
 6. 运行 `python3 scripts/preflight.py` 或至少运行相关 preflight 单测。
 7. 交接给 `writing-plans`，计划必须写 `Technical Design Source`。

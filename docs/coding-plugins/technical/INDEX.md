@@ -4,6 +4,7 @@
 
 | Area | Capability | Technical | Tags | Updated |
 | --- | --- | --- | --- | --- |
+| plugin | document-metadata | `docs/coding-plugins/technical/plugin/document-metadata/technical-design.md` | metadata, chinese, plan, preflight | 2026-06-26 |
 | plugin | technical-design-artifacts | `docs/coding-plugins/technical/plugin/technical-design-artifacts/technical-design.md` | technical-design, architecture, traceability, workflow | 2026-06-26 |
 
 Rules:

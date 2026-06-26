@@ -72,6 +72,8 @@ ARTIFACT_INDEX_REQUIRED_COLUMNS = ("Area", "Capability", "Spec", "Technical", "P
 TECHNICAL_INDEX_REQUIRED_COLUMNS = ("Area", "Capability", "Technical", "Tags", "Updated")
 SPEC_ID_RE = re.compile(r"\b(?:REQ|API|SCHEMA|STATE|ERR|AC|NFR|MIG|OBS|NON)-\d{3,}\b")
 TECHNICAL_DESIGN_PATH_RE = re.compile(r"docs/coding-plugins/technical/[A-Za-z0-9_.\-/]+\.md")
+PLAN_METADATA_REQUIRED_FIELDS = ("title", "status", "area", "capability", "created", "updated")
+CHINESE_DOCUMENT_INFO_REQUIRED_TERMS = ("## 文档信息", "状态", "领域", "能力")
 DOC_SYNC_REFERENCES = (
     "docs/coding-plugins/INDEX.md",
     "docs/coding-plugins/technical/INDEX.md",
@@ -284,6 +286,45 @@ def check_document_path_metadata(root: Path) -> None:
 
     if mismatches:
         raise PreflightError("Spec metadata does not match path: " + "; ".join(mismatches) + ".")
+
+
+def check_plan_metadata(root: Path) -> None:
+    incomplete: list[str] = []
+    mismatches: list[str] = []
+    plans_root = root / "docs" / "coding-plugins" / "plans"
+    for path in collect_plan_files(root):
+        metadata = parse_frontmatter(path.read_text(encoding="utf-8"))
+        missing_fields = [field for field in PLAN_METADATA_REQUIRED_FIELDS if not metadata.get(field)]
+        if missing_fields:
+            incomplete.append(f"{path.relative_to(root)} missing {', '.join(missing_fields)}")
+            continue
+
+        relative_parts = path.relative_to(plans_root).parts
+        if len(relative_parts) < 3:
+            mismatches.append(f"{path.relative_to(root)} is not under plans/<area>/<capability>/")
+            continue
+        path_area, path_capability = relative_parts[0], relative_parts[1]
+        if metadata.get("area") != path_area:
+            mismatches.append(f"{path.relative_to(root)} area={metadata.get('area')} path={path_area}")
+        if metadata.get("capability") != path_capability:
+            mismatches.append(f"{path.relative_to(root)} capability={metadata.get('capability')} path={path_capability}")
+
+    if incomplete:
+        raise PreflightError("Plan metadata is incomplete: " + "; ".join(incomplete) + ".")
+    if mismatches:
+        raise PreflightError("Plan metadata does not match path: " + "; ".join(mismatches) + ".")
+
+
+def check_chinese_document_info_sections(root: Path) -> None:
+    offenders: list[str] = []
+    for path in collect_plan_files(root) + collect_technical_design_files(root):
+        text = path.read_text(encoding="utf-8")
+        missing_terms = [term for term in CHINESE_DOCUMENT_INFO_REQUIRED_TERMS if term not in text]
+        if missing_terms:
+            offenders.append(f"{path.relative_to(root)} missing {', '.join(missing_terms)}")
+
+    if offenders:
+        raise PreflightError("Document is missing Chinese metadata summary: " + "; ".join(offenders) + ".")
 
 
 def specs_for_area_capability(root: Path, document_root_name: str, document_file: Path) -> list[Path]:
@@ -537,6 +578,8 @@ def run_static_checks(root: Path) -> None:
     check_manifest_asset_paths(root)
     check_skill_agent_metadata(root)
     check_document_path_metadata(root)
+    check_plan_metadata(root)
+    check_chinese_document_info_sections(root)
     check_technical_index_covers_designs(root)
     check_artifact_index_covers_documents(root)
     check_spec_technical_design_references(root)

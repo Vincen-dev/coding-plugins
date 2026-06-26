@@ -6,6 +6,7 @@
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | plugin | artifact-index | `docs/coding-plugins/specs/plugin/artifact-index/feature.md` | - | - | `docs/coding-plugins/evidence/plugin/artifact-index/tdd-evidence.md` | index, retrieval, traceability, preflight | 2026-06-26 |
 | plugin | behavior-tests | `docs/coding-plugins/specs/plugin/behavior-tests/feature.md` | - | - | `docs/coding-plugins/evidence/plugin/behavior-tests/tdd-evidence.md` | testing, routing, hooks, claude-code | 2026-06-26 |
+| plugin | document-metadata | `docs/coding-plugins/specs/plugin/document-metadata/feature.md` | `docs/coding-plugins/technical/plugin/document-metadata/technical-design.md` | `docs/coding-plugins/plans/plugin/document-metadata/implementation.md` | `docs/coding-plugins/evidence/plugin/document-metadata/tdd-evidence.md` | metadata, chinese, plan, preflight | 2026-06-26 |
 | plugin | marketplace | `docs/coding-plugins/specs/plugin/marketplace/feature.md` | - | - | - | marketplace, installation, distribution, codex, claude-code | 2026-06-26 |
 | plugin | preflight | `docs/coding-plugins/specs/plugin/preflight/feature.md` | - | - | - | ci, validation, release-gate | 2026-06-26 |
 | plugin | preflight-hardening | `docs/coding-plugins/specs/plugin/preflight-hardening/feature.md` | - | - | `docs/coding-plugins/evidence/plugin/preflight-hardening/tdd-evidence.md` | preflight, validation, manifest, traceability, docs-sync | 2026-06-26 |

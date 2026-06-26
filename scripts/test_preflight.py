@@ -299,6 +299,58 @@ class PreflightTests(unittest.TestCase):
             with self.assertRaisesRegex(preflight.PreflightError, "Spec metadata does not match path"):
                 preflight.check_document_path_metadata(root)
 
+    def test_plan_metadata_check_rejects_missing_frontmatter(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            plan_dir = root / "docs" / "coding-plugins" / "plans" / "plugin" / "routing"
+            plan_dir.mkdir(parents=True)
+            (plan_dir / "implementation.md").write_text("# Plan\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Plan metadata is incomplete"):
+                preflight.check_plan_metadata(root)
+
+    def test_plan_metadata_check_rejects_mismatched_path_metadata(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            plan_dir = root / "docs" / "coding-plugins" / "plans" / "plugin" / "routing"
+            plan_dir.mkdir(parents=True)
+            (plan_dir / "implementation.md").write_text(
+                "---\n"
+                "title: 路由计划\n"
+                "status: approved\n"
+                "area: plugin\n"
+                "capability: other\n"
+                "created: 2026-06-26\n"
+                "updated: 2026-06-26\n"
+                "---\n"
+                "# Plan\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Plan metadata does not match path"):
+                preflight.check_plan_metadata(root)
+
+    def test_document_info_check_rejects_missing_chinese_summary(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            plan_dir = root / "docs" / "coding-plugins" / "plans" / "plugin" / "routing"
+            plan_dir.mkdir(parents=True)
+            (plan_dir / "implementation.md").write_text(
+                "---\n"
+                "title: 路由计划\n"
+                "status: approved\n"
+                "area: plugin\n"
+                "capability: routing\n"
+                "created: 2026-06-26\n"
+                "updated: 2026-06-26\n"
+                "---\n"
+                "# Plan\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Document is missing Chinese metadata summary"):
+                preflight.check_chinese_document_info_sections(root)
+
     def test_evidence_spec_id_check_rejects_unknown_ids(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

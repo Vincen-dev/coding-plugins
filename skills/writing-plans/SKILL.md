@@ -79,8 +79,36 @@ docs/coding-plugins/technical/<area>/<capability>/technical-design.md
 
 每个计划必须以类似结构开头：
 
+机器可读 frontmatter 的 key 保持英文稳定；中文展示写在 `## 文档信息` 表中。不要把 frontmatter key 改成中文。
+
 ```markdown
+---
+title: [Feature Name] 实现计划
+status: draft
+area: [area]
+capability: [capability]
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
+related_specs:
+  - docs/coding-plugins/specs/[area]/[capability]/feature.md
+related_technical:
+  - docs/coding-plugins/technical/[area]/[capability]/technical-design.md
+related_evidence:
+  - docs/coding-plugins/evidence/[area]/[capability]/tdd-evidence.md
+---
+
 # [Feature Name] Implementation Plan
+
+## 文档信息
+
+| 字段 | 内容 |
+| --- | --- |
+| 状态 | 草稿 |
+| 领域 | [area] |
+| 能力 | [capability] |
+| 规格 | `docs/coding-plugins/specs/[area]/[capability]/feature.md` |
+| 技术设计 | `docs/coding-plugins/technical/[area]/[capability]/technical-design.md` |
+| TDD Evidence | `docs/coding-plugins/evidence/[area]/[capability]/tdd-evidence.md` |
 
 > **给代理执行者：** REQUIRED SUB-SKILL: 使用 `coding-plugins:subagent-driven-development`（推荐）或 `coding-plugins:executing-plans` 逐任务实现本计划。步骤使用 checkbox (`- [ ]`) 语法追踪。
 

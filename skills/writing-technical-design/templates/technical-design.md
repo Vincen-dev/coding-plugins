@@ -13,6 +13,16 @@ related_plans:
 
 # <功能名称>技术设计
 
+## 文档信息
+
+| 字段 | 内容 |
+| --- | --- |
+| 状态 | 草稿 |
+| 领域 | <area> |
+| 能力 | <capability> |
+| 规格 | `docs/coding-plugins/specs/<area>/<capability>/feature.md` |
+| 计划 | `docs/coding-plugins/plans/<area>/<capability>/implementation.md` |
+
 ## Design Summary
 
 <2 到 5 句话说明整体技术方案。>

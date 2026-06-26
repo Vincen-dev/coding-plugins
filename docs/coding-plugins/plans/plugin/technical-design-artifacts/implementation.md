@@ -1,4 +1,30 @@
+---
+title: 技术设计产物独立维护实现计划
+status: approved
+area: plugin
+capability: technical-design-artifacts
+created: 2026-06-26
+updated: 2026-06-26
+related_specs:
+  - docs/coding-plugins/specs/plugin/technical-design-artifacts/feature.md
+related_technical:
+  - docs/coding-plugins/technical/plugin/technical-design-artifacts/technical-design.md
+related_evidence:
+  - docs/coding-plugins/evidence/plugin/technical-design-artifacts/tdd-evidence.md
+---
+
 # 技术设计产物独立维护 Implementation Plan
+
+## 文档信息
+
+| 字段 | 内容 |
+| --- | --- |
+| 状态 | 已批准 |
+| 领域 | plugin |
+| 能力 | technical-design-artifacts |
+| 规格 | `docs/coding-plugins/specs/plugin/technical-design-artifacts/feature.md` |
+| 技术设计 | `docs/coding-plugins/technical/plugin/technical-design-artifacts/technical-design.md` |
+| TDD Evidence | `docs/coding-plugins/evidence/plugin/technical-design-artifacts/tdd-evidence.md` |
 
 > **给代理执行者：** REQUIRED SUB-SKILL: 使用 `coding-plugins:executing-plans` 或当前会话按检查点执行本计划。步骤使用 checkbox (`- [ ]`) 语法追踪。
 
