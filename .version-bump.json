@@ -1,0 +1,19 @@
+{
+  "version": "0.6.15",
+  "files": [
+    {
+      "path": ".codex-plugin/plugin.json",
+      "field": "version"
+    },
+    {
+      "path": ".claude-plugin/plugin.json",
+      "field": "version"
+    },
+    {
+      "path": ".version-bump.json",
+      "field": "version"
+    }
+  ],
+  "releaseNotes": "RELEASE-NOTES.md",
+  "preflight": "python3 scripts/preflight.py"
+}

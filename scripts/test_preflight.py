@@ -110,6 +110,7 @@ class PreflightTests(unittest.TestCase):
 
         self.assertIn("test_validate_spec.py", command_text)
         self.assertIn("test_validate_tdd_evidence.py", command_text)
+        self.assertIn("test_bump_version.py", command_text)
         self.assertIn("tests/hooks/test-session-start.sh", command_text)
         self.assertIn("validate_spec.py", command_text)
         self.assertIn("--strict docs/coding-plugins/evidence/plugin/preflight/tdd-evidence.md", command_text)
@@ -296,6 +297,62 @@ class PreflightTests(unittest.TestCase):
 
             with self.assertRaisesRegex(preflight.PreflightError, "Documentation is missing required path references"):
                 preflight.check_documentation_path_references(root)
+
+    def test_docs_sync_check_rejects_missing_release_paths(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "docs").mkdir()
+            baseline = "\n".join(
+                (
+                    "docs/coding-plugins/INDEX.md",
+                    "hooks/hooks-codex.json",
+                    "python3 scripts/preflight.py",
+                )
+            )
+            (root / "README.md").write_text(baseline, encoding="utf-8")
+            (root / "docs" / "installation.md").write_text(baseline, encoding="utf-8")
+            (root / "docs" / "workflow-chain.md").write_text(baseline, encoding="utf-8")
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Documentation is missing required path references"):
+                preflight.check_documentation_path_references(root)
+
+    def test_release_management_check_rejects_missing_release_notes_version(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / ".codex-plugin").mkdir()
+            (root / ".claude-plugin").mkdir()
+            (root / ".codex-plugin" / "plugin.json").write_text(
+                json.dumps({"version": "1.2.3"}),
+                encoding="utf-8",
+            )
+            (root / ".claude-plugin" / "plugin.json").write_text(
+                json.dumps({"version": "1.2.3"}),
+                encoding="utf-8",
+            )
+            (root / ".version-bump.json").write_text(json.dumps({"version": "1.2.3"}), encoding="utf-8")
+            (root / "RELEASE-NOTES.md").write_text("# Release Notes\n\n## 1.2.2\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(preflight.PreflightError, "RELEASE-NOTES.md must include current version"):
+                preflight.check_release_management_files(root)
+
+    def test_release_management_check_rejects_mismatched_config_version(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / ".codex-plugin").mkdir()
+            (root / ".claude-plugin").mkdir()
+            (root / ".codex-plugin" / "plugin.json").write_text(
+                json.dumps({"version": "1.2.3"}),
+                encoding="utf-8",
+            )
+            (root / ".claude-plugin" / "plugin.json").write_text(
+                json.dumps({"version": "1.2.3"}),
+                encoding="utf-8",
+            )
+            (root / ".version-bump.json").write_text(json.dumps({"version": "1.2.2"}), encoding="utf-8")
+            (root / "RELEASE-NOTES.md").write_text("# Release Notes\n\n## 1.2.3\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Version bump config version differs"):
+                preflight.check_release_management_files(root)
 
 
 if __name__ == "__main__":

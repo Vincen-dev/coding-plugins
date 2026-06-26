@@ -72,6 +72,9 @@ SPEC_ID_RE = re.compile(r"\b(?:REQ|API|SCHEMA|STATE|ERR|AC|NFR|MIG|OBS|NON)-\d{3
 DOC_SYNC_REFERENCES = (
     "docs/coding-plugins/INDEX.md",
     "hooks/hooks-codex.json",
+    ".version-bump.json",
+    "RELEASE-NOTES.md",
+    "scripts/bump_version.py",
     "python3 scripts/preflight.py",
 )
 
@@ -94,6 +97,34 @@ def check_manifest_versions(root: Path) -> None:
         raise PreflightError("Both plugin manifests must define a version.")
     if codex_version != claude_version:
         raise PreflightError(f"Manifest versions differ: Codex={codex_version}, Claude={claude_version}.")
+
+
+def current_manifest_version(root: Path) -> str:
+    codex_manifest = read_json(root / ".codex-plugin" / "plugin.json")
+    version = codex_manifest.get("version")
+    if not isinstance(version, str) or not version.strip():
+        raise PreflightError("Codex manifest must define a version.")
+    return version
+
+
+def check_release_management_files(root: Path) -> None:
+    version = current_manifest_version(root)
+
+    config_path = root / ".version-bump.json"
+    if not config_path.exists():
+        raise PreflightError("Missing version bump config: .version-bump.json.")
+    config = read_json(config_path)
+    if config.get("version") != version:
+        raise PreflightError(
+            f"Version bump config version differs: .version-bump.json={config.get('version')} manifest={version}."
+        )
+
+    release_notes_path = root / "RELEASE-NOTES.md"
+    if not release_notes_path.exists():
+        raise PreflightError("Missing RELEASE-NOTES.md.")
+    release_notes = release_notes_path.read_text(encoding="utf-8")
+    if f"## {version}" not in release_notes:
+        raise PreflightError(f"RELEASE-NOTES.md must include current version: {version}.")
 
 
 def check_codex_hook_config_declared(root: Path) -> None:
@@ -357,6 +388,7 @@ def build_validation_commands(
     python = sys.executable
     commands = [
         [python, "-m", "unittest", "scripts/test_preflight.py"],
+        [python, "-m", "unittest", "scripts/test_bump_version.py"],
         [python, "-m", "unittest", "skills/spec-driven-development/scripts/test_validate_spec.py"],
         [python, "-m", "unittest", "skills/test-driven-development/scripts/test_validate_tdd_evidence.py"],
         ["bash", "tests/hooks/test-session-start.sh"],
@@ -394,6 +426,7 @@ def run_commands(root: Path, commands: list[list[str]]) -> None:
 def run_static_checks(root: Path) -> None:
     check_required_plugin_files(root)
     check_manifest_versions(root)
+    check_release_management_files(root)
     check_codex_hook_config_declared(root)
     check_manifest_asset_paths(root)
     check_skill_agent_metadata(root)

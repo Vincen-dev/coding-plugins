@@ -106,6 +106,14 @@ claude --plugin-dir /Users/vincen/workspace/plugins/coding-plugins
 
 ### 发布前检查
 
+提升版本时运行：
+
+```bash
+python3 scripts/bump_version.py 0.6.16
+```
+
+版本同步目标由 [.version-bump.json](.version-bump.json) 维护。然后更新 [RELEASE-NOTES.md](RELEASE-NOTES.md) 中对应版本的变更记录。
+
 提交、push 或发布前运行：
 
 ```bash

@@ -298,6 +298,18 @@ flowchart TD
   F --> G["verification-before-completion"]
 ```
 
+### 发布和版本提升
+
+```mermaid
+flowchart TD
+  A["准备发布插件变更"] --> B["python3 scripts/bump_version.py <version>"]
+  B --> C["同步 .codex-plugin/plugin.json、.claude-plugin/plugin.json 和 .version-bump.json"]
+  C --> D["更新 RELEASE-NOTES.md"]
+  D --> E["python3 scripts/preflight.py"]
+  E --> F["Codex/Claude 插件校验"]
+  F --> G["提交、tag 或分发"]
+```
+
 ### 并行任务
 
 ```mermaid
@@ -478,11 +490,16 @@ docs/coding-plugins/INDEX.md
 
 ```text
 .agents/plugins/marketplace.json
+.version-bump.json
+RELEASE-NOTES.md
 docs/coding-plugins/INDEX.md
 docs/coding-plugins/specs/
 docs/coding-plugins/plans/
 docs/coding-plugins/evidence/
 hooks/
+hooks/hooks-codex.json
+scripts/bump_version.py
+python3 scripts/preflight.py
 ```
 
 规格模板和参考：
