@@ -74,13 +74,31 @@ class PreflightTests(unittest.TestCase):
                 [feature_dir / "feature.md"],
             )
 
+    def test_collect_tdd_evidence_files_uses_default_docs_path(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            evidence_dir = root / "docs" / "coding-plugins" / "evidence" / "plugin" / "preflight"
+            evidence_dir.mkdir(parents=True)
+            report = evidence_dir / "tdd-evidence.md"
+            report.write_text("# TDD Evidence", encoding="utf-8")
+
+            self.assertEqual(
+                preflight.collect_tdd_evidence_files(root),
+                [report],
+            )
+
     def test_build_commands_include_core_validation_steps(self) -> None:
-        commands = preflight.build_validation_commands(Path("/repo"), [Path("/repo/spec.md")])
+        commands = preflight.build_validation_commands(
+            Path("/repo"),
+            [Path("/repo/spec.md")],
+            [Path("/repo/docs/coding-plugins/evidence/plugin/preflight/tdd-evidence.md")],
+        )
         command_text = "\n".join(" ".join(command) for command in commands)
 
         self.assertIn("test_validate_spec.py", command_text)
         self.assertIn("test_validate_tdd_evidence.py", command_text)
         self.assertIn("validate_spec.py", command_text)
+        self.assertIn("--strict docs/coding-plugins/evidence/plugin/preflight/tdd-evidence.md", command_text)
 
     def test_sdd_template_check_rejects_english_headings(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

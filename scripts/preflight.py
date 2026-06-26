@@ -148,7 +148,18 @@ def collect_spec_files(root: Path) -> list[Path]:
     return sorted(path for path in specs_root.rglob("*.md") if path.name != "INDEX.md")
 
 
-def build_validation_commands(root: Path, spec_files: list[Path]) -> list[list[str]]:
+def collect_tdd_evidence_files(root: Path) -> list[Path]:
+    evidence_root = root / "docs" / "coding-plugins" / "evidence"
+    if not evidence_root.exists():
+        return []
+    return sorted(evidence_root.rglob("*.md"))
+
+
+def build_validation_commands(
+    root: Path,
+    spec_files: list[Path],
+    tdd_evidence_files: list[Path],
+) -> list[list[str]]:
     python = sys.executable
     commands = [
         [python, "-m", "unittest", "scripts/test_preflight.py"],
@@ -163,6 +174,16 @@ def build_validation_commands(root: Path, spec_files: list[Path]) -> list[list[s
                 "skills/spec-driven-development/scripts/validate_spec.py",
                 "--strict",
                 *[str(path.relative_to(root)) for path in spec_files],
+            ]
+        )
+
+    if tdd_evidence_files:
+        commands.append(
+            [
+                python,
+                "skills/test-driven-development/scripts/validate_tdd_evidence.py",
+                "--strict",
+                *[str(path.relative_to(root)) for path in tdd_evidence_files],
             ]
         )
 
@@ -186,7 +207,10 @@ def main() -> int:
     root = repo_root()
     try:
         run_static_checks(root)
-        run_commands(root, build_validation_commands(root, collect_spec_files(root)))
+        run_commands(
+            root,
+            build_validation_commands(root, collect_spec_files(root), collect_tdd_evidence_files(root)),
+        )
     except (PreflightError, subprocess.CalledProcessError) as error:
         print(f"Preflight failed: {error}", file=sys.stderr)
         return 1

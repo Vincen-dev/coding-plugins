@@ -17,7 +17,7 @@ Coding Plugins 是中文编码代理方法论插件，支持 Codex 和 Claude Co
 3. **writing-plans** - 基于已批准规格写实现计划。任务拆到 2 到 5 分钟粒度，并建立 Spec ID -> Test -> Task 追踪。
 4. **using-git-worktrees** - 执行前使用。创建隔离 worktree 和新分支，避免污染当前工作区。
 5. **subagent-driven-development / executing-plans** - 根据计划执行。优先子代理驱动；没有子代理时内联执行。
-6. **test-driven-development** - 实现时强制 RED-GREEN-REFACTOR：先从规格写失败测试，再最小实现，再重构，并回报 TDD Evidence。
+6. **test-driven-development** - 实现时强制 RED-GREEN-REFACTOR：先从规格写失败测试，再最小实现，再重构，并把 TDD Evidence 写入 `docs/coding-plugins/evidence/<area>/<capability>/tdd-evidence.md`。
 7. **requesting-code-review** - 任务之间或合并前评审，按严重级别报告问题。
 8. **receiving-code-review** - 收到评审后先验证反馈，再决定是否修改。
 9. **git-commit** - 用户要求提交或完成阶段需要提交时，生成中文 Conventional Commit，在 footer 添加本人 `Authored-by` 署名，并禁止 AI 作者或 AI 生成声明。

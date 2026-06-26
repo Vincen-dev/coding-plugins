@@ -120,9 +120,37 @@ npm test path/to/test.test.ts
 
 如果无法写自动测试，必须先记录 TDD Exception Record，并获得用户同意，再使用最接近的替代验证。
 
+## 落地路径
+
+TDD Evidence 不是只写在聊天里。默认保存到：
+
+```text
+docs/coding-plugins/evidence/<area>/<capability>/tdd-evidence.md
+```
+
+`<area>/<capability>` 应和规格、计划路径一致。例如：
+
+```text
+docs/coding-plugins/specs/auth/login/feature.md
+docs/coding-plugins/plans/auth/login/implementation.md
+docs/coding-plugins/evidence/auth/login/tdd-evidence.md
+```
+
+如果项目已有测试报告或 ADR 约定，优先使用项目约定，但最终报告必须写明实际 evidence 文件路径。
+
+一个文件可以记录同一 capability 下多个任务。每个任务使用二级标题，例如：
+
+```markdown
+## Task 1: 登录失败错误码
+
+### TDD Evidence
+```
+
+无法 TDD 时，同一个文件中记录 `TDD Exception Record`。
+
 ## TDD Evidence
 
-每个会改变行为的实现任务，回报时必须包含一个 TDD Evidence 块。字段名保持英文，便于脚本检查：
+每个会改变行为的实现任务，必须在 evidence 文件中写入 TDD Evidence 块，并在回报时给出该文件路径。字段名保持英文，便于脚本检查：
 
 ```markdown
 ## TDD Evidence
@@ -142,13 +170,13 @@ npm test path/to/test.test.ts
 可以用脚本检查证据：
 
 ```bash
-python3 skills/test-driven-development/scripts/validate_tdd_evidence.py path/to/report.md
+python3 skills/test-driven-development/scripts/validate_tdd_evidence.py docs/coding-plugins/evidence/<area>/<capability>/tdd-evidence.md
 ```
 
 严格检查用于发布前或 CI：
 
 ```bash
-python3 skills/test-driven-development/scripts/validate_tdd_evidence.py --strict path/to/report.md
+python3 skills/test-driven-development/scripts/validate_tdd_evidence.py --strict docs/coding-plugins/evidence/<area>/<capability>/tdd-evidence.md
 ```
 
 ## TDD Exception Record
@@ -217,7 +245,7 @@ python3 skills/test-driven-development/scripts/validate_tdd_evidence.py --strict
 
 ## 完成标准
 
-最终报告必须包含 TDD Evidence，说明：
+最终报告必须包含 TDD Evidence 文件路径，并概述其中记录的证据：
 
 - 写了哪个失败测试。
 - 它对应哪个 Spec ID、bug 复现或验收标准。
@@ -226,4 +254,4 @@ python3 skills/test-driven-development/scripts/validate_tdd_evidence.py --strict
 - 是否重构，以及重构后运行了什么测试。
 - 最终运行了哪些测试，结果如何。
 
-若没有 TDD Evidence，必须有 TDD Exception Record；否则不能声称任务完成。
+若没有 TDD Evidence，必须在 evidence 文件中有 TDD Exception Record；否则不能声称任务完成。

@@ -30,7 +30,7 @@
 | 4 | 实现计划 | `writing-plans` | `docs/coding-plugins/plans/<area>/<capability>/implementation.md`, Technical Approach, Spec ID -> Test -> Task 追踪 |
 | 5 | 隔离工作区 | `using-git-worktrees` | 独立 worktree 或确认在当前工作区执行 |
 | 6 | 执行调度 | `subagent-driven-development`, `executing-plans`, `dispatching-parallel-agents` | 子任务执行、批次执行或并行任务结果 |
-| 7 | TDD 实现 | `test-driven-development` | RED -> GREEN -> REFACTOR，TDD Evidence 或 TDD Exception Record |
+| 7 | TDD 实现 | `test-driven-development` | RED -> GREEN -> REFACTOR，`docs/coding-plugins/evidence/<area>/<capability>/tdd-evidence.md` |
 | 8 | 系统化调试 | `systematic-debugging` | 复现路径、根因、可测试修复入口 |
 | 9 | 评审门禁 | `spec-reviewer`, `code-quality-reviewer`, `requesting-code-review`, `receiving-code-review` | 规格符合性评审、代码质量评审、反馈处理 |
 | 10 | 完成前验证 | `verification-before-completion` | 测试、构建、规格覆盖或人工验收证据 |
@@ -396,14 +396,20 @@ spec-driven-development -> writing-plans -> using-git-worktrees -> subagent-driv
 没有先失败的测试，就不能写生产代码。
 ```
 
-TDD 阶段的交付证据不是“我遵守了 TDD”，而是标准化的 `TDD Evidence`：
+TDD 阶段的交付证据不是“我遵守了 TDD”，而是写入固定路径的标准化 `TDD Evidence`：
+
+```text
+docs/coding-plugins/evidence/<area>/<capability>/tdd-evidence.md
+```
+
+`<area>/<capability>` 应和规格、计划路径保持一致。
 
 - `Spec/Bug/AC`：测试来源。
 - `RED test` / `RED command` / `RED failure`：先失败证据。
 - `GREEN change` / `GREEN command`：最小实现和通过证据。
 - `REFACTOR command` / `Final verification`：重构后和最终验证证据。
 
-纯重构没有新增行为时，使用现有测试基线或 characterization test 作为行为保护证据。无法自动测试时，必须有用户同意的 `TDD Exception Record` 和替代验证。证据报告可用 `skills/test-driven-development/scripts/validate_tdd_evidence.py` 检查。
+纯重构没有新增行为时，使用现有测试基线或 characterization test 作为行为保护证据。无法自动测试时，必须在同一 evidence 文件中记录用户同意的 `TDD Exception Record` 和替代验证。证据报告可用 `skills/test-driven-development/scripts/validate_tdd_evidence.py` 检查，`scripts/preflight.py` 会自动严格校验 `docs/coding-plugins/evidence/**/*.md`。
 
 `systematic-debugging` 适用于 bug、测试失败、构建失败、性能问题和异常行为。铁律是：
 
@@ -466,6 +472,7 @@ feat(commit): 增加中文提交工作流
 .agents/plugins/marketplace.json
 docs/coding-plugins/specs/
 docs/coding-plugins/plans/
+docs/coding-plugins/evidence/
 ```
 
 规格模板和参考：
