@@ -46,12 +46,6 @@ claude --plugin-dir ./coding-plugins
 /coding-plugins:using-coding-plugins
 ```
 
-兼容旧入口命名时调用：
-
-```text
-/coding-plugins:using-superpowers
-```
-
 之后 Claude 会根据技能 description 自动选择相关技能；也可以手动调用具体技能。
 
 ## 工具映射
@@ -62,7 +56,6 @@ claude --plugin-dir ./coding-plugins
 
 ```text
 skills/using-coding-plugins/references/claude-tools.md
-skills/using-superpowers/references/claude-tools.md
 ```
 
 ## 校验
