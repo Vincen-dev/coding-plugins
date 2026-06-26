@@ -7,6 +7,7 @@
 | plugin | artifact-index | `docs/coding-plugins/specs/plugin/artifact-index/feature.md` | - | `docs/coding-plugins/evidence/plugin/artifact-index/tdd-evidence.md` | index, retrieval, traceability, preflight | 2026-06-26 |
 | plugin | marketplace | `docs/coding-plugins/specs/plugin/marketplace/feature.md` | - | - | marketplace, installation, distribution, codex, claude-code | 2026-06-26 |
 | plugin | preflight | `docs/coding-plugins/specs/plugin/preflight/feature.md` | - | - | ci, validation, release-gate | 2026-06-26 |
+| plugin | preflight-hardening | `docs/coding-plugins/specs/plugin/preflight-hardening/feature.md` | - | `docs/coding-plugins/evidence/plugin/preflight-hardening/tdd-evidence.md` | preflight, validation, manifest, traceability, docs-sync | 2026-06-26 |
 | plugin | session-start-hook | `docs/coding-plugins/specs/plugin/session-start-hook/feature.md` | - | `docs/coding-plugins/evidence/plugin/session-start-hook/tdd-evidence.md` | codex, hook, session-start, bootstrap, workflow | 2026-06-26 |
 | plugin | tdd-evidence-path | `docs/coding-plugins/specs/plugin/tdd-evidence-path/feature.md` | - | `docs/coding-plugins/evidence/plugin/tdd-evidence-path/tdd-evidence.md` | tdd, evidence, traceability, validation | 2026-06-26 |
 

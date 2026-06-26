@@ -230,6 +230,73 @@ class PreflightTests(unittest.TestCase):
             with self.assertRaisesRegex(preflight.PreflightError, "Artifact index is missing document paths"):
                 preflight.check_artifact_index_covers_documents(root)
 
+    def test_skill_agent_metadata_check_rejects_missing_agent_file(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            skill_dir = root / "skills" / "example-skill"
+            skill_dir.mkdir(parents=True)
+            (skill_dir / "SKILL.md").write_text("---\nname: example-skill\n---\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Skill is missing agents/openai.yaml"):
+                preflight.check_skill_agent_metadata(root)
+
+    def test_manifest_asset_check_rejects_missing_asset(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / ".codex-plugin").mkdir()
+            (root / ".codex-plugin" / "plugin.json").write_text(
+                json.dumps({"interface": {"logo": "./assets/missing.svg"}}),
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Manifest asset path does not exist"):
+                preflight.check_manifest_asset_paths(root)
+
+    def test_document_path_metadata_check_rejects_mismatched_spec_metadata(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            spec_dir = root / "docs" / "coding-plugins" / "specs" / "plugin" / "routing"
+            spec_dir.mkdir(parents=True)
+            (spec_dir / "feature.md").write_text(
+                "---\narea: plugin\ncapability: other\n---\n# Feature\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Spec metadata does not match path"):
+                preflight.check_document_path_metadata(root)
+
+    def test_evidence_spec_id_check_rejects_unknown_ids(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            spec_dir = root / "docs" / "coding-plugins" / "specs" / "plugin" / "routing"
+            evidence_dir = root / "docs" / "coding-plugins" / "evidence" / "plugin" / "routing"
+            spec_dir.mkdir(parents=True)
+            evidence_dir.mkdir(parents=True)
+            (spec_dir / "feature.md").write_text(
+                "| 编号 | 优先级 | 需求 | 验证方式 |\n"
+                "| --- | --- | --- | --- |\n"
+                "| REQ-001 | 必须 | 已知需求 | 单测 |\n",
+                encoding="utf-8",
+            )
+            (evidence_dir / "tdd-evidence.md").write_text(
+                "- **Spec/Bug/AC:** REQ-999\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "TDD evidence references unknown Spec IDs"):
+                preflight.check_tdd_evidence_spec_ids(root)
+
+    def test_docs_sync_check_rejects_missing_key_paths(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "docs").mkdir()
+            (root / "README.md").write_text("python3 scripts/preflight.py\n", encoding="utf-8")
+            (root / "docs" / "installation.md").write_text("hooks/hooks-codex.json\n", encoding="utf-8")
+            (root / "docs" / "workflow-chain.md").write_text("docs/coding-plugins/INDEX.md\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Documentation is missing required path references"):
+                preflight.check_documentation_path_references(root)
+
 
 if __name__ == "__main__":
     unittest.main()
