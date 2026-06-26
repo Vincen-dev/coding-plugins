@@ -12,12 +12,12 @@ Coding Plugins 是中文编码代理方法论插件，支持 Codex 和 Claude Co
 
 ## 基本流程
 
-1. **using-coding-plugins / using-superpowers** - 入口技能。判断应该使用哪个工作流技能。
+1. **using-coding-plugins** - 入口技能。先判断直接意图，再判断开发任务类型。
 2. **spec-driven-development** - 实现前激活。把需求、接口、schema、状态机和验收标准写成可测试规格。
 3. **writing-plans** - 基于已批准规格写实现计划。任务拆到 2 到 5 分钟粒度，并建立 Spec ID -> Test -> Task 追踪。
 4. **using-git-worktrees** - 执行前使用。创建隔离 worktree 和新分支，避免污染当前工作区。
 5. **subagent-driven-development / executing-plans** - 根据计划执行。优先子代理驱动；没有子代理时内联执行。
-6. **test-driven-development** - 实现时强制 RED-GREEN-REFACTOR：先从规格写失败测试，再最小实现，再重构。
+6. **test-driven-development** - 实现时强制 RED-GREEN-REFACTOR：先从规格写失败测试，再最小实现，再重构，并回报 TDD Evidence。
 7. **requesting-code-review** - 任务之间或合并前评审，按严重级别报告问题。
 8. **receiving-code-review** - 收到评审后先验证反馈，再决定是否修改。
 9. **git-commit** - 用户要求提交或完成阶段需要提交时，生成中文 Conventional Commit，在 footer 添加本人 `Authored-by` 署名，并禁止 AI 作者或 AI 生成声明。
@@ -29,7 +29,7 @@ Coding Plugins 是中文编码代理方法论插件，支持 Codex 和 Claude Co
 
 **测试**
 
-- `test-driven-development`：RED-GREEN-REFACTOR 循环，包含测试反模式参考。
+- `test-driven-development`：RED-GREEN-REFACTOR 循环，包含测试反模式、压力场景和 TDD Evidence 校验脚本。
 
 **调试**
 
@@ -53,7 +53,6 @@ Coding Plugins 是中文编码代理方法论插件，支持 Codex 和 Claude Co
 
 - `writing-skills`：按照可复用技能最佳实践创建和测试新技能。
 - `using-coding-plugins`：中文入口技能。
-- `using-superpowers`：旧入口命名的中文兼容入口。
 
 ## 哲学
 
@@ -87,7 +86,6 @@ claude --plugin-dir ./plugins/coding-plugins
 
 ```text
 /coding-plugins:using-coding-plugins
-/coding-plugins:using-superpowers
 ```
 
 修改插件组件后运行 `/reload-plugins`。更多说明见 [docs/claude-code-usage.md](docs/claude-code-usage.md)。

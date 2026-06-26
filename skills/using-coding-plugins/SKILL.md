@@ -13,21 +13,43 @@ description: 开始任何任务时使用；建立 Coding Plugins 技能选择、
 
 只要当前任务有可能匹配某个技能，就先读取并使用该技能。技能负责约束“怎么做”，用户负责决定“做什么”。当用户显式指令和技能冲突时，用户指令优先。
 
-## 技能选择
+## 任务类型判断
 
-- 新需求、功能构想、产品方向、接口契约或验收标准不清：`spec-driven-development`。
-- 已有规格，需要落地步骤：`writing-plans`。
-- 已有计划，需要实现：`subagent-driven-development` 或 `executing-plans`。
-- 写功能或修 bug 且可测试：`test-driven-development`。
-- 现象不明、原因不清、回归难复现：`systematic-debugging`。
-- 任务可拆成独立调查、评审或实现块：`dispatching-parallel-agents`。
-- 准备合并或需要第二视角：`requesting-code-review`。
-- 收到评审意见后：`receiving-code-review`。
-- 准备结束分支或交付：`finishing-a-development-branch`。
-- 准备宣称完成：`verification-before-completion`。
-- 用户要求提交、提到 commit/提交/`/commit`，或完成阶段需要创建提交：`git-commit`。
-- 多分支或并行改动可能互相影响：`using-git-worktrees`。
-- 需要创建或改造技能：`writing-skills`。
+先判断直接意图，再判断开发任务类型。多个技能同时适用时，先满足用户明确请求和安全门禁，再进入开发流程。
+
+### 直接意图
+
+| 用户意图 | 使用技能 |
+| --- | --- |
+| 解释、搜索、读取、状态查询，不要求改代码 | 普通分析或对应工具 |
+| 代码审查、合并前检查、需要第二视角 | `requesting-code-review` |
+| 收到 review、PR 反馈、别人要求修改 | `receiving-code-review` |
+| 验证是否完成、测试是否通过、能否宣称修好 | `verification-before-completion` |
+| 收尾、merge、开 PR、清理分支或 worktree | `finishing-a-development-branch` |
+| 提交、commit、`/commit`，或完成阶段用户选择提交 | `git-commit` |
+| 创建、修改、优化 skill 或插件工作流 | `writing-skills` |
+| 需要隔离当前工作区、创建 worktree 或避免污染主分支 | `using-git-worktrees` |
+| 多个独立任务、多个失败点、可并行调查或实现 | `dispatching-parallel-agents` |
+
+### 开发任务
+
+| 任务情况 | 使用技能 |
+| --- | --- |
+| 新需求、功能构想、产品方向、接口契约、schema、状态机或验收标准不清 | `spec-driven-development` |
+| 维护、重构、依赖升级、迁移、安全或性能改造会影响外部行为、兼容性或验证口径 | `spec-driven-development`，使用 maintenance spec |
+| 已有批准规格，需要落地步骤 | `writing-plans` |
+| 已有实现计划，需要执行 | 先 `using-git-worktrees`，再 `subagent-driven-development` 或 `executing-plans` |
+| 小型明确变更，验收标准清楚且可测试 | `test-driven-development`，必要时在计划或回复中写 inline spec |
+| bug、CI 失败、测试失败、构建失败、异常行为、原因不明或回归难复现 | `systematic-debugging`，需要修复时转 `test-driven-development` |
+| 纯内部重构且行为不变，但仍可测试 | `test-driven-development` |
+
+### 组合规则
+
+- 用户点名技能时，优先读取该技能；若明显不适用，说明原因并转入更合适技能。
+- 需要声称完成、修复或通过前，必须使用 `verification-before-completion`。
+- 需要提交时必须使用 `git-commit`；提交前仍要检查 diff、作者身份和敏感文件。
+- 任务可并行拆分时，先用 `dispatching-parallel-agents` 拆分，再让每个子任务进入对应技能。
+- 直接验证、直接提交或只创建 worktree 的请求，完成该动作后即可汇报；只有用户要求收尾或开发链路结束时，才进入 `finishing-a-development-branch`。
 
 ## 平台工具映射
 
@@ -41,7 +63,7 @@ description: 开始任何任务时使用；建立 Coding Plugins 技能选择、
 2. 如技能包含检查清单，按清单推进。
 3. 先收集足够上下文，再编辑。
 4. 修改前说明编辑意图。
-5. 完成前用命令、测试、审查或可复现证据验证。
+5. 完成前用命令、测试、审查或可复现证据验证；行为改动还要回报 TDD Evidence 或 TDD Exception Record。
 
 ## 输出原则
 
