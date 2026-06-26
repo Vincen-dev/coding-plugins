@@ -1,6 +1,6 @@
 ---
 spec_id: <area-capability-acceptance>
-title: <Acceptance Criteria>
+title: <验收标准>
 type: acceptance
 status: draft
 area: <area>
@@ -14,15 +14,15 @@ related_code:
 related_specs: []
 ---
 
-# Acceptance Criteria
+# 验收标准
 
-| ID | Scenario | Given | When | Then | Verification |
+| 编号 | 场景 | 前置条件 | 操作 | 期望结果 | 验证方式 |
 | --- | --- | --- | --- | --- | --- |
 | AC-001 | <场景名> | <前置条件> | <动作> | <可观察结果> | <测试或人工验收证据> |
 
-Rules:
+规则：
 
 - 每条验收标准只验证一个用户可观察结果。
-- Then 必须可观察，不能写“系统正常处理”。
+- 期望结果必须可观察，不能写“系统正常处理”。
 - 错误路径和边界条件必须有独立 AC。
 - 如果 AC 无法自动化，写明人工验收步骤和证据。

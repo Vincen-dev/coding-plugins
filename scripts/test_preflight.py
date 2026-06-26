@@ -82,6 +82,19 @@ class PreflightTests(unittest.TestCase):
         self.assertIn("test_validate_tdd_evidence.py", command_text)
         self.assertIn("validate_spec.py", command_text)
 
+    def test_sdd_template_check_rejects_english_headings(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            template_dir = root / "skills" / "spec-driven-development" / "templates"
+            template_dir.mkdir(parents=True)
+            (template_dir / "feature-spec.md").write_text(
+                "# Feature Specification\n\n## Goal\n\n| ID | Requirement |\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "SDD template still contains English structure"):
+                preflight.check_sdd_templates_are_chinese(root)
+
 
 if __name__ == "__main__":
     unittest.main()

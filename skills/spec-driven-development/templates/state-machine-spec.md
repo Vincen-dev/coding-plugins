@@ -1,6 +1,6 @@
 ---
 spec_id: <area-capability-state-machine>
-title: <State Machine Name>
+title: <状态机名称>
 type: state-machine
 status: draft
 area: <area>
@@ -14,36 +14,36 @@ related_code:
 related_specs: []
 ---
 
-# <State Machine Name> Specification
+# <状态机名称>规格
 
-## Goal
+## 目标
 
 <说明该状态机描述的对象和生命周期。>
 
-## States
+## 状态
 
-| ID | State | Meaning | Terminal |
+| 编号 | 状态 | 含义 | 是否终态 |
 | --- | --- | --- | --- |
-| STATE-001 | `draft` | <含义> | no |
+| STATE-001 | `draft` | <含义> | 否 |
 
-## Transitions
+## 状态迁移
 
-| ID | From | Event | Guard | To | Side effects | Verification |
+| 编号 | 来源状态 | 事件 | 守卫条件 | 目标状态 | 副作用 | 验证方式 |
 | --- | --- | --- | --- | --- | --- | --- |
-| STATE-010 | `draft` | `submit` | <条件> | `submitted` | <副作用> | <test> |
+| STATE-010 | `draft` | `submit` | <条件> | `submitted` | <副作用> | <测试> |
 
-## Invalid Transitions
+## 非法迁移
 
-| ID | From | Event | Expected error | Verification |
+| 编号 | 来源状态 | 事件 | 期望错误 | 验证方式 |
 | --- | --- | --- | --- | --- |
-| ERR-001 | <状态> | <事件> | <错误> | <test> |
+| ERR-001 | <状态> | <事件> | <错误> | <测试> |
 
-## Observability
+## 可观测性
 
-| ID | Event or metric | When emitted |
+| 编号 | 事件或指标 | 触发时机 |
 | --- | --- | --- |
 | OBS-001 | <事件> | <时机> |
 
-## Traceability
+## 追踪矩阵
 
-<!-- Insert templates/traceability-matrix.md here before handoff. -->
+<!-- 交接前插入 templates/traceability-matrix.md。 -->

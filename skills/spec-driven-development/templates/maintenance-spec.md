@@ -1,6 +1,6 @@
 ---
 spec_id: <area-capability-maintenance>
-title: <Maintenance Topic>
+title: <维护主题>
 type: maintenance
 status: draft
 area: <area>
@@ -14,48 +14,48 @@ related_code:
 related_specs: []
 ---
 
-# <Maintenance Topic> Specification
+# <维护主题>规格
 
-## Goal
+## 目标
 
 <说明本次维护、修复、重构、升级或迁移要保持、恢复或改进什么行为。>
 
-## Non-goals
+## 非目标
 
-| ID | Non-goal |
+| 编号 | 非目标 |
 | --- | --- |
 | NON-001 | <明确不新增的功能或不改变的行为> |
 
-## Current Baseline
+## 当前基线
 
-| ID | Existing behavior or contract | Evidence |
+| 编号 | 既有行为或契约 | 证据 |
 | --- | --- | --- |
 | REQ-001 | <当前必须保持的行为、接口、schema 或状态语义> | <现有测试、日志、代码路径或手工证据> |
 
-## Maintenance Requirements
+## 维护需求
 
-| ID | Priority | Requirement | Verification |
+| 编号 | 优先级 | 需求 | 验证方式 |
 | --- | --- | --- | --- |
-| NFR-001 | MUST | <性能、稳定性、可维护性、安全性或兼容性要求> | <测试、静态检查、脚本或人工验收证据> |
+| NFR-001 | 必须 | <性能、稳定性、可维护性、安全性或兼容性要求> | <测试、静态检查、脚本或人工验收证据> |
 
-## Regression and Risk Cases
+## 回归和风险情况
 
-| ID | Condition | Expected behavior | Verification |
+| 编号 | 条件 | 期望行为 | 验证方式 |
 | --- | --- | --- | --- |
 | ERR-001 | <已知 bug、边界、降级或风险条件> | <修复后或保持不变的可观察行为> | <回归测试或验证命令> |
 
-## Compatibility or Migration
+## 兼容性或迁移
 
-| ID | Requirement | Verification |
+| 编号 | 要求 | 验证方式 |
 | --- | --- | --- |
 | MIG-001 | <依赖升级、数据迁移、版本兼容或回滚要求> | <验证方式> |
 
-## Observability
+## 可观测性
 
-| ID | Event, log, metric, or alert | When emitted |
+| 编号 | 事件、日志、指标或告警 | 触发时机 |
 | --- | --- | --- |
 | OBS-001 | <需要保持或新增的可观测信号> | <触发时机> |
 
-## Traceability
+## 追踪矩阵
 
-<!-- Insert templates/traceability-matrix.md here before handoff. -->
+<!-- 交接前插入 templates/traceability-matrix.md。 -->

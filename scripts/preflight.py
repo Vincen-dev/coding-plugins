@@ -30,6 +30,42 @@ REMOVED_ENTRY_PATTERNS = (
     "/coding-plugins:" + "using-" + "superpowers",
     "skills/" + "using-" + "superpowers",
 )
+SDD_TEMPLATE_ENGLISH_STRUCTURE = (
+    "# Acceptance Criteria",
+    "# Specs Index",
+    "## Goal",
+    "## Non-goals",
+    "## Context",
+    "## Functional Requirements",
+    "## Error and Edge Cases",
+    "## Acceptance Criteria",
+    "## Endpoints or Methods",
+    "## Request Contract",
+    "## Response Contract",
+    "## Errors",
+    "## Compatibility",
+    "## Current Baseline",
+    "## Maintenance Requirements",
+    "## Regression and Risk Cases",
+    "## Compatibility or Migration",
+    "## Observability",
+    "## Scope",
+    "## Schema Contract",
+    "## Valid Example",
+    "## Invalid Examples",
+    "## States",
+    "## Transitions",
+    "## Invalid Transitions",
+    "## Traceability",
+    "| ID |",
+    "| Priority |",
+    "| Requirement |",
+    "| Verification |",
+    "| Scenario |",
+    "| Given |",
+    "| When |",
+    "| Then |",
+)
 
 
 def repo_root() -> Path:
@@ -88,6 +124,23 @@ def check_required_plugin_files(root: Path) -> None:
         raise PreflightError("Missing required plugin file(s): " + ", ".join(missing) + ".")
 
 
+def check_sdd_templates_are_chinese(root: Path) -> None:
+    templates_root = root / "skills" / "spec-driven-development" / "templates"
+    if not templates_root.exists():
+        return
+
+    offenders: list[str] = []
+    for path in sorted(templates_root.glob("*.md")):
+        text = path.read_text(encoding="utf-8")
+        for pattern in SDD_TEMPLATE_ENGLISH_STRUCTURE:
+            if pattern in text:
+                offenders.append(f"{path.relative_to(root)} contains {pattern!r}")
+                break
+
+    if offenders:
+        raise PreflightError("SDD template still contains English structure: " + "; ".join(offenders) + ".")
+
+
 def collect_spec_files(root: Path) -> list[Path]:
     specs_root = root / "docs" / "coding-plugins" / "specs"
     if not specs_root.exists():
@@ -126,6 +179,7 @@ def run_static_checks(root: Path) -> None:
     check_required_plugin_files(root)
     check_manifest_versions(root)
     check_removed_entry_references(root)
+    check_sdd_templates_are_chinese(root)
 
 
 def main() -> int:

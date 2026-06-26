@@ -1,6 +1,6 @@
 ---
 spec_id: <area-capability-schema>
-title: <Schema Name>
+title: <Schema 名称>
 type: schema
 status: draft
 area: <area>
@@ -14,25 +14,25 @@ related_code:
 related_specs: []
 ---
 
-# <Schema Name> Specification
+# <Schema 名称>规格
 
-## Goal
+## 目标
 
 <说明该 schema 约束什么数据或消息。>
 
-## Scope
+## 范围
 
-- Producer:
-- Consumer:
-- Storage or transport:
+- 生产方：
+- 消费方：
+- 存储或传输：
 
-## Schema Contract
+## Schema 契约
 
-| ID | Field | Type | Required | Constraints | Description |
+| 编号 | 字段 | 类型 | 必填 | 约束 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| SCHEMA-001 | `id` | string | yes | non-empty | <说明> |
+| SCHEMA-001 | `id` | string | 是 | non-empty | <说明> |
 
-## Valid Example
+## 有效示例
 
 ```json
 {
@@ -40,18 +40,18 @@ related_specs: []
 }
 ```
 
-## Invalid Examples
+## 无效示例
 
-| ID | Example | Expected error | Verification |
+| 编号 | 示例 | 期望错误 | 验证方式 |
 | --- | --- | --- | --- |
-| ERR-001 | `{}` | <错误> | <schema validation test> |
+| ERR-001 | `{}` | <错误> | <schema 校验测试> |
 
-## Compatibility
+## 兼容性
 
-| ID | Requirement | Verification |
+| 编号 | 要求 | 验证方式 |
 | --- | --- | --- |
 | MIG-001 | <新增/废弃字段策略> | <验证方式> |
 
-## Traceability
+## 追踪矩阵
 
-<!-- Insert templates/traceability-matrix.md here before handoff. -->
+<!-- 交接前插入 templates/traceability-matrix.md。 -->
