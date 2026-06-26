@@ -1,5 +1,11 @@
 # Release Notes
 
+## 0.6.18 - 2026-06-26
+
+- 为 Plan 文档增加 frontmatter 和中文 `文档信息` 摘要。
+- 更新 Spec、Technical Design 和 Plan 模板，明确机器 metadata key 保持英文、中文摘要用于阅读。
+- 增强 preflight，校验 Plan metadata、路径一致性和中文摘要。
+
 ## 0.6.17 - 2026-06-26
 
 - 增加 `writing-technical-design` skill，将技术实现方案独立维护到 `docs/coding-plugins/technical/`。
