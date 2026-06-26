@@ -1,48 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
   <title id="title">Coding Plugins</title>
-  <desc id="desc">A dark developer tool icon with code brackets, a specification document, a test checkmark, and connected workflow nodes.</desc>
+  <desc id="desc">A simplified developer tool icon with code brackets and a validation checkmark.</desc>
   <defs>
-    <linearGradient id="bg" x1="72" y1="56" x2="440" y2="456" gradientUnits="userSpaceOnUse">
+    <linearGradient id="bg" x1="76" y1="64" x2="436" y2="448" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#111827"/>
-      <stop offset="0.52" stop-color="#1F2937"/>
+      <stop offset="0.58" stop-color="#172033"/>
       <stop offset="1" stop-color="#0F766E"/>
     </linearGradient>
-    <linearGradient id="panel" x1="142" y1="116" x2="370" y2="388" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#F8FAFC"/>
-      <stop offset="1" stop-color="#D7FBE8"/>
+    <linearGradient id="mark" x1="204" y1="300" x2="320" y2="204" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#14B8A6"/>
+      <stop offset="1" stop-color="#BBF7D0"/>
     </linearGradient>
-    <filter id="shadow" x="56" y="60" width="400" height="392" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-      <feDropShadow dx="0" dy="14" stdDeviation="14" flood-color="#020617" flood-opacity="0.32"/>
-    </filter>
   </defs>
 
-  <rect width="512" height="512" rx="96" fill="url(#bg)"/>
-  <path d="M96 129C96 111.33 110.33 97 128 97H384C401.67 97 416 111.33 416 129V383C416 400.67 401.67 415 384 415H128C110.33 415 96 400.67 96 383V129Z" fill="#0B1220" opacity="0.52"/>
-  <path d="M142 134C142 119.64 153.64 108 168 108H344C358.36 108 370 119.64 370 134V378C370 392.36 358.36 404 344 404H168C153.64 404 142 392.36 142 378V134Z" fill="url(#panel)" filter="url(#shadow)"/>
-
-  <path d="M330 108V168C330 182.36 341.64 194 356 194H370L330 108Z" fill="#BDF7D4"/>
-  <path d="M330 108V168C330 182.36 341.64 194 356 194H370" fill="none" stroke="#059669" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
-
-  <path d="M110 234L70 258L110 282" fill="none" stroke="#F59E0B" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M402 234L442 258L402 282" fill="none" stroke="#F59E0B" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>
-
-  <path d="M190 176H286" stroke="#0F172A" stroke-width="18" stroke-linecap="round"/>
-  <path d="M190 222H322" stroke="#0F172A" stroke-width="18" stroke-linecap="round"/>
-  <path d="M190 268H276" stroke="#0F172A" stroke-width="18" stroke-linecap="round"/>
-
-  <path d="M206 336L239 369L310 298" fill="none" stroke="#0F766E" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
-
-  <path d="M184 74V108" stroke="#F59E0B" stroke-width="18" stroke-linecap="round"/>
-  <path d="M256 66V108" stroke="#F59E0B" stroke-width="18" stroke-linecap="round"/>
-  <path d="M328 74V108" stroke="#F59E0B" stroke-width="18" stroke-linecap="round"/>
-
-  <circle cx="184" cy="74" r="15" fill="#FBBF24"/>
-  <circle cx="256" cy="66" r="15" fill="#22C55E"/>
-  <circle cx="328" cy="74" r="15" fill="#38BDF8"/>
-  <path d="M184 74H256H328" stroke="#94A3B8" stroke-width="10" stroke-linecap="round" opacity="0.75"/>
-
-  <circle cx="144" cy="424" r="13" fill="#FBBF24"/>
-  <circle cx="256" cy="446" r="13" fill="#22C55E"/>
-  <circle cx="368" cy="424" r="13" fill="#38BDF8"/>
-  <path d="M144 424C185 454 327 454 368 424" fill="none" stroke="#94A3B8" stroke-width="10" stroke-linecap="round" opacity="0.75"/>
+  <rect width="512" height="512" rx="108" fill="url(#bg)"/>
+  <rect x="94" y="118" width="324" height="276" rx="72" fill="#020617" opacity="0.42"/>
+  <path d="M188 177L116 256L188 335" fill="none" stroke="#F59E0B" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M324 177L396 256L324 335" fill="none" stroke="#F59E0B" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M212 262L248 298L314 218" fill="none" stroke="url(#mark)" stroke-width="40" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
