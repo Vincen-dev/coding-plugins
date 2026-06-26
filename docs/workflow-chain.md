@@ -8,14 +8,15 @@
 
 1. 先判断任务类型。
 2. 新需求先进入 SDD，写成可追踪、可测试、可评审的规格。
-3. 已批准规格再写计划，并建立 Spec ID -> Test -> Task 追踪。
-4. 按计划隔离执行。
-5. 实现阶段遵守 TDD，测试必须来自规格、bug 复现或明确验收标准，并留下 TDD Evidence。
-6. 每个任务通过规格符合性和代码质量评审。
-7. 完成前必须验证规格覆盖和测试证据。
-8. 如有未提交变更，在完成阶段提示是否提交。
-9. 提交必须使用中文 Conventional Commit，在 footer 添加本人 `Authored-by` 署名，且禁止 AI 作者。
-10. 最后做分支收尾和集成选择。
+3. 已批准规格再写独立技术设计，定义工程方案、关键决策和测试策略。
+4. 基于技术设计写计划，并建立 Spec ID -> Test -> Task 追踪。
+5. 按计划隔离执行。
+6. 实现阶段遵守 TDD，测试必须来自规格、bug 复现或明确验收标准，并留下 TDD Evidence。
+7. 每个任务通过规格符合性和代码质量评审。
+8. 完成前必须验证规格覆盖和测试证据。
+9. 如有未提交变更，在完成阶段提示是否提交。
+10. 提交必须使用中文 Conventional Commit，在 footer 添加本人 `Authored-by` 署名，且禁止 AI 作者。
+11. 最后做分支收尾和集成选择。
 
 ## 阶段划分
 
@@ -27,16 +28,17 @@
 | 1 | 入口路由 | `using-coding-plugins` | 判断直接意图和开发任务类型 |
 | 2 | 直接意图处理 | `requesting-code-review`, `receiving-code-review`, `verification-before-completion`, `git-commit`, `finishing-a-development-branch`, `writing-skills`, `using-git-worktrees`, `dispatching-parallel-agents` | 直接完成查询、评审、验证、提交、收尾、隔离或维护任务 |
 | 3 | 需求规格 | `spec-driven-development` | `docs/coding-plugins/specs/<area>/<capability>/<spec-kind>.md`, `specs/INDEX.md`, Spec ID, Traceability Matrix |
-| 4 | 实现计划 | `writing-plans` | `docs/coding-plugins/plans/<area>/<capability>/implementation.md`, Technical Approach, Spec ID -> Test -> Task 追踪 |
-| 5 | 隔离工作区 | `using-git-worktrees` | 独立 worktree 或确认在当前工作区执行 |
-| 6 | 执行调度 | `subagent-driven-development`, `executing-plans`, `dispatching-parallel-agents` | 子任务执行、批次执行或并行任务结果 |
-| 7 | TDD 实现 | `test-driven-development` | RED -> GREEN -> REFACTOR，`docs/coding-plugins/evidence/<area>/<capability>/tdd-evidence.md` |
-| 8 | 系统化调试 | `systematic-debugging` | 复现路径、根因、可测试修复入口 |
-| 9 | 评审门禁 | `spec-reviewer`, `code-quality-reviewer`, `requesting-code-review`, `receiving-code-review` | 规格符合性评审、代码质量评审、反馈处理 |
-| 10 | 完成前验证 | `verification-before-completion` | 测试、构建、规格覆盖或人工验收证据 |
-| 11 | 提交 | `git-commit` | 中文 Conventional Commit，`Authored-by` footer，无 AI 作者 |
-| 12 | 分支收尾 | `finishing-a-development-branch` | merge、PR、保留或丢弃选择，必要时清理 worktree |
-| 13 | 插件维护 | `writing-skills` | skill、prompt、脚本、manifest 或文档更新，并通过插件校验 |
+| 4 | 技术设计 | `writing-technical-design` | `docs/coding-plugins/technical/<area>/<capability>/technical-design.md`, `technical/INDEX.md`, 技术方案和测试策略 |
+| 5 | 实现计划 | `writing-plans` | `docs/coding-plugins/plans/<area>/<capability>/implementation.md`, Technical Design Source, Spec ID -> Test -> Task 追踪 |
+| 6 | 隔离工作区 | `using-git-worktrees` | 独立 worktree 或确认在当前工作区执行 |
+| 7 | 执行调度 | `subagent-driven-development`, `executing-plans`, `dispatching-parallel-agents` | 子任务执行、批次执行或并行任务结果 |
+| 8 | TDD 实现 | `test-driven-development` | RED -> GREEN -> REFACTOR，`docs/coding-plugins/evidence/<area>/<capability>/tdd-evidence.md` |
+| 9 | 系统化调试 | `systematic-debugging` | 复现路径、根因、可测试修复入口 |
+| 10 | 评审门禁 | `spec-reviewer`, `code-quality-reviewer`, `requesting-code-review`, `receiving-code-review` | 规格符合性评审、代码质量评审、反馈处理 |
+| 11 | 完成前验证 | `verification-before-completion` | 测试、构建、规格覆盖或人工验收证据 |
+| 12 | 提交 | `git-commit` | 中文 Conventional Commit，`Authored-by` footer，无 AI 作者 |
+| 13 | 分支收尾 | `finishing-a-development-branch` | merge、PR、保留或丢弃选择，必要时清理 worktree |
+| 14 | 插件维护 | `writing-skills` | skill、prompt、脚本、manifest 或文档更新，并通过插件校验 |
 
 ## 主链路（完整总览）
 
@@ -73,7 +75,8 @@ flowchart TD
 
   DEV_KIND -->|新需求/行为变更/契约不清| SDD["spec-driven-development"]
   DEV_KIND -->|维护/迁移/安全/性能影响外部行为| SDD
-  DEV_KIND -->|已有已批准规格| PLAN["writing-plans"]
+  DEV_KIND -->|已有已批准规格| TECH["writing-technical-design"]
+  DEV_KIND -->|已有技术设计| PLAN["writing-plans"]
   DEV_KIND -->|已有实现计划| WORKTREE
   DEV_KIND -->|小型明确变更/纯内部重构| TDD["test-driven-development"]
   DEV_KIND -->|bug/CI/测试/构建失败或异常行为| DEBUG["systematic-debugging"]
@@ -81,9 +84,11 @@ flowchart TD
   SDD --> SPEC["写规格、维护 INDEX、运行 validate_spec.py"]
   SPEC --> SPEC_OK{"用户确认规格？"}
   SPEC_OK -->|需要修改| SPEC
-  SPEC_OK -->|确认| PLAN
+  SPEC_OK -->|确认| TECH
 
-  PLAN --> PLAN_DOC["写 implementation.md、技术方案和追踪矩阵"]
+  TECH --> TECH_DOC["写 technical-design.md、维护 technical INDEX"]
+  TECH_DOC --> PLAN
+  PLAN --> PLAN_DOC["写 implementation.md、引用技术设计和追踪矩阵"]
   PLAN_DOC --> WORKTREE
 
   WORKTREE --> WT_DEC{"仅创建 worktree？"}
@@ -158,7 +163,8 @@ flowchart TD
 
   D0 -->|新需求/行为变更/契约不清| D["spec-driven-development"]
   D0 -->|维护/迁移/安全/性能影响外部行为| D
-  D0 -->|已有已批准规格| H["writing-plans"]
+  D0 -->|已有已批准规格| TD["writing-technical-design"]
+  D0 -->|已有技术设计| H["writing-plans"]
   D0 -->|已有实现计划| K
   D0 -->|小型明确变更/纯内部重构| O["test-driven-development"]
   D0 -->|bug/CI/测试/构建失败或异常行为| X["systematic-debugging"]
@@ -180,10 +186,11 @@ flowchart TD
   H --> I["规格自审和必要修改"]
   I --> J{"用户确认规格？"}
   J -->|需要修改| F
-  J -->|确认| K["writing-plans"]
-  K --> L["写 plans/<area>/<capability>/implementation.md"]
-  L --> M["补充 Technical Approach"]
-  M --> N["建立 Spec ID -> Test -> Task 追踪矩阵"]
+  J -->|确认| TD["writing-technical-design"]
+  TD --> K["写 technical/<area>/<capability>/technical-design.md"]
+  K --> L["writing-plans"]
+  L --> M["写 plans/<area>/<capability>/implementation.md"]
+  M --> N["引用 Technical Design Source 并建立追踪矩阵"]
   N --> O["计划自审或计划评审"]
   O --> P["进入执行场景"]
 ```
@@ -360,9 +367,21 @@ docs/coding-plugins/specs/<area>/<capability>/<spec-kind>.md
 - 规格自审结果。
 - 用户确认。
 
+### 技术设计层
+
+`writing-technical-design` 把批准规格转成独立工程方案。技术设计负责关键决策、影响组件、数据流、接口落地、兼容策略、测试策略和风险缓解，不负责逐步任务清单。
+
+默认技术设计路径：
+
+```text
+docs/coding-plugins/technical/<area>/<capability>/technical-design.md
+```
+
+技术设计路径的 `<area>/<capability>` 应和规格路径一致，并同步维护 `docs/coding-plugins/technical/INDEX.md` 和 `docs/coding-plugins/INDEX.md`。
+
 ### 计划层
 
-`writing-plans` 把规格转成可执行计划。计划要求明确技术方案、精确文件路径、完整代码片段、测试命令、预期输出和 Spec ID -> Test -> Task 追踪矩阵。
+`writing-plans` 把技术设计转成可执行计划。计划要求引用 `Technical Design Source`，明确精确文件路径、完整代码片段、测试命令、预期输出和 Spec ID -> Test -> Task 追踪矩阵。
 
 默认计划路径：
 
@@ -370,7 +389,7 @@ docs/coding-plugins/specs/<area>/<capability>/<spec-kind>.md
 docs/coding-plugins/plans/<area>/<capability>/implementation.md
 ```
 
-计划路径的 `<area>/<capability>` 应和规格路径一致，例如 `specs/auth/login/feature.md` 对应 `plans/auth/login/implementation.md`。
+计划路径的 `<area>/<capability>` 应和规格及技术设计路径一致，例如 `specs/auth/login/feature.md` 对应 `technical/auth/login/technical-design.md` 和 `plans/auth/login/implementation.md`。
 
 计划文档应说明推荐执行方式：
 
@@ -382,7 +401,7 @@ docs/coding-plugins/plans/<area>/<capability>/implementation.md
 `using-git-worktrees` 负责确认或创建隔离工作区。标准顺序应是：
 
 ```text
-spec-driven-development -> writing-plans -> using-git-worktrees -> subagent-driven-development/executing-plans
+spec-driven-development -> writing-technical-design -> writing-plans -> using-git-worktrees -> subagent-driven-development/executing-plans
 ```
 
 它会先检测当前是否已经处于 linked worktree，再优先使用平台原生 worktree 能力，最后才回退到 `git worktree`。
@@ -494,6 +513,8 @@ docs/coding-plugins/INDEX.md
 RELEASE-NOTES.md
 docs/coding-plugins/INDEX.md
 docs/coding-plugins/specs/
+docs/coding-plugins/technical/
+docs/coding-plugins/technical/INDEX.md
 docs/coding-plugins/plans/
 docs/coding-plugins/evidence/
 hooks/

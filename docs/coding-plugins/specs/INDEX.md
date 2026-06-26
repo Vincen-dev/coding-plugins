@@ -9,6 +9,7 @@
 | plugin | preflight-hardening | feature | approved | `docs/coding-plugins/specs/plugin/preflight-hardening/feature.md` | preflight, validation, manifest, traceability, docs-sync | 2026-06-26 |
 | plugin | release-management | feature | approved | `docs/coding-plugins/specs/plugin/release-management/feature.md` | release, version, changelog, automation | 2026-06-26 |
 | plugin | session-start-hook | feature | approved | `docs/coding-plugins/specs/plugin/session-start-hook/feature.md` | codex, hook, session-start, bootstrap, workflow | 2026-06-26 |
+| plugin | technical-design-artifacts | feature | approved | `docs/coding-plugins/specs/plugin/technical-design-artifacts/feature.md` | technical-design, architecture, traceability, workflow | 2026-06-26 |
 | plugin | tdd-evidence-path | feature | approved | `docs/coding-plugins/specs/plugin/tdd-evidence-path/feature.md` | tdd, evidence, traceability, validation | 2026-06-26 |
 
 Rules:

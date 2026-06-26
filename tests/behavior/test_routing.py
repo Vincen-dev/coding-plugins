@@ -42,6 +42,7 @@ class RoutingBehaviorTests(unittest.TestCase):
 
         for skill_name in (
             "spec-driven-development",
+            "writing-technical-design",
             "writing-plans",
             "using-git-worktrees",
             "subagent-driven-development",

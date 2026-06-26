@@ -28,6 +28,7 @@ description: 开始任何任务时使用；建立 Coding Plugins 技能选择、
 | 收尾、merge、开 PR、清理分支或 worktree | `finishing-a-development-branch` |
 | 提交、commit、`/commit`，或完成阶段用户选择提交 | `git-commit` |
 | 创建、修改、优化 skill 或插件工作流 | `writing-skills` |
+| 编写技术方案、技术设计、架构方案、ADR 或 implementation design | `writing-technical-design` |
 | 需要隔离当前工作区、创建 worktree 或避免污染主分支 | `using-git-worktrees` |
 | 多个独立任务、多个失败点、可并行调查或实现 | `dispatching-parallel-agents` |
 
@@ -37,7 +38,8 @@ description: 开始任何任务时使用；建立 Coding Plugins 技能选择、
 | --- | --- |
 | 新需求、功能构想、产品方向、接口契约、schema、状态机或验收标准不清 | `spec-driven-development` |
 | 维护、重构、依赖升级、迁移、安全或性能改造会影响外部行为、兼容性或验证口径 | `spec-driven-development`，使用 maintenance spec |
-| 已有批准规格，需要落地步骤 | `writing-plans` |
+| 已有批准规格，需要技术实现方案 | `writing-technical-design` |
+| 已有批准规格和技术设计，需要落地步骤 | `writing-plans` |
 | 已有实现计划，需要执行 | 先 `using-git-worktrees`，再 `subagent-driven-development` 或 `executing-plans` |
 | 小型明确变更，验收标准清楚且可测试 | `test-driven-development`，必要时在计划或回复中写 inline spec |
 | bug、CI 失败、测试失败、构建失败、异常行为、原因不明或回归难复现 | `systematic-debugging`，需要修复时转 `test-driven-development` |
@@ -48,6 +50,7 @@ description: 开始任何任务时使用；建立 Coding Plugins 技能选择、
 - 用户点名技能时，优先读取该技能；若明显不适用，说明原因并转入更合适技能。
 - 需要声称完成、修复或通过前，必须使用 `verification-before-completion`。
 - 需要提交时必须使用 `git-commit`；提交前仍要检查 diff、作者身份和敏感文件。
+- 需要从规格进入计划时，先用 `writing-technical-design` 创建或读取独立技术设计，再用 `writing-plans` 拆执行任务。
 - 任务可并行拆分时，先用 `dispatching-parallel-agents` 拆分，再让每个子任务进入对应技能。
 - 直接验证、直接提交或只创建 worktree 的请求，完成该动作后即可汇报；只有用户要求收尾或开发链路结束时，才进入 `finishing-a-development-branch`。
 

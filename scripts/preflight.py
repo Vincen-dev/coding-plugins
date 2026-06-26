@@ -8,6 +8,7 @@ import re
 import subprocess
 import sys
 from pathlib import Path
+from typing import Callable
 
 
 class PreflightError(RuntimeError):
@@ -67,10 +68,13 @@ SDD_TEMPLATE_ENGLISH_STRUCTURE = (
     "| When |",
     "| Then |",
 )
-ARTIFACT_INDEX_REQUIRED_COLUMNS = ("Area", "Capability", "Spec", "Plan", "Evidence", "Tags", "Updated")
+ARTIFACT_INDEX_REQUIRED_COLUMNS = ("Area", "Capability", "Spec", "Technical", "Plan", "Evidence", "Tags", "Updated")
+TECHNICAL_INDEX_REQUIRED_COLUMNS = ("Area", "Capability", "Technical", "Tags", "Updated")
 SPEC_ID_RE = re.compile(r"\b(?:REQ|API|SCHEMA|STATE|ERR|AC|NFR|MIG|OBS|NON)-\d{3,}\b")
+TECHNICAL_DESIGN_PATH_RE = re.compile(r"docs/coding-plugins/technical/[A-Za-z0-9_.\-/]+\.md")
 DOC_SYNC_REFERENCES = (
     "docs/coding-plugins/INDEX.md",
+    "docs/coding-plugins/technical/INDEX.md",
     "hooks/hooks-codex.json",
     ".version-bump.json",
     "RELEASE-NOTES.md",
@@ -249,20 +253,24 @@ def parse_frontmatter(text: str) -> dict[str, str]:
 
 def check_document_path_metadata(root: Path) -> None:
     mismatches: list[str] = []
-    specs_root = root / "docs" / "coding-plugins" / "specs"
-    for path in collect_spec_files(root):
-        relative_parts = path.relative_to(specs_root).parts
-        if len(relative_parts) < 3:
-            mismatches.append(f"{path.relative_to(root)} is not under specs/<area>/<capability>/")
-            continue
-        path_area, path_capability = relative_parts[0], relative_parts[1]
-        metadata = parse_frontmatter(path.read_text(encoding="utf-8"))
-        if metadata.get("area") and metadata.get("area") != path_area:
-            mismatches.append(f"{path.relative_to(root)} area={metadata.get('area')} path={path_area}")
-        if metadata.get("capability") and metadata.get("capability") != path_capability:
-            mismatches.append(
-                f"{path.relative_to(root)} capability={metadata.get('capability')} path={path_capability}"
-            )
+    for root_name, files in (
+        ("specs", collect_spec_files(root)),
+        ("technical", collect_technical_design_files(root)),
+    ):
+        docs_root = root / "docs" / "coding-plugins" / root_name
+        for path in files:
+            relative_parts = path.relative_to(docs_root).parts
+            if len(relative_parts) < 3:
+                mismatches.append(f"{path.relative_to(root)} is not under {root_name}/<area>/<capability>/")
+                continue
+            path_area, path_capability = relative_parts[0], relative_parts[1]
+            metadata = parse_frontmatter(path.read_text(encoding="utf-8"))
+            if metadata.get("area") and metadata.get("area") != path_area:
+                mismatches.append(f"{path.relative_to(root)} area={metadata.get('area')} path={path_area}")
+            if metadata.get("capability") and metadata.get("capability") != path_capability:
+                mismatches.append(
+                    f"{path.relative_to(root)} capability={metadata.get('capability')} path={path_capability}"
+                )
 
     for root_name, files in (
         ("plans", collect_plan_files(root)),
@@ -278,9 +286,9 @@ def check_document_path_metadata(root: Path) -> None:
         raise PreflightError("Spec metadata does not match path: " + "; ".join(mismatches) + ".")
 
 
-def specs_for_evidence(root: Path, evidence_file: Path) -> list[Path]:
-    evidence_root = root / "docs" / "coding-plugins" / "evidence"
-    relative_parts = evidence_file.relative_to(evidence_root).parts
+def specs_for_area_capability(root: Path, document_root_name: str, document_file: Path) -> list[Path]:
+    document_root = root / "docs" / "coding-plugins" / document_root_name
+    relative_parts = document_file.relative_to(document_root).parts
     if len(relative_parts) < 3:
         return []
     area, capability = relative_parts[0], relative_parts[1]
@@ -290,24 +298,109 @@ def specs_for_evidence(root: Path, evidence_file: Path) -> list[Path]:
     return sorted(path for path in spec_dir.rglob("*.md") if path.name != "INDEX.md")
 
 
-def check_tdd_evidence_spec_ids(root: Path) -> None:
+def specs_for_evidence(root: Path, evidence_file: Path) -> list[Path]:
+    return specs_for_area_capability(root, "evidence", evidence_file)
+
+
+def specs_for_technical_design(root: Path, technical_file: Path) -> list[Path]:
+    return specs_for_area_capability(root, "technical", technical_file)
+
+
+def check_document_spec_ids(
+    root: Path,
+    files: list[Path],
+    specs_for_file: Callable[[Path, Path], list[Path]],
+    label: str,
+) -> None:
     offenders: list[str] = []
-    for evidence_file in collect_tdd_evidence_files(root):
-        evidence_ids = set(SPEC_ID_RE.findall(evidence_file.read_text(encoding="utf-8")))
-        if not evidence_ids:
+    for document_file in files:
+        document_ids = set(SPEC_ID_RE.findall(document_file.read_text(encoding="utf-8")))
+        if not document_ids:
             continue
 
-        spec_files = specs_for_evidence(root, evidence_file)
+        spec_files = specs_for_file(root, document_file)
         spec_ids: set[str] = set()
         for spec_file in spec_files:
             spec_ids.update(SPEC_ID_RE.findall(spec_file.read_text(encoding="utf-8")))
 
-        missing = sorted(evidence_ids - spec_ids)
+        missing = sorted(document_ids - spec_ids)
         if missing:
-            offenders.append(f"{evidence_file.relative_to(root)} -> {', '.join(missing)}")
+            offenders.append(f"{document_file.relative_to(root)} -> {', '.join(missing)}")
 
     if offenders:
-        raise PreflightError("TDD evidence references unknown Spec IDs: " + "; ".join(offenders) + ".")
+        raise PreflightError(f"{label} references unknown Spec IDs: " + "; ".join(offenders) + ".")
+
+
+def check_tdd_evidence_spec_ids(root: Path) -> None:
+    check_document_spec_ids(
+        root,
+        collect_tdd_evidence_files(root),
+        specs_for_evidence,
+        "TDD evidence",
+    )
+
+
+def check_technical_design_spec_ids(root: Path) -> None:
+    check_document_spec_ids(
+        root,
+        collect_technical_design_files(root),
+        specs_for_technical_design,
+        "Technical design",
+    )
+
+
+def extract_technical_design_paths(text: str) -> set[str]:
+    return set(TECHNICAL_DESIGN_PATH_RE.findall(text))
+
+
+def check_spec_technical_design_references(root: Path) -> None:
+    missing: list[str] = []
+    for spec_file in collect_spec_files(root):
+        for relative_path in sorted(extract_technical_design_paths(spec_file.read_text(encoding="utf-8"))):
+            if not (root / relative_path).exists():
+                missing.append(f"{spec_file.relative_to(root)} -> {relative_path}")
+
+    if missing:
+        raise PreflightError("Spec references missing technical design: " + "; ".join(missing) + ".")
+
+
+def check_plan_technical_design_references(root: Path) -> None:
+    offenders: list[str] = []
+    missing: list[str] = []
+    for plan_file in collect_plan_files(root):
+        text = plan_file.read_text(encoding="utf-8")
+        refs = sorted(extract_technical_design_paths(text))
+        if "Technical Design Source:" not in text or not refs:
+            offenders.append(str(plan_file.relative_to(root)))
+            continue
+        for relative_path in refs:
+            if not (root / relative_path).exists():
+                missing.append(f"{plan_file.relative_to(root)} -> {relative_path}")
+
+    if offenders:
+        raise PreflightError("Plan is missing Technical Design Source: " + ", ".join(offenders) + ".")
+    if missing:
+        raise PreflightError("Plan references missing technical design: " + "; ".join(missing) + ".")
+
+
+def check_technical_index_covers_designs(root: Path) -> None:
+    designs = collect_technical_design_files(root)
+    if not designs:
+        return
+
+    index_path = root / "docs" / "coding-plugins" / "technical" / "INDEX.md"
+    if not index_path.exists():
+        raise PreflightError("Missing technical index: docs/coding-plugins/technical/INDEX.md.")
+
+    text = index_path.read_text(encoding="utf-8")
+    headers = parse_markdown_table_headers(text)
+    missing_columns = [column for column in TECHNICAL_INDEX_REQUIRED_COLUMNS if column not in headers]
+    if missing_columns:
+        raise PreflightError("Technical index is missing required columns: " + ", ".join(missing_columns) + ".")
+
+    missing_paths = [str(path.relative_to(root)) for path in designs if str(path.relative_to(root)) not in text]
+    if missing_paths:
+        raise PreflightError("Technical index is missing document paths: " + ", ".join(missing_paths) + ".")
 
 
 def check_documentation_path_references(root: Path) -> None:
@@ -348,6 +441,13 @@ def collect_plan_files(root: Path) -> list[Path]:
     return sorted(plans_root.rglob("*.md"))
 
 
+def collect_technical_design_files(root: Path) -> list[Path]:
+    technical_root = root / "docs" / "coding-plugins" / "technical"
+    if not technical_root.exists():
+        return []
+    return sorted(path for path in technical_root.rglob("*.md") if path.name != "INDEX.md")
+
+
 def parse_markdown_table_headers(text: str) -> list[str]:
     lines = text.splitlines()
     for index, line in enumerate(lines[:-1]):
@@ -361,7 +461,12 @@ def parse_markdown_table_headers(text: str) -> list[str]:
 
 
 def check_artifact_index_covers_documents(root: Path) -> None:
-    documents = collect_spec_files(root) + collect_plan_files(root) + collect_tdd_evidence_files(root)
+    documents = (
+        collect_spec_files(root)
+        + collect_technical_design_files(root)
+        + collect_plan_files(root)
+        + collect_tdd_evidence_files(root)
+    )
     if not documents:
         return
 
@@ -432,7 +537,11 @@ def run_static_checks(root: Path) -> None:
     check_manifest_asset_paths(root)
     check_skill_agent_metadata(root)
     check_document_path_metadata(root)
+    check_technical_index_covers_designs(root)
     check_artifact_index_covers_documents(root)
+    check_spec_technical_design_references(root)
+    check_plan_technical_design_references(root)
+    check_technical_design_spec_ids(root)
     check_tdd_evidence_spec_ids(root)
     check_documentation_path_references(root)
     check_removed_entry_references(root)

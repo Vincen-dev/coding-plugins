@@ -6,11 +6,11 @@ Coding Plugins 是中文编码代理方法论插件，支持 Codex 和 Claude Co
 
 Codex 侧包含 SessionStart hook，新建、恢复或清空会话时会注入 `coding-plugins:using-coding-plugins` 入口提示，降低入口技能漏用概率。Claude Code 侧仍通过 `/coding-plugins:<skill-name>` 命名空间手动或按描述触发。
 
-规格、计划和 TDD Evidence 的统一检索入口是 [docs/coding-plugins/INDEX.md](docs/coding-plugins/INDEX.md)。新增或移动相关产物时，`python3 scripts/preflight.py` 会检查总索引是否覆盖真实文件。
+规格、技术设计、计划和 TDD Evidence 的统一检索入口是 [docs/coding-plugins/INDEX.md](docs/coding-plugins/INDEX.md)。技术设计专用索引是 [docs/coding-plugins/technical/INDEX.md](docs/coding-plugins/technical/INDEX.md)。新增或移动相关产物时，`python3 scripts/preflight.py` 会检查总索引是否覆盖真实文件。
 
 ## 工作方式
 
-当代理看到你要构建或修改东西时，它不应该直接写代码。它会先把需求收敛成可追踪、可测试、可评审的规格。规格通过后，它会写出足够具体的实现计划：文件、代码、测试、命令、预期结果都要写清楚。
+当代理看到你要构建或修改东西时，它不应该直接写代码。它会先把需求收敛成可追踪、可测试、可评审的规格。规格通过后，它会把技术实现方案写入独立 technical design，再写出足够具体的实现计划：文件、代码、测试、命令、预期结果都要写清楚。
 
 之后进入实现阶段。推荐使用子代理驱动开发：每个任务由新子代理实现，主代理在任务之间做规格符合性和代码质量评审。没有子代理能力时，也可以在当前会话中按批次执行计划并设置人工检查点。
 
@@ -18,14 +18,15 @@ Codex 侧包含 SessionStart hook，新建、恢复或清空会话时会注入 `
 
 1. **using-coding-plugins** - 入口技能。先判断直接意图，再判断开发任务类型。
 2. **spec-driven-development** - 实现前激活。把需求、接口、schema、状态机和验收标准写成可测试规格。
-3. **writing-plans** - 基于已批准规格写实现计划。任务拆到 2 到 5 分钟粒度，并建立 Spec ID -> Test -> Task 追踪。
-4. **using-git-worktrees** - 执行前使用。创建隔离 worktree 和新分支，避免污染当前工作区。
-5. **subagent-driven-development / executing-plans** - 根据计划执行。优先子代理驱动；没有子代理时内联执行。
-6. **test-driven-development** - 实现时强制 RED-GREEN-REFACTOR：先从规格写失败测试，再最小实现，再重构，并把 TDD Evidence 写入 `docs/coding-plugins/evidence/<area>/<capability>/tdd-evidence.md`。
-7. **requesting-code-review** - 任务之间或合并前评审，按严重级别报告问题。
-8. **receiving-code-review** - 收到评审后先验证反馈，再决定是否修改。
-9. **git-commit** - 用户要求提交或完成阶段需要提交时，生成中文 Conventional Commit，在 footer 添加本人 `Authored-by` 署名，并禁止 AI 作者或 AI 生成声明。
-10. **finishing-a-development-branch** - 所有任务完成后验证测试、提示是否提交、提出合并/PR/保留/丢弃选项并清理。
+3. **writing-technical-design** - 基于已批准规格写独立技术设计，保存到 `docs/coding-plugins/technical/<area>/<capability>/technical-design.md`。
+4. **writing-plans** - 基于已批准规格和技术设计写实现计划。任务拆到 2 到 5 分钟粒度，并建立 Spec ID -> Test -> Task 追踪。
+5. **using-git-worktrees** - 执行前使用。创建隔离 worktree 和新分支，避免污染当前工作区。
+6. **subagent-driven-development / executing-plans** - 根据计划执行。优先子代理驱动；没有子代理时内联执行。
+7. **test-driven-development** - 实现时强制 RED-GREEN-REFACTOR：先从规格写失败测试，再最小实现，再重构，并把 TDD Evidence 写入 `docs/coding-plugins/evidence/<area>/<capability>/tdd-evidence.md`。
+8. **requesting-code-review** - 任务之间或合并前评审，按严重级别报告问题。
+9. **receiving-code-review** - 收到评审后先验证反馈，再决定是否修改。
+10. **git-commit** - 用户要求提交或完成阶段需要提交时，生成中文 Conventional Commit，在 footer 添加本人 `Authored-by` 署名，并禁止 AI 作者或 AI 生成声明。
+11. **finishing-a-development-branch** - 所有任务完成后验证测试、提示是否提交、提出合并/PR/保留/丢弃选项并清理。
 
 完整链路说明见 [docs/workflow-chain.md](docs/workflow-chain.md)。安装方式见 [docs/installation.md](docs/installation.md)。
 
@@ -43,6 +44,7 @@ Codex 侧包含 SessionStart hook，新建、恢复或清空会话时会注入 `
 **协作**
 
 - `spec-driven-development`：规格驱动开发，把需求收敛为可测试契约，并提供支持 JSON 输出和多文件校验的规格质量脚本。
+- `writing-technical-design`：把批准规格转成独立 technical design，维护技术方案索引。
 - `writing-plans`：详细实现计划。
 - `executing-plans`：带检查点的批次执行。
 - `dispatching-parallel-agents`：并行子代理工作流。
