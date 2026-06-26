@@ -4,7 +4,7 @@
 
 **目的：**确认规格完整、一致、可测试，并可进入实现计划阶段。
 
-**派发时机：**规格文档写入 `docs/coding-plugins/specs/` 后。
+**派发时机：**规格文档写入 `docs/coding-plugins/features/<area>/<capability>/specs/` 后。
 
 ```text
 Task tool (general-purpose):

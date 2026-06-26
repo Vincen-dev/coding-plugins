@@ -6,7 +6,7 @@ Coding Plugins 是中文编码代理方法论插件，支持 Codex 和 Claude Co
 
 Codex 侧包含 SessionStart hook，新建、恢复或清空会话时会注入 `coding-plugins:using-coding-plugins` 入口提示，降低入口技能漏用概率。Claude Code 侧仍通过 `/coding-plugins:<skill-name>` 命名空间手动或按描述触发。
 
-规格、技术设计、计划和 TDD Evidence 的统一检索入口是 [docs/coding-plugins/INDEX.md](docs/coding-plugins/INDEX.md)。技术设计专用索引是 [docs/coding-plugins/technical/INDEX.md](docs/coding-plugins/technical/INDEX.md)。新增或移动相关产物时，`python3 scripts/preflight.py` 会检查总索引是否覆盖真实文件。
+规格、技术设计、计划和 TDD Evidence 的统一检索入口是 [docs/coding-plugins/INDEX.md](docs/coding-plugins/INDEX.md)。文档按 `docs/coding-plugins/features/<area>/<capability>/` 集中维护；新增或移动相关产物时，`python3 scripts/preflight.py` 会检查总索引是否覆盖真实文件。
 
 ## 工作方式
 
@@ -18,11 +18,11 @@ Codex 侧包含 SessionStart hook，新建、恢复或清空会话时会注入 `
 
 1. **using-coding-plugins** - 入口技能。先判断直接意图，再判断开发任务类型。
 2. **spec-driven-development** - 实现前激活。把需求、接口、schema、状态机和验收标准写成可测试规格。
-3. **writing-technical-design** - 基于已批准规格写独立技术设计，保存到 `docs/coding-plugins/technical/<area>/<capability>/technical-design.md`。
+3. **writing-technical-design** - 基于已批准规格写独立技术设计，保存到 `docs/coding-plugins/features/<area>/<capability>/technical-design.md`。
 4. **writing-plans** - 基于已批准规格和技术设计写实现计划。任务拆到 2 到 5 分钟粒度，并建立 Spec ID -> Test -> Task 追踪。
 5. **using-git-worktrees** - 执行前使用。创建隔离 worktree 和新分支，避免污染当前工作区。
 6. **subagent-driven-development / executing-plans** - 根据计划执行。优先子代理驱动；没有子代理时内联执行。
-7. **test-driven-development** - 实现时强制 RED-GREEN-REFACTOR：先从规格写失败测试，再最小实现，再重构，并把 TDD Evidence 写入 `docs/coding-plugins/evidence/<area>/<capability>/tdd-evidence.md`。
+7. **test-driven-development** - 实现时强制 RED-GREEN-REFACTOR：先从规格写失败测试，再最小实现，再重构，并把 TDD Evidence 写入 `docs/coding-plugins/features/<area>/<capability>/evidence/tdd-evidence.md`。
 8. **requesting-code-review** - 任务之间或合并前评审，按严重级别报告问题。
 9. **receiving-code-review** - 收到评审后先验证反馈，再决定是否修改。
 10. **git-commit** - 用户要求提交或完成阶段需要提交时，生成中文 Conventional Commit，在 footer 添加本人 `Authored-by` 署名，并禁止 AI 作者或 AI 生成声明。

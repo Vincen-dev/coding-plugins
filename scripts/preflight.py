@@ -68,15 +68,24 @@ SDD_TEMPLATE_ENGLISH_STRUCTURE = (
     "| When |",
     "| Then |",
 )
-ARTIFACT_INDEX_REQUIRED_COLUMNS = ("Area", "Capability", "Spec", "Technical", "Plan", "Evidence", "Tags", "Updated")
-TECHNICAL_INDEX_REQUIRED_COLUMNS = ("Area", "Capability", "Technical", "Tags", "Updated")
+ARTIFACT_INDEX_REQUIRED_COLUMNS = (
+    "Area",
+    "Capability",
+    "Feature Root",
+    "Spec",
+    "Technical Design",
+    "Implementation Plan",
+    "Evidence",
+    "Tags",
+    "Updated",
+)
 SPEC_ID_RE = re.compile(r"\b(?:REQ|API|SCHEMA|STATE|ERR|AC|NFR|MIG|OBS|NON)-\d{3,}\b")
-TECHNICAL_DESIGN_PATH_RE = re.compile(r"docs/coding-plugins/technical/[A-Za-z0-9_.\-/]+\.md")
+TECHNICAL_DESIGN_PATH_RE = re.compile(r"docs/coding-plugins/features/[A-Za-z0-9_.\-/]+/technical-design\.md")
 PLAN_METADATA_REQUIRED_FIELDS = ("title", "status", "area", "capability", "created", "updated")
 CHINESE_DOCUMENT_INFO_REQUIRED_TERMS = ("## 文档信息", "状态", "领域", "能力")
 DOC_SYNC_REFERENCES = (
     "docs/coding-plugins/INDEX.md",
-    "docs/coding-plugins/technical/INDEX.md",
+    "docs/coding-plugins/features",
     "hooks/hooks-codex.json",
     ".version-bump.json",
     "RELEASE-NOTES.md",
@@ -253,19 +262,67 @@ def parse_frontmatter(text: str) -> dict[str, str]:
     return metadata
 
 
+def feature_docs_root(root: Path) -> Path:
+    return root / "docs" / "coding-plugins" / "features"
+
+
+def collect_feature_roots(root: Path) -> list[Path]:
+    features_root = feature_docs_root(root)
+    if not features_root.exists():
+        return []
+
+    feature_roots: list[Path] = []
+    for area_dir in sorted(path for path in features_root.iterdir() if path.is_dir()):
+        for capability_dir in sorted(path for path in area_dir.iterdir() if path.is_dir()):
+            feature_roots.append(capability_dir)
+    return feature_roots
+
+
+def feature_root_for_document(root: Path, path: Path) -> tuple[str, str, Path] | None:
+    try:
+        relative_parts = path.relative_to(feature_docs_root(root)).parts
+    except ValueError:
+        return None
+    if len(relative_parts) < 2:
+        return None
+    area, capability = relative_parts[0], relative_parts[1]
+    return area, capability, feature_docs_root(root) / area / capability
+
+
+def check_legacy_docs_roots(root: Path) -> None:
+    offenders: list[str] = []
+    docs_root = root / "docs" / "coding-plugins"
+    for legacy_name in ("specs", "technical", "plans", "evidence"):
+        legacy_root = docs_root / legacy_name
+        if legacy_root.exists():
+            offenders.extend(str(path.relative_to(root)) for path in sorted(legacy_root.rglob("*.md")))
+
+    if offenders:
+        raise PreflightError("Legacy docs path is no longer active: " + ", ".join(offenders) + ".")
+
+
+def check_feature_readmes(root: Path) -> None:
+    missing = [
+        str((feature_root / "README.md").relative_to(root))
+        for feature_root in collect_feature_roots(root)
+        if not (feature_root / "README.md").exists()
+    ]
+    if missing:
+        raise PreflightError("Feature root is missing README: " + ", ".join(missing) + ".")
+
+
 def check_document_path_metadata(root: Path) -> None:
     mismatches: list[str] = []
-    for root_name, files in (
-        ("specs", collect_spec_files(root)),
-        ("technical", collect_technical_design_files(root)),
+    for label, files in (
+        ("spec", collect_spec_files(root)),
+        ("technical design", collect_technical_design_files(root)),
     ):
-        docs_root = root / "docs" / "coding-plugins" / root_name
         for path in files:
-            relative_parts = path.relative_to(docs_root).parts
-            if len(relative_parts) < 3:
-                mismatches.append(f"{path.relative_to(root)} is not under {root_name}/<area>/<capability>/")
+            feature_context = feature_root_for_document(root, path)
+            if feature_context is None:
+                mismatches.append(f"{path.relative_to(root)} is not under features/<area>/<capability>/")
                 continue
-            path_area, path_capability = relative_parts[0], relative_parts[1]
+            path_area, path_capability, _feature_root = feature_context
             metadata = parse_frontmatter(path.read_text(encoding="utf-8"))
             if metadata.get("area") and metadata.get("area") != path_area:
                 mismatches.append(f"{path.relative_to(root)} area={metadata.get('area')} path={path_area}")
@@ -274,15 +331,13 @@ def check_document_path_metadata(root: Path) -> None:
                     f"{path.relative_to(root)} capability={metadata.get('capability')} path={path_capability}"
                 )
 
-    for root_name, files in (
-        ("plans", collect_plan_files(root)),
+    for label, files in (
+        ("plan", collect_plan_files(root)),
         ("evidence", collect_tdd_evidence_files(root)),
     ):
-        docs_root = root / "docs" / "coding-plugins" / root_name
         for path in files:
-            relative_parts = path.relative_to(docs_root).parts
-            if len(relative_parts) < 3:
-                mismatches.append(f"{path.relative_to(root)} is not under {root_name}/<area>/<capability>/")
+            if feature_root_for_document(root, path) is None:
+                mismatches.append(f"{path.relative_to(root)} is not under features/<area>/<capability>/")
 
     if mismatches:
         raise PreflightError("Spec metadata does not match path: " + "; ".join(mismatches) + ".")
@@ -291,7 +346,6 @@ def check_document_path_metadata(root: Path) -> None:
 def check_plan_metadata(root: Path) -> None:
     incomplete: list[str] = []
     mismatches: list[str] = []
-    plans_root = root / "docs" / "coding-plugins" / "plans"
     for path in collect_plan_files(root):
         metadata = parse_frontmatter(path.read_text(encoding="utf-8"))
         missing_fields = [field for field in PLAN_METADATA_REQUIRED_FIELDS if not metadata.get(field)]
@@ -299,11 +353,11 @@ def check_plan_metadata(root: Path) -> None:
             incomplete.append(f"{path.relative_to(root)} missing {', '.join(missing_fields)}")
             continue
 
-        relative_parts = path.relative_to(plans_root).parts
-        if len(relative_parts) < 3:
-            mismatches.append(f"{path.relative_to(root)} is not under plans/<area>/<capability>/")
+        feature_context = feature_root_for_document(root, path)
+        if feature_context is None:
+            mismatches.append(f"{path.relative_to(root)} is not under features/<area>/<capability>/")
             continue
-        path_area, path_capability = relative_parts[0], relative_parts[1]
+        path_area, path_capability, _feature_root = feature_context
         if metadata.get("area") != path_area:
             mismatches.append(f"{path.relative_to(root)} area={metadata.get('area')} path={path_area}")
         if metadata.get("capability") != path_capability:
@@ -328,12 +382,11 @@ def check_chinese_document_info_sections(root: Path) -> None:
 
 
 def specs_for_area_capability(root: Path, document_root_name: str, document_file: Path) -> list[Path]:
-    document_root = root / "docs" / "coding-plugins" / document_root_name
-    relative_parts = document_file.relative_to(document_root).parts
-    if len(relative_parts) < 3:
+    feature_context = feature_root_for_document(root, document_file)
+    if feature_context is None:
         return []
-    area, capability = relative_parts[0], relative_parts[1]
-    spec_dir = root / "docs" / "coding-plugins" / "specs" / area / capability
+    _area, _capability, feature_root = feature_context
+    spec_dir = feature_root / "specs"
     if not spec_dir.exists():
         return []
     return sorted(path for path in spec_dir.rglob("*.md") if path.name != "INDEX.md")
@@ -424,26 +477,6 @@ def check_plan_technical_design_references(root: Path) -> None:
         raise PreflightError("Plan references missing technical design: " + "; ".join(missing) + ".")
 
 
-def check_technical_index_covers_designs(root: Path) -> None:
-    designs = collect_technical_design_files(root)
-    if not designs:
-        return
-
-    index_path = root / "docs" / "coding-plugins" / "technical" / "INDEX.md"
-    if not index_path.exists():
-        raise PreflightError("Missing technical index: docs/coding-plugins/technical/INDEX.md.")
-
-    text = index_path.read_text(encoding="utf-8")
-    headers = parse_markdown_table_headers(text)
-    missing_columns = [column for column in TECHNICAL_INDEX_REQUIRED_COLUMNS if column not in headers]
-    if missing_columns:
-        raise PreflightError("Technical index is missing required columns: " + ", ".join(missing_columns) + ".")
-
-    missing_paths = [str(path.relative_to(root)) for path in designs if str(path.relative_to(root)) not in text]
-    if missing_paths:
-        raise PreflightError("Technical index is missing document paths: " + ", ".join(missing_paths) + ".")
-
-
 def check_documentation_path_references(root: Path) -> None:
     required_docs = (
         root / "README.md",
@@ -462,31 +495,37 @@ def check_documentation_path_references(root: Path) -> None:
 
 
 def collect_spec_files(root: Path) -> list[Path]:
-    specs_root = root / "docs" / "coding-plugins" / "specs"
-    if not specs_root.exists():
-        return []
-    return sorted(path for path in specs_root.rglob("*.md") if path.name != "INDEX.md")
+    files: list[Path] = []
+    for feature_root in collect_feature_roots(root):
+        specs_root = feature_root / "specs"
+        if specs_root.exists():
+            files.extend(path for path in specs_root.rglob("*.md") if path.name != "INDEX.md")
+    return sorted(files)
 
 
 def collect_tdd_evidence_files(root: Path) -> list[Path]:
-    evidence_root = root / "docs" / "coding-plugins" / "evidence"
-    if not evidence_root.exists():
-        return []
-    return sorted(evidence_root.rglob("*.md"))
+    files: list[Path] = []
+    for feature_root in collect_feature_roots(root):
+        evidence_root = feature_root / "evidence"
+        if evidence_root.exists():
+            files.extend(evidence_root.rglob("*.md"))
+    return sorted(files)
 
 
 def collect_plan_files(root: Path) -> list[Path]:
-    plans_root = root / "docs" / "coding-plugins" / "plans"
-    if not plans_root.exists():
-        return []
-    return sorted(plans_root.rglob("*.md"))
+    return sorted(
+        plan_path
+        for plan_path in (feature_root / "implementation.md" for feature_root in collect_feature_roots(root))
+        if plan_path.exists()
+    )
 
 
 def collect_technical_design_files(root: Path) -> list[Path]:
-    technical_root = root / "docs" / "coding-plugins" / "technical"
-    if not technical_root.exists():
-        return []
-    return sorted(path for path in technical_root.rglob("*.md") if path.name != "INDEX.md")
+    return sorted(
+        design_path
+        for design_path in (feature_root / "technical-design.md" for feature_root in collect_feature_roots(root))
+        if design_path.exists()
+    )
 
 
 def parse_markdown_table_headers(text: str) -> list[str]:
@@ -502,13 +541,14 @@ def parse_markdown_table_headers(text: str) -> list[str]:
 
 
 def check_artifact_index_covers_documents(root: Path) -> None:
+    feature_roots = collect_feature_roots(root)
     documents = (
         collect_spec_files(root)
         + collect_technical_design_files(root)
         + collect_plan_files(root)
         + collect_tdd_evidence_files(root)
     )
-    if not documents:
+    if not feature_roots and not documents:
         return
 
     index_path = root / "docs" / "coding-plugins" / "INDEX.md"
@@ -521,7 +561,10 @@ def check_artifact_index_covers_documents(root: Path) -> None:
     if missing_columns:
         raise PreflightError("Artifact index is missing required columns: " + ", ".join(missing_columns) + ".")
 
-    missing_paths = [str(path.relative_to(root)) for path in documents if str(path.relative_to(root)) not in text]
+    expected_paths = [str(path.relative_to(root)) for path in feature_roots] + [
+        str(path.relative_to(root)) for path in documents
+    ]
+    missing_paths = [path for path in expected_paths if path not in text]
     if missing_paths:
         raise PreflightError("Artifact index is missing document paths: " + ", ".join(missing_paths) + ".")
 
@@ -577,10 +620,11 @@ def run_static_checks(root: Path) -> None:
     check_codex_hook_config_declared(root)
     check_manifest_asset_paths(root)
     check_skill_agent_metadata(root)
+    check_legacy_docs_roots(root)
+    check_feature_readmes(root)
     check_document_path_metadata(root)
     check_plan_metadata(root)
     check_chinese_document_info_sections(root)
-    check_technical_index_covers_designs(root)
     check_artifact_index_covers_documents(root)
     check_spec_technical_design_references(root)
     check_plan_technical_design_references(root)

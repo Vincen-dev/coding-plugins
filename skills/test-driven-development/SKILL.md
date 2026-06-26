@@ -125,15 +125,15 @@ npm test path/to/test.test.ts
 TDD Evidence 不是只写在聊天里。默认保存到：
 
 ```text
-docs/coding-plugins/evidence/<area>/<capability>/tdd-evidence.md
+docs/coding-plugins/features/<area>/<capability>/evidence/tdd-evidence.md
 ```
 
 `<area>/<capability>` 应和规格、计划路径一致。例如：
 
 ```text
-docs/coding-plugins/specs/auth/login/feature.md
-docs/coding-plugins/plans/auth/login/implementation.md
-docs/coding-plugins/evidence/auth/login/tdd-evidence.md
+docs/coding-plugins/features/auth/login/specs/feature.md
+docs/coding-plugins/features/auth/login/implementation.md
+docs/coding-plugins/features/auth/login/evidence/tdd-evidence.md
 ```
 
 如果项目已有测试报告或 ADR 约定，优先使用项目约定，但最终报告必须写明实际 evidence 文件路径。
@@ -170,13 +170,13 @@ docs/coding-plugins/evidence/auth/login/tdd-evidence.md
 可以用脚本检查证据：
 
 ```bash
-python3 skills/test-driven-development/scripts/validate_tdd_evidence.py docs/coding-plugins/evidence/<area>/<capability>/tdd-evidence.md
+python3 skills/test-driven-development/scripts/validate_tdd_evidence.py docs/coding-plugins/features/<area>/<capability>/evidence/tdd-evidence.md
 ```
 
 严格检查用于发布前或 CI：
 
 ```bash
-python3 skills/test-driven-development/scripts/validate_tdd_evidence.py --strict docs/coding-plugins/evidence/<area>/<capability>/tdd-evidence.md
+python3 skills/test-driven-development/scripts/validate_tdd_evidence.py --strict docs/coding-plugins/features/<area>/<capability>/evidence/tdd-evidence.md
 ```
 
 ## TDD Exception Record

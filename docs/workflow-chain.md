@@ -27,12 +27,12 @@
 | 0 | 平台加载 | `.agents/plugins/marketplace.json`, `.codex-plugin/plugin.json`, `.claude-plugin/plugin.json`, `hooks/hooks-codex.json` | Codex marketplace、Codex SessionStart hook、Codex / Claude Code 识别插件和 skills |
 | 1 | 入口路由 | `using-coding-plugins` | 判断直接意图和开发任务类型 |
 | 2 | 直接意图处理 | `requesting-code-review`, `receiving-code-review`, `verification-before-completion`, `git-commit`, `finishing-a-development-branch`, `writing-skills`, `using-git-worktrees`, `dispatching-parallel-agents` | 直接完成查询、评审、验证、提交、收尾、隔离或维护任务 |
-| 3 | 需求规格 | `spec-driven-development` | `docs/coding-plugins/specs/<area>/<capability>/<spec-kind>.md`, `specs/INDEX.md`, Spec ID, Traceability Matrix |
-| 4 | 技术设计 | `writing-technical-design` | `docs/coding-plugins/technical/<area>/<capability>/technical-design.md`, `technical/INDEX.md`, 技术方案和测试策略 |
-| 5 | 实现计划 | `writing-plans` | `docs/coding-plugins/plans/<area>/<capability>/implementation.md`, Technical Design Source, Spec ID -> Test -> Task 追踪 |
+| 3 | 需求规格 | `spec-driven-development` | `docs/coding-plugins/features/<area>/<capability>/specs/<spec-kind>.md`, 总索引, Spec ID, Traceability Matrix |
+| 4 | 技术设计 | `writing-technical-design` | `docs/coding-plugins/features/<area>/<capability>/technical-design.md`, 总索引, 技术方案和测试策略 |
+| 5 | 实现计划 | `writing-plans` | `docs/coding-plugins/features/<area>/<capability>/implementation.md`, Technical Design Source, Spec ID -> Test -> Task 追踪 |
 | 6 | 隔离工作区 | `using-git-worktrees` | 独立 worktree 或确认在当前工作区执行 |
 | 7 | 执行调度 | `subagent-driven-development`, `executing-plans`, `dispatching-parallel-agents` | 子任务执行、批次执行或并行任务结果 |
-| 8 | TDD 实现 | `test-driven-development` | RED -> GREEN -> REFACTOR，`docs/coding-plugins/evidence/<area>/<capability>/tdd-evidence.md` |
+| 8 | TDD 实现 | `test-driven-development` | RED -> GREEN -> REFACTOR，`docs/coding-plugins/features/<area>/<capability>/evidence/tdd-evidence.md` |
 | 9 | 系统化调试 | `systematic-debugging` | 复现路径、根因、可测试修复入口 |
 | 10 | 评审门禁 | `spec-reviewer`, `code-quality-reviewer`, `requesting-code-review`, `receiving-code-review` | 规格符合性评审、代码质量评审、反馈处理 |
 | 11 | 完成前验证 | `verification-before-completion` | 测试、构建、规格覆盖或人工验收证据 |
@@ -180,16 +180,16 @@ flowchart TD
   B --> C["探索上下文"]
   C --> D["选择规格类型和模板"]
   D --> E["检索既有规格和 INDEX"]
-  E --> F["写 specs/<area>/<capability>/<spec-kind>.md"]
-  F --> G["维护 specs/INDEX.md"]
+  E --> F["写 features/<area>/<capability>/specs/<spec-kind>.md"]
+  F --> G["维护 docs/coding-plugins/INDEX.md"]
   G --> H["运行 validate_spec.py"]
   H --> I["规格自审和必要修改"]
   I --> J{"用户确认规格？"}
   J -->|需要修改| F
   J -->|确认| TD["writing-technical-design"]
-  TD --> K["写 technical/<area>/<capability>/technical-design.md"]
+  TD --> K["写 features/<area>/<capability>/technical-design.md"]
   K --> L["writing-plans"]
-  L --> M["写 plans/<area>/<capability>/implementation.md"]
+  L --> M["写 features/<area>/<capability>/implementation.md"]
   M --> N["引用 Technical Design Source 并建立追踪矩阵"]
   N --> O["计划自审或计划评审"]
   O --> P["进入执行场景"]
@@ -348,10 +348,10 @@ Claude Code 侧使用 `.claude-plugin/plugin.json` 识别插件。技能以 `/co
 默认规格路径：
 
 ```text
-docs/coding-plugins/specs/<area>/<capability>/<spec-kind>.md
+docs/coding-plugins/features/<area>/<capability>/specs/<spec-kind>.md
 ```
 
-时间、状态、标签和相关代码写入规格 metadata，并同步维护 `docs/coding-plugins/specs/INDEX.md`；文件名不使用日期前缀。
+时间、状态、标签和相关代码写入规格 metadata，并同步维护 `docs/coding-plugins/INDEX.md`；文件名不使用日期前缀。
 
 该阶段输出应包括：
 
@@ -374,10 +374,10 @@ docs/coding-plugins/specs/<area>/<capability>/<spec-kind>.md
 默认技术设计路径：
 
 ```text
-docs/coding-plugins/technical/<area>/<capability>/technical-design.md
+docs/coding-plugins/features/<area>/<capability>/technical-design.md
 ```
 
-技术设计路径的 `<area>/<capability>` 应和规格路径一致，并同步维护 `docs/coding-plugins/technical/INDEX.md` 和 `docs/coding-plugins/INDEX.md`。
+技术设计路径的 `<area>/<capability>` 应和规格路径一致，并同步维护 `docs/coding-plugins/INDEX.md`。
 
 ### 计划层
 
@@ -386,10 +386,10 @@ docs/coding-plugins/technical/<area>/<capability>/technical-design.md
 默认计划路径：
 
 ```text
-docs/coding-plugins/plans/<area>/<capability>/implementation.md
+docs/coding-plugins/features/<area>/<capability>/implementation.md
 ```
 
-计划路径的 `<area>/<capability>` 应和规格及技术设计路径一致，例如 `specs/auth/login/feature.md` 对应 `technical/auth/login/technical-design.md` 和 `plans/auth/login/implementation.md`。
+计划路径的 `<area>/<capability>` 应和规格及技术设计路径一致，例如 `features/auth/login/specs/feature.md` 对应 `features/auth/login/technical-design.md` 和 `features/auth/login/implementation.md`。
 
 计划文档应说明推荐执行方式：
 
@@ -430,7 +430,7 @@ spec-driven-development -> writing-technical-design -> writing-plans -> using-gi
 TDD 阶段的交付证据不是“我遵守了 TDD”，而是写入固定路径的标准化 `TDD Evidence`：
 
 ```text
-docs/coding-plugins/evidence/<area>/<capability>/tdd-evidence.md
+docs/coding-plugins/features/<area>/<capability>/evidence/tdd-evidence.md
 ```
 
 `<area>/<capability>` 应和规格、计划路径保持一致。
@@ -440,7 +440,7 @@ docs/coding-plugins/evidence/<area>/<capability>/tdd-evidence.md
 - `GREEN change` / `GREEN command`：最小实现和通过证据。
 - `REFACTOR command` / `Final verification`：重构后和最终验证证据。
 
-纯重构没有新增行为时，使用现有测试基线或 characterization test 作为行为保护证据。无法自动测试时，必须在同一 evidence 文件中记录用户同意的 `TDD Exception Record` 和替代验证。证据报告可用 `skills/test-driven-development/scripts/validate_tdd_evidence.py` 检查，`scripts/preflight.py` 会自动严格校验 `docs/coding-plugins/evidence/**/*.md`。
+纯重构没有新增行为时，使用现有测试基线或 characterization test 作为行为保护证据。无法自动测试时，必须在同一 evidence 文件中记录用户同意的 `TDD Exception Record` 和替代验证。证据报告可用 `skills/test-driven-development/scripts/validate_tdd_evidence.py` 检查，`scripts/preflight.py` 会自动严格校验 `docs/coding-plugins/features/**/evidence/**/*.md`。
 
 `systematic-debugging` 适用于 bug、测试失败、构建失败、性能问题和异常行为。铁律是：
 
@@ -512,11 +512,7 @@ docs/coding-plugins/INDEX.md
 .version-bump.json
 RELEASE-NOTES.md
 docs/coding-plugins/INDEX.md
-docs/coding-plugins/specs/
-docs/coding-plugins/technical/
-docs/coding-plugins/technical/INDEX.md
-docs/coding-plugins/plans/
-docs/coding-plugins/evidence/
+docs/coding-plugins/features/
 hooks/
 hooks/hooks-codex.json
 scripts/bump_version.py

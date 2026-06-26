@@ -2,7 +2,7 @@
 
 | 领域 | 能力 | 类型 | 状态 | 规格 | 标签 | 更新时间 |
 | --- | --- | --- | --- | --- | --- | --- |
-| <area> | <capability> | feature | draft | `docs/coding-plugins/specs/<area>/<capability>/feature.md` | <tags> | YYYY-MM-DD |
+| <area> | <capability> | feature | draft | `docs/coding-plugins/features/<area>/<capability>/specs/feature.md` | <tags> | YYYY-MM-DD |
 
 规则：
 

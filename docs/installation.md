@@ -43,10 +43,10 @@ codex plugin marketplace list
 docs/coding-plugins/INDEX.md
 ```
 
-技术设计专用索引是：
+文档按 feature-first 结构集中维护：
 
 ```text
-docs/coding-plugins/technical/INDEX.md
+docs/coding-plugins/features/<area>/<capability>/
 ```
 
 ## 个人 Marketplace 安装
