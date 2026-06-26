@@ -1,5 +1,11 @@
 # Release Notes
 
+## 0.6.17 - 2026-06-26
+
+- 增加 `writing-technical-design` skill，将技术实现方案独立维护到 `docs/coding-plugins/technical/`。
+- 总索引增加 `Technical` 列，并新增 `docs/coding-plugins/technical/INDEX.md` 专用索引。
+- 增强 preflight，校验 technical 文档路径、metadata、Spec/Plan 引用和 Spec ID 追踪。
+
 ## 0.6.16 - 2026-06-26
 
 - 增强 preflight，校验 skill metadata、manifest 资源、文档路径、Evidence Spec ID、release notes 和版本配置一致性。
