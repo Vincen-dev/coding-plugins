@@ -66,6 +66,16 @@ Coding Plugins 是中文编码代理方法论插件，支持 Codex 和 Claude Co
 
 当前目录是插件源码目录，不会自动注册到 marketplace。需要在 Codex App 中展示时，再把它加入个人 marketplace。
 
+### 发布前检查
+
+提交、push 或发布前运行：
+
+```bash
+python3 scripts/preflight.py
+```
+
+该命令会运行 SDD/TDD 校验器单测、真实规格样例校验、manifest 版本一致性检查和旧入口残留扫描。GitHub Actions 会在 push 和 pull request 时运行同一命令。
+
 ### Codex
 
 Codex 侧通过 `.codex-plugin/plugin.json` 识别插件，并使用 `skills/*/agents/openai.yaml` 提供展示元数据。插件结构校验：

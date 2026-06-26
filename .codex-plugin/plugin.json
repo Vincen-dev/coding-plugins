@@ -1,6 +1,6 @@
 {
   "name": "coding-plugins",
-  "version": "0.6.5",
+  "version": "0.6.6",
   "description": "面向 Codex 和 Claude Code 的中文 SDD/TDD 编码工作流插件。",
   "author": {
     "name": "Vincen"
