@@ -20,6 +20,21 @@
 - 没有新需求时，不写 feature spec；只有行为、兼容性、迁移、风险或验证口径会变化时才写 maintenance spec。
 - 规格类型不确定时，先问一个会改变规格结构的问题。
 
+## 文件名选择
+
+规格路径使用 `docs/coding-plugins/specs/<area>/<capability>/<spec-kind>.md`。
+
+| 规格类型 | spec-kind |
+| --- | --- |
+| Feature spec | `feature` |
+| API contract spec | `api-contract` |
+| Schema spec | `schema` |
+| State machine spec | `state-machine` |
+| Acceptance criteria | `acceptance` |
+| Maintenance spec | `maintenance` |
+
+同一 capability 可以有多个 spec-kind 文件。日期、状态、标签和相关代码只写 metadata 和 `INDEX.md`，不写入文件名。
+
 ## 无新需求时的规格选择
 
 没有新功能输入时，优先判断是否真的需要规格：

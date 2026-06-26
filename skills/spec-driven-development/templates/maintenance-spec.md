@@ -1,3 +1,19 @@
+---
+spec_id: <area-capability-maintenance>
+title: <Maintenance Topic>
+type: maintenance
+status: draft
+area: <area>
+capability: <capability>
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
+tags:
+  - <tag>
+related_code:
+  - <path>
+related_specs: []
+---
+
 # <Maintenance Topic> Specification
 
 ## Goal

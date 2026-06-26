@@ -1,3 +1,19 @@
+---
+spec_id: <area-capability-api-contract>
+title: <API or SDK Name> Contract
+type: api-contract
+status: draft
+area: <area>
+capability: <capability>
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
+tags:
+  - <tag>
+related_code:
+  - <path>
+related_specs: []
+---
+
 # <API or SDK Name> Contract Specification
 
 ## Goal

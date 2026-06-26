@@ -1,3 +1,19 @@
+---
+spec_id: <area-capability-schema>
+title: <Schema Name>
+type: schema
+status: draft
+area: <area>
+capability: <capability>
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
+tags:
+  - <tag>
+related_code:
+  - <path>
+related_specs: []
+---
+
 # <Schema Name> Specification
 
 ## Goal

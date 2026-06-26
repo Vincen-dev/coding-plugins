@@ -1,3 +1,19 @@
+---
+spec_id: <area-capability-feature>
+title: <Feature Name>
+type: feature
+status: draft
+area: <area>
+capability: <capability>
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
+tags:
+  - <tag>
+related_code:
+  - <path>
+related_specs: []
+---
+
 # <Feature Name> Specification
 
 ## Goal

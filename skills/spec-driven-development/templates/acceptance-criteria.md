@@ -1,3 +1,19 @@
+---
+spec_id: <area-capability-acceptance>
+title: <Acceptance Criteria>
+type: acceptance
+status: draft
+area: <area>
+capability: <capability>
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
+tags:
+  - <tag>
+related_code:
+  - <path>
+related_specs: []
+---
+
 # Acceptance Criteria
 
 | ID | Scenario | Given | When | Then | Verification |

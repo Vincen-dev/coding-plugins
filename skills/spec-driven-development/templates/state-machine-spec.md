@@ -1,3 +1,19 @@
+---
+spec_id: <area-capability-state-machine>
+title: <State Machine Name>
+type: state-machine
+status: draft
+area: <area>
+capability: <capability>
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
+tags:
+  - <tag>
+related_code:
+  - <path>
+related_specs: []
+---
+
 # <State Machine Name> Specification
 
 ## Goal
