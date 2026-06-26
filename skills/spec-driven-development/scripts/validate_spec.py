@@ -4,8 +4,10 @@
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import sys
+from dataclasses import asdict
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -13,6 +15,7 @@ from pathlib import Path
 SPEC_ID_RE = re.compile(r"\b(?:REQ|API|SCHEMA|STATE|ERR|AC|NFR|MIG|OBS|NON)-\d{3,}\b")
 PLACEHOLDER_RE = re.compile(r"<[^>\n]{2,}>|\bTODO\b|\bTBD\b|待补充|待定|占位")
 MAYBE_AMBIGUOUS = ("适当", "友好", "常见情况", "尽快", "合理", "必要时")
+ALLOWED_TRACE_STATUSES = {"planned", "covered", "manual", "blocked", "deferred", "not-applicable", "n/a"}
 
 
 @dataclass(frozen=True)
@@ -22,11 +25,25 @@ class Table:
     start_line: int
 
 
+@dataclass(frozen=True)
+class ValidationResult:
+    path: str
+    ok: bool
+    errors: list[str]
+    warnings: list[str]
+
+
 def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Validate a Markdown SDD spec for Spec IDs, traceability, and placeholders."
     )
-    parser.add_argument("spec_file", help="Path to the Markdown specification file.")
+    parser.add_argument("spec_files", nargs="+", help="Path(s) to Markdown specification files.")
+    parser.add_argument(
+        "--format",
+        choices=("text", "json"),
+        default="text",
+        help="Output format. Use json for CI or editor integrations.",
+    )
     parser.add_argument(
         "--strict",
         action="store_true",
@@ -83,6 +100,10 @@ def contains_placeholder(text: str) -> bool:
     return bool(PLACEHOLDER_RE.search(text))
 
 
+def normalize_cell(text: str) -> str:
+    return text.strip().strip("`").strip()
+
+
 def validate_spec(path: Path, strict: bool) -> tuple[list[str], list[str]]:
     errors: list[str] = []
     warnings: list[str] = []
@@ -111,19 +132,32 @@ def validate_spec(path: Path, strict: bool) -> tuple[list[str], list[str]]:
 
     tables = extract_tables(lines)
     must_ids: set[str] = set()
+    should_ids: set[str] = set()
     trace_ids: set[str] = set()
+    defined_ids: dict[str, int] = {}
 
     for table in tables:
         header_text = " | ".join(table.headers).lower()
         is_trace_table = "spec id" in header_text and (
             "verification" in header_text or "test file" in header_text or "command" in header_text
         )
+        has_status_column = any("status" in header.strip().lower() for header in table.headers)
 
         for offset, row in enumerate(table.rows, start=2):
             line_no = table.start_line + offset
             row_text = " | ".join(row)
             row_ids = set(SPEC_ID_RE.findall(row_text))
-            priority = get_cell(row, table.headers, ("priority",))
+            priority = normalize_cell(get_cell(row, table.headers, ("priority",))).upper()
+
+            if row_ids and not is_trace_table:
+                for spec_id in row_ids:
+                    if spec_id in defined_ids:
+                        errors.append(
+                            f"Line {line_no}: Duplicate Spec ID definition {spec_id} "
+                            f"(first defined on line {defined_ids[spec_id]})."
+                        )
+                    else:
+                        defined_ids[spec_id] = line_no
 
             if priority in {"MUST", "SHOULD"} and not row_ids:
                 errors.append(f"Line {line_no}: {priority} row is missing a Spec ID.")
@@ -133,6 +167,9 @@ def validate_spec(path: Path, strict: bool) -> tuple[list[str], list[str]]:
                 verification = get_cell(row, table.headers, ("verification",))
                 if not verification or contains_placeholder(verification):
                     errors.append(f"Line {line_no}: MUST row lacks concrete verification evidence.")
+
+            if priority == "SHOULD":
+                should_ids.update(row_ids)
 
             if is_trace_table and row_ids:
                 trace_ids.update(row_ids)
@@ -145,6 +182,16 @@ def validate_spec(path: Path, strict: bool) -> tuple[list[str], list[str]]:
                     or contains_placeholder(test_command)
                 ):
                     errors.append(f"Line {line_no}: traceability row for {sorted(row_ids)} lacks evidence.")
+                if has_status_column:
+                    status = get_cell(row, table.headers, ("status",))
+                    normalized_status = normalize_cell(status).lower()
+                    if not status or contains_placeholder(status):
+                        errors.append(f"Line {line_no}: traceability row for {sorted(row_ids)} lacks status.")
+                    elif normalized_status not in ALLOWED_TRACE_STATUSES:
+                        allowed = ", ".join(sorted(ALLOWED_TRACE_STATUSES))
+                        errors.append(
+                            f"Line {line_no}: invalid traceability status {status!r}; allowed: {allowed}."
+                        )
 
     if must_ids and not trace_ids:
         errors.append("MUST requirements exist but no Traceability Matrix rows were found.")
@@ -153,6 +200,12 @@ def validate_spec(path: Path, strict: bool) -> tuple[list[str], list[str]]:
     if missing_trace:
         errors.append("MUST requirements missing from Traceability Matrix: " + ", ".join(missing_trace) + ".")
 
+    missing_should_trace = sorted(should_ids - trace_ids)
+    if missing_should_trace:
+        warnings.append(
+            "SHOULD requirements missing from Traceability Matrix: " + ", ".join(missing_should_trace) + "."
+        )
+
     if strict and warnings:
         errors.extend(warnings)
         warnings = []
@@ -160,24 +213,47 @@ def validate_spec(path: Path, strict: bool) -> tuple[list[str], list[str]]:
     return errors, warnings
 
 
+def build_result(path: Path, strict: bool) -> ValidationResult:
+    errors, warnings = validate_spec(path, strict)
+    return ValidationResult(path=str(path), ok=not errors, errors=errors, warnings=warnings)
+
+
+def print_text_results(results: list[ValidationResult]) -> None:
+    for index, result in enumerate(results):
+        if index:
+            print()
+
+        if result.errors:
+            print(f"Spec validation failed: {result.path}")
+            print("\nErrors:")
+            for error in result.errors:
+                print(f"- {error}")
+        else:
+            print(f"Spec validation passed: {result.path}")
+
+        if result.warnings:
+            print("\nWarnings:")
+            for warning in result.warnings:
+                print(f"- {warning}")
+
+
 def main(argv: list[str]) -> int:
     args = parse_args(argv)
-    errors, warnings = validate_spec(Path(args.spec_file), args.strict)
+    results = [build_result(Path(spec_file), args.strict) for spec_file in args.spec_files]
+    ok = all(result.ok for result in results)
 
-    if errors:
-        print(f"Spec validation failed: {args.spec_file}")
-        print("\nErrors:")
-        for error in errors:
-            print(f"- {error}")
+    if args.format == "json":
+        payload = {
+            "ok": ok,
+            "error_count": sum(len(result.errors) for result in results),
+            "warning_count": sum(len(result.warnings) for result in results),
+            "results": [asdict(result) for result in results],
+        }
+        print(json.dumps(payload, ensure_ascii=False, indent=2))
     else:
-        print(f"Spec validation passed: {args.spec_file}")
+        print_text_results(results)
 
-    if warnings:
-        print("\nWarnings:")
-        for warning in warnings:
-            print(f"- {warning}")
-
-    return 1 if errors else 0
+    return 0 if ok else 1
 
 
 if __name__ == "__main__":
