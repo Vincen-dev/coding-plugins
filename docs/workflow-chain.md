@@ -88,13 +88,15 @@ docs/coding-plugins/specs/<area>/<capability>/<spec-kind>.md
 
 ### 计划层
 
-`writing-plans` 把规格转成可执行计划。计划要求精确文件路径、完整代码片段、测试命令、预期输出和 Spec ID -> Test -> Task 追踪矩阵。
+`writing-plans` 把规格转成可执行计划。计划要求明确技术方案、精确文件路径、完整代码片段、测试命令、预期输出和 Spec ID -> Test -> Task 追踪矩阵。
 
 默认计划路径：
 
 ```text
-docs/coding-plugins/plans/YYYY-MM-DD-<feature-name>.md
+docs/coding-plugins/plans/<area>/<capability>/implementation.md
 ```
+
+计划路径的 `<area>/<capability>` 应和规格路径一致，例如 `specs/auth/login/feature.md` 对应 `plans/auth/login/implementation.md`。
 
 计划文档应说明推荐执行方式：
 
