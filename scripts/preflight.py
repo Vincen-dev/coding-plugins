@@ -389,6 +389,7 @@ def build_validation_commands(
     commands = [
         [python, "-m", "unittest", "scripts/test_preflight.py"],
         [python, "-m", "unittest", "scripts/test_bump_version.py"],
+        [python, "-m", "unittest", "tests.behavior.test_routing"],
         [python, "-m", "unittest", "skills/spec-driven-development/scripts/test_validate_spec.py"],
         [python, "-m", "unittest", "skills/test-driven-development/scripts/test_validate_tdd_evidence.py"],
         ["bash", "tests/hooks/test-session-start.sh"],

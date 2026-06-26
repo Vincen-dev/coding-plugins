@@ -14,4 +14,26 @@ Claude Code 可直接执行本插件中的 Claude 工具语义。技能文本中
 | 插件重载 | 修改插件组件后运行 `/reload-plugins`。 |
 | 插件校验 | 运行 `claude plugin validate <plugin-path> --strict`。 |
 
+## 显式技能请求
+
+Claude Code 中，本插件技能使用 `/coding-plugins:git-commit` 这类具体技能名命名空间。需要显式指定流程时，可以直接请求：
+
+```text
+/coding-plugins:dispatching-parallel-agents
+/coding-plugins:executing-plans
+/coding-plugins:finishing-a-development-branch
+/coding-plugins:git-commit
+/coding-plugins:receiving-code-review
+/coding-plugins:requesting-code-review
+/coding-plugins:spec-driven-development
+/coding-plugins:subagent-driven-development
+/coding-plugins:systematic-debugging
+/coding-plugins:test-driven-development
+/coding-plugins:using-coding-plugins
+/coding-plugins:using-git-worktrees
+/coding-plugins:verification-before-completion
+/coding-plugins:writing-plans
+/coding-plugins:writing-skills
+```
+
 如果技能提到 Codex、Copilot 或 Gemini 专用工具名，按上表选择 Claude Code 等价能力，不机械照搬工具名。

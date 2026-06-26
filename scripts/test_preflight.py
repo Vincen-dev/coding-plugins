@@ -111,6 +111,7 @@ class PreflightTests(unittest.TestCase):
         self.assertIn("test_validate_spec.py", command_text)
         self.assertIn("test_validate_tdd_evidence.py", command_text)
         self.assertIn("test_bump_version.py", command_text)
+        self.assertIn("tests.behavior.test_routing", command_text)
         self.assertIn("tests/hooks/test-session-start.sh", command_text)
         self.assertIn("validate_spec.py", command_text)
         self.assertIn("--strict docs/coding-plugins/evidence/plugin/preflight/tdd-evidence.md", command_text)
