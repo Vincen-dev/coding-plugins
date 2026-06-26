@@ -15,7 +15,21 @@ from pathlib import Path
 SPEC_ID_RE = re.compile(r"\b(?:REQ|API|SCHEMA|STATE|ERR|AC|NFR|MIG|OBS|NON)-\d{3,}\b")
 PLACEHOLDER_RE = re.compile(r"<[^>\n]{2,}>|\bTODO\b|\bTBD\b|待补充|待定|占位")
 MAYBE_AMBIGUOUS = ("适当", "友好", "常见情况", "尽快", "合理", "必要时")
-ALLOWED_TRACE_STATUSES = {"planned", "covered", "manual", "blocked", "deferred", "not-applicable", "n/a"}
+ALLOWED_TRACE_STATUSES = {
+    "planned",
+    "covered",
+    "manual",
+    "blocked",
+    "deferred",
+    "not-applicable",
+    "n/a",
+    "计划中",
+    "已覆盖",
+    "人工",
+    "阻塞",
+    "延期",
+    "不适用",
+}
 
 
 @dataclass(frozen=True)
@@ -96,12 +110,44 @@ def get_cell(row: list[str], headers: list[str], names: tuple[str, ...]) -> str:
     return ""
 
 
+def has_header(headers: list[str], names: tuple[str, ...]) -> bool:
+    return any(get_cell(headers, headers, (name,)) for name in names)
+
+
 def contains_placeholder(text: str) -> bool:
     return bool(PLACEHOLDER_RE.search(text))
 
 
 def normalize_cell(text: str) -> str:
     return text.strip().strip("`").strip()
+
+
+def normalize_priority(text: str) -> str:
+    normalized = normalize_cell(text).upper()
+    if normalized in {"必须", "必需", "MUST"}:
+        return "MUST"
+    if normalized in {"应该", "SHOULD"}:
+        return "SHOULD"
+    return normalized
+
+
+def is_traceability_table(headers: list[str]) -> bool:
+    header_text = " | ".join(headers).lower()
+    has_spec_id = "spec id" in header_text or "规格 id" in header_text or "规格ID" in header_text
+    has_evidence = any(
+        marker in header_text
+        for marker in (
+            "verification",
+            "test file",
+            "command",
+            "evidence",
+            "验证",
+            "测试文件",
+            "命令",
+            "证据",
+        )
+    )
+    return has_spec_id and has_evidence
 
 
 def validate_spec(path: Path, strict: bool) -> tuple[list[str], list[str]]:
@@ -137,17 +183,14 @@ def validate_spec(path: Path, strict: bool) -> tuple[list[str], list[str]]:
     defined_ids: dict[str, int] = {}
 
     for table in tables:
-        header_text = " | ".join(table.headers).lower()
-        is_trace_table = "spec id" in header_text and (
-            "verification" in header_text or "test file" in header_text or "command" in header_text
-        )
-        has_status_column = any("status" in header.strip().lower() for header in table.headers)
+        is_trace_table = is_traceability_table(table.headers)
+        has_status_column = has_header(table.headers, ("status", "状态"))
 
         for offset, row in enumerate(table.rows, start=2):
             line_no = table.start_line + offset
             row_text = " | ".join(row)
             row_ids = set(SPEC_ID_RE.findall(row_text))
-            priority = normalize_cell(get_cell(row, table.headers, ("priority",))).upper()
+            priority = normalize_priority(get_cell(row, table.headers, ("priority", "优先级")))
 
             if row_ids and not is_trace_table:
                 for spec_id in row_ids:
@@ -164,7 +207,7 @@ def validate_spec(path: Path, strict: bool) -> tuple[list[str], list[str]]:
 
             if priority == "MUST":
                 must_ids.update(row_ids)
-                verification = get_cell(row, table.headers, ("verification",))
+                verification = get_cell(row, table.headers, ("verification", "验证方式", "验证"))
                 if not verification or contains_placeholder(verification):
                     errors.append(f"Line {line_no}: MUST row lacks concrete verification evidence.")
 
@@ -173,8 +216,8 @@ def validate_spec(path: Path, strict: bool) -> tuple[list[str], list[str]]:
 
             if is_trace_table and row_ids:
                 trace_ids.update(row_ids)
-                verification_type = get_cell(row, table.headers, ("verification type", "verification"))
-                test_command = get_cell(row, table.headers, ("test file", "command", "evidence"))
+                verification_type = get_cell(row, table.headers, ("verification type", "verification", "验证类型", "验证方式"))
+                test_command = get_cell(row, table.headers, ("test file", "command", "evidence", "测试文件", "命令", "证据"))
                 if (
                     not verification_type
                     or not test_command
@@ -183,7 +226,7 @@ def validate_spec(path: Path, strict: bool) -> tuple[list[str], list[str]]:
                 ):
                     errors.append(f"Line {line_no}: traceability row for {sorted(row_ids)} lacks evidence.")
                 if has_status_column:
-                    status = get_cell(row, table.headers, ("status",))
+                    status = get_cell(row, table.headers, ("status", "状态"))
                     normalized_status = normalize_cell(status).lower()
                     if not status or contains_placeholder(status):
                         errors.append(f"Line {line_no}: traceability row for {sorted(row_ids)} lacks status.")

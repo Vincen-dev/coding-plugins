@@ -1,12 +1,12 @@
-# Traceability Matrix
+# 追踪矩阵
 
-| Spec ID | Verification type | Test file / command | Plan task | Status |
+| 规格 ID | 验证类型 | 测试文件 / 命令 | 计划任务 | 状态 |
 | --- | --- | --- | --- | --- |
-| REQ-001 | unit test | `<path or command>` | Task N | planned |
-| AC-001 | integration/e2e/manual | `<path or command>` | Task N | planned |
+| REQ-001 | 单元测试 | `<路径或命令>` | Task N | 计划中 |
+| AC-001 | 集成测试、端到端测试或人工验收 | `<路径或命令>` | Task N | 计划中 |
 
-Rules:
+规则：
 
 - 每个 MUST 需求必须有一行。
-- 每个外部契约至少有 contract/schema validation 行。
+- 每个外部契约至少有契约测试或 schema 校验行。
 - 手工验收必须写明证据，而不是只写 “manual”。

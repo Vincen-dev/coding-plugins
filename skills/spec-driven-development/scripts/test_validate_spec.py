@@ -30,6 +30,22 @@ GOOD_SPEC = """# Export Config Specification
 """
 
 
+CHINESE_SPEC = """# 导出配置规格
+
+## 功能需求
+
+| 编号 | 优先级 | 需求 | 验证方式 |
+| --- | --- | --- | --- |
+| REQ-001 | 必须 | 导出的配置结果必须包含非空 `version` 字段。 | 单元测试验证导出配置 payload。 |
+
+## 追踪矩阵
+
+| 规格 ID | 验证类型 | 测试文件 / 命令 | 计划任务 | 状态 |
+| --- | --- | --- | --- | --- |
+| REQ-001 | 单元测试 | `python3 -m pytest tests/test_export_config.py` | Task 1 | 计划中 |
+"""
+
+
 SHOULD_UNTRACED_SPEC = """# Export Config Specification
 
 ## Functional Requirements
@@ -106,6 +122,13 @@ class ValidateSpecTests(unittest.TestCase):
         payload = json.loads(result.stdout)
         self.assertTrue(payload["ok"])
         self.assertEqual(len(payload["results"]), 2)
+
+    def test_accepts_chinese_headers_and_statuses(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            spec = self.write_spec(Path(tmp), "chinese.md", CHINESE_SPEC)
+            result = self.run_validator("--strict", str(spec))
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
     def test_duplicate_definition_id_fails(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

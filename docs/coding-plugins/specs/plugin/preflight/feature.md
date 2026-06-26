@@ -1,6 +1,6 @@
 ---
 spec_id: plugin-preflight-feature
-title: Plugin Preflight Checks
+title: 插件发布前检查
 type: feature
 status: approved
 area: plugin
@@ -17,61 +17,61 @@ related_code:
 related_specs: []
 ---
 
-# Plugin Preflight Checks Specification
+# 插件发布前检查规格
 
-## Goal
+## 目标
 
-Provide one command that verifies the plugin repository before push, release, or marketplace packaging.
+提供一个命令，在 push、发布或 marketplace 打包前校验插件仓库。
 
-## Non-goals
+## 非目标
 
-| ID | Non-goal |
+| 编号 | 非目标 |
 | --- | --- |
-| NON-001 | This command does not publish the plugin or register marketplace metadata. |
-| NON-002 | This command does not replace manual review for skill wording, product fit, or user-facing workflow judgment. |
+| NON-001 | 该命令不负责发布插件，也不注册 marketplace 元数据。 |
+| NON-002 | 该命令不替代对 skill 文案、产品适配和用户可见工作流判断的人工评审。 |
 
-## Context
+## 背景
 
-- Current behavior: SDD and TDD validators exist, but maintainers must remember the full verification set.
-- Target users or callers: plugin maintainers, local Codex sessions, and GitHub Actions.
-- Constraints: the command must run with the Python standard library and repository-local files.
+- 当前行为：仓库已有 SDD 和 TDD 校验器，但维护者需要记住完整验证集合。
+- 目标用户或调用方：插件维护者、本地 Codex 会话和 GitHub Actions。
+- 约束：命令必须只依赖 Python 标准库和仓库内文件。
 
-## Functional Requirements
+## 功能需求
 
-| ID | Priority | Requirement | Verification |
+| 编号 | 优先级 | 需求 | 验证方式 |
 | --- | --- | --- | --- |
-| REQ-001 | MUST | The preflight command runs repository unit tests for the SDD validator, TDD evidence validator, and preflight logic. | Unit test command in Traceability. |
-| REQ-002 | MUST | The preflight command validates all real specification documents under `docs/coding-plugins/specs`, excluding `INDEX.md`. | Strict spec validator command in Traceability. |
-| REQ-003 | MUST | The preflight command rejects mismatched Codex and Claude plugin manifest versions. | Unit test `test_manifest_version_check_rejects_mismatched_versions`. |
-| REQ-004 | MUST | The preflight command rejects active references to the removed legacy entry outside Git internals. | Unit test `test_removed_entry_scan_ignores_git_and_detects_active_references`. |
-| REQ-005 | MUST | GitHub Actions runs the same preflight command on pushes and pull requests targeting `main`. | Workflow file review plus command execution in Traceability. |
+| REQ-001 | 必须 | preflight 命令运行 SDD 校验器、TDD Evidence 校验器和 preflight 逻辑的仓库单测。 | 追踪矩阵中的单测命令。 |
+| REQ-002 | 必须 | preflight 命令校验 `docs/coding-plugins/specs` 下除 `INDEX.md` 以外的真实规格文档。 | 追踪矩阵中的 strict 规格校验命令。 |
+| REQ-003 | 必须 | preflight 命令拒绝 Codex 和 Claude 插件 manifest 版本不一致的仓库状态。 | 单测 `test_manifest_version_check_rejects_mismatched_versions`。 |
+| REQ-004 | 必须 | preflight 命令拒绝 Git 内部目录之外仍引用已移除旧入口的仓库状态。 | 单测 `test_removed_entry_scan_ignores_git_and_detects_active_references`。 |
+| REQ-005 | 必须 | GitHub Actions 在 push 到 `main` 和面向 `main` 的 pull request 中运行同一个 preflight 命令。 | 追踪矩阵中的 workflow 文件检查和命令执行。 |
 
-## Error and Edge Cases
+## 错误和边界情况
 
-| ID | Condition | Expected behavior | Verification |
+| 编号 | 条件 | 期望行为 | 验证方式 |
 | --- | --- | --- | --- |
-| ERR-001 | No real spec files exist under `docs/coding-plugins/specs`. | Preflight skips spec file validation and still runs unit tests and static checks. | Unit test `test_build_commands_include_core_validation_steps`. |
-| ERR-002 | A removed entry reference appears only inside `.git`. | Preflight ignores the `.git` directory. | Unit test `test_removed_entry_scan_ignores_git_and_detects_active_references`. |
-| ERR-003 | A required manifest file is missing. | Preflight exits non-zero with a missing file message. | Unit test coverage for `check_required_plugin_files` or manual command failure evidence. |
+| ERR-001 | `docs/coding-plugins/specs` 下没有真实规格文件。 | preflight 跳过规格文件校验，仍运行单测和静态检查。 | 单测 `test_build_commands_include_core_validation_steps`。 |
+| ERR-002 | 已移除旧入口的引用只出现在 `.git` 目录内。 | preflight 忽略 `.git` 目录。 | 单测 `test_removed_entry_scan_ignores_git_and_detects_active_references`。 |
+| ERR-003 | 必需的 manifest 文件缺失。 | preflight 以非零状态退出，并输出缺失文件信息。 | `check_required_plugin_files` 的单测覆盖或手工命令失败证据。 |
 
-## Acceptance Criteria
+## 验收标准
 
-| ID | Scenario | Given | When | Then |
+| 编号 | 场景 | 前置条件 | 操作 | 期望结果 |
 | --- | --- | --- | --- | --- |
-| AC-001 | Local preflight succeeds | A clean checkout with matching manifests and valid specs | Maintainer runs `python3 scripts/preflight.py` | The command exits 0 and prints `Preflight passed.` |
-| AC-002 | CI preflight runs | A push or pull request targets `main` | GitHub Actions starts the `ci` workflow | The workflow runs `python3 scripts/preflight.py`. |
+| AC-001 | 本地 preflight 成功 | 仓库干净、manifest 版本一致且规格有效 | 维护者运行 `python3 scripts/preflight.py` | 命令以 0 状态退出，并输出 `Preflight passed.` |
+| AC-002 | CI preflight 运行 | push 或 pull request 目标分支为 `main` | GitHub Actions 启动 `ci` workflow | workflow 运行 `python3 scripts/preflight.py`。 |
 
-## Traceability
+## 追踪矩阵
 
-| Spec ID | Verification type | Test file / command | Plan task | Status |
+| 规格 ID | 验证类型 | 测试文件 / 命令 | 计划任务 | 状态 |
 | --- | --- | --- | --- | --- |
-| REQ-001 | unit test | `python3 -m unittest scripts/test_preflight.py skills/spec-driven-development/scripts/test_validate_spec.py skills/test-driven-development/scripts/test_validate_tdd_evidence.py` | Task 1 | covered |
-| REQ-002 | spec validation | `python3 skills/spec-driven-development/scripts/validate_spec.py --strict docs/coding-plugins/specs/plugin/preflight/feature.md` | Task 1 | covered |
-| REQ-003 | unit test | `python3 -m unittest scripts/test_preflight.py` | Task 1 | covered |
-| REQ-004 | unit test | `python3 -m unittest scripts/test_preflight.py` | Task 1 | covered |
-| REQ-005 | workflow check | `.github/workflows/ci.yml` contains `python3 scripts/preflight.py` | Task 2 | covered |
-| ERR-001 | unit test | `python3 -m unittest scripts/test_preflight.py` | Task 1 | covered |
-| ERR-002 | unit test | `python3 -m unittest scripts/test_preflight.py` | Task 1 | covered |
-| ERR-003 | manual validation | Delete a manifest in a temporary checkout and run `python3 scripts/preflight.py` | Task 1 | planned |
-| AC-001 | command validation | `python3 scripts/preflight.py` | Task 3 | covered |
-| AC-002 | workflow review | `.github/workflows/ci.yml` | Task 2 | covered |
+| REQ-001 | 单元测试 | `python3 -m unittest scripts/test_preflight.py skills/spec-driven-development/scripts/test_validate_spec.py skills/test-driven-development/scripts/test_validate_tdd_evidence.py` | Task 1 | 已覆盖 |
+| REQ-002 | 规格校验 | `python3 skills/spec-driven-development/scripts/validate_spec.py --strict docs/coding-plugins/specs/plugin/preflight/feature.md` | Task 1 | 已覆盖 |
+| REQ-003 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
+| REQ-004 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
+| REQ-005 | workflow 检查 | `.github/workflows/ci.yml` 包含 `python3 scripts/preflight.py` | Task 2 | 已覆盖 |
+| ERR-001 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
+| ERR-002 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
+| ERR-003 | 手工验证 | 在临时 checkout 删除一个 manifest 后运行 `python3 scripts/preflight.py` | Task 1 | 计划中 |
+| AC-001 | 命令验证 | `python3 scripts/preflight.py` | Task 3 | 已覆盖 |
+| AC-002 | workflow 评审 | `.github/workflows/ci.yml` | Task 2 | 已覆盖 |
