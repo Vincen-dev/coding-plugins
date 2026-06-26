@@ -466,10 +466,19 @@ feat(commit): 增加中文提交工作流
 
 ## 文档和产物路径
 
+统一检索入口：
+
+```text
+docs/coding-plugins/INDEX.md
+```
+
+查找某个功能时，先按 `Area`、`Capability` 或 `Tags` 查总索引，再进入对应规格、计划或 TDD Evidence 文件。新增、移动或删除相关产物时必须同步更新总索引；`scripts/preflight.py` 会校验真实 spec、plan 和 evidence 文件都出现在总索引中。
+
 默认路径：
 
 ```text
 .agents/plugins/marketplace.json
+docs/coding-plugins/INDEX.md
 docs/coding-plugins/specs/
 docs/coding-plugins/plans/
 docs/coding-plugins/evidence/

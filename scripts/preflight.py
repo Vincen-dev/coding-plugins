@@ -66,6 +66,7 @@ SDD_TEMPLATE_ENGLISH_STRUCTURE = (
     "| When |",
     "| Then |",
 )
+ARTIFACT_INDEX_REQUIRED_COLUMNS = ("Area", "Capability", "Spec", "Plan", "Evidence", "Tags", "Updated")
 
 
 def repo_root() -> Path:
@@ -161,6 +162,45 @@ def collect_tdd_evidence_files(root: Path) -> list[Path]:
     return sorted(evidence_root.rglob("*.md"))
 
 
+def collect_plan_files(root: Path) -> list[Path]:
+    plans_root = root / "docs" / "coding-plugins" / "plans"
+    if not plans_root.exists():
+        return []
+    return sorted(plans_root.rglob("*.md"))
+
+
+def parse_markdown_table_headers(text: str) -> list[str]:
+    lines = text.splitlines()
+    for index, line in enumerate(lines[:-1]):
+        if not line.lstrip().startswith("|"):
+            continue
+        headers = [cell.strip() for cell in line.strip().strip("|").split("|")]
+        separator = [cell.strip() for cell in lines[index + 1].strip().strip("|").split("|")]
+        if separator and all(cell.replace(":", "").strip("-") == "" and "---" in cell for cell in separator):
+            return headers
+    return []
+
+
+def check_artifact_index_covers_documents(root: Path) -> None:
+    documents = collect_spec_files(root) + collect_plan_files(root) + collect_tdd_evidence_files(root)
+    if not documents:
+        return
+
+    index_path = root / "docs" / "coding-plugins" / "INDEX.md"
+    if not index_path.exists():
+        raise PreflightError("Missing artifact index: docs/coding-plugins/INDEX.md.")
+
+    text = index_path.read_text(encoding="utf-8")
+    headers = parse_markdown_table_headers(text)
+    missing_columns = [column for column in ARTIFACT_INDEX_REQUIRED_COLUMNS if column not in headers]
+    if missing_columns:
+        raise PreflightError("Artifact index is missing required columns: " + ", ".join(missing_columns) + ".")
+
+    missing_paths = [str(path.relative_to(root)) for path in documents if str(path.relative_to(root)) not in text]
+    if missing_paths:
+        raise PreflightError("Artifact index is missing document paths: " + ", ".join(missing_paths) + ".")
+
+
 def build_validation_commands(
     root: Path,
     spec_files: list[Path],
@@ -207,6 +247,7 @@ def run_static_checks(root: Path) -> None:
     check_required_plugin_files(root)
     check_manifest_versions(root)
     check_codex_hook_config_declared(root)
+    check_artifact_index_covers_documents(root)
     check_removed_entry_references(root)
     check_sdd_templates_are_chinese(root)
 

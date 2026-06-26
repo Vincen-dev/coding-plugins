@@ -6,6 +6,8 @@ Coding Plugins 是中文编码代理方法论插件，支持 Codex 和 Claude Co
 
 Codex 侧包含 SessionStart hook，新建、恢复或清空会话时会注入 `coding-plugins:using-coding-plugins` 入口提示，降低入口技能漏用概率。Claude Code 侧仍通过 `/coding-plugins:<skill-name>` 命名空间手动或按描述触发。
 
+规格、计划和 TDD Evidence 的统一检索入口是 [docs/coding-plugins/INDEX.md](docs/coding-plugins/INDEX.md)。新增或移动相关产物时，`python3 scripts/preflight.py` 会检查总索引是否覆盖真实文件。
+
 ## 工作方式
 
 当代理看到你要构建或修改东西时，它不应该直接写代码。它会先把需求收敛成可追踪、可测试、可评审的规格。规格通过后，它会写出足够具体的实现计划：文件、代码、测试、命令、预期结果都要写清楚。

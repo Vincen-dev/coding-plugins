@@ -87,6 +87,19 @@ class PreflightTests(unittest.TestCase):
                 [report],
             )
 
+    def test_collect_plan_files_uses_default_docs_path(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            plan_dir = root / "docs" / "coding-plugins" / "plans" / "plugin" / "preflight"
+            plan_dir.mkdir(parents=True)
+            plan = plan_dir / "implementation.md"
+            plan.write_text("# Implementation", encoding="utf-8")
+
+            self.assertEqual(
+                preflight.collect_plan_files(root),
+                [plan],
+            )
+
     def test_build_commands_include_core_validation_steps(self) -> None:
         commands = preflight.build_validation_commands(
             Path("/repo"),
@@ -136,6 +149,86 @@ class PreflightTests(unittest.TestCase):
 
             with self.assertRaisesRegex(preflight.PreflightError, "Codex manifest must declare hooks"):
                 preflight.check_codex_hook_config_declared(root)
+
+    def test_artifact_index_allows_empty_docs_tree(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            preflight.check_artifact_index_covers_documents(Path(tmp))
+
+    def test_artifact_index_requires_index_file(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            spec_dir = root / "docs" / "coding-plugins" / "specs" / "plugin" / "search"
+            spec_dir.mkdir(parents=True)
+            (spec_dir / "feature.md").write_text("# Feature", encoding="utf-8")
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Missing artifact index"):
+                preflight.check_artifact_index_covers_documents(root)
+
+    def test_artifact_index_requires_expected_headers(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            docs = root / "docs" / "coding-plugins"
+            spec_dir = docs / "specs" / "plugin" / "search"
+            spec_dir.mkdir(parents=True)
+            (spec_dir / "feature.md").write_text("# Feature", encoding="utf-8")
+            (docs / "INDEX.md").write_text(
+                "| Area | Capability | Spec |\n| --- | --- | --- |\n| plugin | search | `docs/coding-plugins/specs/plugin/search/feature.md` |\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Artifact index is missing required columns"):
+                preflight.check_artifact_index_covers_documents(root)
+
+    def test_artifact_index_requires_spec_paths(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            docs = root / "docs" / "coding-plugins"
+            spec_dir = docs / "specs" / "plugin" / "search"
+            spec_dir.mkdir(parents=True)
+            (spec_dir / "feature.md").write_text("# Feature", encoding="utf-8")
+            (docs / "INDEX.md").write_text(
+                "| Area | Capability | Spec | Plan | Evidence | Tags | Updated |\n"
+                "| --- | --- | --- | --- | --- | --- | --- |\n"
+                "| plugin | search | - | - | - | search | 2026-06-26 |\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Artifact index is missing document paths"):
+                preflight.check_artifact_index_covers_documents(root)
+
+    def test_artifact_index_requires_plan_paths(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            docs = root / "docs" / "coding-plugins"
+            plan_dir = docs / "plans" / "plugin" / "search"
+            plan_dir.mkdir(parents=True)
+            (plan_dir / "implementation.md").write_text("# Plan", encoding="utf-8")
+            (docs / "INDEX.md").write_text(
+                "| Area | Capability | Spec | Plan | Evidence | Tags | Updated |\n"
+                "| --- | --- | --- | --- | --- | --- | --- |\n"
+                "| plugin | search | - | - | - | search | 2026-06-26 |\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Artifact index is missing document paths"):
+                preflight.check_artifact_index_covers_documents(root)
+
+    def test_artifact_index_requires_evidence_paths(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            docs = root / "docs" / "coding-plugins"
+            evidence_dir = docs / "evidence" / "plugin" / "search"
+            evidence_dir.mkdir(parents=True)
+            (evidence_dir / "tdd-evidence.md").write_text("# Evidence", encoding="utf-8")
+            (docs / "INDEX.md").write_text(
+                "| Area | Capability | Spec | Plan | Evidence | Tags | Updated |\n"
+                "| --- | --- | --- | --- | --- | --- | --- |\n"
+                "| plugin | search | - | - | - | search | 2026-06-26 |\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Artifact index is missing document paths"):
+                preflight.check_artifact_index_covers_documents(root)
 
 
 if __name__ == "__main__":
