@@ -96,7 +96,7 @@ related_specs:
 | ERR-002 | 文件系统检查 | `/Users/vincen/.agents/plugins/marketplace.json` | Task 4 | 已覆盖 |
 | ERR-003 | 文档评审 | `docs/installation.md` | Task 2 | 已覆盖 |
 | AC-001 | 文件检查 | `.agents/plugins/marketplace.json` | Task 1 | 已覆盖 |
-| AC-002 | 手工命令 | `codex plugin marketplace add /Users/vincen/workspace/plugins/coding-plugins` | Task 4 | 计划中 |
+| AC-002 | 文档评审和命令验证 | `docs/installation.md`、`codex plugin add coding-plugins@personal` | Task 4 | 已覆盖 |
 | AC-003 | 命令验证 | `codex plugin list` | Task 4 | 已覆盖 |
 | AC-004 | 文档评审 | `docs/installation.md` | Task 2 | 已覆盖 |
-| AC-005 | 命令验证 | `python3 scripts/preflight.py` 等 | Task 3 | 计划中 |
+| AC-005 | 命令验证 | `python3 scripts/preflight.py`、`claude plugin validate /Users/vincen/workspace/plugins/coding-plugins --strict` | Task 3 | 已覆盖 |

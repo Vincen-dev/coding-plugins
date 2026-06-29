@@ -1,5 +1,11 @@
 # Release Notes
 
+## 0.6.26 - 2026-06-29
+
+- 回填 marketplace 规格中已完成验收项的追踪状态和验证证据。
+- 更新 artifact-index 技术设计，明确文档索引职责已迁移到 `scripts/docs_index.py`。
+- 清理过期的 `preflight.py` 膨胀风险描述，改为固定 docs index 模块边界。
+
 ## 0.6.25 - 2026-06-29
 
 - 拆出 `scripts/docs_index.py`，统一承接 feature-first 文档索引生成、写入和一致性校验。
