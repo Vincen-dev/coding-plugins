@@ -6,7 +6,7 @@ status: approved
 area: plugin
 capability: session-start-hook
 created: 2026-06-26
-updated: 2026-06-26
+updated: 2026-06-29
 tags:
   - codex
   - hook
@@ -54,6 +54,7 @@ related_specs:
 | REQ-004 | 必须 | `hooks/session-start-codex` 必须输出 JSON，包含 `hookSpecificOutput.hookEventName=SessionStart` 和非空 `additionalContext`。 | `tests/hooks/test-session-start.sh`。 |
 | REQ-005 | 必须 | 注入上下文必须明确要求优先使用 `coding-plugins:using-coding-plugins`，并概述 SDD -> plan -> TDD -> verification -> commit/finish 链路。 | `tests/hooks/test-session-start.sh`。 |
 | REQ-006 | 必须 | preflight 必须运行 hook 测试，避免发布时遗漏启动链路。 | 单元测试 `test_build_commands_include_core_validation_steps` 和 `python3 scripts/preflight.py`。 |
+| REQ-007 | 必须 | 注入上下文中的 TDD Evidence 路径必须使用 feature-first 路径 `docs/coding-plugins/features/{area}/{capability}/evidence/tdd-evidence.md`。 | `tests/hooks/test-session-start.sh`。 |
 
 ## 错误和边界情况
 
@@ -62,6 +63,7 @@ related_specs:
 | ERR-001 | hook wrapper 收到未知命令。 | 以非零状态退出，并输出 unknown hook command。 | `tests/hooks/test-session-start.sh`。 |
 | ERR-002 | hook 脚本在最小环境中运行。 | 仍输出合法 JSON，不依赖 Codex 特定环境变量。 | `tests/hooks/test-session-start.sh`。 |
 | ERR-003 | hook 输出上下文中出现旧入口名称。 | 测试失败。 | `tests/hooks/test-session-start.sh`。 |
+| ERR-004 | hook 输出上下文中出现旧 TDD Evidence 路径。 | 测试失败并指出旧路径。 | `tests/hooks/test-session-start.sh`。 |
 
 ## 验收标准
 
@@ -81,9 +83,11 @@ related_specs:
 | REQ-004 | hook 测试 | `bash tests/hooks/test-session-start.sh` | Task 1 | 已覆盖 |
 | REQ-005 | hook 测试 | `bash tests/hooks/test-session-start.sh` | Task 1 | 已覆盖 |
 | REQ-006 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 2 | 已覆盖 |
+| REQ-007 | hook 测试 | `bash tests/hooks/test-session-start.sh` | Task 2 | 已覆盖 |
 | ERR-001 | hook 测试 | `bash tests/hooks/test-session-start.sh` | Task 1 | 已覆盖 |
 | ERR-002 | hook 测试 | `bash tests/hooks/test-session-start.sh` | Task 1 | 已覆盖 |
 | ERR-003 | hook 测试 | `bash tests/hooks/test-session-start.sh` | Task 1 | 已覆盖 |
+| ERR-004 | hook 测试 | `bash tests/hooks/test-session-start.sh` | Task 2 | 已覆盖 |
 | AC-001 | 文件检查 | `.codex-plugin/plugin.json` | Task 1 | 已覆盖 |
 | AC-002 | hook 测试 | `bash tests/hooks/test-session-start.sh` | Task 1 | 已覆盖 |
 | AC-003 | 命令验证 | `python3 scripts/preflight.py` | Task 3 | 已覆盖 |

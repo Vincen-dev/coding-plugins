@@ -87,6 +87,7 @@ required = (
     "coding-plugins:using-coding-plugins",
     "SDD",
     "TDD",
+    "docs/coding-plugins/features/<area>/<capability>/evidence/tdd-evidence.md",
     "verification-before-completion",
     "git-commit",
     "finishing-a-development-branch",
@@ -94,7 +95,11 @@ required = (
 for text in required:
     if text not in context:
         raise SystemExit(f"additionalContext missing {text}")
-for forbidden in ("using-" + "superpowers", "brain" + "storming"):
+for forbidden in (
+    "using-" + "superpowers",
+    "brain" + "storming",
+    "docs/coding-plugins/evidence/<area>/<capability>/tdd-evidence.md",
+):
     if forbidden in context:
         raise SystemExit(f"additionalContext contains removed entry {forbidden}")
 PY

@@ -21,6 +21,7 @@ TEXT_SUFFIXES = {
     ".py",
     ".sh",
     ".svg",
+    ".cmd",
     ".toml",
     ".txt",
     ".yaml",
@@ -31,6 +32,26 @@ REMOVED_ENTRY_PATTERNS = (
     "using-" + "superpowers",
     "/coding-plugins:" + "using-" + "superpowers",
     "skills/" + "using-" + "superpowers",
+    "docs/coding-plugins/specs/",
+    "docs/coding-plugins/technical/",
+    "docs/coding-plugins/plans/",
+    "docs/coding-plugins/evidence/",
+    "~/.config/" + "superpowers",
+    "super" + "powers",
+    "brain" + "storming",
+)
+RESIDUE_SCAN_ROOTS = (
+    "README.md",
+    "docs",
+    "hooks",
+    "skills",
+    ".codex-plugin",
+    ".claude-plugin",
+    ".agents",
+    ".github",
+)
+RESIDUE_SCAN_EXCLUDED_PREFIXES = (
+    "docs/coding-plugins/features/",
 )
 SDD_TEMPLATE_ENGLISH_STRUCTURE = (
     "# Acceptance Criteria",
@@ -161,16 +182,38 @@ def iter_text_files(root: Path) -> list[Path]:
 
 def check_removed_entry_references(root: Path) -> None:
     offenders: list[str] = []
-    for path in iter_text_files(root):
+    for path in iter_residue_scan_files(root):
         text = path.read_text(encoding="utf-8", errors="ignore")
         for pattern in REMOVED_ENTRY_PATTERNS:
             if pattern in text:
-                offenders.append(str(path.relative_to(root)))
+                offenders.append(f"{path.relative_to(root)} contains {pattern!r}")
                 break
 
     if offenders:
         joined = ", ".join(offenders)
-        raise PreflightError(f"Removed entry reference found in: {joined}.")
+        raise PreflightError(f"Removed residue reference found in: {joined}.")
+
+
+def iter_residue_scan_files(root: Path) -> list[Path]:
+    files: list[Path] = []
+    for scan_root in RESIDUE_SCAN_ROOTS:
+        path = root / scan_root
+        if not path.exists():
+            continue
+        candidates = [path] if path.is_file() else sorted(path.rglob("*"))
+        for candidate in candidates:
+            if any(part in SKIPPED_DIRS for part in candidate.parts):
+                continue
+            if not candidate.is_file():
+                continue
+            relative = str(candidate.relative_to(root))
+            is_hook_script = relative.startswith("hooks/") and candidate.suffix == ""
+            if candidate.suffix not in TEXT_SUFFIXES and not is_hook_script:
+                continue
+            if any(relative.startswith(prefix) for prefix in RESIDUE_SCAN_EXCLUDED_PREFIXES):
+                continue
+            files.append(candidate)
+    return sorted(files)
 
 
 def check_required_plugin_files(root: Path) -> None:

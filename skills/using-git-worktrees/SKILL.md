@@ -56,8 +56,7 @@ git rev-parse --show-superproject-working-tree 2>/dev/null
 
 1. 用户或指令中声明的 worktree 目录。
 2. 项目本地 `.worktrees/`，其次 `worktrees/`。
-3. 兼容旧路径 `~/.config/superpowers/worktrees/<project>`。
-4. 默认项目根目录下 `.worktrees/`。
+3. 默认项目根目录下 `.worktrees/`。
 
 项目本地目录必须确认被忽略：
 

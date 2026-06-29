@@ -12,3 +12,16 @@
 - **GREEN command:** `python3 -m unittest scripts/test_preflight.py` 和 `bash tests/hooks/test-session-start.sh`
 - **REFACTOR command:** `bash tests/hooks/test-session-start.sh`
 - **Final verification:** `python3 scripts/preflight.py` PASS，包含 hook 测试、严格规格校验和严格 TDD Evidence 校验；`codex plugin add coding-plugins@personal` PASS，安装到本机 `0.6.14` 缓存；`claude plugin validate /Users/vincen/workspace/plugins/coding-plugins --strict` PASS；`git diff --check` PASS。
+
+## Task 2: 修正 SessionStart 注入的 Evidence 路径
+
+### TDD Evidence
+
+- **Spec/Bug/AC:** REQ-007 / ERR-004
+- **RED test:** `tests/hooks/test-session-start.sh`
+- **RED command:** `bash tests/hooks/test-session-start.sh`
+- **RED failure:** hook 测试失败于 `additionalContext missing docs/coding-plugins/features/{area}/{capability}/evidence/tdd-evidence.md`，说明 SessionStart 注入内容仍提示旧 TDD Evidence 路径。
+- **GREEN change:** 将 `hooks/session-start-codex` 中的 TDD Evidence 注入路径改为 feature-first 路径，并在 hook 测试中禁止旧路径回归。
+- **GREEN command:** `bash tests/hooks/test-session-start.sh` PASS
+- **REFACTOR command:** `bash tests/hooks/test-session-start.sh` PASS
+- **Final verification:** `python3 scripts/preflight.py --write-index` PASS，包含 hook 测试、严格规格校验和严格 TDD Evidence 校验；`python3 scripts/preflight.py` PASS；`git diff --check` PASS；`claude plugin validate /Users/vincen/workspace/plugins/coding-plugins --strict` PASS。

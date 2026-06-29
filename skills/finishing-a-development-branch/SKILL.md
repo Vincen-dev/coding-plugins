@@ -146,7 +146,7 @@ Type 'discard' to confirm.
 
 只对选项 1 和 4 执行。选项 2 和 3 永远保留 worktree。
 
-普通仓库无需清理。若 worktree 路径位于 `.worktrees/`、`worktrees/` 或 `~/.config/superpowers/worktrees/` 下，视为本流程创建并负责清理：
+普通仓库无需清理。若 worktree 路径位于项目本地 `.worktrees/` 或 `worktrees/` 下，视为本流程创建并负责清理：
 
 ```bash
 git worktree remove "$WORKTREE_PATH"

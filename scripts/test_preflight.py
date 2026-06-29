@@ -57,8 +57,44 @@ class PreflightTests(unittest.TestCase):
             (root / ".git" / "packed-refs").write_text(removed_entry, encoding="utf-8")
             (root / "docs" / "usage.md").write_text(f"call {removed_entry}", encoding="utf-8")
 
-            with self.assertRaisesRegex(preflight.PreflightError, "Removed entry reference"):
+            with self.assertRaisesRegex(preflight.PreflightError, "Removed residue reference"):
                 preflight.check_removed_entry_references(root)
+
+    def test_legacy_tdd_evidence_path_references_are_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            hooks = root / "hooks"
+            hooks.mkdir()
+            (hooks / "session-start-codex").write_text(
+                "write evidence to docs/coding-plugins/evidence/<area>/<capability>/tdd-evidence.md\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Removed residue reference"):
+                preflight.check_removed_entry_references(root)
+
+    def test_superpowers_references_are_rejected_in_active_guidance(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            skill = root / "skills" / "using-git-worktrees"
+            skill.mkdir(parents=True)
+            (skill / "SKILL.md").write_text(
+                "fallback to ~/.config/superpowers/worktrees/project\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Removed residue reference"):
+                preflight.check_removed_entry_references(root)
+
+    def test_removed_residue_scan_allows_release_history(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "RELEASE-NOTES.md").write_text(
+                "old docs/coding-plugins/evidence/<area>/<capability>/tdd-evidence.md and superpowers history\n",
+                encoding="utf-8",
+            )
+
+            preflight.check_removed_entry_references(root)
 
     def test_collect_spec_files_excludes_index(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

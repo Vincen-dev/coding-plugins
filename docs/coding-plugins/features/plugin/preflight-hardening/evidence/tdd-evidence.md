@@ -12,3 +12,16 @@
 - **GREEN command:** `python3 -m unittest scripts/test_preflight.py` PASS
 - **REFACTOR command:** `python3 -m unittest scripts/test_preflight.py` PASS
 - **Final verification:** `python3 scripts/preflight.py` PASS，包含 skill metadata、manifest 资源路径、文档路径 metadata、Evidence Spec ID 和关键文档路径同步检查。
+
+## Task 2: 拦截旧路径和旧品牌残留
+
+### TDD Evidence
+
+- **Spec/Bug/AC:** REQ-006 / REQ-007 / ERR-004
+- **RED test:** `scripts/test_preflight.py::PreflightTests.test_legacy_tdd_evidence_path_references_are_rejected`、`scripts/test_preflight.py::PreflightTests.test_superpowers_references_are_rejected_in_active_guidance` 和 `scripts/test_preflight.py::PreflightTests.test_removed_residue_scan_allows_release_history`
+- **RED command:** `python3 -m unittest scripts/test_preflight.py`
+- **RED failure:** 单测失败于 `PreflightError not raised`，说明 preflight 尚未拒绝活跃 hook 中的旧 TDD Evidence 路径，也未拒绝活跃 skill 中的 Superpowers worktree 残留。
+- **GREEN change:** 扩展 `check_removed_entry_references()`，只扫描活跃说明文件、hooks、skills、manifest 和 CI 配置，拒绝旧 `docs/coding-plugins/evidence/`、旧 docs roots、旧入口、`brainstorming` 和 Superpowers 残留；保留 release notes 与 feature specs/evidence 中的历史记录能力。
+- **GREEN command:** `python3 -m unittest scripts/test_preflight.py` PASS，44 个测试通过。
+- **REFACTOR command:** `python3 -m unittest scripts/test_preflight.py` PASS
+- **Final verification:** `python3 scripts/preflight.py --write-index` PASS，包含 44 个 preflight 单测、hook 测试、严格规格校验和严格 TDD Evidence 校验；`python3 scripts/preflight.py` PASS；`git diff --check` PASS；`claude plugin validate /Users/vincen/workspace/plugins/coding-plugins --strict` PASS。
