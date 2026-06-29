@@ -320,6 +320,7 @@ flowchart TD
   I --> J["git tag -a v<version>"]
   J --> K["git push origin v<version>"]
   K --> L["GitHub Actions 创建 GitHub Release"]
+  L --> M["scripts/remote_audit.py 手动审计远程状态"]
 ```
 
 ### 并行任务
@@ -333,6 +334,34 @@ flowchart TD
   E --> F["主代理审阅结果和冲突"]
   F --> G["运行整体验证"]
 ```
+
+## 场景链路契约
+
+本节是行为级测试的机器可读契约，记录不同场景下必须保持的技能顺序。修改入口路由、场景流程或技能命名时，需要同步更新这里和 `tests/behavior/test_routing.py`。
+
+### 新需求
+
+`spec-driven-development` -> `writing-technical-design` -> `writing-plans` -> `using-git-worktrees` -> `test-driven-development` -> `verification-before-completion`
+
+### Bug 修复
+
+`systematic-debugging` -> `test-driven-development` -> `verification-before-completion`
+
+### 直接提交
+
+`git-commit` -> 检查 diff -> `Authored-by` -> 验证最新提交
+
+### 完成收尾
+
+`verification-before-completion` -> `finishing-a-development-branch` -> `git-commit`
+
+### 插件维护
+
+`writing-skills` -> `quick_validate` -> `verification-before-completion`
+
+### 并行任务
+
+`dispatching-parallel-agents` -> 为每个任务选择对应技能 -> 运行整体验证
 
 ## Skill 职责
 

@@ -14,6 +14,16 @@ Claude Code 可直接执行本插件中的 Claude 工具语义。技能文本中
 | 插件重载 | 修改插件组件后运行 `/reload-plugins`。 |
 | 插件校验 | 运行 `claude plugin validate <plugin-path> --strict`。 |
 
+## 会话启动提示
+
+Claude Code 没有 Codex SessionStart hook 的等价自动注入入口。新会话开始时，优先发送：
+
+```text
+/coding-plugins:using-coding-plugins
+```
+
+随后再描述具体任务，让入口技能先完成任务类型判断和技能选择。
+
 ## 显式技能请求
 
 Claude Code 中，本插件技能使用 `/coding-plugins:git-commit` 这类具体技能名命名空间。需要显式指定流程时，可以直接请求：

@@ -18,3 +18,7 @@
 | 实现计划 | - |
 | TDD Evidence | `evidence/tdd-evidence.md` |
 
+## 轻量例外
+
+- **Reason:** 该 feature 范围只包含本地行为测试补充，已由规格和 TDD Evidence 明确测试文件、失败原因和最终验证；单独 technical/plan 会重复 evidence 中的任务。
+- **Verification:** python3 scripts/preflight.py

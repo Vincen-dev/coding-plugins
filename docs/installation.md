@@ -136,3 +136,9 @@ git push origin v<version>
 ```
 
 推送 `v*` tag 后，`.github/workflows/release.yml` 会运行 preflight，校验 tag 与 manifest 版本一致，并调用 `gh release create` 使用当前版本 release notes 创建 GitHub Release。
+
+发布后手动审计远程状态：
+
+```bash
+python3 scripts/remote_audit.py --owner Vincen-dev --repo coding-plugins --tag v<version> --expected-pusher Vincen-dev
+```

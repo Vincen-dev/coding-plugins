@@ -169,6 +169,47 @@ class PreflightTests(unittest.TestCase):
             with self.assertRaisesRegex(preflight.PreflightError, "Feature root is missing README"):
                 preflight.check_feature_readmes(root)
 
+    def test_feature_document_chain_requires_plan_or_lightweight_exception(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature_dir = root / "docs" / "coding-plugins" / "features" / "plugin" / "routing"
+            (feature_dir / "specs").mkdir(parents=True)
+            (feature_dir / "evidence").mkdir()
+            (feature_dir / "README.md").write_text(
+                "# Routing\n\n"
+                "## 文档信息\n\n"
+                "| 字段 | 内容 |\n"
+                "| --- | --- |\n"
+                "| 状态 | 已批准 |\n"
+                "| 领域 | plugin |\n"
+                "| 能力 | routing |\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "specs" / "feature.md").write_text(
+                "---\nstatus: approved\narea: plugin\ncapability: routing\n---\n# Feature\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "evidence" / "tdd-evidence.md").write_text("# Evidence\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Feature document chain is incomplete"):
+                preflight.check_feature_document_chain_closure(root)
+
+            (feature_dir / "README.md").write_text(
+                "# Routing\n\n"
+                "## 文档信息\n\n"
+                "| 字段 | 内容 |\n"
+                "| --- | --- |\n"
+                "| 状态 | 已批准 |\n"
+                "| 领域 | plugin |\n"
+                "| 能力 | routing |\n\n"
+                "## 轻量例外\n\n"
+                "- **Reason:** 已由规格和 TDD Evidence 完成，技术设计和计划只会重复既有证据。\n"
+                "- **Verification:** python3 scripts/preflight.py\n",
+                encoding="utf-8",
+            )
+
+            preflight.check_feature_document_chain_closure(root)
+
     def test_legacy_docs_roots_are_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -193,6 +234,7 @@ class PreflightTests(unittest.TestCase):
         self.assertIn("test_prepare_release.py", command_text)
         self.assertIn("scripts/test_docs_index.py", command_text)
         self.assertIn("scripts/test_manifest_checks.py", command_text)
+        self.assertIn("scripts/test_remote_audit.py", command_text)
         self.assertIn("tests.behavior.test_routing", command_text)
         self.assertIn("tests/hooks/test-session-start.sh", command_text)
         self.assertIn("validate_spec.py", command_text)

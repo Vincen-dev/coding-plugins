@@ -106,6 +106,7 @@ TECHNICAL_DESIGN_PATH_RE = re.compile(
 )
 PLAN_METADATA_REQUIRED_FIELDS = ("title", "status", "area", "capability", "created", "updated")
 CHINESE_DOCUMENT_INFO_REQUIRED_TERMS = ("## 文档信息", "状态", "领域", "能力")
+LIGHTWEIGHT_EXCEPTION_REQUIRED_TERMS = ("## 轻量例外", "Reason", "Verification")
 DOC_SYNC_REFERENCES = (
     "docs/coding-plugins/INDEX.md",
     "docs/coding-plugins/features",
@@ -295,6 +296,43 @@ def check_feature_first_document_layout(root: Path) -> None:
     if offenders:
         raise PreflightError(
             "Flat feature root document is no longer active; use technical/ or plans/: "
+            + ", ".join(offenders)
+            + "."
+        )
+
+
+def feature_has_approved_spec(feature_root: Path) -> bool:
+    for spec_file in docs_index.feature_spec_files(feature_root):
+        metadata = parse_frontmatter(spec_file.read_text(encoding="utf-8"))
+        if metadata.get("status") == "approved":
+            return True
+    return False
+
+
+def feature_has_lightweight_exception(feature_root: Path) -> bool:
+    readme = feature_root / "README.md"
+    if not readme.exists():
+        return False
+    text = readme.read_text(encoding="utf-8")
+    return all(term in text for term in LIGHTWEIGHT_EXCEPTION_REQUIRED_TERMS)
+
+
+def check_feature_document_chain_closure(root: Path) -> None:
+    offenders: list[str] = []
+    for feature_root in collect_feature_roots(root):
+        if not feature_has_approved_spec(feature_root):
+            continue
+        has_technical = bool(docs_index.feature_technical_design_files(feature_root))
+        has_plan = bool(docs_index.feature_plan_files(feature_root))
+        if has_technical and has_plan:
+            continue
+        if feature_has_lightweight_exception(feature_root):
+            continue
+        offenders.append(str(feature_root.relative_to(root)))
+
+    if offenders:
+        raise PreflightError(
+            "Feature document chain is incomplete; add technical/plan or README lightweight exception: "
             + ", ".join(offenders)
             + "."
         )
@@ -536,6 +574,7 @@ def build_validation_commands(
         [python, "-m", "unittest", "scripts/test_preflight.py"],
         [python, "-m", "unittest", "scripts/test_docs_index.py"],
         [python, "-m", "unittest", "scripts/test_manifest_checks.py"],
+        [python, "-m", "unittest", "scripts/test_remote_audit.py"],
         [python, "-m", "unittest", "scripts/test_bump_version.py"],
         [python, "-m", "unittest", "scripts/test_prepare_release.py"],
         [python, "-m", "unittest", "tests.behavior.test_routing"],
@@ -583,6 +622,7 @@ def run_static_checks(root: Path) -> None:
     check_legacy_docs_roots(root)
     check_feature_readmes(root)
     check_feature_first_document_layout(root)
+    check_feature_document_chain_closure(root)
     check_document_path_metadata(root)
     check_plan_metadata(root)
     check_chinese_document_info_sections(root)

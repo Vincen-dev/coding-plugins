@@ -12,6 +12,7 @@ from pathlib import Path
 
 
 VALIDATOR = Path(__file__).with_name("validate_tdd_evidence.py")
+FIXTURES = Path(__file__).with_name("fixtures")
 
 
 GOOD_EVIDENCE = """# Task Report
@@ -152,6 +153,17 @@ class ValidateTddEvidenceTests(unittest.TestCase):
         self.assertIn("does not look traceable", result.stdout)
         self.assertNotEqual(strict_result.returncode, 0)
         self.assertIn("does not look traceable", strict_result.stdout)
+
+    def test_fixture_valid_tdd_evidence_passes_strict_validation(self) -> None:
+        result = self.run_validator("--strict", str(FIXTURES / "valid-tdd-evidence.md"))
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_fixture_invalid_after_the_fact_evidence_fails_validation(self) -> None:
+        result = self.run_validator("--strict", str(FIXTURES / "invalid-after-the-fact-evidence.md"))
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("after-the-fact", result.stdout)
 
 
 if __name__ == "__main__":

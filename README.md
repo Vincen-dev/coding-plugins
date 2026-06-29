@@ -140,6 +140,12 @@ git push origin v<version>
 
 `.github/workflows/release.yml` 会在 `v*` tag push 后运行 preflight、校验 tag 与 manifest 版本一致，并用当前版本 release notes 创建 GitHub Release。
 
+发布后可手动审计远程 tag、GitHub Release 和直接 push 权限：
+
+```bash
+python3 scripts/remote_audit.py --owner Vincen-dev --repo coding-plugins --tag v<version> --expected-pusher Vincen-dev
+```
+
 ### Codex
 
 Codex 侧通过 `.codex-plugin/plugin.json` 识别插件，并使用 `skills/*/agents/openai.yaml` 提供展示元数据。插件结构校验：

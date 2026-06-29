@@ -12,6 +12,7 @@ from pathlib import Path
 
 
 VALIDATOR = Path(__file__).with_name("validate_spec.py")
+FIXTURES = Path(__file__).with_name("fixtures")
 
 
 GOOD_SPEC = """# Export Config Specification
@@ -161,6 +162,17 @@ class ValidateSpecTests(unittest.TestCase):
 
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("SHOULD requirements missing from Traceability Matrix", result.stdout)
+
+    def test_fixture_valid_feature_spec_passes_strict_validation(self) -> None:
+        result = self.run_validator("--strict", str(FIXTURES / "valid-feature-spec.md"))
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_fixture_invalid_placeholder_spec_fails_validation(self) -> None:
+        result = self.run_validator("--strict", str(FIXTURES / "invalid-placeholder-spec.md"))
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("unresolved placeholder", result.stdout)
 
 
 if __name__ == "__main__":

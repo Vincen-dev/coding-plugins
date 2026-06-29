@@ -1,5 +1,12 @@
 # Release Notes
 
+## 0.6.28 - 2026-06-29
+
+- 增强行为级测试，固定新需求、Bug、提交、收尾、插件维护和并行任务的场景链路顺序。
+- 增加 approved 轻量 feature 的 README 例外契约，并由 preflight 校验。
+- 新增 `scripts/remote_audit.py` 手动审计 GitHub Release 和直接 push 协作者权限。
+- 补充 Claude Code 会话启动提示，以及 SDD/TDD validator 的真实 fixture 回归样例。
+
 ## 0.6.27 - 2026-06-29
 
 - 拆出 `scripts/manifest_checks.py`，统一承接 manifest 文件、版本、Codex hook 和资源路径校验。

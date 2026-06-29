@@ -48,6 +48,18 @@ claude --plugin-dir ./coding-plugins
 
 之后 Claude 会根据技能 description 自动选择相关技能；也可以手动调用具体技能。
 
+## 会话启动提示
+
+Claude Code 当前没有 Codex SessionStart hook 的等价自动注入入口。为了让新会话稳定进入同一条工作链路，把下面提示作为 Claude Code 会话开始消息：
+
+```text
+/coding-plugins:using-coding-plugins
+
+请先读取并遵守 Coding Plugins 入口规则，再判断我的请求属于只读分析、规格驱动开发、技术设计、实现计划、TDD、调试、评审、验证、提交或分支收尾中的哪一种。
+```
+
+如果会话中执行过 `/reload-plugins`，再次发送上面的启动提示，确保 Claude 使用最新插件内容。
+
 ## 工具映射
 
 技能中出现的 Claude 工具名可以直接按 Claude Code 能力执行。只有在技能文本明确提到 Codex、Copilot 或 Gemini 专用工具时，才需要转换到 Claude Code 等价能力。
