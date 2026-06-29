@@ -23,13 +23,22 @@ related_evidence:
 | 规格 | `docs/coding-plugins/features/plugin/workflow-hardening/specs/maintenance.md` |
 | TDD Evidence | `docs/coding-plugins/features/plugin/workflow-hardening/evidence/tdd-evidence.md` |
 
-## Design Summary
+## 设计摘要
 
 本轮硬化不改变插件主流程，而是增加可验证的护栏。行为测试从“包含技能名”扩展到场景顺序契约；preflight 增加 approved feature 的轻量例外校验；远程 GitHub 状态通过显式 `scripts/remote_audit.py` 手动审计；Claude Code 增加启动入口提示；SDD/TDD validator 用真实 fixture 样例防止误报和漏报。
 
-## Key Decisions
+## 规格缺口审查
 
-| Decision | Rationale | Tradeoff |
+| 检查项 | 结论 |
+| --- | --- |
+| 未覆盖需求 | 无。 |
+| 验收标准不清 | 无。 |
+| 新增外部行为 | 无。 |
+| 处理状态 | 通过，未发现需要回写 spec 的缺口。 |
+
+## 关键决策
+
+| 决策 | 原因 | 取舍 |
 | --- | --- | --- |
 | 行为测试使用文档和入口文本的场景顺序断言 | 插件行为主要由技能文档驱动，没有运行时路由函数 | 仍不能替代真实代理会话测试 |
 | 轻量 feature 使用 README 例外说明而不是强制补全技术计划 | 避免把历史小型 feature 膨胀成重复文档 | 需要 preflight 校验例外格式 |
@@ -37,9 +46,9 @@ related_evidence:
 | Claude 使用可复制启动提示 | Claude 当前没有 Codex SessionStart 等价 hook | 仍依赖用户在会话开始时使用提示 |
 | validator fixture 放在各 skill 的 `fixtures/` 目录 | 样例和校验器同目录维护，便于扩展 | 增加少量测试文件 |
 
-## Affected Components
+## 影响组件
 
-| Component | Change | Related Spec IDs |
+| 组件 | 变更 | 相关 Spec ID |
 | --- | --- | --- |
 | `tests/behavior/test_routing.py` | 增加场景顺序和 Claude 启动提示测试 | NFR-001, NFR-004, ERR-001, ERR-004 |
 | `docs/workflow-chain.md` | 增加场景链路说明，供行为测试校验 | NFR-001 |
@@ -49,7 +58,7 @@ related_evidence:
 | `scripts/test_remote_audit.py` | 覆盖远程审计的纯函数和命令计划 | NFR-003, ERR-003 |
 | `skills/*/fixtures/` | 增加 validator 好/坏样例 | NFR-005, ERR-005 |
 
-## Data Flow / Control Flow
+## 数据流 / 控制流
 
 ```mermaid
 flowchart TD
@@ -61,7 +70,7 @@ flowchart TD
   F --> G["GitHub tag/release/协作者权限摘要"]
 ```
 
-## Interfaces and Contracts
+## 接口和契约
 
 `scripts/remote_audit.py` CLI：
 
@@ -84,11 +93,11 @@ Claude Code 启动提示契约：
 /coding-plugins:using-coding-plugins
 ```
 
-## Migration / Compatibility
+## 迁移 / 兼容性
 
 默认 preflight 仍只依赖本地文件和标准库，不访问网络。历史 approved feature 可以选择补 technical/plan，也可以在 README 中声明轻量例外。Codex 和 Claude 安装路径保持不变。
 
-## Test Strategy
+## 测试策略
 
 | Spec ID | Test Strategy |
 | --- | --- |
@@ -100,9 +109,9 @@ Claude Code 启动提示契约：
 
 TDD Evidence 记录在 `docs/coding-plugins/features/plugin/workflow-hardening/evidence/tdd-evidence.md`。
 
-## Risks and Mitigations
+## 风险和缓解
 
-| Risk | Mitigation |
+| 风险 | 缓解方案 |
 | --- | --- |
 | 行为测试仍不能证明真实 LLM 路由 | 使用场景顺序契约覆盖文档和入口，后续可追加真实会话 transcript 测试 |
 | 轻量例外被滥用 | preflight 要求 README 明确 Reason 和 Verification |

@@ -4,7 +4,7 @@ status: approved
 area: plugin
 capability: technical-design-artifacts
 created: 2026-06-26
-updated: 2026-06-26
+updated: 2026-06-29
 related_specs:
   - docs/coding-plugins/features/plugin/technical-design-artifacts/specs/feature.md
 related_technical:
@@ -53,6 +53,9 @@ related_evidence:
 | REQ-005 | `python3 -m unittest scripts/test_preflight.py` | `test_plan_technical_design_source_check_rejects_missing_source` | `docs/coding-plugins/features/plugin/technical-design-artifacts/evidence/tdd-evidence.md` / RED-GREEN-Final verification | Task 2 |
 | REQ-006 | `python3 -m unittest scripts/test_preflight.py` | technical preflight unit tests | `docs/coding-plugins/features/plugin/technical-design-artifacts/evidence/tdd-evidence.md` / RED-GREEN-Final verification | Task 1 |
 | REQ-007 | `python3 -m unittest tests.behavior.test_routing` | `test_claude_reference_documents_explicit_namespace_for_each_skill` | `docs/coding-plugins/features/plugin/technical-design-artifacts/evidence/tdd-evidence.md` / RED-GREEN-Final verification | Task 2 |
+| REQ-008 | `python3 -m unittest scripts/test_preflight.py` | `test_technical_design_gap_review_requires_section`, `test_technical_design_gap_review_rejects_unresolved_gap` | `docs/coding-plugins/features/plugin/technical-design-artifacts/evidence/tdd-evidence.md` / Task 4 | Task 4 |
+| REQ-009 | `python3 -m unittest scripts/test_preflight.py` | `test_technical_template_check_rejects_english_headings` | `docs/coding-plugins/features/plugin/technical-design-artifacts/evidence/tdd-evidence.md` / Task 4 | Task 4 |
+| REQ-010 | `python3 -m unittest scripts/test_preflight.py` | `test_technical_design_gap_review_requires_section` plus full preflight | `docs/coding-plugins/features/plugin/technical-design-artifacts/evidence/tdd-evidence.md` / Task 4 | Task 4 |
 
 ## Task 1: Technical document and preflight support
 
@@ -127,4 +130,31 @@ Write `docs/coding-plugins/features/plugin/technical-design-artifacts/evidence/t
 - [x] **Step 3: Run final verification**
 
 Run: `python3 scripts/preflight.py`
+Expected: PASS.
+
+## Task 4: Technical gap gate and Chinese template
+
+**Spec IDs:** REQ-008, REQ-009, REQ-010, ERR-006, ERR-007, ERR-008, AC-004
+
+**Files:**
+- Modify: `skills/writing-technical-design/SKILL.md`
+- Modify: `skills/writing-technical-design/templates/technical-design.md`
+- Modify: `scripts/preflight.py`
+- Modify: `scripts/test_preflight.py`
+- Modify: `docs/coding-plugins/features/plugin/*/technical/technical-design.md`
+- Modify: `docs/workflow-chain.md`
+- Modify: `docs/coding-plugins/features/plugin/technical-design-artifacts/evidence/tdd-evidence.md`
+
+- [x] **Step 1: Write failing tests from Spec IDs**
+
+Run: `python3 -m unittest scripts/test_preflight.py`
+Expected: FAIL because technical template Chinese heading checks and technical spec gap review checks do not exist.
+
+- [x] **Step 2: Write minimal implementation after RED**
+
+Add preflight checks for Chinese technical template structure and `## 规格缺口审查`; update the technical design skill, template and existing technical docs.
+
+- [x] **Step 3: Run test to verify it passes**
+
+Run: `python3 -m unittest scripts/test_preflight.py`
 Expected: PASS.

@@ -17,6 +17,7 @@ related_code:
   - skills/writing-technical-design/templates/technical-design.md
   - skills/writing-plans/SKILL.md
   - scripts/preflight.py
+  - scripts/test_preflight.py
   - docs/coding-plugins/INDEX.md
 related_specs: []
 related_technical:
@@ -54,6 +55,9 @@ related_technical:
 | REQ-005 | 必须 | `writing-plans` 必须引用 `Technical Design Source`，计划只保留方案快照和任务拆分。 | 单元测试 `test_plan_technical_design_source_check_rejects_missing_source`。 |
 | REQ-006 | 必须 | preflight 必须校验技术设计路径、metadata、Spec ID 和引用路径。 | 单元测试 `scripts/test_preflight.py`。 |
 | REQ-007 | 必须 | Claude Code 显式技能请求清单必须包含 `/coding-plugins:writing-technical-design`。 | 行为测试 `test_claude_reference_documents_explicit_namespace_for_each_skill`。 |
+| REQ-008 | 必须 | `writing-technical-design` 必须声明规格缺口门禁：发现需求、验收、外部行为、错误边界或兼容要求不清时，停止技术设计并回到 spec 更新。 | 单元测试 `test_technical_design_gap_review_requires_section`、`test_technical_design_gap_review_rejects_unresolved_gap`，并由 `python3 scripts/preflight.py` 覆盖真实文档。 |
+| REQ-009 | 必须 | technical 模板的正文标题和表头必须使用中文，避免新技术设计继续生成英文章节结构。 | 单元测试 `test_technical_template_check_rejects_english_headings`。 |
+| REQ-010 | 必须 | 每份真实 technical 文档必须包含 `## 规格缺口审查`，并明确未覆盖需求、验收标准、外部行为和处理状态。 | 单元测试 `test_technical_design_gap_review_requires_section` 和 `python3 scripts/preflight.py`。 |
 
 ## 错误和边界情况
 
@@ -64,6 +68,9 @@ related_technical:
 | ERR-003 | 计划没有 `Technical Design Source` 或路径不存在。 | preflight 失败并指出计划缺少技术设计来源。 | 单元测试。 |
 | ERR-004 | 技术设计文档引用了对应规格中不存在的 Spec ID。 | preflight 失败并指出未知 Spec ID。 | 单元测试。 |
 | ERR-005 | 技术设计文档存在但总索引未记录。 | preflight 失败并指出索引缺失路径。 | 单元测试。 |
+| ERR-006 | 技术设计文档缺少 `## 规格缺口审查` 或审查字段不完整。 | preflight 失败并指出缺失章节或字段。 | 单元测试。 |
+| ERR-007 | 技术设计文档的规格缺口审查仍包含未处理、待处理、需澄清、不清楚或待确认。 | preflight 失败，阻止进入计划和实现。 | 单元测试。 |
+| ERR-008 | technical 模板重新出现英文章节标题或英文表头。 | preflight 失败并指出模板残留的英文结构。 | 单元测试。 |
 
 ## 验收标准
 
@@ -72,6 +79,7 @@ related_technical:
 | AC-001 | 创建技术设计链路 | 已有批准规格 | 创建 `technical/technical-design.md` 并在规格和计划中引用 | preflight 通过，索引能检索到 Spec、Technical、Plan、Evidence。 |
 | AC-002 | 使用新技能 | 用户要求根据规格写技术方案 | 路由到 `writing-technical-design` | 生成独立技术设计文档，而不是把完整技术方案写入计划。 |
 | AC-003 | 发布前检查 | 仓库包含 technical 文档和计划 | 运行 `python3 scripts/preflight.py` | 技术设计、规格、计划和 Evidence 校验全部通过。 |
+| AC-004 | 技术设计发现规格缺口 | 编写 technical 时发现需求或验收不清 | 停止技术设计并回到 `spec-driven-development` 更新 spec | technical 不承载新需求，preflight 阻止未处理缺口。 |
 
 ## 追踪矩阵
 
@@ -84,11 +92,18 @@ related_technical:
 | REQ-005 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 2 | 已覆盖 |
 | REQ-006 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
 | REQ-007 | 行为测试 | `python3 -m unittest tests.behavior.test_routing` | Task 2 | 已覆盖 |
+| REQ-008 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 4 | 已覆盖 |
+| REQ-009 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 4 | 已覆盖 |
+| REQ-010 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 4 | 已覆盖 |
 | ERR-001 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
 | ERR-002 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
 | ERR-003 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 2 | 已覆盖 |
 | ERR-004 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
 | ERR-005 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
+| ERR-006 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 4 | 已覆盖 |
+| ERR-007 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 4 | 已覆盖 |
+| ERR-008 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 4 | 已覆盖 |
 | AC-001 | 命令验证 | `python3 scripts/preflight.py` | Task 3 | 已覆盖 |
 | AC-002 | 行为测试 | `python3 -m unittest tests.behavior.test_routing` | Task 2 | 已覆盖 |
 | AC-003 | 命令验证 | `python3 scripts/preflight.py` | Task 3 | 已覆盖 |
+| AC-004 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 4 | 已覆盖 |

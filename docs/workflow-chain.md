@@ -403,7 +403,9 @@ docs/coding-plugins/features/<area>/<capability>/specs/<spec-kind>.md
 
 ### 技术设计层
 
-`writing-technical-design` 把批准规格转成独立工程方案。技术设计负责关键决策、影响组件、数据流、接口落地、兼容策略、测试策略和风险缓解，不负责逐步任务清单。
+`writing-technical-design` 把批准规格转成独立工程方案。技术设计负责关键决策、影响组件、数据流、接口落地、兼容策略、测试策略和风险缓解，不负责逐步任务清单，也不能补写或重定义需求。
+
+技术设计阶段必须先完成 `## 规格缺口审查`。如果发现未覆盖需求、验收标准不清、新增外部行为、错误边界或兼容要求不清，停止 technical，回到 `spec-driven-development` 更新 spec、重新校验并取得确认，再继续 technical。preflight 会校验 technical 文档包含规格缺口审查，并拦截未处理、待处理、需澄清、不清楚或待确认的缺口。
 
 默认技术设计路径：
 
@@ -411,7 +413,7 @@ docs/coding-plugins/features/<area>/<capability>/specs/<spec-kind>.md
 docs/coding-plugins/features/<area>/<capability>/technical/technical-design.md
 ```
 
-技术设计路径的 `<area>/<capability>` 应和规格路径一致。保存或移动技术设计后运行 `python3 scripts/preflight.py --write-index`，让 `docs/coding-plugins/INDEX.md` 同步反映最新文件树。
+技术设计路径的 `<area>/<capability>` 应和规格路径一致。保存或移动技术设计后运行 `python3 scripts/preflight.py --write-index`，让 `docs/coding-plugins/INDEX.md` 同步反映最新文件树。technical 模板正文标题和表头默认使用中文，Spec ID、命令、路径和代码标识可保留英文。
 
 ### 计划层
 

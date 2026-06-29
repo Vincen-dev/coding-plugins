@@ -253,6 +253,19 @@ class PreflightTests(unittest.TestCase):
             with self.assertRaisesRegex(preflight.PreflightError, "SDD template still contains English structure"):
                 preflight.check_sdd_templates_are_chinese(root)
 
+    def test_technical_template_check_rejects_english_headings(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            template_dir = root / "skills" / "writing-technical-design" / "templates"
+            template_dir.mkdir(parents=True)
+            (template_dir / "technical-design.md").write_text(
+                "# Technical Design\n\n## Design Summary\n\n## Key Decisions\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Technical template still contains English structure"):
+                preflight.check_technical_templates_are_chinese(root)
+
     def test_codex_manifest_declares_hook_config(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -675,6 +688,40 @@ class PreflightTests(unittest.TestCase):
 
             with self.assertRaisesRegex(preflight.PreflightError, "Technical design references unknown Spec IDs"):
                 preflight.check_technical_design_spec_ids(root)
+
+    def test_technical_design_gap_review_requires_section(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            technical_dir = root / "docs" / "coding-plugins" / "features" / "plugin" / "routing" / "technical"
+            technical_dir.mkdir(parents=True)
+            (technical_dir / "technical-design.md").write_text(
+                "---\narea: plugin\ncapability: routing\n---\n# 技术设计\n\n## 设计摘要\n\n无。\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Technical design is missing spec gap review"):
+                preflight.check_technical_design_gap_review(root)
+
+    def test_technical_design_gap_review_rejects_unresolved_gap(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            technical_dir = root / "docs" / "coding-plugins" / "features" / "plugin" / "routing" / "technical"
+            technical_dir.mkdir(parents=True)
+            (technical_dir / "technical-design.md").write_text(
+                "---\narea: plugin\ncapability: routing\n---\n"
+                "# 技术设计\n\n"
+                "## 规格缺口审查\n\n"
+                "| 检查项 | 结论 |\n"
+                "| --- | --- |\n"
+                "| 未覆盖需求 | 存在：需要新增导出行为。 |\n"
+                "| 验收标准不清 | 无。 |\n"
+                "| 新增外部行为 | 无。 |\n"
+                "| 处理状态 | 未处理 |\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Technical design has unresolved spec gaps"):
+                preflight.check_technical_design_gap_review(root)
 
     def test_docs_sync_check_rejects_missing_key_paths(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

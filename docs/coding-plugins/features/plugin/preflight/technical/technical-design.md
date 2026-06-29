@@ -23,13 +23,22 @@ related_evidence:
 | 规格 | `docs/coding-plugins/features/plugin/preflight/specs/feature.md` |
 | TDD Evidence | `docs/coding-plugins/features/plugin/preflight/evidence/tdd-evidence.md` |
 
-## Design Summary
+## 设计摘要
 
 preflight 是插件仓库的本地发布门禁，入口固定为 `python3 scripts/preflight.py`。它先运行静态结构检查，再调度单元测试、行为测试、hook 测试、严格规格校验和严格 TDD Evidence 校验。文档索引生成和一致性校验独立封装到 `scripts/docs_index.py`，manifest 文件、版本、资源和 hook 配置检查独立封装到 `scripts/manifest_checks.py`，避免发布门禁脚本继续承担所有静态检查细节。GitHub Actions 的 `ci` workflow 复用同一命令，确保本地和远程门禁一致。
 
-## Key Decisions
+## 规格缺口审查
 
-| Decision | Rationale | Tradeoff |
+| 检查项 | 结论 |
+| --- | --- |
+| 未覆盖需求 | 无。 |
+| 验收标准不清 | 无。 |
+| 新增外部行为 | 无。 |
+| 处理状态 | 通过，未发现需要回写 spec 的缺口。 |
+
+## 关键决策
+
+| 决策 | 原因 | 取舍 |
 | --- | --- | --- |
 | 单入口 `scripts/preflight.py` | 维护者和 CI 使用同一命令，覆盖 REQ-001、REQ-005、AC-001、AC-002 | 脚本职责较多，后续可能需要拆模块 |
 | 独立 `scripts/docs_index.py` | 文档索引渲染、写入和漂移校验是独立职责，拆出后降低 `preflight.py` 膨胀风险 | 需要保留 preflight 的兼容 wrapper，避免现有测试和调用方断裂 |
@@ -38,9 +47,9 @@ preflight 是插件仓库的本地发布门禁，入口固定为 `python3 script
 | 严格校验真实规格和 Evidence | 覆盖 REQ-002、REQ-007，防止示例文档和真实文档标准不一致 | 新增文档时需要同步 metadata 和索引 |
 | hook 和行为测试纳入 preflight | 覆盖 REQ-006，避免入口注入和路由测试在发布时被漏跑 | 增加 preflight 执行时间 |
 
-## Affected Components
+## 影响组件
 
-| Component | Change | Related Spec IDs |
+| 组件 | 变更 | 相关 Spec ID |
 | --- | --- | --- |
 | `scripts/preflight.py` | 提供静态检查、索引生成、验证命令构建和主入口 | REQ-001, REQ-002, REQ-003, REQ-004, REQ-006, REQ-007, ERR-001, ERR-002, ERR-003, AC-001 |
 | `scripts/docs_index.py` | 提供 feature root 收集、索引渲染、`--write-index` 写入和索引内容一致性校验 | REQ-007, REQ-008 |
@@ -52,7 +61,7 @@ preflight 是插件仓库的本地发布门禁，入口固定为 `python3 script
 | `tests/hooks/test-session-start.sh` | 验证 Codex SessionStart hook 配置和 wrapper 行为 | REQ-006 |
 | `docs/coding-plugins/INDEX.md` | 由 `--write-index` 生成并由 preflight 校验一致性 | REQ-007 |
 
-## Data Flow / Control Flow
+## 数据流 / 控制流
 
 ```mermaid
 flowchart TD
@@ -68,7 +77,7 @@ flowchart TD
   G --> H
 ```
 
-## Interfaces and Contracts
+## 接口和契约
 
 CLI 契约：
 
@@ -87,11 +96,11 @@ CLI 契约：
 | technical design / implementation 引用 | 引用不存在文件或未知 Spec ID 时失败 |
 | TDD Evidence | Evidence 中引用未知 Spec ID 或严格校验失败时失败 |
 
-## Migration / Compatibility
+## 迁移 / 兼容性
 
 preflight 保留无参数入口，兼容本地和 CI 现有用法。`--write-index` 是附加模式，不改变普通检查语义。旧 docs roots、旧入口和旧品牌残留会被拒绝，但 release history 和 feature specs/evidence 中的历史记录允许保留。
 
-## Test Strategy
+## 测试策略
 
 | Spec ID | Test Strategy |
 | --- | --- |
@@ -105,9 +114,9 @@ preflight 保留无参数入口，兼容本地和 CI 现有用法。`--write-ind
 
 TDD Evidence 记录在 `docs/coding-plugins/features/plugin/preflight/evidence/tdd-evidence.md`。本轮为历史文档回填，不改变 preflight 行为，因此使用 TDD Exception Record 记录替代验证。
 
-## Risks and Mitigations
+## 风险和缓解
 
-| Risk | Mitigation |
+| 风险 | 缓解方案 |
 | --- | --- |
 | `preflight.py` 持续膨胀 | 先拆出 `scripts/docs_index.py` 和 `scripts/manifest_checks.py`，后续如 release 规则继续增长再拆 `scripts/release_checks.py` |
 | 新文档加入后忘记刷新索引 | `python3 scripts/preflight.py --write-index` 和生成内容一致性校验 |

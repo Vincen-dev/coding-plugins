@@ -100,12 +100,32 @@ SDD_TEMPLATE_ENGLISH_STRUCTURE = (
     "| When |",
     "| Then |",
 )
+TECHNICAL_TEMPLATE_ENGLISH_STRUCTURE = (
+    "## Design Summary",
+    "## Key Decisions",
+    "## Affected Components",
+    "## Data Flow / Control Flow",
+    "## Interfaces and Contracts",
+    "## Migration / Compatibility",
+    "## Test Strategy",
+    "## Risks and Mitigations",
+    "| Decision |",
+    "| Rationale |",
+    "| Tradeoff |",
+    "| Component |",
+    "| Change |",
+    "| Related Spec IDs |",
+    "| Risk |",
+    "| Mitigation |",
+)
 SPEC_ID_RE = re.compile(r"\b(?:REQ|API|SCHEMA|STATE|ERR|AC|NFR|MIG|OBS|NON)-\d{3,}\b")
 TECHNICAL_DESIGN_PATH_RE = re.compile(
     r"docs/coding-plugins/features/[A-Za-z0-9_.\-/]+/technical/technical-design\.md"
 )
 PLAN_METADATA_REQUIRED_FIELDS = ("title", "status", "area", "capability", "created", "updated")
 CHINESE_DOCUMENT_INFO_REQUIRED_TERMS = ("## 文档信息", "状态", "领域", "能力")
+TECHNICAL_GAP_REVIEW_REQUIRED_TERMS = ("未覆盖需求", "验收标准", "外部行为", "处理状态")
+TECHNICAL_GAP_REVIEW_UNRESOLVED_TERMS = ("未处理", "待处理", "需澄清", "不清楚", "待确认")
 LIGHTWEIGHT_EXCEPTION_REQUIRED_TERMS = ("## 轻量例外", "Reason", "Verification")
 DOC_SYNC_REFERENCES = (
     "docs/coding-plugins/INDEX.md",
@@ -242,6 +262,21 @@ def check_sdd_templates_are_chinese(root: Path) -> None:
 
     if offenders:
         raise PreflightError("SDD template still contains English structure: " + "; ".join(offenders) + ".")
+
+
+def check_technical_templates_are_chinese(root: Path) -> None:
+    template_path = root / "skills" / "writing-technical-design" / "templates" / "technical-design.md"
+    if not template_path.exists():
+        return
+
+    text = template_path.read_text(encoding="utf-8")
+    offenders = [
+        f"{template_path.relative_to(root)} contains {pattern!r}"
+        for pattern in TECHNICAL_TEMPLATE_ENGLISH_STRUCTURE
+        if pattern in text
+    ]
+    if offenders:
+        raise PreflightError("Technical template still contains English structure: " + "; ".join(offenders) + ".")
 
 
 def check_skill_agent_metadata(root: Path) -> None:
@@ -406,6 +441,48 @@ def check_chinese_document_info_sections(root: Path) -> None:
 
     if offenders:
         raise PreflightError("Document is missing Chinese metadata summary: " + "; ".join(offenders) + ".")
+
+
+def markdown_section(text: str, heading: str) -> str | None:
+    marker = f"## {heading}"
+    start = text.find(marker)
+    if start == -1:
+        return None
+
+    next_heading = text.find("\n## ", start + len(marker))
+    if next_heading == -1:
+        return text[start:]
+    return text[start:next_heading]
+
+
+def check_technical_design_gap_review(root: Path) -> None:
+    missing_section: list[str] = []
+    incomplete: list[str] = []
+    unresolved: list[str] = []
+
+    for path in collect_technical_design_files(root):
+        text = path.read_text(encoding="utf-8")
+        section = markdown_section(text, "规格缺口审查")
+        relative = str(path.relative_to(root))
+        if section is None:
+            missing_section.append(relative)
+            continue
+
+        missing_terms = [term for term in TECHNICAL_GAP_REVIEW_REQUIRED_TERMS if term not in section]
+        if missing_terms:
+            incomplete.append(f"{relative} missing {', '.join(missing_terms)}")
+            continue
+
+        unresolved_terms = [term for term in TECHNICAL_GAP_REVIEW_UNRESOLVED_TERMS if term in section]
+        if unresolved_terms:
+            unresolved.append(f"{relative} contains {', '.join(unresolved_terms)}")
+
+    if missing_section:
+        raise PreflightError("Technical design is missing spec gap review: " + ", ".join(missing_section) + ".")
+    if incomplete:
+        raise PreflightError("Technical design spec gap review is incomplete: " + "; ".join(incomplete) + ".")
+    if unresolved:
+        raise PreflightError("Technical design has unresolved spec gaps: " + "; ".join(unresolved) + ".")
 
 
 def specs_for_area_capability(root: Path, document_root_name: str, document_file: Path) -> list[Path]:
@@ -626,6 +703,7 @@ def run_static_checks(root: Path) -> None:
     check_document_path_metadata(root)
     check_plan_metadata(root)
     check_chinese_document_info_sections(root)
+    check_technical_design_gap_review(root)
     check_artifact_index_covers_documents(root)
     check_spec_technical_design_references(root)
     check_plan_technical_design_references(root)
@@ -634,6 +712,7 @@ def run_static_checks(root: Path) -> None:
     check_documentation_path_references(root)
     check_removed_entry_references(root)
     check_sdd_templates_are_chinese(root)
+    check_technical_templates_are_chinese(root)
 
 
 def main(argv: list[str] | None = None) -> int:
