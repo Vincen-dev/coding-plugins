@@ -26,7 +26,7 @@ related_evidence:
 | 技术设计 | `docs/coding-plugins/features/plugin/release-management/technical/technical-design.md` |
 | TDD Evidence | `docs/coding-plugins/features/plugin/release-management/evidence/tdd-evidence.md` |
 
-**Goal:** 补齐 release tag 和 GitHub Release 的可重复发布链路。
+**Goal:** 补齐 release tag、GitHub Release 和远程 push 权限的可重复发布链路。
 
 **Architecture:** 版本同步、release metadata 准备和 GitHub Release 创建拆成独立步骤。`scripts/prepare_release.py` 提供本地和 GitHub Actions 共用的 release metadata 契约，`.github/workflows/release.yml` 在 tag push 时执行发布。
 
@@ -47,6 +47,7 @@ related_evidence:
 | 新增独立 release 准备脚本 | 让本地和 CI 共享 release metadata 规则 | 增加一个测试入口 |
 | GitHub Release 只由 tag workflow 创建 | 避免 preflight 或普通 push 触发发布 | 发布依赖维护者 push tag |
 | release notes 从 `RELEASE-NOTES.md` 当前版本提取 | 保持发布说明单一来源 | 标题格式必须稳定 |
+| 只有 `Vincen-dev` 可直接 push | public 仓库仍可被 fork，直接写权限只授予维护者 | 维护者仍可按需 bypass PR 规则 |
 
 **Affected Components:**
 
@@ -57,6 +58,7 @@ related_evidence:
 | `scripts/test_preflight.py` | 要求 preflight 运行 release 单测并检查 release automation 文件 | REQ-004, REQ-008, ERR-004 |
 | `scripts/preflight.py` | 增加 release automation 文件和 workflow 内容检查 | REQ-004, REQ-008, ERR-004 |
 | `.github/workflows/release.yml` | 新增 tag workflow 和 GitHub Release 创建步骤 | REQ-007, ERR-006, AC-004 |
+| GitHub repository settings | 确认只有 `Vincen-dev` 是直接协作者且具备 push/admin 权限 | REQ-010, AC-006 |
 
 **Data Flow / Control Flow:** 维护者提升版本并更新 release notes 后运行 preflight；本地用 `prepare_release.py` 生成 release metadata；维护者 push `v<version>` tag；GitHub Actions 运行 preflight、准备 notes、校验 tag 与 manifest 一致，并调用 `gh release create`。
 
@@ -96,6 +98,10 @@ related_evidence:
 | ERR-006 | `.github/workflows/release.yml` | tag 校验步骤 | `docs/coding-plugins/features/plugin/release-management/evidence/tdd-evidence.md` / Task 2 | Task 2 |
 | AC-003 | `python3 scripts/prepare_release.py --skip-git-checks --notes-out /tmp/plugin-release-notes.md` | 输出 `Release ready: v<version>` 并生成 notes | `docs/coding-plugins/features/plugin/release-management/evidence/tdd-evidence.md` / Task 2 | Task 2 |
 | AC-004 | `.github/workflows/release.yml` | tag push release workflow | `docs/coding-plugins/features/plugin/release-management/evidence/tdd-evidence.md` / Task 2 | Task 2 |
+| REQ-009 | `git ls-remote --tags origin v<version>` / `gh release view v<version>` | current version tag and release exist | `docs/coding-plugins/features/plugin/release-management/evidence/tdd-evidence.md` / Task 3 | Task 3 |
+| REQ-010 | `gh api repos/Vincen-dev/coding-plugins/collaborators?affiliation=direct` | direct push-capable collaborator is only `Vincen-dev` | `docs/coding-plugins/features/plugin/release-management/evidence/tdd-evidence.md` / Task 3 | Task 3 |
+| AC-005 | `gh release view v<version>` | GitHub Release exists for current version | `docs/coding-plugins/features/plugin/release-management/evidence/tdd-evidence.md` / Task 3 | Task 3 |
+| AC-006 | `gh api` collaborators and branch protection queries | public repo direct push permission is restricted to maintainer | `docs/coding-plugins/features/plugin/release-management/evidence/tdd-evidence.md` / Task 3 | Task 3 |
 
 ## Task 2: Release tag 和 GitHub Release 自动化
 
@@ -137,3 +143,57 @@ Expected: PASS
 - [x] **Step 5: Record TDD Evidence**
 
 更新 `docs/coding-plugins/features/plugin/release-management/evidence/tdd-evidence.md` 的 Task 2。
+
+## Task 3: 发布当前版本并确认 push 权限
+
+**Spec IDs:** REQ-009, REQ-010, AC-005, AC-006
+
+**Files:**
+
+- Modify: `docs/coding-plugins/features/plugin/release-management/specs/feature.md`
+- Modify: `docs/coding-plugins/features/plugin/release-management/technical/technical-design.md`
+- Modify: `docs/coding-plugins/features/plugin/release-management/plans/implementation.md`
+- Modify: `docs/coding-plugins/features/plugin/release-management/evidence/tdd-evidence.md`
+
+- [x] **Step 1: Prepare release metadata**
+
+Run: `python3 scripts/prepare_release.py --skip-git-checks --notes-out /tmp/coding-plugins-release-notes.md`
+Expected: outputs `Release ready: v<current-version>`.
+
+- [x] **Step 2: Confirm only Vincen-dev has direct push permission**
+
+Run:
+
+```bash
+gh api repos/Vincen-dev/coding-plugins --jq '{name:.full_name, visibility:.visibility, permissions:.permissions}'
+gh api 'repos/Vincen-dev/coding-plugins/collaborators?affiliation=direct&per_page=100'
+gh api repos/Vincen-dev/coding-plugins/branches/main/protection
+```
+
+Expected: direct collaborator list contains only `Vincen-dev` with push/admin permission; public users without collaborator rights cannot directly push.
+
+- [x] **Step 3: Create and push release tag**
+
+Run:
+
+```bash
+git tag v<current-version>
+git push origin v<current-version>
+```
+
+Expected: tag push succeeds and GitHub release workflow starts.
+
+- [x] **Step 4: Verify remote tag and GitHub Release**
+
+Run:
+
+```bash
+git ls-remote --tags origin v<current-version>
+gh release view v<current-version>
+```
+
+Expected: remote tag exists and GitHub Release is visible.
+
+- [x] **Step 5: Record TDD Exception evidence**
+
+This task is release governance and remote state verification, not code behavior. Record final verification in `docs/coding-plugins/features/plugin/release-management/evidence/tdd-evidence.md`.

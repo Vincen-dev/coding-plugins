@@ -192,6 +192,7 @@ class PreflightTests(unittest.TestCase):
         self.assertIn("test_bump_version.py", command_text)
         self.assertIn("test_prepare_release.py", command_text)
         self.assertIn("scripts/test_docs_index.py", command_text)
+        self.assertIn("scripts/test_manifest_checks.py", command_text)
         self.assertIn("tests.behavior.test_routing", command_text)
         self.assertIn("tests/hooks/test-session-start.sh", command_text)
         self.assertIn("validate_spec.py", command_text)

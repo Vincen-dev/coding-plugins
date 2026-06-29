@@ -3,7 +3,6 @@
 
 from __future__ import annotations
 
-import json
 import re
 import subprocess
 import sys
@@ -11,6 +10,7 @@ from pathlib import Path
 from typing import Callable
 
 import docs_index
+import manifest_checks
 from docs_index import (
     collect_feature_roots,
     feature_docs_root,
@@ -19,6 +19,7 @@ from docs_index import (
     render_artifact_index,
     write_artifact_index,
 )
+from manifest_checks import normalize_manifest_asset_path, read_json
 
 
 class PreflightError(RuntimeError):
@@ -121,28 +122,19 @@ def repo_root() -> Path:
     return Path(__file__).resolve().parents[1]
 
 
-def read_json(path: Path) -> dict[str, object]:
-    return json.loads(path.read_text(encoding="utf-8"))
+def run_manifest_check(check: Callable[[Path], object], root: Path) -> object:
+    try:
+        return check(root)
+    except manifest_checks.ManifestCheckError as error:
+        raise PreflightError(str(error)) from error
 
 
 def check_manifest_versions(root: Path) -> None:
-    codex_manifest = read_json(root / ".codex-plugin" / "plugin.json")
-    claude_manifest = read_json(root / ".claude-plugin" / "plugin.json")
-    codex_version = codex_manifest.get("version")
-    claude_version = claude_manifest.get("version")
-
-    if not codex_version or not claude_version:
-        raise PreflightError("Both plugin manifests must define a version.")
-    if codex_version != claude_version:
-        raise PreflightError(f"Manifest versions differ: Codex={codex_version}, Claude={claude_version}.")
+    run_manifest_check(manifest_checks.check_manifest_versions, root)
 
 
 def current_manifest_version(root: Path) -> str:
-    codex_manifest = read_json(root / ".codex-plugin" / "plugin.json")
-    version = codex_manifest.get("version")
-    if not isinstance(version, str) or not version.strip():
-        raise PreflightError("Codex manifest must define a version.")
-    return version
+    return str(run_manifest_check(manifest_checks.current_manifest_version, root))
 
 
 def check_release_management_files(root: Path) -> None:
@@ -181,9 +173,7 @@ def check_release_management_files(root: Path) -> None:
 
 
 def check_codex_hook_config_declared(root: Path) -> None:
-    codex_manifest = read_json(root / ".codex-plugin" / "plugin.json")
-    if codex_manifest.get("hooks") != "./hooks/hooks-codex.json":
-        raise PreflightError("Codex manifest must declare hooks: ./hooks/hooks-codex.json.")
+    run_manifest_check(manifest_checks.check_codex_hook_config_declared, root)
 
 
 def iter_text_files(root: Path) -> list[Path]:
@@ -233,15 +223,7 @@ def iter_residue_scan_files(root: Path) -> list[Path]:
 
 
 def check_required_plugin_files(root: Path) -> None:
-    required = (
-        root / ".codex-plugin" / "plugin.json",
-        root / ".claude-plugin" / "plugin.json",
-        root / "skills",
-        root / "README.md",
-    )
-    missing = [str(path.relative_to(root)) for path in required if not path.exists()]
-    if missing:
-        raise PreflightError("Missing required plugin file(s): " + ", ".join(missing) + ".")
+    run_manifest_check(manifest_checks.check_required_plugin_files, root)
 
 
 def check_sdd_templates_are_chinese(root: Path) -> None:
@@ -276,34 +258,8 @@ def check_skill_agent_metadata(root: Path) -> None:
         raise PreflightError("Skill is missing agents/openai.yaml: " + ", ".join(missing) + ".")
 
 
-def normalize_manifest_asset_path(raw_path: object) -> str | None:
-    if not isinstance(raw_path, str) or not raw_path.strip():
-        return None
-    return raw_path[2:] if raw_path.startswith("./") else raw_path
-
-
 def check_manifest_asset_paths(root: Path) -> None:
-    codex_manifest = read_json(root / ".codex-plugin" / "plugin.json")
-    interface = codex_manifest.get("interface")
-    if not isinstance(interface, dict):
-        return
-
-    asset_refs: list[tuple[str, str]] = []
-    for field in ("composerIcon", "logo", "logoDark"):
-        normalized = normalize_manifest_asset_path(interface.get(field))
-        if normalized is not None:
-            asset_refs.append((f"interface.{field}", normalized))
-
-    screenshots = interface.get("screenshots", [])
-    if isinstance(screenshots, list):
-        for index, item in enumerate(screenshots):
-            normalized = normalize_manifest_asset_path(item)
-            if normalized is not None:
-                asset_refs.append((f"interface.screenshots[{index}]", normalized))
-
-    missing = [f"{field} -> {path}" for field, path in asset_refs if not (root / path).exists()]
-    if missing:
-        raise PreflightError("Manifest asset path does not exist: " + ", ".join(missing) + ".")
+    run_manifest_check(manifest_checks.check_manifest_asset_paths, root)
 
 
 def check_legacy_docs_roots(root: Path) -> None:
@@ -579,6 +535,7 @@ def build_validation_commands(
     commands = [
         [python, "-m", "unittest", "scripts/test_preflight.py"],
         [python, "-m", "unittest", "scripts/test_docs_index.py"],
+        [python, "-m", "unittest", "scripts/test_manifest_checks.py"],
         [python, "-m", "unittest", "scripts/test_bump_version.py"],
         [python, "-m", "unittest", "scripts/test_prepare_release.py"],
         [python, "-m", "unittest", "tests.behavior.test_routing"],

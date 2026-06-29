@@ -1,5 +1,11 @@
 # Release Notes
 
+## 0.6.27 - 2026-06-29
+
+- 拆出 `scripts/manifest_checks.py`，统一承接 manifest 文件、版本、Codex hook 和资源路径校验。
+- 将 `scripts/test_manifest_checks.py` 纳入 preflight 验证链路，防止 manifest 检查职责回流到 `scripts/preflight.py`。
+- 补充 release tag 发布与只有 `Vincen-dev` 直接 push 的治理计划和验证口径。
+
 ## 0.6.26 - 2026-06-29
 
 - 回填 marketplace 规格中已完成验收项的追踪状态和验证证据。

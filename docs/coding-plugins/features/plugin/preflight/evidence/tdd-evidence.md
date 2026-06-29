@@ -21,3 +21,16 @@
 - **GREEN command:** `python3 -m unittest scripts/test_docs_index.py scripts/test_preflight.py` PASS，48 tests。
 - **REFACTOR command:** `python3 scripts/preflight.py --write-index` PASS。
 - **Final verification:** `python3 scripts/preflight.py --write-index` PASS，包含 `scripts/test_preflight.py` 46 tests、`scripts/test_docs_index.py` 2 tests、bump/release/behavior/spec/evidence/hook 全部校验；`python3 scripts/prepare_release.py --skip-git-checks --notes-out /tmp/coding-plugins-release-notes.md` 输出 `Release ready: v0.6.25`；`claude plugin validate /Users/vincen/workspace/plugins/coding-plugins --strict` PASS；`git diff --check` PASS。
+
+## Task 3: 拆出 manifest 检查模块
+
+### TDD Evidence
+
+- **Spec/Bug/AC:** REQ-003 / REQ-009 / ERR-003
+- **RED test:** `scripts/test_manifest_checks.py::ManifestChecksTests.test_manifest_checks_module_exposes_manifest_contract`、`test_manifest_checks_module_rejects_invalid_manifest_state`、`test_preflight_converts_manifest_check_errors`、`scripts/test_preflight.py::PreflightTests.test_build_commands_include_core_validation_steps`
+- **RED command:** `python3 -m unittest scripts/test_manifest_checks.py scripts/test_preflight.py`
+- **RED failure:** `ModuleNotFoundError: No module named 'manifest_checks'`；同时 `test_build_commands_include_core_validation_steps` 失败，因为 preflight validation commands 还没有包含 `scripts/test_manifest_checks.py`。
+- **GREEN change:** 新增 `scripts/manifest_checks.py`，把必需插件文件、manifest 版本、当前版本读取、Codex hook 配置、asset 路径归一化和 manifest asset 存在性检查迁出 `scripts/preflight.py`；`preflight.py` 保留兼容 wrapper 并把 `ManifestCheckError` 转换为 `PreflightError`；新增 `scripts/test_manifest_checks.py` 并纳入 preflight validation commands。
+- **GREEN command:** `python3 -m unittest scripts/test_manifest_checks.py scripts/test_preflight.py` PASS，49 tests。
+- **REFACTOR command:** `python3 -m unittest scripts/test_manifest_checks.py scripts/test_preflight.py` PASS。
+- **Final verification:** `python3 -m unittest scripts/test_manifest_checks.py scripts/test_preflight.py` PASS，49 tests；完整 release gate 使用 `python3 scripts/preflight.py --write-index` 和 `python3 scripts/preflight.py` 验证。

@@ -25,3 +25,13 @@
 - **GREEN command:** `python3 -m unittest scripts/test_prepare_release.py` 和 `python3 -m unittest scripts/test_preflight.py` PASS
 - **REFACTOR command:** `python3 -m unittest scripts/test_prepare_release.py scripts/test_preflight.py` PASS
 - **Final verification:** `python3 scripts/preflight.py` PASS；`python3 scripts/prepare_release.py --skip-git-checks --notes-out /tmp/coding-plugins-release-notes.md` 输出 `Release ready: v0.6.22`；`claude plugin validate /Users/vincen/workspace/plugins/coding-plugins --strict` PASS。
+
+## Task 3: 发布当前版本并确认 push 权限
+
+### TDD Exception Record
+
+- **Reason:** 本任务验证的是 GitHub 远程仓库状态、tag 发布和权限治理，不是仓库内可用单元测试先驱动的代码行为。release workflow 是否创建 GitHub Release 必须通过远程 tag 和 GitHub API 结果确认。
+- **User approval:** 用户要求“补充计划实现1，5，4中只有我才能push”，其中 1 是发布 tag/GitHub Release，5 是继续拆分 preflight，4 是确认只有维护者可直接 push。
+- **Alternative verification:** `python3 scripts/prepare_release.py --skip-git-checks --notes-out /tmp/coding-plugins-release-notes.md`、`gh api repos/Vincen-dev/coding-plugins --jq '{name:.full_name, visibility:.visibility, permissions:.permissions}'`、`gh api 'repos/Vincen-dev/coding-plugins/collaborators?affiliation=direct&per_page=100'`、`gh api repos/Vincen-dev/coding-plugins/branches/main/protection`、`git push origin v0.6.27`、`git ls-remote --tags origin v0.6.27`、`gh release view v0.6.27`。
+- **Risk:** GitHub 仓库权限和 release 状态会随远程设置漂移；发布前必须重新查询直接协作者、main 分支保护和目标 tag/release 状态。
+- **Final verification:** 本轮使用 `v0.6.27` 作为当前版本 tag；远程 tag、GitHub Release 和直接协作者权限在发布后验证。

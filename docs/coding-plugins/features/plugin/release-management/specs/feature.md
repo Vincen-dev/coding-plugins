@@ -48,6 +48,7 @@ related_specs:
 | NON-001 | 不替代维护者决定版本号、发布时间和是否 push tag。 |
 | NON-002 | 不在 preflight 中执行网络发布、push tag 或创建 GitHub Release。 |
 | NON-003 | 不修改 Git 用户配置。 |
+| NON-004 | 不取消仓库所有者 `Vincen-dev` 的 push 权限；权限治理目标是确认没有其他直接协作者可 push。 |
 
 ## 背景
 
@@ -67,6 +68,8 @@ related_specs:
 | REQ-006 | 必须 | `scripts/prepare_release.py` 必须读取当前 manifest 版本，生成 `v` 前缀 tag 名，例如 `v0.6.22`，并提取当前版本 release notes 正文。 | 单元测试 `scripts/test_prepare_release.py`。 |
 | REQ-007 | 必须 | GitHub Actions 必须在 `v*` tag push 时运行 preflight、校验 tag 和 manifest 版本一致，并用当前版本 release notes 创建 GitHub Release。 | 单元测试 `test_release_management_check_rejects_missing_release_automation` 和人工评审 `.github/workflows/release.yml`。 |
 | REQ-008 | 必须 | preflight 必须拒绝缺少 release 准备脚本、release 脚本单测或 GitHub Release workflow 的仓库状态。 | 单元测试 `test_release_management_check_rejects_missing_release_automation`。 |
+| REQ-009 | 必须 | 当前 manifest 版本发布时必须创建并推送对应 `v` 前缀 tag，让 GitHub Release workflow 创建发布产物；本轮版本为 `v0.6.27`。 | `git tag --list v0.6.27`、`git ls-remote --tags origin v0.6.27` 和 `gh release view v0.6.27`。 |
+| REQ-010 | 必须 | 远程仓库直接协作者中，只有 `Vincen-dev` 具备 push/admin 权限；其他公开用户只能 fork 或提 PR。 | `gh api repos/Vincen-dev/coding-plugins/collaborators?affiliation=direct` 和 main branch protection 查询。 |
 
 ## 错误和边界情况
 
@@ -87,6 +90,8 @@ related_specs:
 | AC-002 | 发布前检查 | release notes 包含当前版本 | 运行 `python3 scripts/preflight.py` | 版本管理检查通过。 |
 | AC-003 | 本地准备发布 metadata | manifest、版本配置和 release notes 已同步 | 运行 `python3 scripts/prepare_release.py --skip-git-checks --notes-out release-notes.md` | 输出类似 `Release ready: v0.6.22`，并生成当前版本 release notes 正文。 |
 | AC-004 | tag 触发 GitHub Release | 维护者 push 当前版本对应的 `v` 前缀 tag 到 GitHub，例如 `v0.6.22` | GitHub Actions 执行 release workflow | workflow 运行 preflight、校验 tag 匹配 manifest，并创建 GitHub Release。 |
+| AC-005 | 当前版本正式发布 | 当前仓库 main 已同步且 preflight 通过 | 创建并 push 当前版本 tag | GitHub Release 存在，release notes 来自当前版本段落。 |
+| AC-006 | 只有维护者可直接 push | 仓库为 public | 查询直接协作者和 main 保护规则 | 只有 `Vincen-dev` 拥有 push/admin 权限；其他用户不能直接 push。 |
 
 ## 追踪矩阵
 
@@ -100,6 +105,8 @@ related_specs:
 | REQ-006 | 单元测试 | `python3 -m unittest scripts/test_prepare_release.py` | Task 2 | 已覆盖 |
 | REQ-007 | 单元测试 + 人工评审 | `python3 -m unittest scripts/test_preflight.py`，评审 `.github/workflows/release.yml` | Task 2 | 已覆盖 |
 | REQ-008 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 2 | 已覆盖 |
+| REQ-009 | 远程验证 | `git ls-remote --tags origin v0.6.27`、`gh release view v0.6.27` | Task 3 | 已覆盖 |
+| REQ-010 | 远程验证 | `gh api repos/Vincen-dev/coding-plugins/collaborators?affiliation=direct` | Task 3 | 已覆盖 |
 | ERR-001 | 单元测试 | `python3 -m unittest scripts/test_bump_version.py` | Task 1 | 已覆盖 |
 | ERR-002 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
 | ERR-003 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
@@ -110,3 +117,5 @@ related_specs:
 | AC-002 | 命令验证 | `python3 scripts/preflight.py` | Task 3 | 已覆盖 |
 | AC-003 | 命令验证 | `python3 scripts/prepare_release.py --skip-git-checks --notes-out /tmp/plugin-release-notes.md` | Task 2 | 已覆盖 |
 | AC-004 | 人工评审 | `.github/workflows/release.yml` | Task 3 | 已覆盖 |
+| AC-005 | 远程验证 | `gh release view v0.6.27` | Task 3 | 已覆盖 |
+| AC-006 | 远程验证 | `gh api` collaborators 和 branch protection 查询 | Task 3 | 已覆盖 |
