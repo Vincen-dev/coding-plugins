@@ -28,8 +28,8 @@
 | 1 | 入口路由 | `using-coding-plugins` | 判断直接意图和开发任务类型 |
 | 2 | 直接意图处理 | `requesting-code-review`, `receiving-code-review`, `verification-before-completion`, `git-commit`, `finishing-a-development-branch`, `writing-skills`, `using-git-worktrees`, `dispatching-parallel-agents` | 直接完成查询、评审、验证、提交、收尾、隔离或维护任务 |
 | 3 | 需求规格 | `spec-driven-development` | `docs/coding-plugins/features/<area>/<capability>/specs/<spec-kind>.md`, 生成式总索引, Spec ID, Traceability Matrix |
-| 4 | 技术设计 | `writing-technical-design` | `docs/coding-plugins/features/<area>/<capability>/technical-design.md`, 生成式总索引, 技术方案和测试策略 |
-| 5 | 实现计划 | `writing-plans` | `docs/coding-plugins/features/<area>/<capability>/implementation.md`, Technical Design Source, Spec ID -> Test -> Task 追踪 |
+| 4 | 技术设计 | `writing-technical-design` | `docs/coding-plugins/features/<area>/<capability>/technical/technical-design.md`, 生成式总索引, 技术方案和测试策略 |
+| 5 | 实现计划 | `writing-plans` | `docs/coding-plugins/features/<area>/<capability>/plans/implementation.md`, Technical Design Source, Spec ID -> Test -> Task 追踪 |
 | 6 | 隔离工作区 | `using-git-worktrees` | 独立 worktree 或确认在当前工作区执行 |
 | 7 | 执行调度 | `subagent-driven-development`, `executing-plans`, `dispatching-parallel-agents` | 子任务执行、批次执行或并行任务结果 |
 | 8 | TDD 实现 | `test-driven-development` | RED -> GREEN -> REFACTOR，`docs/coding-plugins/features/<area>/<capability>/evidence/tdd-evidence.md` |
@@ -86,9 +86,9 @@ flowchart TD
   SPEC_OK -->|需要修改| SPEC
   SPEC_OK -->|确认| TECH
 
-  TECH --> TECH_DOC["写 technical-design.md、维护 technical INDEX"]
+  TECH --> TECH_DOC["写 technical/technical-design.md、维护总索引"]
   TECH_DOC --> PLAN
-  PLAN --> PLAN_DOC["写 implementation.md、引用技术设计和追踪矩阵"]
+  PLAN --> PLAN_DOC["写 plans/implementation.md、引用技术设计和追踪矩阵"]
   PLAN_DOC --> WORKTREE
 
   WORKTREE --> WT_DEC{"仅创建 worktree？"}
@@ -187,9 +187,9 @@ flowchart TD
   I --> J{"用户确认规格？"}
   J -->|需要修改| F
   J -->|确认| TD["writing-technical-design"]
-  TD --> K["写 features/<area>/<capability>/technical-design.md"]
+  TD --> K["写 features/<area>/<capability>/technical/technical-design.md"]
   K --> L["writing-plans"]
-  L --> M["写 features/<area>/<capability>/implementation.md"]
+  L --> M["写 features/<area>/<capability>/plans/implementation.md"]
   M --> N["引用 Technical Design Source 并建立追踪矩阵"]
   N --> O["计划自审或计划评审"]
   O --> P["进入执行场景"]
@@ -379,7 +379,7 @@ docs/coding-plugins/features/<area>/<capability>/specs/<spec-kind>.md
 默认技术设计路径：
 
 ```text
-docs/coding-plugins/features/<area>/<capability>/technical-design.md
+docs/coding-plugins/features/<area>/<capability>/technical/technical-design.md
 ```
 
 技术设计路径的 `<area>/<capability>` 应和规格路径一致。保存或移动技术设计后运行 `python3 scripts/preflight.py --write-index`，让 `docs/coding-plugins/INDEX.md` 同步反映最新文件树。
@@ -391,10 +391,10 @@ docs/coding-plugins/features/<area>/<capability>/technical-design.md
 默认计划路径：
 
 ```text
-docs/coding-plugins/features/<area>/<capability>/implementation.md
+docs/coding-plugins/features/<area>/<capability>/plans/implementation.md
 ```
 
-计划路径的 `<area>/<capability>` 应和规格及技术设计路径一致，例如 `features/auth/login/specs/feature.md` 对应 `features/auth/login/technical-design.md` 和 `features/auth/login/implementation.md`。
+计划路径的 `<area>/<capability>` 应和规格及技术设计路径一致，例如 `features/auth/login/specs/feature.md` 对应 `features/auth/login/technical/technical-design.md` 和 `features/auth/login/plans/implementation.md`。
 
 计划文档应说明推荐执行方式：
 

@@ -6,7 +6,7 @@ status: approved
 area: plugin
 capability: technical-design-artifacts
 created: 2026-06-26
-updated: 2026-06-26
+updated: 2026-06-29
 tags:
   - technical-design
   - architecture
@@ -20,14 +20,14 @@ related_code:
   - docs/coding-plugins/INDEX.md
 related_specs: []
 related_technical:
-  - docs/coding-plugins/features/plugin/technical-design-artifacts/technical-design.md
+  - docs/coding-plugins/features/plugin/technical-design-artifacts/technical/technical-design.md
 ---
 
 # 技术设计产物独立维护规格
 
 ## 目标
 
-将技术实现方案从计划文档中拆出到 feature root 下的独立 `technical-design.md`，并让规格、技术设计、计划和 TDD Evidence 形成可检索、可校验的链路。
+将技术实现方案从计划文档中拆出到 feature root 的 `technical/technical-design.md`，并让规格、技术设计、计划和 TDD Evidence 形成可检索、可校验的链路。
 
 ## 非目标
 
@@ -39,7 +39,7 @@ related_technical:
 
 ## 背景
 
-- 当前行为：技术方案主要写在 `writing-plans` 产出的 `implementation.md` 中，规格和计划之间没有独立的技术设计产物。
+- 当前行为：技术方案主要写在 `writing-plans` 产出的 `plans/implementation.md` 中，规格和计划之间没有独立的技术设计产物。
 - 目标用户或调用方：插件维护者、后续执行计划的代理、发布前 preflight、GitHub Actions。
 - 约束：路径要按 `area/capability` 检索；新增规则不能破坏没有历史计划文档的现有 capability。
 
@@ -47,7 +47,7 @@ related_technical:
 
 | 编号 | 优先级 | 需求 | 验证方式 |
 | --- | --- | --- | --- |
-| REQ-001 | 必须 | 技术设计文档默认保存到 `docs/coding-plugins/features/plugin/technical-design-artifacts/technical-design.md` 这类 area/capability 分层路径。 | 单元测试 `test_collect_technical_design_files_uses_feature_first_path`。 |
+| REQ-001 | 必须 | 技术设计文档默认保存到 `docs/coding-plugins/features/plugin/technical-design-artifacts/technical/technical-design.md` 这类 area/capability 分层路径。 | 单元测试 `test_collect_technical_design_files_uses_feature_first_technical_subdir`。 |
 | REQ-002 | 必须 | `docs/coding-plugins/INDEX.md` 必须覆盖所有真实技术设计文档。 | 单元测试 `test_artifact_index_requires_technical_paths`。 |
 | REQ-003 | 必须 | 总索引 `docs/coding-plugins/INDEX.md` 必须包含 `Technical Design` 列，并覆盖真实技术设计文档。 | 单元测试 `test_artifact_index_requires_technical_paths`。 |
 | REQ-004 | 必须 | 新增 `writing-technical-design` skill，负责把已批准规格转成独立技术设计。 | 行为测试 `test_using_entry_routes_development_intents_to_required_skills`。 |
@@ -69,7 +69,7 @@ related_technical:
 
 | 编号 | 场景 | 前置条件 | 操作 | 期望结果 |
 | --- | --- | --- | --- | --- |
-| AC-001 | 创建技术设计链路 | 已有批准规格 | 创建 `technical-design.md` 并在规格和计划中引用 | preflight 通过，索引能检索到 Spec、Technical、Plan、Evidence。 |
+| AC-001 | 创建技术设计链路 | 已有批准规格 | 创建 `technical/technical-design.md` 并在规格和计划中引用 | preflight 通过，索引能检索到 Spec、Technical、Plan、Evidence。 |
 | AC-002 | 使用新技能 | 用户要求根据规格写技术方案 | 路由到 `writing-technical-design` | 生成独立技术设计文档，而不是把完整技术方案写入计划。 |
 | AC-003 | 发布前检查 | 仓库包含 technical 文档和计划 | 运行 `python3 scripts/preflight.py` | 技术设计、规格、计划和 Evidence 校验全部通过。 |
 

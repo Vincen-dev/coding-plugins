@@ -8,7 +8,7 @@ updated: YYYY-MM-DD
 related_specs:
   - docs/coding-plugins/features/<area>/<capability>/specs/feature.md
 related_plans:
-  - docs/coding-plugins/features/<area>/<capability>/implementation.md
+  - docs/coding-plugins/features/<area>/<capability>/plans/implementation.md
 ---
 
 # <功能名称>技术设计
@@ -21,7 +21,7 @@ related_plans:
 | 领域 | <area> |
 | 能力 | <capability> |
 | 规格 | `docs/coding-plugins/features/<area>/<capability>/specs/feature.md` |
-| 计划 | `docs/coding-plugins/features/<area>/<capability>/implementation.md` |
+| 计划 | `docs/coding-plugins/features/<area>/<capability>/plans/implementation.md` |
 
 ## Design Summary
 

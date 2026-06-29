@@ -9,7 +9,7 @@ description: 已有批准规格，需要在实现计划前创建或更新独立 
 
 技术设计把规格契约转成工程方案，但不拆执行任务。它回答“怎么实现这些契约”，实现计划回答“按什么步骤改代码和写测试”。
 
-核心原则：技术设计默认独立保存，计划只引用它并拆任务；不要把完整技术方案埋在 `implementation.md` 里。
+核心原则：技术设计默认独立保存，计划只引用它并拆任务；不要把完整技术方案埋在 `plans/implementation.md` 里。
 
 ## 何时使用
 
@@ -31,7 +31,7 @@ description: 已有批准规格，需要在实现计划前创建或更新独立 
 技术设计默认保存到：
 
 ```text
-docs/coding-plugins/features/<area>/<capability>/technical-design.md
+docs/coding-plugins/features/<area>/<capability>/technical/technical-design.md
 ```
 
 `<area>/<capability>` 必须和规格、计划、TDD Evidence 路径一致。
@@ -68,7 +68,7 @@ docs/coding-plugins/INDEX.md
 
 1. 读取批准规格和相关现有代码。
 2. 确认 area/capability，并检查是否已有技术设计。
-3. 创建或更新 `technical-design.md`。
+3. 创建或更新 `technical/technical-design.md`。
 4. 在规格 metadata 或正文中引用 technical design 路径；metadata key 保持英文，正文使用 `## 文档信息` 展示中文摘要。
 5. 更新 `docs/coding-plugins/INDEX.md`。
 6. 运行 `python3 scripts/preflight.py` 或至少运行相关 preflight 单测。
@@ -99,6 +99,6 @@ skills/writing-technical-design/templates/technical-design.md
 完成后说明：
 
 ```text
-技术设计已保存到 docs/coding-plugins/features/<area>/<capability>/technical-design.md。
+技术设计已保存到 docs/coding-plugins/features/<area>/<capability>/technical/technical-design.md。
 下一步使用 writing-plans 创建 implementation.md，并在计划中引用 Technical Design Source。
 ```

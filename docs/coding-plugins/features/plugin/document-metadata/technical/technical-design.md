@@ -8,7 +8,7 @@ updated: 2026-06-26
 related_specs:
   - docs/coding-plugins/features/plugin/document-metadata/specs/feature.md
 related_plans:
-  - docs/coding-plugins/features/plugin/document-metadata/implementation.md
+  - docs/coding-plugins/features/plugin/document-metadata/plans/implementation.md
 ---
 
 # 文档元数据中文展示优化技术设计
@@ -21,7 +21,7 @@ related_plans:
 | 领域 | plugin |
 | 能力 | document-metadata |
 | 规格 | `docs/coding-plugins/features/plugin/document-metadata/specs/feature.md` |
-| 计划 | `docs/coding-plugins/features/plugin/document-metadata/implementation.md` |
+| 计划 | `docs/coding-plugins/features/plugin/document-metadata/plans/implementation.md` |
 
 ## Design Summary
 
@@ -43,7 +43,7 @@ related_plans:
 | `scripts/test_preflight.py` | 增加 RED/GREEN 单元测试 | REQ-001, REQ-002, REQ-003 |
 | `skills/writing-plans/SKILL.md` | 计划模板增加 frontmatter 和 `文档信息` | REQ-005, AC-001 |
 | `skills/writing-technical-design/templates/technical-design.md` | 技术设计模板增加 `文档信息` | REQ-004 |
-| `docs/coding-plugins/features/**/implementation.md` | 回填现有计划 metadata 和中文摘要 | REQ-001, REQ-003 |
+| `docs/coding-plugins/features/**/plans/implementation.md` | 回填现有计划 metadata 和中文摘要 | REQ-001, REQ-003 |
 
 ## Data Flow / Control Flow
 
@@ -60,7 +60,7 @@ flowchart TD
 ## Interfaces and Contracts
 
 - Plan frontmatter must include `title`、`status`、`area`、`capability`、`created`、`updated`。
-- Plan path must remain `docs/coding-plugins/features/<area>/<capability>/implementation.md`。
+- Plan path must remain `docs/coding-plugins/features/<area>/<capability>/plans/implementation.md`。
 - Plan body must include `## 文档信息` and at least `状态`、`领域`、`能力` rows.
 - Frontmatter key names remain English.
 

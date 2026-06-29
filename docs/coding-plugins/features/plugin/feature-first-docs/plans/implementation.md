@@ -4,11 +4,11 @@ status: approved
 area: plugin
 capability: feature-first-docs
 created: 2026-06-26
-updated: 2026-06-26
+updated: 2026-06-29
 related_specs:
   - docs/coding-plugins/features/plugin/feature-first-docs/specs/maintenance.md
 related_technical:
-  - docs/coding-plugins/features/plugin/feature-first-docs/technical-design.md
+  - docs/coding-plugins/features/plugin/feature-first-docs/technical/technical-design.md
 related_evidence:
   - docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md
 ---
@@ -23,20 +23,20 @@ related_evidence:
 | 领域 | plugin |
 | 能力 | feature-first-docs |
 | 规格 | `docs/coding-plugins/features/plugin/feature-first-docs/specs/maintenance.md` |
-| 技术设计 | `docs/coding-plugins/features/plugin/feature-first-docs/technical-design.md` |
+| 技术设计 | `docs/coding-plugins/features/plugin/feature-first-docs/technical/technical-design.md` |
 | TDD Evidence | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` |
 
 > **给代理执行者：** REQUIRED SUB-SKILL: 使用 `coding-plugins:executing-plans` 或当前会话按检查点执行本计划。步骤使用 checkbox (`- [x]`) 语法追踪。
 
-**Goal:** 将 `docs/coding-plugins` 迁移到 feature-first 文档结构。
+**Goal:** 将 `docs/coding-plugins` 迁移到 feature-first 文档结构，并去除 feature root 下裸露的技术设计和实现计划文件。
 
-**Architecture:** `features/<area>/<capability>` 成为唯一活跃文档根。preflight 从 feature root 派生文档集合，并拒绝旧四类目录残留。
+**Architecture:** `features/<area>/<capability>` 成为唯一活跃文档根。规格、技术设计、计划和证据分别落到 `specs/`、`technical/`、`plans/` 和 `evidence/` 子目录。preflight 从 feature root 派生文档集合，并拒绝旧四类目录残留和 flat feature-root 技术/计划文件。
 
 **Tech Stack:** Python 标准库、Markdown、Codex/Claude plugin manifests 和 skills。
 
 **Spec Source:** `docs/coding-plugins/features/plugin/feature-first-docs/specs/maintenance.md`
 
-**Technical Design Source:** `docs/coding-plugins/features/plugin/feature-first-docs/technical-design.md`
+**Technical Design Source:** `docs/coding-plugins/features/plugin/feature-first-docs/technical/technical-design.md`
 
 ## Technical Design Snapshot
 
@@ -48,20 +48,23 @@ related_evidence:
 | --- | --- | --- | --- | --- |
 | NFR-001 | `python3 -m unittest scripts/test_preflight.py` | `test_collect_spec_files_uses_feature_first_path` | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` / Task 1 | Task 1 |
 | NFR-002 | `python3 -m unittest scripts/test_preflight.py` | spec collector returns `features/.../specs/feature.md` | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` / Task 1 | Task 1 |
-| NFR-003 | `python3 -m unittest scripts/test_preflight.py` | `test_collect_technical_design_files_uses_feature_first_path` | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` / Task 1 | Task 1 |
-| NFR-004 | `python3 -m unittest scripts/test_preflight.py` | `test_collect_plan_files_uses_feature_first_path` | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` / Task 1 | Task 1 |
+| NFR-003 | `python3 -m unittest scripts/test_preflight.py` | `test_collect_technical_design_files_uses_feature_first_technical_subdir` | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` / Task 1 | Task 1 |
+| NFR-004 | `python3 -m unittest scripts/test_preflight.py` | `test_collect_plan_files_uses_feature_first_plans_subdir` | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` / Task 1 | Task 1 |
 | NFR-005 | `python3 -m unittest scripts/test_preflight.py` | `test_collect_tdd_evidence_files_uses_feature_first_path` | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` / Task 1 | Task 1 |
 | NFR-006 | `python3 -m unittest scripts/test_preflight.py` | `test_feature_roots_require_readme` | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` / Task 1 | Task 1 |
 | NFR-007 | `python3 scripts/preflight.py` | total index covers feature roots and documents | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` / Final verification | Task 3 |
 | NFR-008 | `rg -n "docs/coding-plugins/(specs|technical|plans|evidence)" README.md docs skills scripts tests` | no active old default paths | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` / Final verification | Task 4 |
+| NFR-009 | `python3 -m unittest scripts/test_preflight.py` | `test_flat_feature_root_technical_and_plan_files_are_rejected` | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` / Task 6 | Task 6 |
 | ERR-001 | `python3 -m unittest scripts/test_preflight.py` | `test_legacy_docs_roots_are_rejected` | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` / Task 1 | Task 1 |
 | ERR-002 | `python3 -m unittest scripts/test_preflight.py` | `test_feature_roots_require_readme` | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` / Task 1 | Task 1 |
 | ERR-003 | `python3 -m unittest scripts/test_preflight.py` | metadata mismatch tests | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` / Task 1 | Task 1 |
 | ERR-004 | `rg -n "docs/coding-plugins/(specs|technical|plans|evidence)" README.md docs skills scripts tests` | no active old path references | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` / Final verification | Task 4 |
 | ERR-005 | `python3 scripts/preflight.py` | existing Spec ID checks still pass | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` / Final verification | Task 5 |
+| ERR-006 | `python3 -m unittest scripts/test_preflight.py` | flat feature root document is rejected | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` / Task 6 | Task 6 |
 | MIG-001 | `git status --short` | moved docs under `features/` | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` / Task 2 | Task 2 |
 | MIG-002 | `python3 -m unittest scripts/test_preflight.py` | legacy root rejection | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` / Task 2 | Task 2 |
 | MIG-003 | `python3 scripts/preflight.py` | all references and docs pass | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` / Final verification | Task 4 |
+| MIG-004 | `find docs/coding-plugins/features -maxdepth 3 -type f \( -name technical-design.md -o -name implementation.md \) -print` | no flat feature root technical/plan files | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` / Task 6 | Task 6 |
 
 ## Task 1: Preflight feature-first contract
 
@@ -93,8 +96,8 @@ Expected: PASS.
 
 **Files:**
 - Move: legacy spec files into `docs/coding-plugins/features/plugin/*/specs/`
-- Move: legacy technical design files into `docs/coding-plugins/features/plugin/*/technical-design.md`
-- Move: legacy implementation plans into `docs/coding-plugins/features/plugin/*/implementation.md`
+- Move: legacy technical design files into `docs/coding-plugins/features/plugin/*/technical/technical-design.md`
+- Move: legacy implementation plans into `docs/coding-plugins/features/plugin/*/plans/implementation.md`
 - Move: legacy TDD Evidence files into `docs/coding-plugins/features/plugin/*/evidence/`
 - Delete: `docs/coding-plugins/INDEX.md`
 - Delete: `docs/coding-plugins/INDEX.md`
@@ -189,3 +192,34 @@ Expected: all PASS.
 - [x] **Step 3: Commit, bump version, reinstall and push**
 
 Create Chinese Conventional Commit with `Authored-by: Vincen <hx001007@gmail.com>`, bump patch version, run verification again, install personal plugin and push.
+
+## Task 6: Remove flat feature-root technical and plan files
+
+**Spec IDs:** NFR-003, NFR-004, NFR-009, ERR-006, MIG-004
+
+**Files:**
+- Modify: `scripts/test_preflight.py`
+- Modify: `scripts/preflight.py`
+- Move: legacy flat feature-root technical design files into `docs/coding-plugins/features/plugin/*/technical/technical-design.md`
+- Move: legacy flat feature-root implementation plan files into `docs/coding-plugins/features/plugin/*/plans/implementation.md`
+- Modify: `docs/coding-plugins/features/**`
+- Modify: `skills/**`
+
+- [x] **Step 1: Write failing tests**
+
+Add tests that collectors only accept `technical/technical-design.md` and `plans/implementation.md`, and that flat feature-root `technical-design.md` or `implementation.md` fails preflight.
+
+Run: `python3 -m unittest scripts/test_preflight.py`
+Expected: FAIL because collectors still expect flat feature-root files and the flat-root rejection check does not exist.
+
+- [x] **Step 2: Implement nested collectors and reject flat files**
+
+Update preflight collectors, index rendering, plan/source validation and static checks to use `technical/` and `plans/` subdirectories.
+
+- [x] **Step 3: Migrate docs and references**
+
+Move all existing flat feature-root technical and plan files into the new subdirectories, then update active README、workflow、skill、spec、technical、plan 和 evidence 引用。
+
+- [x] **Step 4: Run final verification and release**
+
+Run `python3 scripts/preflight.py --write-index`、`python3 scripts/preflight.py`、`git diff --check`、`claude plugin validate /Users/vincen/workspace/plugins/coding-plugins --strict`，确认无旧 flat feature-root 文件残留，然后 bump patch version、重装本地插件并提交推送。

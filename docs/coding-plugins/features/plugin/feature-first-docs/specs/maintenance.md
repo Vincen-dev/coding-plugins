@@ -6,7 +6,7 @@ status: approved
 area: plugin
 capability: feature-first-docs
 created: 2026-06-26
-updated: 2026-06-26
+updated: 2026-06-29
 tags:
   - docs
   - migration
@@ -34,13 +34,13 @@ related_specs:
 | 领域 | plugin |
 | 能力 | feature-first-docs |
 | 规格类型 | maintenance |
-| 技术设计 | `docs/coding-plugins/features/plugin/feature-first-docs/technical-design.md` |
-| 实现计划 | `docs/coding-plugins/features/plugin/feature-first-docs/implementation.md` |
+| 技术设计 | `docs/coding-plugins/features/plugin/feature-first-docs/technical/technical-design.md` |
+| 实现计划 | `docs/coding-plugins/features/plugin/feature-first-docs/plans/implementation.md` |
 | TDD Evidence | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` |
 
 ## 目标
 
-将 `docs/coding-plugins` 从按产物类型分桶的结构迁移为 feature-first 结构，让同一 capability 的规格、技术设计、实现计划和证据集中维护，降低功能数量增长后的检索和同步成本。
+将 `docs/coding-plugins` 从按产物类型分桶和 flat feature-root 混用的结构迁移为严格 feature-first 子目录结构，让同一 capability 的规格、技术设计、实现计划和证据集中维护，降低功能数量增长后的检索和同步成本。
 
 ## 非目标
 
@@ -64,12 +64,13 @@ related_specs:
 | --- | --- | --- | --- |
 | NFR-001 | 必须 | 新文档根必须是 `docs/coding-plugins/features/{area}/{capability}/`。 | 单元测试 `test_collect_spec_files_uses_feature_first_path`。 |
 | NFR-002 | 必须 | 规格必须保存到 `docs/coding-plugins/features/{area}/{capability}/specs/{spec-kind}.md`。 | 单元测试和 `python3 scripts/preflight.py`。 |
-| NFR-003 | 必须 | 技术设计必须保存到 `docs/coding-plugins/features/{area}/{capability}/technical-design.md`。 | 单元测试 `test_collect_technical_design_files_uses_feature_first_path`。 |
-| NFR-004 | 必须 | 实现计划必须保存到 `docs/coding-plugins/features/{area}/{capability}/implementation.md`。 | 单元测试 `test_collect_plan_files_uses_feature_first_path`。 |
+| NFR-003 | 必须 | 技术设计必须保存到 `docs/coding-plugins/features/{area}/{capability}/technical/technical-design.md`。 | 单元测试 `test_collect_technical_design_files_uses_feature_first_technical_subdir`。 |
+| NFR-004 | 必须 | 实现计划必须保存到 `docs/coding-plugins/features/{area}/{capability}/plans/implementation.md`。 | 单元测试 `test_collect_plan_files_uses_feature_first_plans_subdir`。 |
 | NFR-005 | 必须 | TDD Evidence 必须保存到 `docs/coding-plugins/features/{area}/{capability}/evidence/tdd-evidence.md`。 | 单元测试 `test_collect_tdd_evidence_files_uses_feature_first_path`。 |
 | NFR-006 | 必须 | 每个 feature root 必须包含 `README.md` 作为该 capability 的人工入口。 | 单元测试 `test_feature_roots_require_readme`。 |
 | NFR-007 | 必须 | `docs/coding-plugins/INDEX.md` 必须覆盖每个 feature root 和每个真实文档路径。 | 单元测试 `test_artifact_index_requires_feature_root_paths` 和 preflight。 |
 | NFR-008 | 必须 | 活跃文档、skill、模板、测试和 README 中不得继续使用旧四类目录作为默认路径。 | 旧路径扫描命令必须无活跃命中。 |
+| NFR-009 | 必须 | feature root 下不得裸露 `technical-design.md` 或 `implementation.md`；这两个产物必须分别位于 `technical/` 和 `plans/` 子目录。 | 单元测试 `test_flat_feature_root_technical_and_plan_files_are_rejected`。 |
 
 ## 回归和风险情况
 
@@ -80,6 +81,7 @@ related_specs:
 | ERR-003 | metadata 的 `area` 或 `capability` 与 feature root 路径不一致。 | preflight 失败并指出 metadata/path mismatch。 | 单元测试。 |
 | ERR-004 | plan 或 technical design 引用旧路径。 | preflight 失败或旧路径扫描失败。 | 单元测试和 `rg` 命令。 |
 | ERR-005 | Evidence 引用了同 capability 规格中不存在的 Spec ID。 | preflight 失败并指出未知 Spec ID。 | 既有 evidence Spec ID 单元测试。 |
+| ERR-006 | feature root 下出现裸露 `technical-design.md` 或 `implementation.md`。 | preflight 失败并指出 flat feature root document。 | 单元测试 `test_flat_feature_root_technical_and_plan_files_are_rejected`。 |
 
 ## 兼容性或迁移
 
@@ -88,6 +90,7 @@ related_specs:
 | MIG-001 | 使用 `git mv` 或等价移动保留历史追踪，将现有文档迁移到 feature-first 路径。 | `git status --short` 显示 rename 或 delete/add 后由 Git 识别。 |
 | MIG-002 | 删除旧分类索引，只保留总索引。 | `test_legacy_docs_roots_are_rejected` 和 `python3 scripts/preflight.py`。 |
 | MIG-003 | 更新 README、installation、workflow、skills、templates 和测试中的活跃路径说明。 | `rg` 旧路径扫描和 preflight。 |
+| MIG-004 | 将已有 flat feature-root 技术设计和实现计划迁移到 `technical/` 与 `plans/` 子目录。 | `find docs/coding-plugins/features -maxdepth 3 -type f \( -name technical-design.md -o -name implementation.md \)` 无结果。 |
 
 ## 可观测性
 
@@ -107,12 +110,15 @@ related_specs:
 | NFR-006 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 计划中 |
 | NFR-007 | 单元测试和命令验证 | `python3 scripts/preflight.py` | Task 3 | 计划中 |
 | NFR-008 | 命令验证 | 旧路径扫描命令 | Task 4 | 计划中 |
+| NFR-009 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 计划中 |
 | ERR-001 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 计划中 |
 | ERR-002 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 计划中 |
 | ERR-003 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 计划中 |
 | ERR-004 | 命令验证 | 旧路径扫描命令 | Task 4 | 计划中 |
 | ERR-005 | 单元测试和 preflight | `python3 scripts/preflight.py` | Task 2 | 计划中 |
+| ERR-006 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 计划中 |
 | MIG-001 | Git 状态检查 | `git status --short` | Task 2 | 计划中 |
 | MIG-002 | 单元测试和文件检查 | `python3 -m unittest scripts/test_preflight.py` | Task 2 | 计划中 |
 | MIG-003 | 命令验证 | `python3 scripts/preflight.py` | Task 4 | 计划中 |
+| MIG-004 | 命令验证 | `find docs/coding-plugins/features -maxdepth 3 -type f \( -name technical-design.md -o -name implementation.md \)` | Task 2 | 计划中 |
 | OBS-001 | 命令验证 | `python3 scripts/preflight.py` | Task 5 | 计划中 |

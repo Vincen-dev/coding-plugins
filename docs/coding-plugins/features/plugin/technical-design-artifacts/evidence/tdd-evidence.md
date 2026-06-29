@@ -5,7 +5,7 @@
 ### TDD Evidence
 
 - **Spec/Bug/AC:** REQ-001 / REQ-002 / REQ-003 / REQ-006 / ERR-001 / ERR-002 / ERR-003 / ERR-004 / ERR-005
-- **RED test:** `scripts/test_preflight.py::PreflightTests.test_collect_technical_design_files_uses_feature_first_path`、`test_artifact_index_requires_technical_paths`、`test_spec_technical_reference_check_rejects_missing_paths`、`test_plan_technical_design_source_check_rejects_missing_source`、`test_technical_design_spec_id_check_rejects_unknown_ids`
+- **RED test:** `scripts/test_preflight.py::PreflightTests.test_collect_technical_design_files_uses_feature_first_technical_subdir`、`test_artifact_index_requires_technical_paths`、`test_spec_technical_reference_check_rejects_missing_paths`、`test_plan_technical_design_source_check_rejects_missing_source`、`test_technical_design_spec_id_check_rejects_unknown_ids`
 - **RED command:** `python3 -m unittest scripts/test_preflight.py`
 - **RED failure:** preflight 单测失败于缺少 technical 文件收集、索引校验、Spec/Plan 技术设计引用校验和 technical Spec ID 校验。
 - **GREEN change:** 新增 technical 文件收集、technical 索引覆盖、总索引 Technical 列覆盖、Spec/Plan technical 引用和 technical Spec ID 校验。

@@ -8,7 +8,7 @@ updated: 2026-06-29
 related_specs:
   - docs/coding-plugins/features/plugin/artifact-index/specs/feature.md
 related_plans:
-  - docs/coding-plugins/features/plugin/artifact-index/implementation.md
+  - docs/coding-plugins/features/plugin/artifact-index/plans/implementation.md
 related_evidence:
   - docs/coding-plugins/features/plugin/artifact-index/evidence/tdd-evidence.md
 ---
@@ -23,7 +23,7 @@ related_evidence:
 | 领域 | plugin |
 | 能力 | artifact-index |
 | 规格 | `docs/coding-plugins/features/plugin/artifact-index/specs/feature.md` |
-| 计划 | `docs/coding-plugins/features/plugin/artifact-index/implementation.md` |
+| 计划 | `docs/coding-plugins/features/plugin/artifact-index/plans/implementation.md` |
 | TDD Evidence | `docs/coding-plugins/features/plugin/artifact-index/evidence/tdd-evidence.md` |
 
 ## Design Summary
@@ -57,8 +57,8 @@ flowchart TD
   B --> C["path -> Area / Capability"]
   B --> D["README.md -> Tags"]
   B --> E["specs/*.md"]
-  B --> F["technical-design.md"]
-  B --> G["implementation.md"]
+  B --> F["technical/technical-design.md"]
+  B --> G["plans/implementation.md"]
   B --> H["evidence/**/*.md"]
   E --> I["Updated max from frontmatter"]
   F --> I

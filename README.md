@@ -18,7 +18,7 @@ Codex 侧包含 SessionStart hook，新建、恢复或清空会话时会注入 `
 
 1. **using-coding-plugins** - 入口技能。先判断直接意图，再判断开发任务类型。
 2. **spec-driven-development** - 实现前激活。把需求、接口、schema、状态机和验收标准写成可测试规格。
-3. **writing-technical-design** - 基于已批准规格写独立技术设计，保存到 `docs/coding-plugins/features/<area>/<capability>/technical-design.md`。
+3. **writing-technical-design** - 基于已批准规格写独立技术设计，保存到 `docs/coding-plugins/features/<area>/<capability>/technical/technical-design.md`。
 4. **writing-plans** - 基于已批准规格和技术设计写实现计划。任务拆到 2 到 5 分钟粒度，并建立 Spec ID -> Test -> Task 追踪。
 5. **using-git-worktrees** - 执行前使用。创建隔离 worktree 和新分支，避免污染当前工作区。
 6. **subagent-driven-development / executing-plans** - 根据计划执行。优先子代理驱动；没有子代理时内联执行。

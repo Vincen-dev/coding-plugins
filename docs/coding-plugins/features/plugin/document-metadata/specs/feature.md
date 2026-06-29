@@ -20,7 +20,7 @@ related_code:
 related_specs:
   - docs/coding-plugins/features/plugin/technical-design-artifacts/specs/feature.md
 related_technical:
-  - docs/coding-plugins/features/plugin/document-metadata/technical-design.md
+  - docs/coding-plugins/features/plugin/document-metadata/technical/technical-design.md
 ---
 
 # 文档元数据中文展示优化规格
@@ -37,7 +37,7 @@ related_technical:
 | 领域 | plugin |
 | 能力 | document-metadata |
 | 规格类型 | feature |
-| 技术设计 | `docs/coding-plugins/features/plugin/document-metadata/technical-design.md` |
+| 技术设计 | `docs/coding-plugins/features/plugin/document-metadata/technical/technical-design.md` |
 
 ## 非目标
 
@@ -58,7 +58,7 @@ related_technical:
 | 编号 | 优先级 | 需求 | 验证方式 |
 | --- | --- | --- | --- |
 | REQ-001 | 必须 | Plan 文档必须包含 frontmatter，并声明 `title`、`status`、`area`、`capability`、`created`、`updated`。 | 单元测试 `test_plan_metadata_check_rejects_missing_frontmatter`。 |
-| REQ-002 | 必须 | Plan frontmatter 的 `area` 和 `capability` 必须与 `plans/plugin/document-metadata/implementation.md` 这类分层路径一致。 | 单元测试 `test_plan_metadata_check_rejects_mismatched_path_metadata`。 |
+| REQ-002 | 必须 | Plan frontmatter 的 `area` 和 `capability` 必须与 `features/plugin/document-metadata/plans/implementation.md` 这类 feature-first 分层路径一致。 | 单元测试 `test_plan_metadata_check_rejects_mismatched_path_metadata`。 |
 | REQ-003 | 必须 | Plan 文档必须包含中文 `## 文档信息` 摘要表。 | 单元测试 `test_document_info_check_rejects_missing_chinese_summary`。 |
 | REQ-004 | 必须 | Technical Design 模板必须包含中文 `## 文档信息` 摘要表。 | 文档评审和 preflight。 |
 | REQ-005 | 必须 | `writing-plans` 计划模板必须包含 frontmatter 和中文 `## 文档信息` 摘要表。 | 文档评审和 preflight。 |

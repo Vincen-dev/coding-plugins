@@ -29,7 +29,7 @@ related_specs: []
 | 领域 | plugin |
 | 能力 | preflight |
 | 规格类型 | feature |
-| 技术设计 | `docs/coding-plugins/features/plugin/preflight/technical-design.md` |
+| 技术设计 | `docs/coding-plugins/features/plugin/preflight/technical/technical-design.md` |
 
 ## 目标
 

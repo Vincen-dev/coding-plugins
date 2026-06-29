@@ -132,7 +132,7 @@ docs/coding-plugins/features/<area>/<capability>/evidence/tdd-evidence.md
 
 ```text
 docs/coding-plugins/features/auth/login/specs/feature.md
-docs/coding-plugins/features/auth/login/implementation.md
+docs/coding-plugins/features/auth/login/plans/implementation.md
 docs/coding-plugins/features/auth/login/evidence/tdd-evidence.md
 ```
 

@@ -101,7 +101,9 @@ ARTIFACT_INDEX_REQUIRED_COLUMNS = (
     "Updated",
 )
 SPEC_ID_RE = re.compile(r"\b(?:REQ|API|SCHEMA|STATE|ERR|AC|NFR|MIG|OBS|NON)-\d{3,}\b")
-TECHNICAL_DESIGN_PATH_RE = re.compile(r"docs/coding-plugins/features/[A-Za-z0-9_.\-/]+/technical-design\.md")
+TECHNICAL_DESIGN_PATH_RE = re.compile(
+    r"docs/coding-plugins/features/[A-Za-z0-9_.\-/]+/technical/technical-design\.md"
+)
 PLAN_METADATA_REQUIRED_FIELDS = ("title", "status", "area", "capability", "created", "updated")
 CHINESE_DOCUMENT_INFO_REQUIRED_TERMS = ("## 文档信息", "状态", "领域", "能力")
 DOC_SYNC_REFERENCES = (
@@ -370,6 +372,22 @@ def check_feature_readmes(root: Path) -> None:
         raise PreflightError("Feature root is missing README: " + ", ".join(missing) + ".")
 
 
+def check_feature_first_document_layout(root: Path) -> None:
+    offenders: list[str] = []
+    for feature_root in collect_feature_roots(root):
+        for flat_name in ("technical-design.md", "implementation.md"):
+            flat_path = feature_root / flat_name
+            if flat_path.exists():
+                offenders.append(str(flat_path.relative_to(root)))
+
+    if offenders:
+        raise PreflightError(
+            "Flat feature root document is no longer active; use technical/ or plans/: "
+            + ", ".join(offenders)
+            + "."
+        )
+
+
 def check_document_path_metadata(root: Path) -> None:
     mismatches: list[str] = []
     for label, files in (
@@ -574,7 +592,7 @@ def collect_tdd_evidence_files(root: Path) -> list[Path]:
 def collect_plan_files(root: Path) -> list[Path]:
     return sorted(
         plan_path
-        for plan_path in (feature_root / "implementation.md" for feature_root in collect_feature_roots(root))
+        for plan_path in (feature_root / "plans" / "implementation.md" for feature_root in collect_feature_roots(root))
         if plan_path.exists()
     )
 
@@ -582,7 +600,9 @@ def collect_plan_files(root: Path) -> list[Path]:
 def collect_technical_design_files(root: Path) -> list[Path]:
     return sorted(
         design_path
-        for design_path in (feature_root / "technical-design.md" for feature_root in collect_feature_roots(root))
+        for design_path in (
+            feature_root / "technical" / "technical-design.md" for feature_root in collect_feature_roots(root)
+        )
         if design_path.exists()
     )
 
@@ -639,12 +659,12 @@ def feature_evidence_files(feature_root: Path) -> list[Path]:
 
 
 def feature_technical_design_files(feature_root: Path) -> list[Path]:
-    path = feature_root / "technical-design.md"
+    path = feature_root / "technical" / "technical-design.md"
     return [path] if path.exists() else []
 
 
 def feature_plan_files(feature_root: Path) -> list[Path]:
-    path = feature_root / "implementation.md"
+    path = feature_root / "plans" / "implementation.md"
     return [path] if path.exists() else []
 
 
@@ -710,8 +730,8 @@ def render_artifact_index(root: Path) -> str:
             "- `Area` 和 `Capability` 必须和 `Feature Root` 路径一致。",
             "- `Feature Root` 指向 `docs/coding-plugins/features/<area>/<capability>`。",
             "- `Spec` 指向该 capability 的规格文件；有多个规格时在同一个单元格用 `<br>` 分隔。",
-            "- `Technical Design` 指向默认技术设计 `docs/coding-plugins/features/<area>/<capability>/technical-design.md`；没有技术设计时使用 `-`。",
-            "- `Implementation Plan` 指向默认实现计划 `docs/coding-plugins/features/<area>/<capability>/implementation.md`；没有计划时使用 `-`。",
+            "- `Technical Design` 指向默认技术设计 `docs/coding-plugins/features/<area>/<capability>/technical/technical-design.md`；没有技术设计时使用 `-`。",
+            "- `Implementation Plan` 指向默认实现计划 `docs/coding-plugins/features/<area>/<capability>/plans/implementation.md`；没有计划时使用 `-`。",
             "- `Evidence` 指向该 capability 的 evidence 文件；有多个 evidence 时在同一个单元格用 `<br>` 分隔；没有 evidence 时使用 `-`。",
             "- `Tags` 来自 feature README 的 `标签` 行；日期来自规格、技术设计或计划 frontmatter 的最大 `updated` 值。",
         ]
@@ -814,6 +834,7 @@ def run_static_checks(root: Path) -> None:
     check_skill_agent_metadata(root)
     check_legacy_docs_roots(root)
     check_feature_readmes(root)
+    check_feature_first_document_layout(root)
     check_document_path_metadata(root)
     check_plan_metadata(root)
     check_chinese_document_info_sections(root)

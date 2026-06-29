@@ -8,7 +8,7 @@ updated: 2026-06-26
 related_specs:
   - docs/coding-plugins/features/plugin/technical-design-artifacts/specs/feature.md
 related_technical:
-  - docs/coding-plugins/features/plugin/technical-design-artifacts/technical-design.md
+  - docs/coding-plugins/features/plugin/technical-design-artifacts/technical/technical-design.md
 related_evidence:
   - docs/coding-plugins/features/plugin/technical-design-artifacts/evidence/tdd-evidence.md
 ---
@@ -23,7 +23,7 @@ related_evidence:
 | 领域 | plugin |
 | 能力 | technical-design-artifacts |
 | 规格 | `docs/coding-plugins/features/plugin/technical-design-artifacts/specs/feature.md` |
-| 技术设计 | `docs/coding-plugins/features/plugin/technical-design-artifacts/technical-design.md` |
+| 技术设计 | `docs/coding-plugins/features/plugin/technical-design-artifacts/technical/technical-design.md` |
 | TDD Evidence | `docs/coding-plugins/features/plugin/technical-design-artifacts/evidence/tdd-evidence.md` |
 
 > **给代理执行者：** REQUIRED SUB-SKILL: 使用 `coding-plugins:executing-plans` 或当前会话按检查点执行本计划。步骤使用 checkbox (`- [ ]`) 语法追踪。
@@ -36,7 +36,7 @@ related_evidence:
 
 **Spec Source:** `docs/coding-plugins/features/plugin/technical-design-artifacts/specs/feature.md`
 
-**Technical Design Source:** `docs/coding-plugins/features/plugin/technical-design-artifacts/technical-design.md`
+**Technical Design Source:** `docs/coding-plugins/features/plugin/technical-design-artifacts/technical/technical-design.md`
 
 ## Technical Design Snapshot
 
@@ -46,7 +46,7 @@ related_evidence:
 
 | Spec ID | Test file / command | Test name or assertion | TDD evidence file / field | Implementation task |
 | --- | --- | --- | --- | --- |
-| REQ-001 | `python3 -m unittest scripts/test_preflight.py` | `test_collect_technical_design_files_uses_feature_first_path` | `docs/coding-plugins/features/plugin/technical-design-artifacts/evidence/tdd-evidence.md` / RED-GREEN-Final verification | Task 1 |
+| REQ-001 | `python3 -m unittest scripts/test_preflight.py` | `test_collect_technical_design_files_uses_feature_first_technical_subdir` | `docs/coding-plugins/features/plugin/technical-design-artifacts/evidence/tdd-evidence.md` / RED-GREEN-Final verification | Task 1 |
 | REQ-002 | `python3 -m unittest scripts/test_preflight.py` | `test_technical_index_requires_design_paths` | `docs/coding-plugins/features/plugin/technical-design-artifacts/evidence/tdd-evidence.md` / RED-GREEN-Final verification | Task 1 |
 | REQ-003 | `python3 -m unittest scripts/test_preflight.py` | `test_artifact_index_requires_technical_paths` | `docs/coding-plugins/features/plugin/technical-design-artifacts/evidence/tdd-evidence.md` / RED-GREEN-Final verification | Task 1 |
 | REQ-004 | `python3 -m unittest tests.behavior.test_routing` | `test_using_entry_routes_development_intents_to_required_skills` | `docs/coding-plugins/features/plugin/technical-design-artifacts/evidence/tdd-evidence.md` / RED-GREEN-Final verification | Task 2 |
@@ -60,7 +60,7 @@ related_evidence:
 
 **Files:**
 - Create: `docs/coding-plugins/INDEX.md`
-- Create: `docs/coding-plugins/features/plugin/technical-design-artifacts/technical-design.md`
+- Create: `docs/coding-plugins/features/plugin/technical-design-artifacts/technical/technical-design.md`
 - Modify: `docs/coding-plugins/INDEX.md`
 - Modify: `scripts/preflight.py`
 - Modify: `scripts/test_preflight.py`

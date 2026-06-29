@@ -8,7 +8,7 @@ updated: 2026-06-29
 related_specs:
   - docs/coding-plugins/features/plugin/marketplace/specs/feature.md
 related_technical:
-  - docs/coding-plugins/features/plugin/marketplace/technical-design.md
+  - docs/coding-plugins/features/plugin/marketplace/technical/technical-design.md
 related_evidence:
   - docs/coding-plugins/features/plugin/marketplace/evidence/tdd-evidence.md
 ---
@@ -23,7 +23,7 @@ related_evidence:
 | 领域 | plugin |
 | 能力 | marketplace |
 | 规格 | `docs/coding-plugins/features/plugin/marketplace/specs/feature.md` |
-| 技术设计 | `docs/coding-plugins/features/plugin/marketplace/technical-design.md` |
+| 技术设计 | `docs/coding-plugins/features/plugin/marketplace/technical/technical-design.md` |
 | TDD Evidence | `docs/coding-plugins/features/plugin/marketplace/evidence/tdd-evidence.md` |
 
 **Goal:** 记录并固化 `coding-plugins` 的 Codex marketplace、personal marketplace 和 Claude Code 安装入口。
@@ -34,7 +34,7 @@ related_evidence:
 
 **Spec Source:** `docs/coding-plugins/features/plugin/marketplace/specs/feature.md`
 
-**Technical Design Source:** `docs/coding-plugins/features/plugin/marketplace/technical-design.md`
+**Technical Design Source:** `docs/coding-plugins/features/plugin/marketplace/technical/technical-design.md`
 
 ## Technical Design Snapshot
 
@@ -100,8 +100,8 @@ related_evidence:
 
 **Files:**
 
-- Create: `docs/coding-plugins/features/plugin/marketplace/technical-design.md`
-- Create: `docs/coding-plugins/features/plugin/marketplace/implementation.md`
+- Create: `docs/coding-plugins/features/plugin/marketplace/technical/technical-design.md`
+- Create: `docs/coding-plugins/features/plugin/marketplace/plans/implementation.md`
 - Create: `docs/coding-plugins/features/plugin/marketplace/evidence/tdd-evidence.md`
 - Modify: `docs/coding-plugins/features/plugin/marketplace/specs/feature.md`
 - Modify: `docs/coding-plugins/features/plugin/marketplace/README.md`

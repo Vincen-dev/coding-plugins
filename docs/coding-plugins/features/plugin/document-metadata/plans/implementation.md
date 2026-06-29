@@ -8,7 +8,7 @@ updated: 2026-06-26
 related_specs:
   - docs/coding-plugins/features/plugin/document-metadata/specs/feature.md
 related_technical:
-  - docs/coding-plugins/features/plugin/document-metadata/technical-design.md
+  - docs/coding-plugins/features/plugin/document-metadata/technical/technical-design.md
 related_evidence:
   - docs/coding-plugins/features/plugin/document-metadata/evidence/tdd-evidence.md
 ---
@@ -23,7 +23,7 @@ related_evidence:
 | 领域 | plugin |
 | 能力 | document-metadata |
 | 规格 | `docs/coding-plugins/features/plugin/document-metadata/specs/feature.md` |
-| 技术设计 | `docs/coding-plugins/features/plugin/document-metadata/technical-design.md` |
+| 技术设计 | `docs/coding-plugins/features/plugin/document-metadata/technical/technical-design.md` |
 | TDD Evidence | `docs/coding-plugins/features/plugin/document-metadata/evidence/tdd-evidence.md` |
 
 > **给代理执行者：** REQUIRED SUB-SKILL: 使用 `coding-plugins:executing-plans` 或当前会话按检查点执行本计划。步骤使用 checkbox (`- [ ]`) 语法追踪。
@@ -36,7 +36,7 @@ related_evidence:
 
 **Spec Source:** `docs/coding-plugins/features/plugin/document-metadata/specs/feature.md`
 
-**Technical Design Source:** `docs/coding-plugins/features/plugin/document-metadata/technical-design.md`
+**Technical Design Source:** `docs/coding-plugins/features/plugin/document-metadata/technical/technical-design.md`
 
 ## Technical Design Snapshot
 
@@ -82,8 +82,8 @@ Expected: PASS.
 **Files:**
 - Modify: `skills/writing-plans/SKILL.md`
 - Modify: `skills/writing-technical-design/templates/technical-design.md`
-- Modify: `docs/coding-plugins/features/plugin/technical-design-artifacts/implementation.md`
-- Modify: `docs/coding-plugins/features/plugin/document-metadata/implementation.md`
+- Modify: `docs/coding-plugins/features/plugin/technical-design-artifacts/plans/implementation.md`
+- Modify: `docs/coding-plugins/features/plugin/document-metadata/plans/implementation.md`
 
 - [x] **Step 1: Update templates**
 

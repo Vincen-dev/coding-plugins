@@ -4,11 +4,11 @@ status: approved
 area: plugin
 capability: feature-first-docs
 created: 2026-06-26
-updated: 2026-06-26
+updated: 2026-06-29
 related_specs:
   - docs/coding-plugins/features/plugin/feature-first-docs/specs/maintenance.md
 related_plans:
-  - docs/coding-plugins/features/plugin/feature-first-docs/implementation.md
+  - docs/coding-plugins/features/plugin/feature-first-docs/plans/implementation.md
 ---
 
 # Feature-first 文档结构迁移技术设计
@@ -21,11 +21,11 @@ related_plans:
 | 领域 | plugin |
 | 能力 | feature-first-docs |
 | 规格 | `docs/coding-plugins/features/plugin/feature-first-docs/specs/maintenance.md` |
-| 计划 | `docs/coding-plugins/features/plugin/feature-first-docs/implementation.md` |
+| 计划 | `docs/coding-plugins/features/plugin/feature-first-docs/plans/implementation.md` |
 
 ## Design Summary
 
-文档结构从产物类型优先改为 feature-first。`docs/coding-plugins/features/<area>/<capability>/` 成为 capability 的唯一活跃文档根，规格放入 `specs/` 子目录，技术设计、计划和 README 放在 feature root，TDD Evidence 放在 `evidence/` 子目录。preflight 通过统一的 feature root collector 收集文档，并拒绝旧四类目录中的活跃文档。
+文档结构从产物类型优先改为 feature-first。`docs/coding-plugins/features/<area>/<capability>/` 成为 capability 的唯一活跃文档根，规格放入 `specs/` 子目录，技术设计放入 `technical/` 子目录，计划放入 `plans/` 子目录，TDD Evidence 放入 `evidence/` 子目录。preflight 通过统一的 feature root collector 收集文档，并拒绝旧四类目录和 feature root 下裸露技术/计划文件中的活跃文档。
 
 ## Key Decisions
 
@@ -40,7 +40,7 @@ related_plans:
 
 | Component | Change | Related Spec IDs |
 | --- | --- | --- |
-| `scripts/preflight.py` | 改为扫描 `features/<area>/<capability>`，拒绝旧 docs root，校验 README、metadata 和索引 | NFR-001, NFR-007, ERR-001 |
+| `scripts/preflight.py` | 改为扫描 `features/<area>/<capability>`，拒绝旧 docs root 和 flat feature-root 技术/计划文件，校验 README、metadata 和索引 | NFR-001, NFR-007, ERR-001 |
 | `scripts/test_preflight.py` | 更新 RED/GREEN 单元测试，覆盖新路径和旧路径拒绝 | NFR-001, NFR-006, ERR-001 |
 | `docs/coding-plugins/**` | 将现有文档迁移到 feature-first 结构，重建总索引 | MIG-001, MIG-002 |
 | `skills/*/SKILL.md` 和模板 | 更新默认落地路径和示例路径 | NFR-008, MIG-003 |
@@ -52,8 +52,8 @@ related_plans:
 flowchart TD
   A["docs/coding-plugins/features/<area>/<capability>/"] --> B["README.md"]
   A --> C["specs/*.md"]
-  A --> D["technical-design.md"]
-  A --> E["implementation.md"]
+  A --> D["technical/technical-design.md"]
+  A --> E["plans/implementation.md"]
   A --> F["evidence/*.md"]
   C --> G["preflight Spec validation"]
   D --> H["preflight technical Spec ID validation"]
@@ -71,8 +71,8 @@ flowchart TD
 - Feature root: `docs/coding-plugins/features/<area>/<capability>/`
 - Feature README: `docs/coding-plugins/features/<area>/<capability>/README.md`
 - Spec files: `docs/coding-plugins/features/<area>/<capability>/specs/<spec-kind>.md`
-- Technical design: `docs/coding-plugins/features/<area>/<capability>/technical-design.md`
-- Implementation plan: `docs/coding-plugins/features/<area>/<capability>/implementation.md`
+- Technical design: `docs/coding-plugins/features/<area>/<capability>/technical/technical-design.md`
+- Implementation plan: `docs/coding-plugins/features/<area>/<capability>/plans/implementation.md`
 - Evidence files: `docs/coding-plugins/features/<area>/<capability>/evidence/tdd-evidence.md`
 - Frontmatter `area` and `capability` must match feature root path.
 - `docs/coding-plugins/INDEX.md` must reference every feature root and every collected document path.

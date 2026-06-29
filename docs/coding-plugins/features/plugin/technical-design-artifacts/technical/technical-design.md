@@ -4,11 +4,11 @@ status: approved
 area: plugin
 capability: technical-design-artifacts
 created: 2026-06-26
-updated: 2026-06-26
+updated: 2026-06-29
 related_specs:
   - docs/coding-plugins/features/plugin/technical-design-artifacts/specs/feature.md
 related_plans:
-  - docs/coding-plugins/features/plugin/technical-design-artifacts/implementation.md
+  - docs/coding-plugins/features/plugin/technical-design-artifacts/plans/implementation.md
 ---
 
 # 技术设计产物独立维护技术设计
@@ -21,17 +21,17 @@ related_plans:
 | 领域 | plugin |
 | 能力 | technical-design-artifacts |
 | 规格 | `docs/coding-plugins/features/plugin/technical-design-artifacts/specs/feature.md` |
-| 计划 | `docs/coding-plugins/features/plugin/technical-design-artifacts/implementation.md` |
+| 计划 | `docs/coding-plugins/features/plugin/technical-design-artifacts/plans/implementation.md` |
 
 ## Design Summary
 
-新增独立技术设计层，位于 Spec 和 Plan 之间。`writing-technical-design` 负责把批准规格转成 feature root 下的 `technical-design.md`，`writing-plans` 只引用技术设计并拆解 TDD 任务。preflight 统一校验总索引、Spec 引用、Plan 引用和 Spec ID 追踪。
+新增独立技术设计层，位于 Spec 和 Plan 之间。`writing-technical-design` 负责把批准规格转成 feature root 的 `technical/technical-design.md`，`writing-plans` 只引用技术设计并拆解 TDD 任务到 `plans/implementation.md`。preflight 统一校验总索引、Spec 引用、Plan 引用和 Spec ID 追踪。
 
 ## Key Decisions
 
 | Decision | Rationale | Tradeoff |
 | --- | --- | --- |
-| 在 feature root 下新增 `technical-design.md`，而不是复用 `implementation.md` | 区分稳定技术方案和执行任务，避免 `implementation.md` 同时承担设计和步骤 | 需要维护新的引用和校验规则 |
+| 在 feature root 的 `technical/` 子目录下新增 `technical/technical-design.md`，而不是复用 `plans/implementation.md` | 区分稳定技术方案和执行任务，避免 `plans/implementation.md` 同时承担设计和步骤 | 需要维护新的引用和校验规则 |
 | 新增 `writing-technical-design` skill | 技术设计是独立阶段，放进 `writing-plans` 会让计划 skill 继续膨胀 | 会增加一次技能选择和文档产物 |
 | preflight 只强制校验真实 technical 文件和已有引用 | 避免历史 capability 必须立即回填技术设计 | 历史规格暂时可能没有 technical 链路 |
 | 总索引增加 `Technical Design` 列 | 检索 capability 时能看到 Spec、Technical、Plan、Evidence 全链路 | 需要更新既有索引行 |
@@ -54,9 +54,9 @@ related_plans:
 ```mermaid
 flowchart TD
   A["Approved Spec"] --> B["writing-technical-design"]
-  B --> C["technical-design.md"]
+  B --> C["technical/technical-design.md"]
   C --> D["writing-plans"]
-  D --> E["implementation.md"]
+  D --> E["plans/implementation.md"]
   E --> F["test-driven-development"]
   F --> G["tdd-evidence.md"]
   C --> H["docs/coding-plugins/INDEX.md"]
@@ -64,8 +64,8 @@ flowchart TD
 
 ## Interfaces and Contracts
 
-- Technical design path: `docs/coding-plugins/features/plugin/technical-design-artifacts/technical-design.md`
-- Plan path: `docs/coding-plugins/features/plugin/technical-design-artifacts/implementation.md`
+- Technical design path: `docs/coding-plugins/features/plugin/technical-design-artifacts/technical/technical-design.md`
+- Plan path: `docs/coding-plugins/features/plugin/technical-design-artifacts/plans/implementation.md`
 - Evidence path: `docs/coding-plugins/features/plugin/technical-design-artifacts/evidence/tdd-evidence.md`
 - Spec metadata may include `related_technical` paths.
 - Plan must include `Technical Design Source:` followed by a real technical design path.

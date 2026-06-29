@@ -1,5 +1,11 @@
 # Release Notes
 
+## 0.6.24 - 2026-06-29
+
+- 将 feature-first 技术设计和实现计划从 feature root 裸文件迁移到 `technical/technical-design.md` 与 `plans/implementation.md`。
+- 增强 preflight，拒绝 feature root 下裸露的 `technical-design.md` 和 `implementation.md`，并更新总索引生成规则。
+- 同步更新规格、技术设计、实现计划、TDD Evidence、技能模板和链路文档中的新路径契约。
+
 ## 0.6.23 - 2026-06-29
 
 - 补齐 `marketplace` feature 的技术设计、实现计划和 TDD Exception Evidence。

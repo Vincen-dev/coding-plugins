@@ -8,7 +8,7 @@ updated: 2026-06-29
 related_specs:
   - docs/coding-plugins/features/plugin/artifact-index/specs/feature.md
 related_technical:
-  - docs/coding-plugins/features/plugin/artifact-index/technical-design.md
+  - docs/coding-plugins/features/plugin/artifact-index/technical/technical-design.md
 related_evidence:
   - docs/coding-plugins/features/plugin/artifact-index/evidence/tdd-evidence.md
 ---
@@ -23,7 +23,7 @@ related_evidence:
 | 领域 | plugin |
 | 能力 | artifact-index |
 | 规格 | `docs/coding-plugins/features/plugin/artifact-index/specs/feature.md` |
-| 技术设计 | `docs/coding-plugins/features/plugin/artifact-index/technical-design.md` |
+| 技术设计 | `docs/coding-plugins/features/plugin/artifact-index/technical/technical-design.md` |
 | TDD Evidence | `docs/coding-plugins/features/plugin/artifact-index/evidence/tdd-evidence.md` |
 
 > **给代理执行者：** REQUIRED SUB-SKILL: 使用 `coding-plugins:executing-plans` 或当前会话按检查点执行本计划。步骤使用 checkbox (`- [x]`) 语法追踪。
@@ -36,11 +36,11 @@ related_evidence:
 
 **Spec Source:** `docs/coding-plugins/features/plugin/artifact-index/specs/feature.md`
 
-**Technical Design Source:** `docs/coding-plugins/features/plugin/artifact-index/technical-design.md`
+**Technical Design Source:** `docs/coding-plugins/features/plugin/artifact-index/technical/technical-design.md`
 
 ## Technical Design Snapshot
 
-本计划执行 `technical-design.md` 中的确定性索引生成方案。关键路径是先用 RED 测试固定渲染输出和漂移校验，再在 `preflight.py` 中复用 feature root collector 实现生成器，最后用 `--write-index` 刷新真实索引并记录 TDD Evidence。
+本计划执行 `technical/technical-design.md` 中的确定性索引生成方案。关键路径是先用 RED 测试固定渲染输出和漂移校验，再在 `preflight.py` 中复用 feature root collector 实现生成器，最后用 `--write-index` 刷新真实索引并记录 TDD Evidence。
 
 ## Spec Traceability
 
@@ -103,8 +103,8 @@ Expected: PASS.
 - Modify: `docs/coding-plugins/INDEX.md`
 - Modify: `docs/coding-plugins/features/plugin/artifact-index/README.md`
 - Modify: `docs/coding-plugins/features/plugin/artifact-index/specs/feature.md`
-- Create: `docs/coding-plugins/features/plugin/artifact-index/technical-design.md`
-- Create: `docs/coding-plugins/features/plugin/artifact-index/implementation.md`
+- Create: `docs/coding-plugins/features/plugin/artifact-index/technical/technical-design.md`
+- Create: `docs/coding-plugins/features/plugin/artifact-index/plans/implementation.md`
 - Modify: `docs/coding-plugins/features/plugin/artifact-index/evidence/tdd-evidence.md`
 
 - [x] **Step 1: Update feature docs**

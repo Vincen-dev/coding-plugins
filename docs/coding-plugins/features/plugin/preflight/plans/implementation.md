@@ -8,7 +8,7 @@ updated: 2026-06-29
 related_specs:
   - docs/coding-plugins/features/plugin/preflight/specs/feature.md
 related_technical:
-  - docs/coding-plugins/features/plugin/preflight/technical-design.md
+  - docs/coding-plugins/features/plugin/preflight/technical/technical-design.md
 related_evidence:
   - docs/coding-plugins/features/plugin/preflight/evidence/tdd-evidence.md
 ---
@@ -23,7 +23,7 @@ related_evidence:
 | 领域 | plugin |
 | 能力 | preflight |
 | 规格 | `docs/coding-plugins/features/plugin/preflight/specs/feature.md` |
-| 技术设计 | `docs/coding-plugins/features/plugin/preflight/technical-design.md` |
+| 技术设计 | `docs/coding-plugins/features/plugin/preflight/technical/technical-design.md` |
 | TDD Evidence | `docs/coding-plugins/features/plugin/preflight/evidence/tdd-evidence.md` |
 
 **Goal:** 记录并固化 `python3 scripts/preflight.py` 作为插件发布前检查的完整执行链路。
@@ -34,7 +34,7 @@ related_evidence:
 
 **Spec Source:** `docs/coding-plugins/features/plugin/preflight/specs/feature.md`
 
-**Technical Design Source:** `docs/coding-plugins/features/plugin/preflight/technical-design.md`
+**Technical Design Source:** `docs/coding-plugins/features/plugin/preflight/technical/technical-design.md`
 
 ## Technical Design Snapshot
 
@@ -99,8 +99,8 @@ related_evidence:
 
 **Files:**
 
-- Create: `docs/coding-plugins/features/plugin/preflight/technical-design.md`
-- Create: `docs/coding-plugins/features/plugin/preflight/implementation.md`
+- Create: `docs/coding-plugins/features/plugin/preflight/technical/technical-design.md`
+- Create: `docs/coding-plugins/features/plugin/preflight/plans/implementation.md`
 - Create: `docs/coding-plugins/features/plugin/preflight/evidence/tdd-evidence.md`
 - Modify: `docs/coding-plugins/features/plugin/preflight/specs/feature.md`
 - Modify: `docs/coding-plugins/features/plugin/preflight/README.md`
