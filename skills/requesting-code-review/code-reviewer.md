@@ -97,7 +97,7 @@ Task tool (general-purpose):
 
     **Ready to merge?** [Yes | No | With fixes]
 
-    **Reasoning:** [1-2 句技术判断]
+    **判断理由:** [1-2 句技术判断]
 
     ## 严格规则
 

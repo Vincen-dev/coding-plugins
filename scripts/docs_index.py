@@ -11,15 +11,15 @@ class DocsIndexError(RuntimeError):
 
 
 ARTIFACT_INDEX_REQUIRED_COLUMNS = (
-    "Area",
-    "Capability",
-    "Feature Root",
-    "Spec",
-    "Technical Design",
-    "Implementation Plan",
-    "Evidence",
-    "Tags",
-    "Updated",
+    "领域",
+    "能力",
+    "功能根目录",
+    "规格",
+    "技术设计",
+    "实现计划",
+    "证据",
+    "标签",
+    "更新日期",
 )
 
 
@@ -152,9 +152,9 @@ def render_artifact_index(root: Path) -> str:
     lines = [
         "# Coding Plugins Feature 索引",
         "",
-        "本索引用于按 `Area` 和 `Capability` 检索 feature-first 文档链路。运行 `python3 scripts/preflight.py --write-index` 可根据 feature root 重新生成本文件。",
+        "本索引用于按 `领域` 和 `能力` 检索 feature-first 文档链路。运行 `python3 scripts/preflight.py --write-index` 可根据 feature root 重新生成本文件。",
         "",
-        "| Area | Capability | Feature Root | Spec | Technical Design | Implementation Plan | Evidence | Tags | Updated |",
+        "| 领域 | 能力 | 功能根目录 | 规格 | 技术设计 | 实现计划 | 证据 | 标签 | 更新日期 |",
         "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
 
@@ -184,15 +184,15 @@ def render_artifact_index(root: Path) -> str:
     lines.extend(
         [
             "",
-            "Rules:",
+            "规则:",
             "",
-            "- `Area` 和 `Capability` 必须和 `Feature Root` 路径一致。",
-            "- `Feature Root` 指向 `docs/coding-plugins/features/<area>/<capability>`。",
-            "- `Spec` 指向该 capability 的规格文件；有多个规格时在同一个单元格用 `<br>` 分隔。",
-            "- `Technical Design` 指向默认技术设计 `docs/coding-plugins/features/<area>/<capability>/technical/technical-design.md`；没有技术设计时使用 `-`。",
-            "- `Implementation Plan` 指向默认实现计划 `docs/coding-plugins/features/<area>/<capability>/plans/implementation.md`；没有计划时使用 `-`。",
-            "- `Evidence` 指向该 capability 的 evidence 文件；有多个 evidence 时在同一个单元格用 `<br>` 分隔；没有 evidence 时使用 `-`。",
-            "- `Tags` 来自 feature README 的 `标签` 行；日期来自规格、技术设计或计划 frontmatter 的最大 `updated` 值。",
+            "- `领域` 和 `能力` 必须和 `功能根目录` 路径一致。",
+            "- `功能根目录` 指向 `docs/coding-plugins/features/<area>/<capability>`。",
+            "- `规格` 指向该 capability 的规格文件；有多个规格时在同一个单元格用 `<br>` 分隔。",
+            "- `技术设计` 指向默认技术设计 `docs/coding-plugins/features/<area>/<capability>/technical/technical-design.md`；没有技术设计时使用 `-`。",
+            "- `实现计划` 指向默认实现计划 `docs/coding-plugins/features/<area>/<capability>/plans/implementation.md`；没有计划时使用 `-`。",
+            "- `证据` 指向该 capability 的 evidence 文件；有多个 evidence 时在同一个单元格用 `<br>` 分隔；没有 evidence 时使用 `-`。",
+            "- `标签` 来自 feature README 的 `标签` 行；日期来自规格、技术设计或计划 frontmatter 的最大 `updated` 值。",
         ]
     )
     return "\n".join(lines) + "\n"

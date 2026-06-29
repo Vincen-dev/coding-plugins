@@ -36,7 +36,7 @@ description: 已有批准规格，需要在实现计划前创建或更新独立 
 docs/coding-plugins/features/<area>/<capability>/technical/technical-design.md
 ```
 
-`<area>/<capability>` 必须和规格、计划、TDD Evidence 路径一致。
+`<area>/<capability>` 必须和规格、计划、TDD 证据路径一致。
 
 同时维护：
 
@@ -48,27 +48,27 @@ docs/coding-plugins/INDEX.md
 
 | 文档 | 负责 | 不负责 |
 | --- | --- | --- |
-| Spec | 需求、契约、验收标准、错误边界、Spec ID | 具体实现方案 |
-| Technical Design | 架构方案、关键决策、影响组件、数据流、接口落地、兼容策略、测试策略 | 逐步执行清单 |
-| Plan | 任务拆分、文件修改步骤、RED/GREEN 命令、Spec ID 到 Test 到 Task 追踪 | 重复完整技术方案 |
-| Evidence | 实际 RED/GREEN/REFACTOR 和最终验证证据 | 设计讨论 |
+| 规格 | 需求、契约、验收标准、错误边界、Spec ID | 具体实现方案 |
+| 技术设计 | 架构方案、关键决策、影响组件、数据流、接口落地、兼容策略、测试策略 | 逐步执行清单 |
+| 实现计划 | 任务拆分、文件修改步骤、RED/GREEN 命令、Spec ID 到测试和任务的追踪 | 重复完整技术方案 |
+| 证据 | 实际 RED/GREEN/REFACTOR 和最终验证证据 | 设计讨论 |
 
 ## 必须覆盖
 
 - **设计摘要**：2 到 5 句话说明整体方案。
 - **规格缺口审查**：确认是否存在未覆盖需求、验收标准不清或新增外部行为；有缺口必须先回到 spec。
 - **生命周期 metadata**：frontmatter 必须包含 `lifecycle_status`、`implemented_commits` 和 `validated_by`；生命周期值只允许 `draft`、`approved`、`implemented`、`stale`、`superseded`。
-- **规格到设计映射**：每个 MUST Spec ID 对应 `规格摘要`、具体技术落点、`TD-xxx` 关键决策 ID、影响文件或符号、验证命令和 Evidence 路径。
+- **规格到设计映射**：每个 MUST Spec ID 对应 `规格摘要`、具体技术落点、`TD-xxx` 关键决策 ID、影响文件或符号、验证命令和证据路径。
 - **无需技术设计的规格**：只有当某个 MUST Spec ID 确实不需要技术方案时才填写豁免原因。
 - **关键决策**：每条关键决策必须有 `TD-xxx` ID、原因和代价；映射表中的关键决策 ID 必须能在这里找到。
 - **影响组件**：模块、文件、服务或数据结构怎么变。
 - **数据流 / 控制流**：核心数据流或控制流。
 - **接口和契约**：内部接口、外部 API、schema、状态机如何落地。
 - **迁移 / 兼容性**：迁移、兼容、回滚、灰度。
-- **测试策略**：Spec ID 对应的测试层级、RED/GREEN 命令和 TDD Evidence 记录方式。
+- **测试策略**：Spec ID 对应的测试层级、RED/GREEN 命令和 TDD 证据记录方式。
 - **风险和缓解**：风险和缓解方案。
 
-如果某项不适用，写 `Not applicable` 并说明原因。不要留空。
+如果某项不适用，写 `不适用` 并说明原因。不要留空。
 
 ## 流程
 
@@ -81,7 +81,7 @@ docs/coding-plugins/INDEX.md
 7. 更新 `docs/coding-plugins/INDEX.md`。
 8. 运行 `python3 skills/writing-technical-design/scripts/validate_technical_design.py <technical-path>` 做 technical 单文档校验；发布前和 preflight 使用 strict 质量门禁。
 9. 运行 `python3 scripts/preflight.py` 或至少运行相关 preflight 单测。
-10. 交接给 `writing-plans`，计划必须写 `Technical Design Source`。
+10. 交接给 `writing-plans`，计划必须写 `技术设计来源`。
 
 ## 模板
 
@@ -97,19 +97,19 @@ skills/writing-technical-design/templates/technical-design.md
 
 - 是否每个 MUST Spec ID 都在设计中有落地点。
 - 是否每个 MUST Spec ID 都出现在 `## 规格到设计映射` 或 `## 无需技术设计的规格` 中。
-- 映射表是否使用完整 7 列：`Spec ID`、`规格摘要`、`技术落点`、`关键决策 ID`、`影响文件/符号`、`验证命令`、`Evidence`。
+- 映射表是否使用完整 7 列：`规格 ID`、`规格摘要`、`技术落点`、`关键决策 ID`、`影响文件/符号`、`验证命令`、`证据`。
 - 映射表中的 `关键决策 ID` 是否都能在 `## 关键决策` 表中找到。
 - `## 规格到设计映射` 是否避免“见本设计章节”“按本 technical 落地”等泛化映射。
 - 是否完成 `## 规格缺口审查`，且没有未处理、待处理或需澄清的缺口。
 - 是否没有在 technical 中新增需求、验收标准或外部行为；如有，是否已回写 spec。
 - 是否没有隐藏需求：出现必须、不得、禁止、MUST、SHOULD 类约束时，要么引用 Spec ID，要么明确标注“设计约束”。
 - 是否维护 `lifecycle_status`、`implemented_commits` 和 `validated_by`。
-- 是否在 metadata 中链接了已存在的 spec、plan 和 TDD Evidence。
+- 是否在 metadata 中链接了已存在的 spec、plan 和 TDD 证据。
 - related spec 的 `updated` 是否晚于 technical；若晚于，先更新 technical 或标记 stale。
 - 是否把关键决策、代价和风险写清楚。
 - 是否明确受影响文件或模块。
 - 是否说明兼容、迁移或为什么不适用。
-- 是否说明测试策略和 TDD Evidence 目标。
+- 是否说明测试策略和 TDD 证据目标。
 - 是否没有任务清单膨胀；任务拆分留给 `writing-plans`。
 - 是否同步两个索引。
 - 是否运行 technical validator；发布前使用 `--strict`，确保泛化映射和 stale technical 会失败。
@@ -120,5 +120,5 @@ skills/writing-technical-design/templates/technical-design.md
 
 ```text
 技术设计已保存到 docs/coding-plugins/features/<area>/<capability>/technical/technical-design.md。
-下一步使用 writing-plans 创建 implementation.md，并在计划中引用 Technical Design Source。
+下一步使用 writing-plans 创建 implementation.md，并在计划中引用技术设计来源。
 ```

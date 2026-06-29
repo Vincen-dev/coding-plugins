@@ -36,7 +36,7 @@ related_specs:
 | 规格类型 | maintenance |
 | 技术设计 | `docs/coding-plugins/features/plugin/feature-first-docs/technical/technical-design.md` |
 | 实现计划 | `docs/coding-plugins/features/plugin/feature-first-docs/plans/implementation.md` |
-| TDD Evidence | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` |
+| TDD 证据 | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` |
 
 ## 目标
 
@@ -66,7 +66,7 @@ related_specs:
 | NFR-002 | 必须 | 规格必须保存到 `docs/coding-plugins/features/{area}/{capability}/specs/{spec-kind}.md`。 | 单元测试和 `python3 scripts/preflight.py`。 |
 | NFR-003 | 必须 | 技术设计必须保存到 `docs/coding-plugins/features/{area}/{capability}/technical/technical-design.md`。 | 单元测试 `test_collect_technical_design_files_uses_feature_first_technical_subdir`。 |
 | NFR-004 | 必须 | 实现计划必须保存到 `docs/coding-plugins/features/{area}/{capability}/plans/implementation.md`。 | 单元测试 `test_collect_plan_files_uses_feature_first_plans_subdir`。 |
-| NFR-005 | 必须 | TDD Evidence 必须保存到 `docs/coding-plugins/features/{area}/{capability}/evidence/tdd-evidence.md`。 | 单元测试 `test_collect_tdd_evidence_files_uses_feature_first_path`。 |
+| NFR-005 | 必须 | TDD 证据 必须保存到 `docs/coding-plugins/features/{area}/{capability}/evidence/tdd-evidence.md`。 | 单元测试 `test_collect_tdd_evidence_files_uses_feature_first_path`。 |
 | NFR-006 | 必须 | 每个 feature root 必须包含 `README.md` 作为该 capability 的人工入口。 | 单元测试 `test_feature_roots_require_readme`。 |
 | NFR-007 | 必须 | `docs/coding-plugins/INDEX.md` 必须覆盖每个 feature root 和每个真实文档路径。 | 单元测试 `test_artifact_index_requires_feature_root_paths` 和 preflight。 |
 | NFR-008 | 必须 | 活跃文档、skill、模板、测试和 README 中不得继续使用旧四类目录作为默认路径。 | 旧路径扫描命令必须无活跃命中。 |

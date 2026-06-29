@@ -141,7 +141,7 @@ class PreflightTests(unittest.TestCase):
             technical_dir = root / "docs" / "coding-plugins" / "features" / "plugin" / "preflight" / "technical"
             technical_dir.mkdir(parents=True)
             design = technical_dir / "technical-design.md"
-            design.write_text("# Technical Design", encoding="utf-8")
+            design.write_text("# 技术设计", encoding="utf-8")
 
             self.assertEqual(
                 preflight.collect_technical_design_files(root),
@@ -207,8 +207,8 @@ class PreflightTests(unittest.TestCase):
                 "| 领域 | plugin |\n"
                 "| 能力 | routing |\n\n"
                 "## 轻量例外\n\n"
-                "- **Reason:** 已由规格和 TDD Evidence 完成，技术设计和计划只会重复既有证据。\n"
-                "- **Verification:** python3 scripts/preflight.py\n",
+                "- **原因:** 已由规格和 TDD Evidence 完成，技术设计和计划只会重复既有证据。\n"
+                "- **验证方式:** python3 scripts/preflight.py\n",
                 encoding="utf-8",
             )
 
@@ -224,9 +224,9 @@ class PreflightTests(unittest.TestCase):
                 "| 领域 | plugin |\n"
                 "| 能力 | routing |\n\n"
                 "## 轻量例外\n\n"
-                "- **Reason:** 已由规格和 TDD Evidence 完成，技术设计和计划只会重复既有证据。\n"
-                "- **Verification:** python3 scripts/preflight.py\n\n"
-                "| Spec ID | Evidence |\n"
+                "- **原因:** 已由规格和 TDD Evidence 完成，技术设计和计划只会重复既有证据。\n"
+                "- **验证方式:** python3 scripts/preflight.py\n\n"
+                "| 规格 ID | 证据 |\n"
                 "| --- | --- |\n"
                 "| REQ-001 | `docs/coding-plugins/features/plugin/routing/technical/technical-design.md` |\n",
                 encoding="utf-8",
@@ -244,9 +244,9 @@ class PreflightTests(unittest.TestCase):
                 "| 领域 | plugin |\n"
                 "| 能力 | routing |\n\n"
                 "## 轻量例外\n\n"
-                "- **Reason:** 已由规格和 TDD Evidence 完成，技术设计和计划只会重复既有证据。\n"
-                "- **Verification:** python3 scripts/preflight.py\n\n"
-                "| Spec ID | Evidence |\n"
+                "- **原因:** 已由规格和 TDD Evidence 完成，技术设计和计划只会重复既有证据。\n"
+                "- **验证方式:** python3 scripts/preflight.py\n\n"
+                "| 规格 ID | 证据 |\n"
                 "| --- | --- |\n"
                 "| REQ-001 | `docs/coding-plugins/features/plugin/routing/evidence/tdd-evidence.md` |\n",
                 encoding="utf-8",
@@ -346,12 +346,44 @@ class PreflightTests(unittest.TestCase):
             template_dir = root / "skills" / "writing-technical-design" / "templates"
             template_dir.mkdir(parents=True)
             (template_dir / "technical-design.md").write_text(
-                "# Technical Design\n\n## Design Summary\n\n## Key Decisions\n",
+                "# 技术设计\n\n## Design Summary\n\n## Key Decisions\n",
                 encoding="utf-8",
             )
 
             with self.assertRaisesRegex(preflight.PreflightError, "Technical template still contains English structure"):
                 preflight.check_technical_templates_are_chinese(root)
+
+    def test_plan_template_check_rejects_english_headings(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            skill_dir = root / "skills" / "writing-plans"
+            skill_dir.mkdir(parents=True)
+            (skill_dir / "SKILL.md").write_text(
+                "# 编写实现计划\n\n"
+                "# [Feature Name] Implementation Plan\n\n"
+                "**Goal:** build it\n\n"
+                "| Spec ID | Test file / command |\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Plan template still contains English structure"):
+                preflight.check_plan_templates_are_chinese(root)
+
+    def test_tdd_evidence_template_check_rejects_english_fields(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            template_dir = root / "skills" / "test-driven-development" / "templates"
+            template_dir.mkdir(parents=True)
+            (template_dir / "tdd-evidence.md").write_text(
+                "# <Capability> TDD Evidence\n\n"
+                "### TDD Evidence\n\n"
+                "- **Spec/Bug/AC:** REQ-001\n"
+                "- **Final verification:** PASS\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "TDD evidence template still contains English structure"):
+                preflight.check_tdd_evidence_templates_are_chinese(root)
 
     def test_technical_template_requires_spec_design_mapping_sections(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -411,7 +443,7 @@ class PreflightTests(unittest.TestCase):
             spec_dir.mkdir(parents=True)
             (spec_dir / "feature.md").write_text("# Feature", encoding="utf-8")
             (docs / "INDEX.md").write_text(
-                "| Area | Capability | Spec |\n| --- | --- | --- |\n| plugin | search | `docs/coding-plugins/features/plugin/search/specs/feature.md` |\n",
+                "| 领域 | 能力 | 规格 |\n| --- | --- | --- |\n| plugin | search | `docs/coding-plugins/features/plugin/search/specs/feature.md` |\n",
                 encoding="utf-8",
             )
 
@@ -426,7 +458,7 @@ class PreflightTests(unittest.TestCase):
             feature_dir.mkdir(parents=True)
             (feature_dir / "README.md").write_text("# Search", encoding="utf-8")
             (docs / "INDEX.md").write_text(
-                "| Area | Capability | Feature Root | Spec | Technical Design | Implementation Plan | Evidence | Tags | Updated |\n"
+                "| 领域 | 能力 | 功能根目录 | 规格 | 技术设计 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
                 "| --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
                 "| plugin | search | - | - | - | - | search | 2026-06-26 |\n",
                 encoding="utf-8",
@@ -445,7 +477,7 @@ class PreflightTests(unittest.TestCase):
             technical_dir.mkdir()
             (technical_dir / "technical-design.md").write_text("# Technical", encoding="utf-8")
             (docs / "INDEX.md").write_text(
-                "| Area | Capability | Feature Root | Spec | Technical Design | Implementation Plan | Evidence | Tags | Updated |\n"
+                "| 领域 | 能力 | 功能根目录 | 规格 | 技术设计 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
                 "| --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
                 "| plugin | search | `docs/coding-plugins/features/plugin/search` | - | - | - | - | search | 2026-06-26 |\n",
                 encoding="utf-8",
@@ -462,7 +494,7 @@ class PreflightTests(unittest.TestCase):
             spec_dir.mkdir(parents=True)
             (spec_dir / "feature.md").write_text("# Feature", encoding="utf-8")
             (docs / "INDEX.md").write_text(
-                "| Area | Capability | Feature Root | Spec | Technical Design | Implementation Plan | Evidence | Tags | Updated |\n"
+                "| 领域 | 能力 | 功能根目录 | 规格 | 技术设计 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
                 "| --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
                 "| plugin | search | `docs/coding-plugins/features/plugin/search` | - | - | - | - | search | 2026-06-26 |\n",
                 encoding="utf-8",
@@ -481,7 +513,7 @@ class PreflightTests(unittest.TestCase):
             plan_dir.mkdir()
             (plan_dir / "implementation.md").write_text("# Plan", encoding="utf-8")
             (docs / "INDEX.md").write_text(
-                "| Area | Capability | Feature Root | Spec | Technical Design | Implementation Plan | Evidence | Tags | Updated |\n"
+                "| 领域 | 能力 | 功能根目录 | 规格 | 技术设计 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
                 "| --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
                 "| plugin | search | `docs/coding-plugins/features/plugin/search` | - | - | - | - | search | 2026-06-26 |\n",
                 encoding="utf-8",
@@ -498,7 +530,7 @@ class PreflightTests(unittest.TestCase):
             evidence_dir.mkdir(parents=True)
             (evidence_dir / "tdd-evidence.md").write_text("# Evidence", encoding="utf-8")
             (docs / "INDEX.md").write_text(
-                "| Area | Capability | Feature Root | Spec | Technical Design | Implementation Plan | Evidence | Tags | Updated |\n"
+                "| 领域 | 能力 | 功能根目录 | 规格 | 技术设计 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
                 "| --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
                 "| plugin | search | `docs/coding-plugins/features/plugin/search` | - | - | - | - | search | 2026-06-26 |\n",
                 encoding="utf-8",
@@ -607,7 +639,7 @@ class PreflightTests(unittest.TestCase):
             (docs / "INDEX.md").write_text(
                 "# Coding Plugins Feature 索引\n\n"
                 "本索引用于按 `Area` 和 `Capability` 检索 feature-first 文档链路。新增、移动、批准、废弃或拆分相关产物时同步更新本文件。\n\n"
-                "| Area | Capability | Feature Root | Spec | Technical Design | Implementation Plan | Evidence | Tags | Updated |\n"
+                "| 领域 | 能力 | 功能根目录 | 规格 | 技术设计 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
                 "| --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
                 "| plugin | search | `docs/coding-plugins/features/plugin/search` | `docs/coding-plugins/features/plugin/search/specs/feature.md` | - | - | - | wrong-tag | 2026-06-29 |\n",
                 encoding="utf-8",
@@ -733,7 +765,7 @@ class PreflightTests(unittest.TestCase):
             technical_dir.mkdir(parents=True)
             (technical_dir / "technical-design.md").write_text("# Technical", encoding="utf-8")
             (docs / "INDEX.md").write_text(
-                "| Area | Capability | Feature Root | Spec | Technical Design | Implementation Plan | Evidence | Tags | Updated |\n"
+                "| 领域 | 能力 | 功能根目录 | 规格 | 技术设计 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
                 "| --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
                 "| plugin | routing | `docs/coding-plugins/features/plugin/routing` | - | - | - | - | routing | 2026-06-26 |\n",
                 encoding="utf-8",
@@ -764,7 +796,7 @@ class PreflightTests(unittest.TestCase):
             plan_dir.mkdir(parents=True)
             (plan_dir / "implementation.md").write_text("# Plan\n", encoding="utf-8")
 
-            with self.assertRaisesRegex(preflight.PreflightError, "Plan is missing Technical Design Source"):
+            with self.assertRaisesRegex(preflight.PreflightError, "Plan is missing 技术设计来源"):
                 preflight.check_plan_technical_design_references(root)
 
     def test_technical_design_spec_id_check_rejects_unknown_ids(self) -> None:
@@ -865,11 +897,11 @@ class PreflightTests(unittest.TestCase):
                 "---\narea: plugin\ncapability: routing\n---\n"
                 "# 技术设计\n\n"
                 "## 规格到设计映射\n\n"
-                "| Spec ID | 技术落点 | 设计决策 | 测试策略 |\n"
+                "| 规格 ID | 技术落点 | 设计决策 | 测试策略 |\n"
                 "| --- | --- | --- | --- |\n"
                 "| REQ-001 | `scripts/preflight.py` | 已覆盖 | 单测 |\n\n"
                 "## 无需技术设计的规格\n\n"
-                "| Spec ID | 原因 |\n"
+                "| 规格 ID | 原因 |\n"
                 "| --- | --- |\n"
                 "| 无 | 无。 |\n",
                 encoding="utf-8",
@@ -898,11 +930,11 @@ class PreflightTests(unittest.TestCase):
                 "---\narea: plugin\ncapability: routing\n---\n"
                 "# 技术设计\n\n"
                 "## 规格到设计映射\n\n"
-                "| Spec ID | 技术落点 | 设计决策 | 测试策略 |\n"
+                "| 规格 ID | 技术落点 | 设计决策 | 测试策略 |\n"
                 "| --- | --- | --- | --- |\n"
                 "| REQ-001 | `scripts/preflight.py` | 已覆盖 | 单测 |\n\n"
                 "## 无需技术设计的规格\n\n"
-                "| Spec ID | 原因 |\n"
+                "| 规格 ID | 原因 |\n"
                 "| --- | --- |\n"
                 "| REQ-002 | 该规格只约束人工文档说明。 |\n",
                 encoding="utf-8",
@@ -916,11 +948,11 @@ class PreflightTests(unittest.TestCase):
             "## 设计摘要\n\n"
             "正文引用 `## 规格到设计映射` 和 `## 无需技术设计的规格`，但这不是章节标题。\n\n"
             "## 规格到设计映射\n\n"
-            "| Spec ID | 技术落点 | 设计决策 | 测试策略 |\n"
+            "| 规格 ID | 技术落点 | 设计决策 | 测试策略 |\n"
             "| --- | --- | --- | --- |\n"
             "| REQ-001 | `scripts/preflight.py` | 已覆盖 | 单测 |\n\n"
             "## 无需技术设计的规格\n\n"
-            "| Spec ID | 原因 |\n"
+            "| 规格 ID | 原因 |\n"
             "| --- | --- |\n"
             "| REQ-002 | 文档说明，无需技术设计。 |\n"
         )

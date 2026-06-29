@@ -43,13 +43,13 @@ related_evidence:
 
 ## 规格到设计映射
 
-| Spec ID | 规格摘要 | 技术落点 | 关键决策 ID | 影响文件/符号 | 验证命令 | Evidence |
+| 规格 ID | 规格摘要 | 技术落点 | 关键决策 ID | 影响文件/符号 | 验证命令 | 证据 |
 | --- | --- | --- | --- | --- | --- | --- |
 | REQ-001 | 技术设计文档默认保存到 `docs/coding-plugins/features/plugin/technical-design-artifacts/technical/technical-design.md` 这类 area/capability 分层路径。 | `scripts/preflight.py`：增加 technical 文档收集、索引、引用、Spec ID、规格缺口审查和模板中文结构校验 | TD-001 | `scripts/preflight.py` | 单元测试 `test_collect_technical_design_files_uses_feature_first_technical_subdir`。 | `docs/coding-plugins/features/plugin/technical-design-artifacts/evidence/tdd-evidence.md` |
 | REQ-002 | `docs/coding-plugins/INDEX.md` 必须覆盖所有真实技术设计文档。 | `docs/coding-plugins/INDEX.md`：覆盖 feature root 和真实技术设计文档<br>`scripts/preflight.py`：增加 technical 文档收集、索引、引用、Spec ID、规格缺口审查和模板中文结构校验 | TD-002 | `docs/coding-plugins/INDEX.md`<br>`scripts/preflight.py` | 单元测试 `test_artifact_index_requires_technical_paths`。 | `docs/coding-plugins/features/plugin/technical-design-artifacts/evidence/tdd-evidence.md` |
-| REQ-003 | 总索引 `docs/coding-plugins/INDEX.md` 必须包含 `Technical Design` 列，并覆盖真实技术设计文档。 | `docs/coding-plugins/INDEX.md`：新增 `Technical Design` 列<br>`scripts/preflight.py`：增加 technical 文档收集、索引、引用、Spec ID、规格缺口审查和模板中文结构校验 | TD-003 | `docs/coding-plugins/INDEX.md`<br>`scripts/preflight.py` | 单元测试 `test_artifact_index_requires_technical_paths`。 | `docs/coding-plugins/features/plugin/technical-design-artifacts/evidence/tdd-evidence.md` |
+| REQ-003 | 总索引 `docs/coding-plugins/INDEX.md` 必须包含 `技术设计` 列，并覆盖真实技术设计文档。 | `docs/coding-plugins/INDEX.md`：新增 `技术设计` 列<br>`scripts/preflight.py`：增加 technical 文档收集、索引、引用、Spec ID、规格缺口审查和模板中文结构校验 | TD-003 | `docs/coding-plugins/INDEX.md`<br>`scripts/preflight.py` | 单元测试 `test_artifact_index_requires_technical_paths`。 | `docs/coding-plugins/features/plugin/technical-design-artifacts/evidence/tdd-evidence.md` |
 | REQ-004 | 新增 `writing-technical-design` skill，负责把已批准规格转成独立技术设计。 | `skills/writing-technical-design/SKILL.md`：新增技术设计 skill，定义职责、路径、流程和自审规则<br>`skills/writing-technical-design/templates/technical-design.md`：提供中文标题 technical 模板和规格缺口审查表<br>`skills/using-coding-plugins/SKILL.md`：在批准规格后路由到 `writing-technical-design`，再进入 `writing-plans`<br>`tests/behavior/test_routing.py`：覆盖新 skill 的入口路由 | TD-004 | `skills/writing-technical-design/SKILL.md`<br>`skills/writing-technical-design/templates/technical-design.md`<br>`skills/using-coding-plugins/SKILL.md`<br>`tests/behavior/test_routing.py` | 行为测试 `test_using_entry_routes_development_intents_to_required_skills`。 | `docs/coding-plugins/features/plugin/technical-design-artifacts/evidence/tdd-evidence.md` |
-| REQ-005 | `writing-plans` 必须引用 `Technical Design Source`，计划只保留方案快照和任务拆分。 | `skills/writing-plans/SKILL.md`：要求计划引用 `Technical Design Source`，并只保留方案快照<br>`scripts/preflight.py`：增加 technical 文档收集、索引、引用、Spec ID、规格缺口审查和模板中文结构校验 | TD-005 | `skills/writing-plans/SKILL.md`<br>`scripts/preflight.py` | 单元测试 `test_plan_technical_design_source_check_rejects_missing_source`。 | `docs/coding-plugins/features/plugin/technical-design-artifacts/evidence/tdd-evidence.md` |
+| REQ-005 | `writing-plans` 必须引用 `技术设计来源`，计划只保留方案快照和任务拆分。 | `skills/writing-plans/SKILL.md`：要求计划引用 `技术设计来源`，并只保留方案快照<br>`scripts/preflight.py`：增加 technical 文档收集、索引、引用、Spec ID、规格缺口审查和模板中文结构校验 | TD-005 | `skills/writing-plans/SKILL.md`<br>`scripts/preflight.py` | 单元测试 `test_plan_technical_design_source_check_rejects_missing_source`。 | `docs/coding-plugins/features/plugin/technical-design-artifacts/evidence/tdd-evidence.md` |
 | REQ-006 | preflight 必须校验技术设计路径、metadata、Spec ID 和引用路径。 | `scripts/preflight.py`：增加 technical 文档收集、索引、引用、Spec ID、规格缺口审查和模板中文结构校验 | TD-006 | `scripts/preflight.py` | 单元测试 `scripts/test_preflight.py`。 | `docs/coding-plugins/features/plugin/technical-design-artifacts/evidence/tdd-evidence.md` |
 | REQ-007 | Claude Code 显式技能请求清单必须包含 `/coding-plugins:writing-technical-design`。 | `tests/behavior/test_routing.py`：覆盖新 skill 的入口路由 | TD-006 | `tests/behavior/test_routing.py` | 行为测试 `test_claude_reference_documents_explicit_namespace_for_each_skill`。 | `docs/coding-plugins/features/plugin/technical-design-artifacts/evidence/tdd-evidence.md` |
 | REQ-008 | `writing-technical-design` 必须声明规格缺口门禁：发现需求、验收、外部行为、错误边界或兼容要求不清时，停止技术设计并回到 spec 更新。 | `skills/writing-technical-design/SKILL.md`：增加规格缺口门禁，发现需求或验收不清时回到 `spec-driven-development`<br>`scripts/preflight.py`：增加 technical 文档收集、索引、引用、Spec ID、规格缺口审查和模板中文结构校验<br>`scripts/test_preflight.py`：覆盖缺口审查和 technical 模板中文结构回归 | TD-006 | `skills/writing-technical-design/SKILL.md`<br>`scripts/preflight.py`<br>`scripts/test_preflight.py` | 单元测试 `test_technical_design_gap_review_requires_section`、`test_technical_design_gap_review_rejects_unresolved_gap`，并由 `python3 scripts/preflight.py` 覆盖真实文档。 | `docs/coding-plugins/features/plugin/technical-design-artifacts/evidence/tdd-evidence.md` |
@@ -58,7 +58,7 @@ related_evidence:
 
 ## 无需技术设计的规格
 
-| Spec ID | 原因 |
+| 规格 ID | 原因 |
 | --- | --- |
 | 无 | 本 capability 的 MUST 规格均有 technical 落点。 |
 
@@ -71,19 +71,19 @@ related_evidence:
 | TD-003 | 在 technical 中增加 `## 规格缺口审查` | 防止技术方案顺手新增需求或掩盖验收不清；缺口必须回写 spec 后再继续设计 | 现有 technical 文档需要补充一段固定审查表 |
 | TD-004 | technical 模板标题和表头统一中文 | 插件面向中文工作流，模板会直接影响后续产物语言 | 英文工程术语保留在 Spec ID、命令和路径中 |
 | TD-005 | preflight 只强制校验真实 technical 文件和已有引用 | 避免历史 capability 必须立即回填技术设计 | 历史规格暂时可能没有 technical 链路 |
-| TD-006 | 总索引增加 `Technical Design` 列 | 检索 capability 时能看到 Spec、Technical、Plan、Evidence 全链路 | 需要更新既有索引行 |
+| TD-006 | 总索引增加 `技术设计` 列 | 检索 capability 时能看到 Spec、Technical、Plan、证据 全链路 | 需要更新既有索引行 |
 
 ## 影响组件
 
-| 组件 | 变更 | 相关 Spec ID |
+| 组件 | 变更 | 相关规格 ID |
 | --- | --- | --- |
 | `skills/writing-technical-design/SKILL.md` | 新增技术设计 skill，定义职责、路径、流程和自审规则 | REQ-004, AC-002 |
 | `skills/writing-technical-design/SKILL.md` | 增加规格缺口门禁，发现需求或验收不清时回到 `spec-driven-development` | REQ-008, AC-004 |
 | `skills/writing-technical-design/templates/technical-design.md` | 提供中文标题 technical 模板和规格缺口审查表 | REQ-004, REQ-009, REQ-010 |
 | `skills/using-coding-plugins/SKILL.md` | 在批准规格后路由到 `writing-technical-design`，再进入 `writing-plans` | REQ-004 |
-| `skills/writing-plans/SKILL.md` | 要求计划引用 `Technical Design Source`，并只保留方案快照 | REQ-005 |
+| `skills/writing-plans/SKILL.md` | 要求计划引用 `技术设计来源`，并只保留方案快照 | REQ-005 |
 | `docs/coding-plugins/INDEX.md` | 覆盖 feature root 和真实技术设计文档 | REQ-002 |
-| `docs/coding-plugins/INDEX.md` | 新增 `Technical Design` 列 | REQ-003 |
+| `docs/coding-plugins/INDEX.md` | 新增 `技术设计` 列 | REQ-003 |
 | `scripts/preflight.py` | 增加 technical 文档收集、索引、引用、Spec ID、规格缺口审查和模板中文结构校验 | REQ-001, REQ-002, REQ-003, REQ-005, REQ-006, REQ-008, REQ-009, REQ-010 |
 | `tests/behavior/test_routing.py` | 覆盖新 skill 的入口路由 | REQ-004, REQ-007 |
 | `scripts/test_preflight.py` | 覆盖缺口审查和 technical 模板中文结构回归 | REQ-008, REQ-009, REQ-010, ERR-006, ERR-007, ERR-008 |
@@ -105,9 +105,9 @@ flowchart TD
 
 - Technical design path: `docs/coding-plugins/features/plugin/technical-design-artifacts/technical/technical-design.md`
 - Plan path: `docs/coding-plugins/features/plugin/technical-design-artifacts/plans/implementation.md`
-- Evidence path: `docs/coding-plugins/features/plugin/technical-design-artifacts/evidence/tdd-evidence.md`
+- 证据 path: `docs/coding-plugins/features/plugin/technical-design-artifacts/evidence/tdd-evidence.md`
 - Spec metadata may include `related_technical` paths.
-- Plan must include `Technical Design Source:` followed by a real technical design path.
+- Plan must include `技术设计来源:` followed by a real technical design path.
 - Technical design may mention Spec IDs only if those IDs exist in the corresponding spec directory.
 - Technical design must include `## 规格缺口审查` and cover `未覆盖需求`、`验收标准不清`、`新增外部行为` and `处理状态`.
 - If the gap review contains unresolved terms such as `未处理`、`待处理`、`需澄清`、`不清楚` or `待确认`, preflight fails and implementation must return to spec first.
@@ -121,7 +121,7 @@ flowchart TD
 - REQ-008 到 REQ-010 和 ERR-006 到 ERR-008 使用 `python3 -m unittest scripts/test_preflight.py` 覆盖。
 - REQ-004 和 REQ-007 使用 `python3 -m unittest tests.behavior.test_routing` 覆盖。
 - AC-003 使用 `python3 scripts/preflight.py` 做完整发布前验证。
-- TDD Evidence 写入 `docs/coding-plugins/features/plugin/technical-design-artifacts/evidence/tdd-evidence.md`。
+- TDD 证据 写入 `docs/coding-plugins/features/plugin/technical-design-artifacts/evidence/tdd-evidence.md`。
 
 ## 风险和缓解
 

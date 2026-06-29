@@ -43,7 +43,7 @@ related_evidence:
 
 ## 规格到设计映射
 
-| Spec ID | 规格摘要 | 技术落点 | 关键决策 ID | 影响文件/符号 | 验证命令 | Evidence |
+| 规格 ID | 规格摘要 | 技术落点 | 关键决策 ID | 影响文件/符号 | 验证命令 | 证据 |
 | --- | --- | --- | --- | --- | --- | --- |
 | REQ-001 | Plan 文档必须包含 frontmatter，并声明 `title`、`status`、`area`、`capability`、`created`、`updated`。 | `scripts/preflight.py`：增加 Plan metadata 和中文文档信息校验<br>`scripts/test_preflight.py`：增加 RED/GREEN 单元测试<br>`docs/coding-plugins/features/**/plans/implementation.md`：回填现有计划 metadata 和中文摘要 | TD-001 | `scripts/preflight.py`<br>`scripts/test_preflight.py`<br>`docs/coding-plugins/features/**/plans/implementation.md` | 单元测试 `test_plan_metadata_check_rejects_missing_frontmatter`。 | `docs/coding-plugins/features/plugin/document-metadata/evidence/tdd-evidence.md` |
 | REQ-002 | Plan frontmatter 的 `area` 和 `capability` 必须与 `features/plugin/document-metadata/plans/implementation.md` 这类 feature-first 分层路径一致。 | `scripts/preflight.py`：增加 Plan metadata 和中文文档信息校验<br>`scripts/test_preflight.py`：增加 RED/GREEN 单元测试 | TD-002 | `scripts/preflight.py`<br>`scripts/test_preflight.py` | 单元测试 `test_plan_metadata_check_rejects_mismatched_path_metadata`。 | `docs/coding-plugins/features/plugin/document-metadata/evidence/tdd-evidence.md` |
@@ -54,7 +54,7 @@ related_evidence:
 
 ## 无需技术设计的规格
 
-| Spec ID | 原因 |
+| 规格 ID | 原因 |
 | --- | --- |
 | 无 | 本 capability 的 MUST 规格均有 technical 落点。 |
 
@@ -68,7 +68,7 @@ related_evidence:
 
 ## 影响组件
 
-| 组件 | 变更 | 相关 Spec ID |
+| 组件 | 变更 | 相关规格 ID |
 | --- | --- | --- |
 | `scripts/preflight.py` | 增加 Plan metadata 和中文文档信息校验 | REQ-001, REQ-002, REQ-003, REQ-006 |
 | `scripts/test_preflight.py` | 增加 RED/GREEN 单元测试 | REQ-001, REQ-002, REQ-003 |

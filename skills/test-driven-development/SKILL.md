@@ -118,11 +118,11 @@ npm test path/to/test.test.ts
 | bug 修复 | 失败复现测试 | 回归测试覆盖邻近边界 |
 | 纯重构 | 现有测试或 characterization test | 行为不变的快照/金样本测试 |
 
-如果无法写自动测试，必须先记录 TDD Exception Record，并获得用户同意，再使用最接近的替代验证。
+如果无法写自动测试，必须先记录 TDD 例外记录，并获得用户同意，再使用最接近的替代验证。
 
 ## 落地路径
 
-TDD Evidence 不是只写在聊天里。默认保存到：
+TDD 证据不是只写在聊天里。默认保存到：
 
 ```text
 docs/coding-plugins/features/<area>/<capability>/evidence/tdd-evidence.md
@@ -141,31 +141,31 @@ docs/coding-plugins/features/auth/login/evidence/tdd-evidence.md
 一个文件可以记录同一 capability 下多个任务。每个任务使用二级标题，例如：
 
 ```markdown
-## Task 1: 登录失败错误码
+## 任务 1: 登录失败错误码
 
-### TDD Evidence
+### TDD 证据
 ```
 
-无法 TDD 时，同一个文件中记录 `TDD Exception Record`。
+无法 TDD 时，同一个文件中记录 `TDD 例外记录`。
 
-## TDD Evidence
+## TDD 证据
 
-每个会改变行为的实现任务，必须在 evidence 文件中写入 TDD Evidence 块，并在回报时给出该文件路径。字段名保持英文，便于脚本检查：
+每个会改变行为的实现任务，必须在 evidence 文件中写入 TDD 证据块，并在回报时给出该文件路径。字段标签使用中文，便于中文文档保持一致：
 
 ```markdown
-## TDD Evidence
+## TDD 证据
 
-- **Spec/Bug/AC:** REQ-001 或 bug 复现链接/明确验收标准
-- **RED test:** `tests/path/test_file.py::test_specific_behavior`
-- **RED command:** `pytest tests/path/test_file.py::test_specific_behavior -v`
-- **RED failure:** 失败信息摘要，说明它因缺失行为失败，而不是导入、拼写或环境问题
-- **GREEN change:** 最小实现摘要
-- **GREEN command:** `pytest tests/path/test_file.py::test_specific_behavior -v`
-- **REFACTOR command:** `pytest tests/path/test_file.py -v`，没有重构也写明重跑命令
-- **Final verification:** 最终相关测试/构建命令和结果
+- **规格/缺陷/验收:** REQ-001 或 bug 复现链接/明确验收标准
+- **RED 测试:** `tests/path/test_file.py::test_specific_behavior`
+- **RED 命令:** `pytest tests/path/test_file.py::test_specific_behavior -v`
+- **RED 失败:** 失败信息摘要，说明它因缺失行为失败，而不是导入、拼写或环境问题
+- **GREEN 变更:** 最小实现摘要
+- **GREEN 命令:** `pytest tests/path/test_file.py::test_specific_behavior -v`
+- **REFACTOR 命令:** `pytest tests/path/test_file.py -v`，没有重构也写明重跑命令
+- **最终验证:** 最终相关测试/构建命令和结果
 ```
 
-纯重构没有新增行为时，`RED failure` 字段写 existing green baseline 或 characterization test 的基线结果，并说明为什么 RED 不适用。发现真实 bug 时不要混在重构里修，拆出 bugfix 并走标准 RED。
+纯重构没有新增行为时，`RED 失败` 字段写 existing green baseline 或 characterization test 的基线结果，并说明为什么 RED 不适用。发现真实 bug 时不要混在重构里修，拆出 bugfix 并走标准 RED。
 
 可以用脚本检查证据：
 
@@ -179,20 +179,20 @@ python3 skills/test-driven-development/scripts/validate_tdd_evidence.py docs/cod
 python3 skills/test-driven-development/scripts/validate_tdd_evidence.py --strict docs/coding-plugins/features/<area>/<capability>/evidence/tdd-evidence.md
 ```
 
-## TDD Exception Record
+## TDD 例外记录
 
 跳过先写失败测试不是默认选项。只有确实无法 TDD 时，先问用户，并记录：
 
 ```markdown
-## TDD Exception Record
+## TDD 例外记录
 
-- **Reason:** 为什么无法先写失败测试
-- **User approval:** 用户同意的原话或明确说明
-- **Alternative verification:** 替代验证命令、日志、截图或人工验收步骤
-- **Risk:** 剩余风险和后续补测试计划
+- **原因:** 为什么无法先写失败测试
+- **用户批准:** 用户同意的原话或明确说明
+- **替代验证:** 替代验证命令、日志、截图或人工验收步骤
+- **风险:** 剩余风险和后续补测试计划
 ```
 
-以下情况也需要 Exception Record：
+以下情况也需要 例外记录：
 
 - 第三方生成代码无法提前写测试。
 - 纯文档、manifest 或配置修改没有可执行行为。
@@ -245,7 +245,7 @@ python3 skills/test-driven-development/scripts/validate_tdd_evidence.py --strict
 
 ## 完成标准
 
-最终报告必须包含 TDD Evidence 文件路径，并概述其中记录的证据：
+最终报告必须包含 TDD 证据文件路径，并概述其中记录的证据：
 
 - 写了哪个失败测试。
 - 它对应哪个 Spec ID、bug 复现或验收标准。
@@ -254,4 +254,4 @@ python3 skills/test-driven-development/scripts/validate_tdd_evidence.py --strict
 - 是否重构，以及重构后运行了什么测试。
 - 最终运行了哪些测试，结果如何。
 
-若没有 TDD Evidence，必须在 evidence 文件中有 TDD Exception Record；否则不能声称任务完成。
+若没有 TDD 证据，必须在 evidence 文件中有 TDD 例外记录；否则不能声称任务完成。

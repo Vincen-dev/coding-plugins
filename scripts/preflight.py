@@ -118,6 +118,68 @@ TECHNICAL_TEMPLATE_ENGLISH_STRUCTURE = (
     "| Related Spec IDs |",
     "| Risk |",
     "| Mitigation |",
+    "| Spec ID |",
+    "| Evidence |",
+    "TDD Evidence",
+)
+PLAN_TEMPLATE_ENGLISH_STRUCTURE = (
+    "# [Feature Name] Implementation Plan",
+    "**Goal:**",
+    "**Architecture:**",
+    "**Tech Stack:**",
+    "**Spec Source:**",
+    "**Technical Design Source:**",
+    "## Technical Design Snapshot",
+    "**Design Summary:**",
+    "**Key Decisions:**",
+    "**Affected Components:**",
+    "**Data Flow / Control Flow:**",
+    "**Interfaces and Contracts:**",
+    "**Migration / Compatibility:**",
+    "**Test Strategy:**",
+    "**TDD Evidence Target:**",
+    "**Risks and Mitigations:**",
+    "## Spec Traceability",
+    "| Decision |",
+    "| Component |",
+    "| Related Spec IDs |",
+    "| Spec ID |",
+    "| Test file / command |",
+    "| TDD evidence file / field |",
+    "| Implementation task |",
+    "### Task N:",
+    "**Spec IDs:**",
+    "**Files:**",
+    "- Create:",
+    "- Modify:",
+    "- Test:",
+    "Step 1: Write the failing test",
+    "Run:",
+    "Expected:",
+    "Step 6: Record TDD Evidence",
+    "**Spec/Bug/AC:**",
+    "**RED test:**",
+    "**RED command:**",
+    "**Final verification:**",
+)
+TDD_EVIDENCE_TEMPLATE_ENGLISH_STRUCTURE = (
+    "# <Capability> TDD Evidence",
+    "# <Capability>",
+    "## Task <N>",
+    "### TDD Evidence",
+    "### TDD Exception Record",
+    "**Spec/Bug/AC:**",
+    "**RED test:**",
+    "**RED command:**",
+    "**RED failure:**",
+    "**GREEN change:**",
+    "**GREEN command:**",
+    "**REFACTOR command:**",
+    "**Final verification:**",
+    "**Reason:**",
+    "**User approval:**",
+    "**Alternative verification:**",
+    "**Risk:**",
 )
 SPEC_ID_RE = re.compile(r"\b(?:REQ|API|SCHEMA|STATE|ERR|AC|NFR|MIG|OBS|NON)-\d{3,}\b")
 TECHNICAL_DESIGN_PATH_RE = re.compile(
@@ -129,8 +191,8 @@ CHINESE_DOCUMENT_INFO_REQUIRED_TERMS = ("## 文档信息", "状态", "领域", "
 TECHNICAL_GAP_REVIEW_REQUIRED_TERMS = ("未覆盖需求", "验收标准", "外部行为", "处理状态")
 TECHNICAL_GAP_REVIEW_UNRESOLVED_TERMS = ("未处理", "待处理", "需澄清", "不清楚", "待确认")
 TECHNICAL_DESIGN_REQUIRED_SECTIONS = ("规格到设计映射", "无需技术设计的规格")
-LIGHTWEIGHT_EXCEPTION_REQUIRED_TERMS = ("## 轻量例外", "Reason", "Verification")
-LIGHTWEIGHT_EXCEPTION_TRACE_HEADERS = ("Spec ID", "Evidence")
+LIGHTWEIGHT_EXCEPTION_REQUIRED_TERMS = ("## 轻量例外", "原因", "验证方式")
+LIGHTWEIGHT_EXCEPTION_TRACE_HEADERS = ("规格 ID", "证据")
 DOC_SYNC_REFERENCES = (
     "docs/coding-plugins/INDEX.md",
     "docs/coding-plugins/features",
@@ -294,6 +356,40 @@ def check_technical_templates_are_chinese(root: Path) -> None:
         raise PreflightError("Technical template still contains English structure: " + "; ".join(offenders) + ".")
 
 
+def check_plan_templates_are_chinese(root: Path) -> None:
+    skill_path = root / "skills" / "writing-plans" / "SKILL.md"
+    if not skill_path.exists():
+        return
+
+    text = skill_path.read_text(encoding="utf-8")
+    offenders = [
+        f"{skill_path.relative_to(root)} contains {pattern!r}"
+        for pattern in PLAN_TEMPLATE_ENGLISH_STRUCTURE
+        if pattern in text
+    ]
+    if offenders:
+        raise PreflightError("Plan template still contains English structure: " + "; ".join(offenders) + ".")
+
+
+def check_tdd_evidence_templates_are_chinese(root: Path) -> None:
+    candidates = [
+        root / "skills" / "test-driven-development" / "templates" / "tdd-evidence.md",
+        root / "skills" / "test-driven-development" / "SKILL.md",
+    ]
+    offenders: list[str] = []
+    for path in candidates:
+        if not path.exists():
+            continue
+        text = path.read_text(encoding="utf-8")
+        for pattern in TDD_EVIDENCE_TEMPLATE_ENGLISH_STRUCTURE:
+            if pattern in text:
+                offenders.append(f"{path.relative_to(root)} contains {pattern!r}")
+                break
+
+    if offenders:
+        raise PreflightError("TDD evidence template still contains English structure: " + "; ".join(offenders) + ".")
+
+
 def check_technical_template_required_sections(root: Path) -> None:
     template_path = root / "skills" / "writing-technical-design" / "templates" / "technical-design.md"
     if not template_path.exists():
@@ -417,7 +513,7 @@ def lightweight_exception_traceability_errors(root: Path, feature_root: Path) ->
 
     headers, rows = parse_markdown_table(section)
     if tuple(headers[:2]) != LIGHTWEIGHT_EXCEPTION_TRACE_HEADERS:
-        return [f"{readme.relative_to(root)} missing Spec ID -> Evidence table"]
+        return [f"{readme.relative_to(root)} missing 规格 ID -> 证据 table"]
 
     covered: set[str] = set()
     missing_evidence_paths: list[str] = []
@@ -800,7 +896,7 @@ def check_plan_technical_design_references(root: Path) -> None:
     for plan_file in collect_plan_files(root):
         text = plan_file.read_text(encoding="utf-8")
         refs = sorted(extract_technical_design_paths(text))
-        if "Technical Design Source:" not in text or not refs:
+        if "技术设计来源" not in text or not refs:
             offenders.append(str(plan_file.relative_to(root)))
             continue
         for relative_path in refs:
@@ -808,7 +904,7 @@ def check_plan_technical_design_references(root: Path) -> None:
                 missing.append(f"{plan_file.relative_to(root)} -> {relative_path}")
 
     if offenders:
-        raise PreflightError("Plan is missing Technical Design Source: " + ", ".join(offenders) + ".")
+        raise PreflightError("Plan is missing 技术设计来源: " + ", ".join(offenders) + ".")
     if missing:
         raise PreflightError("Plan references missing technical design: " + "; ".join(missing) + ".")
 
@@ -950,6 +1046,8 @@ def run_static_checks(root: Path) -> None:
     check_removed_entry_references(root)
     check_sdd_templates_are_chinese(root)
     check_technical_templates_are_chinese(root)
+    check_plan_templates_are_chinese(root)
+    check_tdd_evidence_templates_are_chinese(root)
     check_technical_template_required_sections(root)
 
 

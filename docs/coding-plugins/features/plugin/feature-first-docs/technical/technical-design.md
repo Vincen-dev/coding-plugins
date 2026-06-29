@@ -30,7 +30,7 @@ related_evidence:
 
 ## 设计摘要
 
-文档结构从产物类型优先改为 feature-first。`docs/coding-plugins/features/<area>/<capability>/` 成为 capability 的唯一活跃文档根，规格放入 `specs/` 子目录，技术设计放入 `technical/` 子目录，计划放入 `plans/` 子目录，TDD Evidence 放入 `evidence/` 子目录。preflight 通过统一的 feature root collector 收集文档，并拒绝旧四类目录和 feature root 下裸露技术/计划文件中的活跃文档。
+文档结构从产物类型优先改为 feature-first。`docs/coding-plugins/features/<area>/<capability>/` 成为 capability 的唯一活跃文档根，规格放入 `specs/` 子目录，技术设计放入 `technical/` 子目录，计划放入 `plans/` 子目录，TDD 证据 放入 `evidence/` 子目录。preflight 通过统一的 feature root collector 收集文档，并拒绝旧四类目录和 feature root 下裸露技术/计划文件中的活跃文档。
 
 ## 规格缺口审查
 
@@ -43,13 +43,13 @@ related_evidence:
 
 ## 规格到设计映射
 
-| Spec ID | 规格摘要 | 技术落点 | 关键决策 ID | 影响文件/符号 | 验证命令 | Evidence |
+| 规格 ID | 规格摘要 | 技术落点 | 关键决策 ID | 影响文件/符号 | 验证命令 | 证据 |
 | --- | --- | --- | --- | --- | --- | --- |
 | NFR-001 | 新文档根必须是 `docs/coding-plugins/features/{area}/{capability}/`。 | `scripts/preflight.py`：改为扫描 `features/<area>/<capability>`，拒绝旧 docs root 和 flat feature-root 技术/计划文件，校验 README、metadata 和索引<br>`scripts/test_preflight.py`：更新 RED/GREEN 单元测试，覆盖新路径和旧路径拒绝 | TD-001 | `scripts/preflight.py`<br>`scripts/test_preflight.py` | 单元测试 `test_collect_spec_files_uses_feature_first_path`。 | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` |
 | NFR-002 | 规格必须保存到 `docs/coding-plugins/features/{area}/{capability}/specs/{spec-kind}.md`。 | `docs/coding-plugins/features/plugin/feature-first-docs/technical/technical-design.md` 中的影响组件追踪 | TD-002 | `python3 -m unittest scripts/test_preflight.py` | 单元测试和 `python3 scripts/preflight.py`。 | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` |
 | NFR-003 | 技术设计必须保存到 `docs/coding-plugins/features/{area}/{capability}/technical/technical-design.md`。 | `docs/coding-plugins/features/plugin/feature-first-docs/technical/technical-design.md` 中的影响组件追踪 | TD-003 | `python3 -m unittest scripts/test_preflight.py` | 单元测试 `test_collect_technical_design_files_uses_feature_first_technical_subdir`。 | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` |
 | NFR-004 | 实现计划必须保存到 `docs/coding-plugins/features/{area}/{capability}/plans/implementation.md`。 | `docs/coding-plugins/features/plugin/feature-first-docs/technical/technical-design.md` 中的影响组件追踪 | TD-004 | `python3 -m unittest scripts/test_preflight.py` | 单元测试 `test_collect_plan_files_uses_feature_first_plans_subdir`。 | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` |
-| NFR-005 | TDD Evidence 必须保存到 `docs/coding-plugins/features/{area}/{capability}/evidence/tdd-evidence.md`。 | `docs/coding-plugins/features/plugin/feature-first-docs/technical/technical-design.md` 中的影响组件追踪 | TD-004 | `python3 -m unittest scripts/test_preflight.py` | 单元测试 `test_collect_tdd_evidence_files_uses_feature_first_path`。 | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` |
+| NFR-005 | TDD 证据 必须保存到 `docs/coding-plugins/features/{area}/{capability}/evidence/tdd-evidence.md`。 | `docs/coding-plugins/features/plugin/feature-first-docs/technical/technical-design.md` 中的影响组件追踪 | TD-004 | `python3 -m unittest scripts/test_preflight.py` | 单元测试 `test_collect_tdd_evidence_files_uses_feature_first_path`。 | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` |
 | NFR-006 | 每个 feature root 必须包含 `README.md` 作为该 capability 的人工入口。 | `scripts/test_preflight.py`：更新 RED/GREEN 单元测试，覆盖新路径和旧路径拒绝 | TD-004 | `scripts/test_preflight.py` | 单元测试 `test_feature_roots_require_readme`。 | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` |
 | NFR-007 | `docs/coding-plugins/INDEX.md` 必须覆盖每个 feature root 和每个真实文档路径。 | `scripts/preflight.py`：改为扫描 `features/<area>/<capability>`，拒绝旧 docs root 和 flat feature-root 技术/计划文件，校验 README、metadata 和索引 | TD-004 | `scripts/preflight.py` | 单元测试 `test_artifact_index_requires_feature_root_paths` 和 preflight。 | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` |
 | NFR-008 | 活跃文档、skill、模板、测试和 README 中不得继续使用旧四类目录作为默认路径。 | `skills/*/SKILL.md` 和模板：更新默认落地路径和示例路径 | TD-004 | `skills/*/SKILL.md` 和模板 | 旧路径扫描命令必须无活跃命中。 | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` |
@@ -57,7 +57,7 @@ related_evidence:
 
 ## 无需技术设计的规格
 
-| Spec ID | 原因 |
+| 规格 ID | 原因 |
 | --- | --- |
 | 无 | 本 capability 的 MUST 规格均有 technical 落点。 |
 
@@ -72,7 +72,7 @@ related_evidence:
 
 ## 影响组件
 
-| 组件 | 变更 | 相关 Spec ID |
+| 组件 | 变更 | 相关规格 ID |
 | --- | --- | --- |
 | `scripts/preflight.py` | 改为扫描 `features/<area>/<capability>`，拒绝旧 docs root 和 flat feature-root 技术/计划文件，校验 README、metadata 和索引 | NFR-001, NFR-007, ERR-001 |
 | `scripts/test_preflight.py` | 更新 RED/GREEN 单元测试，覆盖新路径和旧路径拒绝 | NFR-001, NFR-006, ERR-001 |

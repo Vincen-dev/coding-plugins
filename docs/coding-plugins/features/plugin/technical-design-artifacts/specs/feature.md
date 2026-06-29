@@ -28,7 +28,7 @@ related_technical:
 
 ## 目标
 
-将技术实现方案从计划文档中拆出到 feature root 的 `technical/technical-design.md`，并让规格、技术设计、计划和 TDD Evidence 形成可检索、可校验的链路。
+将技术实现方案从计划文档中拆出到 feature root 的 `technical/technical-design.md`，并让规格、技术设计、计划和 TDD 证据 形成可检索、可校验的链路。
 
 ## 非目标
 
@@ -50,9 +50,9 @@ related_technical:
 | --- | --- | --- | --- |
 | REQ-001 | 必须 | 技术设计文档默认保存到 `docs/coding-plugins/features/plugin/technical-design-artifacts/technical/technical-design.md` 这类 area/capability 分层路径。 | 单元测试 `test_collect_technical_design_files_uses_feature_first_technical_subdir`。 |
 | REQ-002 | 必须 | `docs/coding-plugins/INDEX.md` 必须覆盖所有真实技术设计文档。 | 单元测试 `test_artifact_index_requires_technical_paths`。 |
-| REQ-003 | 必须 | 总索引 `docs/coding-plugins/INDEX.md` 必须包含 `Technical Design` 列，并覆盖真实技术设计文档。 | 单元测试 `test_artifact_index_requires_technical_paths`。 |
+| REQ-003 | 必须 | 总索引 `docs/coding-plugins/INDEX.md` 必须包含 `技术设计` 列，并覆盖真实技术设计文档。 | 单元测试 `test_artifact_index_requires_technical_paths`。 |
 | REQ-004 | 必须 | 新增 `writing-technical-design` skill，负责把已批准规格转成独立技术设计。 | 行为测试 `test_using_entry_routes_development_intents_to_required_skills`。 |
-| REQ-005 | 必须 | `writing-plans` 必须引用 `Technical Design Source`，计划只保留方案快照和任务拆分。 | 单元测试 `test_plan_technical_design_source_check_rejects_missing_source`。 |
+| REQ-005 | 必须 | `writing-plans` 必须引用 `技术设计来源`，计划只保留方案快照和任务拆分。 | 单元测试 `test_plan_technical_design_source_check_rejects_missing_source`。 |
 | REQ-006 | 必须 | preflight 必须校验技术设计路径、metadata、Spec ID 和引用路径。 | 单元测试 `scripts/test_preflight.py`。 |
 | REQ-007 | 必须 | Claude Code 显式技能请求清单必须包含 `/coding-plugins:writing-technical-design`。 | 行为测试 `test_claude_reference_documents_explicit_namespace_for_each_skill`。 |
 | REQ-008 | 必须 | `writing-technical-design` 必须声明规格缺口门禁：发现需求、验收、外部行为、错误边界或兼容要求不清时，停止技术设计并回到 spec 更新。 | 单元测试 `test_technical_design_gap_review_requires_section`、`test_technical_design_gap_review_rejects_unresolved_gap`，并由 `python3 scripts/preflight.py` 覆盖真实文档。 |
@@ -65,7 +65,7 @@ related_technical:
 | --- | --- | --- | --- |
 | ERR-001 | 技术设计文档不在 area/capability 分层路径下，或 metadata 与路径不一致。 | preflight 失败并指出路径和 metadata 不一致。 | 单元测试。 |
 | ERR-002 | 规格中的 `related_technical` 指向不存在的文档。 | preflight 失败并指出缺失技术设计引用。 | 单元测试。 |
-| ERR-003 | 计划没有 `Technical Design Source` 或路径不存在。 | preflight 失败并指出计划缺少技术设计来源。 | 单元测试。 |
+| ERR-003 | 计划没有 `技术设计来源` 或路径不存在。 | preflight 失败并指出计划缺少技术设计来源。 | 单元测试。 |
 | ERR-004 | 技术设计文档引用了对应规格中不存在的 Spec ID。 | preflight 失败并指出未知 Spec ID。 | 单元测试。 |
 | ERR-005 | 技术设计文档存在但总索引未记录。 | preflight 失败并指出索引缺失路径。 | 单元测试。 |
 | ERR-006 | 技术设计文档缺少 `## 规格缺口审查` 或审查字段不完整。 | preflight 失败并指出缺失章节或字段。 | 单元测试。 |
@@ -76,34 +76,34 @@ related_technical:
 
 | 编号 | 场景 | 前置条件 | 操作 | 期望结果 |
 | --- | --- | --- | --- | --- |
-| AC-001 | 创建技术设计链路 | 已有批准规格 | 创建 `technical/technical-design.md` 并在规格和计划中引用 | preflight 通过，索引能检索到 Spec、Technical、Plan、Evidence。 |
+| AC-001 | 创建技术设计链路 | 已有批准规格 | 创建 `technical/technical-design.md` 并在规格和计划中引用 | preflight 通过，索引能检索到 Spec、Technical、Plan、证据。 |
 | AC-002 | 使用新技能 | 用户要求根据规格写技术方案 | 路由到 `writing-technical-design` | 生成独立技术设计文档，而不是把完整技术方案写入计划。 |
-| AC-003 | 发布前检查 | 仓库包含 technical 文档和计划 | 运行 `python3 scripts/preflight.py` | 技术设计、规格、计划和 Evidence 校验全部通过。 |
+| AC-003 | 发布前检查 | 仓库包含 technical 文档和计划 | 运行 `python3 scripts/preflight.py` | 技术设计、规格、计划和 证据 校验全部通过。 |
 | AC-004 | 技术设计发现规格缺口 | 编写 technical 时发现需求或验收不清 | 停止技术设计并回到 `spec-driven-development` 更新 spec | technical 不承载新需求，preflight 阻止未处理缺口。 |
 
 ## 追踪矩阵
 
 | 规格 ID | 验证类型 | 测试文件 / 命令 | 计划任务 | 状态 |
 | --- | --- | --- | --- | --- |
-| REQ-001 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
-| REQ-002 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
-| REQ-003 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
-| REQ-004 | 行为测试 | `python3 -m unittest tests.behavior.test_routing` | Task 2 | 已覆盖 |
-| REQ-005 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 2 | 已覆盖 |
-| REQ-006 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
-| REQ-007 | 行为测试 | `python3 -m unittest tests.behavior.test_routing` | Task 2 | 已覆盖 |
-| REQ-008 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 4 | 已覆盖 |
-| REQ-009 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 4 | 已覆盖 |
-| REQ-010 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 4 | 已覆盖 |
-| ERR-001 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
-| ERR-002 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
-| ERR-003 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 2 | 已覆盖 |
-| ERR-004 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
-| ERR-005 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
-| ERR-006 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 4 | 已覆盖 |
-| ERR-007 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 4 | 已覆盖 |
-| ERR-008 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 4 | 已覆盖 |
-| AC-001 | 命令验证 | `python3 scripts/preflight.py` | Task 3 | 已覆盖 |
-| AC-002 | 行为测试 | `python3 -m unittest tests.behavior.test_routing` | Task 2 | 已覆盖 |
-| AC-003 | 命令验证 | `python3 scripts/preflight.py` | Task 3 | 已覆盖 |
-| AC-004 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 4 | 已覆盖 |
+| REQ-001 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | 任务 1 | 已覆盖 |
+| REQ-002 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | 任务 1 | 已覆盖 |
+| REQ-003 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | 任务 1 | 已覆盖 |
+| REQ-004 | 行为测试 | `python3 -m unittest tests.behavior.test_routing` | 任务 2 | 已覆盖 |
+| REQ-005 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | 任务 2 | 已覆盖 |
+| REQ-006 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | 任务 1 | 已覆盖 |
+| REQ-007 | 行为测试 | `python3 -m unittest tests.behavior.test_routing` | 任务 2 | 已覆盖 |
+| REQ-008 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | 任务 4 | 已覆盖 |
+| REQ-009 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | 任务 4 | 已覆盖 |
+| REQ-010 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | 任务 4 | 已覆盖 |
+| ERR-001 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | 任务 1 | 已覆盖 |
+| ERR-002 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | 任务 1 | 已覆盖 |
+| ERR-003 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | 任务 2 | 已覆盖 |
+| ERR-004 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | 任务 1 | 已覆盖 |
+| ERR-005 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | 任务 1 | 已覆盖 |
+| ERR-006 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | 任务 4 | 已覆盖 |
+| ERR-007 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | 任务 4 | 已覆盖 |
+| ERR-008 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | 任务 4 | 已覆盖 |
+| AC-001 | 命令验证 | `python3 scripts/preflight.py` | 任务 3 | 已覆盖 |
+| AC-002 | 行为测试 | `python3 -m unittest tests.behavior.test_routing` | 任务 2 | 已覆盖 |
+| AC-003 | 命令验证 | `python3 scripts/preflight.py` | 任务 3 | 已覆盖 |
+| AC-004 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | 任务 4 | 已覆盖 |

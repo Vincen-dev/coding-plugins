@@ -39,7 +39,7 @@ related_evidence:
 | 规格类型 | feature |
 | 技术设计 | `docs/coding-plugins/features/plugin/technical-design-validator/technical/technical-design.md` |
 | 实现计划 | `docs/coding-plugins/features/plugin/technical-design-validator/plans/implementation.md` |
-| TDD Evidence | `docs/coding-plugins/features/plugin/technical-design-validator/evidence/tdd-evidence.md` |
+| TDD 证据 | `docs/coding-plugins/features/plugin/technical-design-validator/evidence/tdd-evidence.md` |
 
 ## 目标
 

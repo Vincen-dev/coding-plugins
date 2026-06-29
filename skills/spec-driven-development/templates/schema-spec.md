@@ -1,6 +1,6 @@
 ---
 spec_id: <area-capability-schema>
-title: <Schema 名称>
+title: <数据结构名称>
 type: schema
 status: draft
 area: <area>
@@ -14,7 +14,7 @@ related_code:
 related_specs: []
 ---
 
-# <Schema 名称>规格
+# <数据结构名称>规格
 
 ## 文档信息
 
@@ -35,7 +35,7 @@ related_specs: []
 - 消费方：
 - 存储或传输：
 
-## Schema 契约
+## 数据结构契约
 
 | 编号 | 字段 | 类型 | 必填 | 约束 | 说明 |
 | --- | --- | --- | --- | --- | --- |

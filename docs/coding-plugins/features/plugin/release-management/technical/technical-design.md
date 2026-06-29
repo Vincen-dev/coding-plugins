@@ -26,7 +26,7 @@ related_plans:
 | 领域 | plugin |
 | 能力 | release-management |
 | 规格 | `docs/coding-plugins/features/plugin/release-management/specs/feature.md` |
-| TDD Evidence | `docs/coding-plugins/features/plugin/release-management/evidence/tdd-evidence.md` |
+| TDD 证据 | `docs/coding-plugins/features/plugin/release-management/evidence/tdd-evidence.md` |
 
 ## 设计摘要
 
@@ -43,7 +43,7 @@ related_plans:
 
 ## 规格到设计映射
 
-| Spec ID | 规格摘要 | 技术落点 | 关键决策 ID | 影响文件/符号 | 验证命令 | Evidence |
+| 规格 ID | 规格摘要 | 技术落点 | 关键决策 ID | 影响文件/符号 | 验证命令 | 证据 |
 | --- | --- | --- | --- | --- | --- | --- |
 | REQ-001 | 仓库必须包含 `RELEASE-NOTES.md`，并记录当前 manifest 版本。 | `scripts/bump_version.py`：保持现有版本同步职责<br>`RELEASE-NOTES.md`：继续作为当前版本 GitHub Release notes 的唯一来源 | TD-001 | `scripts/bump_version.py`<br>`RELEASE-NOTES.md` | 单元测试 `test_release_management_check_rejects_missing_release_notes_version`。 | `docs/coding-plugins/features/plugin/release-management/evidence/tdd-evidence.md` |
 | REQ-002 | 仓库必须包含 `.version-bump.json`，且其中版本必须和两个 manifest 版本一致。 | `scripts/bump_version.py`：保持现有版本同步职责 | TD-002 | `scripts/bump_version.py` | 单元测试 `test_release_management_check_rejects_mismatched_config_version`。 | `docs/coding-plugins/features/plugin/release-management/evidence/tdd-evidence.md` |
@@ -58,7 +58,7 @@ related_plans:
 
 ## 无需技术设计的规格
 
-| Spec ID | 原因 |
+| 规格 ID | 原因 |
 | --- | --- |
 | 无 | 本 capability 的 MUST 规格均有 technical 落点。 |
 
@@ -74,7 +74,7 @@ related_plans:
 
 ## 影响组件
 
-| 组件 | 变更 | 相关 Spec ID |
+| 组件 | 变更 | 相关规格 ID |
 | --- | --- | --- |
 | `scripts/bump_version.py` | 保持现有版本同步职责 | REQ-001, REQ-002, REQ-003, ERR-001, ERR-002 |
 | `scripts/prepare_release.py` | 新增 release metadata 校验、tag 名生成、release notes 提取和 GitHub output 写入 | REQ-006, ERR-005, AC-003 |
@@ -129,7 +129,7 @@ python3 scripts/prepare_release.py --skip-git-checks --notes-out release-notes.m
 
 ## 测试策略
 
-| Spec ID | Test Strategy |
+| 规格 ID | 测试策略 |
 | --- | --- |
 | REQ-001, REQ-002, REQ-003, ERR-001, ERR-002 | 继续由 `scripts/test_bump_version.py` 和 `scripts/test_preflight.py` 覆盖 |
 | REQ-004, REQ-005, REQ-008, ERR-003, ERR-004 | `scripts/test_preflight.py` 检查 preflight 命令列表和 release automation 文件约束 |
@@ -138,7 +138,7 @@ python3 scripts/prepare_release.py --skip-git-checks --notes-out release-notes.m
 | REQ-009, AC-005 | `git ls-remote --tags origin v<version>` 和 `gh release view v<version>` |
 | REQ-010, AC-006 | `gh api` 查询直接协作者和 main branch protection |
 
-TDD Evidence 记录在 `docs/coding-plugins/features/plugin/release-management/evidence/tdd-evidence.md`。
+TDD 证据 记录在 `docs/coding-plugins/features/plugin/release-management/evidence/tdd-evidence.md`。
 
 ## 风险和缓解
 

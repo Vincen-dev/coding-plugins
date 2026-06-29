@@ -4,9 +4,9 @@
 
 ```text
 Task tool (general-purpose):
-  description: "Implement Task N: [task name]"
+  description: "Implement 任务 N: [task name]"
   prompt: |
-    你正在实现 Task N: [task name]
+    你正在实现 任务 N: [task name]
 
     ## 任务描述
 
@@ -81,8 +81,8 @@ Task tool (general-purpose):
 
     **测试：**
     - 测试是否验证真实行为？
-    - 是否留下 TDD Evidence，证明先 RED 后 GREEN？
-    - 如果没有 TDD Evidence，是否有用户同意的 TDD Exception Record 和替代验证？
+    - 是否留下 TDD 证据，证明先 RED 后 GREEN？
+    - 如果没有 TDD 证据，是否有用户同意的 TDD 例外记录 和替代验证？
     - 测试是否足够？
 
     自审发现问题时，先修复再回报。
@@ -91,8 +91,8 @@ Task tool (general-purpose):
 
     - **Status:** DONE | DONE_WITH_CONCERNS | BLOCKED | NEEDS_CONTEXT
     - 实现了什么（若阻塞则说明尝试了什么）
-    - TDD Evidence（功能、bugfix、重构或行为变更必须提供）
-    - TDD Exception Record（仅在用户同意跳过 TDD 时提供）
+    - TDD 证据（功能、bugfix、重构或行为变更必须提供）
+    - TDD 例外记录（仅在用户同意跳过 TDD 时提供）
     - 测试内容和结果
     - 修改文件
     - 提交 SHA（如果本任务创建了提交）

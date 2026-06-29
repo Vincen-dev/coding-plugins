@@ -26,7 +26,7 @@ related_plans:
 | 领域 | plugin |
 | 能力 | workflow-hardening |
 | 规格 | `docs/coding-plugins/features/plugin/workflow-hardening/specs/maintenance.md` |
-| TDD Evidence | `docs/coding-plugins/features/plugin/workflow-hardening/evidence/tdd-evidence.md` |
+| TDD 证据 | `docs/coding-plugins/features/plugin/workflow-hardening/evidence/tdd-evidence.md` |
 
 ## 设计摘要
 
@@ -43,7 +43,7 @@ related_plans:
 
 ## 规格到设计映射
 
-| Spec ID | 规格摘要 | 技术落点 | 关键决策 ID | 影响文件/符号 | 验证命令 | Evidence |
+| 规格 ID | 规格摘要 | 技术落点 | 关键决策 ID | 影响文件/符号 | 验证命令 | 证据 |
 | --- | --- | --- | --- | --- | --- | --- |
 | NFR-001 | 行为测试必须覆盖新需求、bug、直接提交、完成收尾、插件维护和并行任务的技能顺序，不只检查技能名存在。 | `tests/behavior/test_routing.py`：增加场景顺序和 Claude 启动提示测试<br>`docs/workflow-chain.md`：增加场景链路说明，供行为测试校验 | TD-001 | `tests/behavior/test_routing.py`<br>`docs/workflow-chain.md` | `python3 -m unittest tests.behavior.test_routing`。 | `docs/coding-plugins/features/plugin/workflow-hardening/evidence/tdd-evidence.md` |
 | NFR-002 | approved feature 如果没有 technical/plan，必须在 README 中声明轻量例外原因，preflight 必须校验该例外。 | `scripts/preflight.py`：增加轻量 feature 例外校验，并运行 remote audit 单测 | TD-002 | `scripts/preflight.py` | `python3 -m unittest scripts/test_preflight.py`。 | `docs/coding-plugins/features/plugin/workflow-hardening/evidence/tdd-evidence.md` |
@@ -53,7 +53,7 @@ related_plans:
 
 ## 无需技术设计的规格
 
-| Spec ID | 原因 |
+| 规格 ID | 原因 |
 | --- | --- |
 | 无 | 本 capability 的 MUST 规格均有 technical 落点。 |
 
@@ -69,7 +69,7 @@ related_plans:
 
 ## 影响组件
 
-| 组件 | 变更 | 相关 Spec ID |
+| 组件 | 变更 | 相关规格 ID |
 | --- | --- | --- |
 | `tests/behavior/test_routing.py` | 增加场景顺序和 Claude 启动提示测试 | NFR-001, NFR-004, ERR-001, ERR-004 |
 | `docs/workflow-chain.md` | 增加场景链路说明，供行为测试校验 | NFR-001 |
@@ -103,7 +103,7 @@ python3 scripts/remote_audit.py --owner Vincen-dev --repo coding-plugins --tag v
 
 ```text## 轻量例外
 
-- **Reason:** 该 feature 已由规格和 TDD Evidence 完成，技术方案和计划只会重复 evidence 中的任务。
+- **原因:** 该 feature 已由规格和 TDD 证据 完成，技术方案和计划只会重复 evidence 中的任务。
 - **Verification:** python3 scripts/preflight.py
 ```
 
@@ -119,7 +119,7 @@ Claude Code 启动提示契约：
 
 ## 测试策略
 
-| Spec ID | Test Strategy |
+| 规格 ID | 测试策略 |
 | --- | --- |
 | NFR-001, ERR-001 | `tests/behavior/test_routing.py` 校验新需求、bug、提交、收尾、插件维护和并行任务的技能顺序 |
 | NFR-002, ERR-002 | `scripts/test_preflight.py` 构造缺 technical/plan 且无轻量例外的 feature root，确认 preflight 失败 |
@@ -127,13 +127,13 @@ Claude Code 启动提示契约：
 | NFR-004, ERR-004 | `tests/behavior/test_routing.py` 校验 Claude 启动提示文档 |
 | NFR-005, ERR-005 | validator 单测读取 fixture，确认好样例通过、坏样例失败 |
 
-TDD Evidence 记录在 `docs/coding-plugins/features/plugin/workflow-hardening/evidence/tdd-evidence.md`。
+TDD 证据 记录在 `docs/coding-plugins/features/plugin/workflow-hardening/evidence/tdd-evidence.md`。
 
 ## 风险和缓解
 
 | 风险 | 缓解方案 |
 | --- | --- |
 | 行为测试仍不能证明真实 LLM 路由 | 使用场景顺序契约覆盖文档和入口，后续可追加真实会话 transcript 测试 |
-| 轻量例外被滥用 | preflight 要求 README 明确 Reason 和 Verification |
+| 轻量例外被滥用 | preflight 要求 README 明确 原因和验证方式 |
 | 远程审计脚本误入 CI 造成网络失败 | 只运行 `scripts/test_remote_audit.py`，不在 preflight 中调用远程 API |
 | Claude 启动提示和 README 漂移 | 行为测试同时检查 Claude 使用文档和工具映射参考 |

@@ -24,7 +24,7 @@ from docs_index import feature_root_for_document, parse_frontmatter  # noqa: E40
 SPEC_ID_RE = re.compile(r"\b(?:REQ|API|SCHEMA|STATE|ERR|AC|NFR|MIG|OBS|NON)-\d{3,}\b")
 TD_ID_RE = re.compile(r"\bTD-\d{3,}\b")
 TECHNICAL_DESIGN_REQUIRED_SECTIONS = ("规格到设计映射", "无需技术设计的规格")
-TECHNICAL_MAPPING_HEADERS = ("Spec ID", "规格摘要", "技术落点", "关键决策 ID", "影响文件/符号", "验证命令", "Evidence")
+TECHNICAL_MAPPING_HEADERS = ("规格 ID", "规格摘要", "技术落点", "关键决策 ID", "影响文件/符号", "验证命令", "证据")
 TECHNICAL_DECISION_HEADERS = ("决策 ID", "决策", "原因", "取舍")
 TECHNICAL_LIFECYCLE_STATUSES = {"draft", "approved", "implemented", "stale", "superseded"}
 TECHNICAL_LIFECYCLE_REQUIRED_FIELDS = ("lifecycle_status", "implemented_commits", "validated_by")

@@ -76,7 +76,7 @@ class TechnicalDesignValidatorTests(unittest.TestCase):
         )
         mapping_section = (
             "## 规格到设计映射\n\n"
-            "| Spec ID | 规格摘要 | 技术落点 | 关键决策 ID | 影响文件/符号 | 验证命令 | Evidence |\n"
+            "| 规格 ID | 规格摘要 | 技术落点 | 关键决策 ID | 影响文件/符号 | 验证命令 | 证据 |\n"
             "| --- | --- | --- | --- | --- | --- | --- |\n"
             f"{mapping_rows}\n"
             if include_mapping_section
@@ -118,7 +118,7 @@ class TechnicalDesignValidatorTests(unittest.TestCase):
             "| 处理状态 | 通过，未发现需要回写 spec 的缺口。 |\n\n"
             f"{mapping_section}"
             "## 无需技术设计的规格\n\n"
-            "| Spec ID | 原因 |\n"
+            "| 规格 ID | 原因 |\n"
             "| --- | --- |\n"
             "| 无 | 全部 MUST 规格都有技术落点。 |\n\n"
             "## 关键决策\n\n"
@@ -240,9 +240,9 @@ class TechnicalDesignValidatorTests(unittest.TestCase):
             text = technical.read_text(encoding="utf-8")
             technical.write_text(
                 text.replace(
-                    "| Spec ID | 规格摘要 | 技术落点 | 关键决策 ID | 影响文件/符号 | 验证命令 | Evidence |\n"
+                    "| 规格 ID | 规格摘要 | 技术落点 | 关键决策 ID | 影响文件/符号 | 验证命令 | 证据 |\n"
                     "| --- | --- | --- | --- | --- | --- | --- |",
-                    "| Spec ID | 技术落点 | 设计决策 | 测试策略 |\n"
+                    "| 规格 ID | 技术落点 | 设计决策 | 测试策略 |\n"
                     "| --- | --- | --- | --- |",
                 ),
                 encoding="utf-8",

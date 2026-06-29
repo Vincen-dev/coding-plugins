@@ -54,13 +54,13 @@ related_specs: []
 
 | 编号 | 优先级 | 需求 | 验证方式 |
 | --- | --- | --- | --- |
-| REQ-001 | 必须 | preflight 命令运行 SDD 校验器、TDD Evidence 校验器和 preflight 逻辑的仓库单测。 | 追踪矩阵中的单测命令。 |
+| REQ-001 | 必须 | preflight 命令运行 SDD 校验器、TDD 证据 校验器和 preflight 逻辑的仓库单测。 | 追踪矩阵中的单测命令。 |
 | REQ-002 | 必须 | preflight 命令校验 `docs/coding-plugins/features/**/specs/*.md` 下的真实规格文档。 | 追踪矩阵中的 strict 规格校验命令。 |
 | REQ-003 | 必须 | preflight 命令拒绝 Codex 和 Claude 插件 manifest 版本不一致的仓库状态。 | 单测 `test_manifest_version_check_rejects_mismatched_versions`。 |
 | REQ-004 | 必须 | preflight 命令拒绝 Git 内部目录之外仍引用已移除旧入口的仓库状态。 | 单测 `test_removed_entry_scan_ignores_git_and_detects_active_references`。 |
 | REQ-005 | 必须 | GitHub Actions 在 push 到 `main` 和面向 `main` 的 pull request 中运行同一个 preflight 命令。 | 追踪矩阵中的 workflow 文件检查和命令执行。 |
 | REQ-006 | 必须 | preflight 命令运行 Codex SessionStart hook 测试，防止入口注入链路发布时失效。 | 单测 `test_build_commands_include_core_validation_steps` 和 hook 测试命令。 |
-| REQ-007 | 必须 | preflight 命令校验 `docs/coding-plugins/INDEX.md` 覆盖所有真实 spec、plan 和 TDD Evidence 文件。 | 单测 `test_artifact_index_requires_spec_paths`、`test_artifact_index_requires_plan_paths` 和 `test_artifact_index_requires_evidence_paths`。 |
+| REQ-007 | 必须 | preflight 命令校验 `docs/coding-plugins/INDEX.md` 覆盖所有真实 spec、plan 和 TDD 证据 文件。 | 单测 `test_artifact_index_requires_spec_paths`、`test_artifact_index_requires_plan_paths` 和 `test_artifact_index_requires_evidence_paths`。 |
 | REQ-008 | 必须 | 文档索引生成、写入和内容一致性校验必须封装在 `scripts/docs_index.py`，`scripts/preflight.py` 只保留 CLI 和发布门禁编排。 | 单测 `test_docs_index_module_exposes_index_contract` 和 `test_preflight_delegates_artifact_index_checks_to_docs_index`。 |
 | REQ-009 | 必须 | manifest 相关检查必须封装在 `scripts/manifest_checks.py`，`scripts/preflight.py` 只保留错误转换、CLI 和发布门禁编排。 | 单测 `test_manifest_checks_module_exposes_manifest_contract` 和 `test_preflight_converts_manifest_check_errors`。 |
 

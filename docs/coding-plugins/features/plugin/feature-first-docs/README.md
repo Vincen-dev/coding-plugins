@@ -16,5 +16,5 @@
 | 规格 | `specs/maintenance.md` |
 | 技术设计 | `technical/technical-design.md` |
 | 实现计划 | `plans/implementation.md` |
-| TDD Evidence | `evidence/tdd-evidence.md` |
+| TDD 证据| `evidence/tdd-evidence.md` |
 

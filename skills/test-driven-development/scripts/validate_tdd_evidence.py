@@ -12,9 +12,9 @@ from dataclasses import dataclass
 from pathlib import Path
 
 
-EVIDENCE_HEADING_RE = re.compile(r"^\s{0,3}#{1,6}\s+TDD Evidence\s*$", re.IGNORECASE | re.MULTILINE)
+EVIDENCE_HEADING_RE = re.compile(r"^\s{0,3}#{1,6}\s+TDD 证据\s*$", re.IGNORECASE | re.MULTILINE)
 EXCEPTION_HEADING_RE = re.compile(
-    r"^\s{0,3}#{1,6}\s+TDD Exception Record\s*$", re.IGNORECASE | re.MULTILINE
+    r"^\s{0,3}#{1,6}\s+TDD 例外记录\s*$", re.IGNORECASE | re.MULTILINE
 )
 SPEC_SOURCE_RE = re.compile(
     r"\b(?:REQ|API|SCHEMA|STATE|ERR|AC|NFR|MIG|OBS|NON)-\d{3,}\b|bug|复现|验收|acceptance",
@@ -27,20 +27,20 @@ SUSPICIOUS_RE = re.compile(
 )
 
 EVIDENCE_FIELDS = (
-    "Spec/Bug/AC",
-    "RED test",
-    "RED command",
-    "RED failure",
-    "GREEN change",
-    "GREEN command",
-    "REFACTOR command",
-    "Final verification",
+    "规格/缺陷/验收",
+    "RED 测试",
+    "RED 命令",
+    "RED 失败",
+    "GREEN 变更",
+    "GREEN 命令",
+    "REFACTOR 命令",
+    "最终验证",
 )
 EXCEPTION_FIELDS = (
-    "Reason",
-    "User approval",
-    "Alternative verification",
-    "Risk",
+    "原因",
+    "用户批准",
+    "替代验证",
+    "风险",
 )
 
 
@@ -116,27 +116,27 @@ def validate_text(text: str, strict: bool) -> tuple[list[str], list[str]]:
     has_exception = bool(EXCEPTION_HEADING_RE.search(text))
 
     if not has_evidence and not has_exception:
-        errors.append("Missing TDD Evidence or TDD Exception Record section.")
+        errors.append("Missing TDD 证据 or TDD 例外记录 section.")
 
     if has_evidence:
-        errors.extend(require_fields(text, EVIDENCE_FIELDS, "TDD Evidence"))
-        source = get_field(text, "Spec/Bug/AC")
-        red_failure = get_field(text, "RED failure")
-        final_verification = get_field(text, "Final verification")
+        errors.extend(require_fields(text, EVIDENCE_FIELDS, "TDD 证据"))
+        source = get_field(text, "规格/缺陷/验收")
+        red_failure = get_field(text, "RED 失败")
+        final_verification = get_field(text, "最终验证")
 
         if source and not is_placeholder(source) and not SPEC_SOURCE_RE.search(source):
             warnings.append(
-                "Spec/Bug/AC does not look traceable to a Spec ID, bug reproduction, or acceptance criterion."
+                "规格/缺陷/验收 does not look traceable to a Spec ID, bug reproduction, or acceptance criterion."
             )
 
         if red_failure and re.search(r"\bpass(?:ed)?\b|通过", red_failure, re.IGNORECASE):
-            warnings.append("RED failure mentions a pass-like result; confirm the test really failed first.")
+            warnings.append("RED 失败提到了类似通过的结果；请确认测试确实先失败。")
 
         if final_verification and re.search(r"not run|未运行|无法运行", final_verification, re.IGNORECASE):
-            warnings.append("Final verification was not run; use TDD Exception Record if automation is blocked.")
+            warnings.append("最终验证未运行；如果自动化被阻塞，请使用 TDD 例外记录。")
 
     if has_exception:
-        errors.extend(require_fields(text, EXCEPTION_FIELDS, "TDD Exception Record"))
+        errors.extend(require_fields(text, EXCEPTION_FIELDS, "TDD 例外记录"))
 
     if strict and warnings:
         errors.extend(warnings)

@@ -9,7 +9,7 @@
 3. 如果没有覆盖，先写 characterization test，锁定当前外部行为。
 4. 确认测试 green 后再重构。
 5. 每次小步重构后重跑相关测试。
-6. 回报 TDD Evidence；RED 不适用时说明使用的是 existing green baseline 或 characterization test。
+6. 回报 TDD 证据；RED 不适用时说明使用的是 existing green baseline 或 characterization test。
 
 ## Characterization Test 要求
 
@@ -19,4 +19,4 @@
 
 ## 例外
 
-纯格式化、注释整理、文档移动、manifest 元数据调整可以使用 TDD Exception Record。仍需提供替代验证，例如格式化检查、插件校验或文档链接检查。
+纯格式化、注释整理、文档移动、manifest 元数据调整可以使用 TDD 例外记录。仍需提供替代验证，例如格式化检查、插件校验或文档链接检查。

@@ -1,6 +1,6 @@
 ---
 spec_id: plugin-tdd-evidence-path-feature
-title: TDD Evidence 固定落地路径
+title: TDD 证据 固定落地路径
 type: feature
 status: approved
 area: plugin
@@ -21,11 +21,11 @@ related_specs:
   - docs/coding-plugins/features/plugin/preflight/specs/feature.md
 ---
 
-# TDD Evidence 固定落地路径规格
+# TDD 证据 固定落地路径规格
 
 ## 目标
 
-为 TDD Evidence 和 TDD Exception Record 规定稳定的仓库内落地路径，使规格、计划、测试证据可以按同一个 area/capability 检索和校验。
+为 TDD 证据 和 TDD 例外记录 规定稳定的仓库内落地路径，使规格、计划、测试证据可以按同一个 area/capability 检索和校验。
 
 ## 非目标
 
@@ -37,7 +37,7 @@ related_specs:
 
 ## 背景
 
-- 当前行为：TDD Evidence 要求出现在最终报告中，但没有固定文件路径。
+- 当前行为：TDD 证据 要求出现在最终报告中，但没有固定文件路径。
 - 目标用户或调用方：插件使用者、实现子代理、计划执行者、preflight 校验。
 - 约束：路径必须和现有规格、计划路径规则一致，并可由 Python 标准库脚本校验。
 
@@ -45,10 +45,10 @@ related_specs:
 
 | 编号 | 优先级 | 需求 | 验证方式 |
 | --- | --- | --- | --- |
-| REQ-001 | 必须 | TDD Evidence 默认保存到 `docs/coding-plugins/features/{area}/{capability}/evidence/tdd-evidence.md`。 | 文档评审 `skills/test-driven-development/SKILL.md`。 |
+| REQ-001 | 必须 | TDD 证据 默认保存到 `docs/coding-plugins/features/{area}/{capability}/evidence/tdd-evidence.md`。 | 文档评审 `skills/test-driven-development/SKILL.md`。 |
 | REQ-002 | 必须 | area/capability 必须和规格、计划路径保持一致。 | 文档评审 `skills/writing-plans/SKILL.md` 和 `docs/workflow-chain.md`。 |
-| REQ-003 | 必须 | writing-plans 必须在计划中声明 TDD Evidence Target，并把 Spec ID 映射到 evidence 文件。 | 文档评审 `skills/writing-plans/SKILL.md`。 |
-| REQ-004 | 必须 | 仓库提供 TDD Evidence 模板，覆盖 Evidence 和 Exception Record 两种情况。 | 文件检查 `skills/test-driven-development/templates/tdd-evidence.md`。 |
+| REQ-003 | 必须 | writing-plans 必须在计划中声明 TDD 证据 Target，并把 Spec ID 映射到 evidence 文件。 | 文档评审 `skills/writing-plans/SKILL.md`。 |
+| REQ-004 | 必须 | 仓库提供 TDD 证据 模板，覆盖 Evidence 和 Exception Record 两种情况。 | 文件检查 `skills/test-driven-development/templates/tdd-evidence.md`。 |
 | REQ-005 | 必须 | preflight 必须自动严格校验 `docs/coding-plugins/features/**/evidence/**/*.md` 下的证据文件。 | 单测 `test_collect_tdd_evidence_files_uses_feature_first_path` 和 preflight 命令。 |
 
 ## 错误和边界情况
@@ -57,14 +57,14 @@ related_specs:
 | --- | --- | --- | --- |
 | ERR-001 | 项目没有 feature evidence 目录。 | preflight 跳过 evidence 文件校验，不报错。 | 单测或命令行为评审。 |
 | ERR-002 | evidence 文件缺少必需字段。 | `validate_tdd_evidence.py --strict` 失败。 | 既有 TDD validator 单测。 |
-| ERR-003 | 文档、manifest 或配置修改无法先写失败测试。 | 在固定 evidence 文件中记录 `TDD Exception Record`。 | 本次 evidence 文件。 |
+| ERR-003 | 文档、manifest 或配置修改无法先写失败测试。 | 在固定 evidence 文件中记录 `TDD 例外记录`。 | 本次 evidence 文件。 |
 
 ## 验收标准
 
 | 编号 | 场景 | 前置条件 | 操作 | 期望结果 |
 | --- | --- | --- | --- | --- |
-| AC-001 | 用户查找 TDD 最终落地文件 | 已有 area 和 capability | 查看 `docs/coding-plugins/features/{area}/{capability}/evidence/tdd-evidence.md` | 能找到 TDD Evidence 或 Exception Record。 |
-| AC-002 | 计划生成后执行 | 已有规格路径和计划路径 | 阅读 implementation plan | 计划声明对应 TDD Evidence Target。 |
+| AC-001 | 用户查找 TDD 最终落地文件 | 已有 area 和 capability | 查看 `docs/coding-plugins/features/{area}/{capability}/evidence/tdd-evidence.md` | 能找到 TDD 证据 或 Exception Record。 |
+| AC-002 | 计划生成后执行 | 已有规格路径和计划路径 | 阅读 implementation plan | 计划声明对应 TDD 证据 Target。 |
 | AC-003 | 发布前检查 | evidence 文件存在 | 运行 `python3 scripts/preflight.py` | preflight 自动校验证据文件并通过。 |
 
 ## 追踪矩阵

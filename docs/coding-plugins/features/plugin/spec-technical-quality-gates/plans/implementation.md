@@ -24,27 +24,27 @@ related_evidence:
 | 能力 | spec-technical-quality-gates |
 | 规格 | `docs/coding-plugins/features/plugin/spec-technical-quality-gates/specs/feature.md` |
 | 技术设计 | `docs/coding-plugins/features/plugin/spec-technical-quality-gates/technical/technical-design.md` |
-| TDD Evidence | `docs/coding-plugins/features/plugin/spec-technical-quality-gates/evidence/tdd-evidence.md` |
+| TDD 证据 | `docs/coding-plugins/features/plugin/spec-technical-quality-gates/evidence/tdd-evidence.md` |
 
 > **给代理执行者：** REQUIRED SUB-SKILL: 使用 `coding-plugins:executing-plans` 或当前会话按检查点执行本计划。步骤使用 checkbox (`- [ ]`) 语法追踪。
 
-**Goal:** 增加 spec 和 technical design 的质量门禁，防止 MUST 规格缺少技术落点。
+**目标:** 增加 spec 和 technical design 的质量门禁，防止 MUST 规格缺少技术落点。
 
-**Architecture:** preflight 从 approved spec 提取 MUST ID，并要求 technical 的映射或豁免章节显式处理这些 ID。模板和技能同步更新，现有 technical 文档一次性迁移。
+**架构:** preflight 从 approved spec 提取 MUST ID，并要求 technical 的映射或豁免章节显式处理这些 ID。模板和技能同步更新，现有 technical 文档一次性迁移。
 
-**Tech Stack:** Python 标准库、Markdown 文档、Codex/Claude skills。
+**技术栈:** Python 标准库、Markdown 文档、Codex/Claude skills。
 
-**Spec Source:** `docs/coding-plugins/features/plugin/spec-technical-quality-gates/specs/feature.md`
+**规格来源:** `docs/coding-plugins/features/plugin/spec-technical-quality-gates/specs/feature.md`
 
-**Technical Design Source:** `docs/coding-plugins/features/plugin/spec-technical-quality-gates/technical/technical-design.md`
+**技术设计来源:** `docs/coding-plugins/features/plugin/spec-technical-quality-gates/technical/technical-design.md`
 
-## Technical Design Snapshot
+## 技术设计快照
 
 本计划执行 technical design 中的新增门禁：模板新增 `规格到设计映射` 和 `无需技术设计的规格`，preflight 校验真实 technical 文档的章节、MUST Spec ID 反向覆盖和 related metadata 链路。
 
-## Spec Traceability
+## 规格追踪
 
-| Spec ID | Test file / command | Test name or assertion | TDD evidence file / field | Implementation task |
+| 规格 ID | 测试文件 / 命令 | 测试名称或断言 | TDD 证据文件 / 字段 | 实现任务 |
 | --- | --- | --- | --- | --- |
 | REQ-001 | `python3 -m unittest scripts/test_preflight.py` | `test_technical_template_requires_spec_design_mapping_sections` | `docs/coding-plugins/features/plugin/spec-technical-quality-gates/evidence/tdd-evidence.md` / Task 1 | Task 1 |
 | REQ-002 | `python3 -m unittest scripts/test_preflight.py` | `test_technical_template_requires_spec_design_mapping_sections` | `docs/coding-plugins/features/plugin/spec-technical-quality-gates/evidence/tdd-evidence.md` / Task 1 | Task 1 |
@@ -53,95 +53,95 @@ related_evidence:
 | REQ-005 | `python3 -m unittest scripts/test_preflight.py` | `test_technical_metadata_requires_related_chain_paths` | `docs/coding-plugins/features/plugin/spec-technical-quality-gates/evidence/tdd-evidence.md` / Task 3 | Task 3 |
 | REQ-006 | `python3 scripts/preflight.py` | full preflight validates skill/template/docs | `docs/coding-plugins/features/plugin/spec-technical-quality-gates/evidence/tdd-evidence.md` / Task 4 | Task 4 |
 
-## Task 1: Technical template and section gates
+## 任务 1： Technical template and section gates
 
-**Spec IDs:** REQ-001, REQ-002, REQ-003, ERR-001, ERR-002, AC-001
+**规格 ID:** REQ-001, REQ-002, REQ-003, ERR-001, ERR-002, AC-001
 
-**Files:**
-- Modify: `scripts/test_preflight.py`
-- Modify: `scripts/preflight.py`
-- Modify: `skills/writing-technical-design/templates/technical-design.md`
-- Modify: `skills/writing-technical-design/SKILL.md`
-- Modify: `docs/coding-plugins/features/plugin/*/technical/technical-design.md`
+**文件:**
+- 修改: `scripts/test_preflight.py`
+- 修改: `scripts/preflight.py`
+- 修改: `skills/writing-technical-design/templates/technical-design.md`
+- 修改: `skills/writing-technical-design/SKILL.md`
+- 修改: `docs/coding-plugins/features/plugin/*/technical/technical-design.md`
 
-- [x] **Step 1: Write failing tests from Spec IDs**
+- [x] **步骤 1：Write failing tests from Spec IDs**
 
-Run: `python3 -m unittest scripts/test_preflight.py`
-Expected: FAIL because template and technical section checks do not exist.
+运行: `python3 -m unittest scripts/test_preflight.py`
+预期: FAIL because template and technical section checks do not exist.
 
-- [x] **Step 2: Write minimal implementation after RED**
+- [x] **步骤 2：Write minimal implementation after RED**
 
 Add preflight checks for `## 规格到设计映射` and `## 无需技术设计的规格`; update the template and skill.
 
-- [x] **Step 3: Run test to verify it passes**
+- [x] **步骤 3：Run test to verify it passes**
 
-Run: `python3 -m unittest scripts/test_preflight.py`
-Expected: PASS.
+运行: `python3 -m unittest scripts/test_preflight.py`
+预期: PASS.
 
-## Task 2: MUST Spec ID reverse coverage
+## 任务 2： MUST Spec ID reverse coverage
 
-**Spec IDs:** REQ-004, ERR-003, AC-002
+**规格 ID:** REQ-004, ERR-003, AC-002
 
-**Files:**
-- Modify: `scripts/test_preflight.py`
-- Modify: `scripts/preflight.py`
-- Modify: `docs/coding-plugins/features/plugin/*/technical/technical-design.md`
+**文件:**
+- 修改: `scripts/test_preflight.py`
+- 修改: `scripts/preflight.py`
+- 修改: `docs/coding-plugins/features/plugin/*/technical/technical-design.md`
 
-- [x] **Step 1: Write failing tests from Spec IDs**
+- [x] **步骤 1：Write failing tests from Spec IDs**
 
-Run: `python3 -m unittest scripts/test_preflight.py`
-Expected: FAIL because MUST Spec ID reverse coverage is not checked.
+运行: `python3 -m unittest scripts/test_preflight.py`
+预期: FAIL because MUST Spec ID reverse coverage is not checked.
 
-- [x] **Step 2: Write minimal implementation after RED**
+- [x] **步骤 2：Write minimal implementation after RED**
 
 Extract MUST Spec IDs from approved specs and compare them against technical mapping and exemption sections.
 
-- [x] **Step 3: Run test to verify it passes**
+- [x] **步骤 3：Run test to verify it passes**
 
-Run: `python3 -m unittest scripts/test_preflight.py`
-Expected: PASS.
+运行: `python3 -m unittest scripts/test_preflight.py`
+预期: PASS.
 
-## Task 3: Technical metadata chain
+## 任务 3： Technical metadata chain
 
-**Spec IDs:** REQ-005, ERR-004, AC-003
+**规格 ID:** REQ-005, ERR-004, AC-003
 
-**Files:**
-- Modify: `scripts/test_preflight.py`
-- Modify: `scripts/preflight.py`
-- Modify: `docs/coding-plugins/features/plugin/*/technical/technical-design.md`
+**文件:**
+- 修改: `scripts/test_preflight.py`
+- 修改: `scripts/preflight.py`
+- 修改: `docs/coding-plugins/features/plugin/*/technical/technical-design.md`
 
-- [x] **Step 1: Write failing tests from Spec IDs**
+- [x] **步骤 1：Write failing tests from Spec IDs**
 
-Run: `python3 -m unittest scripts/test_preflight.py`
-Expected: FAIL because technical related metadata is not enforced.
+运行: `python3 -m unittest scripts/test_preflight.py`
+预期: FAIL because technical related metadata is not enforced.
 
-- [x] **Step 2: Write minimal implementation after RED**
+- [x] **步骤 2：Write minimal implementation after RED**
 
 Require `related_specs`, `related_plans` and `related_evidence` when the corresponding files exist, and verify referenced paths exist.
 
-- [x] **Step 3: Run test to verify it passes**
+- [x] **步骤 3：Run test to verify it passes**
 
-Run: `python3 -m unittest scripts/test_preflight.py`
-Expected: PASS.
+运行: `python3 -m unittest scripts/test_preflight.py`
+预期: PASS.
 
-## Task 4: Docs, evidence and final verification
+## 任务 4： Docs, evidence and final verification
 
-**Spec IDs:** REQ-006, ERR-005, AC-001, AC-002, AC-003
+**规格 ID:** REQ-006, ERR-005, AC-001, AC-002, AC-003
 
-**Files:**
-- Modify: `docs/workflow-chain.md`
-- Modify: `docs/coding-plugins/INDEX.md`
-- Modify: `docs/coding-plugins/features/plugin/spec-technical-quality-gates/evidence/tdd-evidence.md`
+**文件:**
+- 修改: `docs/workflow-chain.md`
+- 修改: `docs/coding-plugins/INDEX.md`
+- 修改: `docs/coding-plugins/features/plugin/spec-technical-quality-gates/evidence/tdd-evidence.md`
 
-- [x] **Step 1: Update workflow documentation**
+- [x] **步骤 1：Update workflow documentation**
 
 Document the technical coverage gate and metadata chain.
 
-- [x] **Step 2: Record TDD Evidence**
+- [x] **步骤 2：Record TDD 证据**
 
 Write RED/GREEN/REFACTOR evidence into `docs/coding-plugins/features/plugin/spec-technical-quality-gates/evidence/tdd-evidence.md`.
 
-- [x] **Step 3: Run final verification**
+- [x] **步骤 3：Run final verification**
 
-Run: `python3 scripts/preflight.py --write-index` and `python3 scripts/preflight.py`.
-Expected: PASS.
+运行: `python3 scripts/preflight.py --write-index` and `python3 scripts/preflight.py`.
+预期: PASS.

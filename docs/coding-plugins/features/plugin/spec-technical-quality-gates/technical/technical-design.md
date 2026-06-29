@@ -27,7 +27,7 @@ related_evidence:
 | 能力 | spec-technical-quality-gates |
 | 规格 | `docs/coding-plugins/features/plugin/spec-technical-quality-gates/specs/feature.md` |
 | 计划 | `docs/coding-plugins/features/plugin/spec-technical-quality-gates/plans/implementation.md` |
-| TDD Evidence | `docs/coding-plugins/features/plugin/spec-technical-quality-gates/evidence/tdd-evidence.md` |
+| TDD 证据 | `docs/coding-plugins/features/plugin/spec-technical-quality-gates/evidence/tdd-evidence.md` |
 
 ## 设计摘要
 
@@ -44,7 +44,7 @@ related_evidence:
 
 ## 规格到设计映射
 
-| Spec ID | 规格摘要 | 技术落点 | 关键决策 ID | 影响文件/符号 | 验证命令 | Evidence |
+| 规格 ID | 规格摘要 | 技术落点 | 关键决策 ID | 影响文件/符号 | 验证命令 | 证据 |
 | --- | --- | --- | --- | --- | --- | --- |
 | REQ-001 | technical 模板必须包含 `## 规格到设计映射`，用于把 Spec ID 映射到技术落点、设计决策和测试策略。 | `scripts/test_preflight.py`：增加 RED/GREEN 单元测试覆盖新增门禁<br>`skills/writing-technical-design/templates/technical-design.md`：增加 `规格到设计映射` 和 `无需技术设计的规格` 默认章节 | TD-001 | `scripts/test_preflight.py`<br>`skills/writing-technical-design/templates/technical-design.md` | `test_technical_template_requires_spec_design_mapping_sections` | `docs/coding-plugins/features/plugin/spec-technical-quality-gates/evidence/tdd-evidence.md` |
 | REQ-002 | technical 模板必须包含 `## 无需技术设计的规格`，用于显式豁免不需要技术设计落点的 Spec ID。 | `scripts/test_preflight.py`：增加 RED/GREEN 单元测试覆盖新增门禁<br>`skills/writing-technical-design/templates/technical-design.md`：增加 `规格到设计映射` 和 `无需技术设计的规格` 默认章节 | TD-002 | `scripts/test_preflight.py`<br>`skills/writing-technical-design/templates/technical-design.md` | `test_technical_template_requires_spec_design_mapping_sections` | `docs/coding-plugins/features/plugin/spec-technical-quality-gates/evidence/tdd-evidence.md` |
@@ -55,7 +55,7 @@ related_evidence:
 
 ## 无需技术设计的规格
 
-| Spec ID | 原因 |
+| 规格 ID | 原因 |
 | --- | --- |
 | 无 | 本 capability 的 MUST 规格均有 technical 落点。 |
 
@@ -69,7 +69,7 @@ related_evidence:
 
 ## 影响组件
 
-| 组件 | 变更 | 相关 Spec ID |
+| 组件 | 变更 | 相关规格 ID |
 | --- | --- | --- |
 | `scripts/preflight.py` | 增加 technical 映射章节、MUST 反向覆盖和 related 链路校验 | REQ-003, REQ-004, REQ-005 |
 | `scripts/test_preflight.py` | 增加 RED/GREEN 单元测试覆盖新增门禁 | REQ-001, REQ-002, REQ-003, REQ-004, REQ-005 |

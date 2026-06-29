@@ -1,23 +1,23 @@
-# <Capability> TDD Evidence
+# <能力> TDD 证据
 
-## Task <N>: <任务名称>
+## 任务 <N>：<任务名称>
 
-### TDD Evidence
+### TDD 证据
 
-- **Spec/Bug/AC:** <REQ-001、bug 复现链接或验收标准>
-- **RED test:** `<tests/path/test_file.py::test_specific_behavior>`
-- **RED command:** `<pytest tests/path/test_file.py::test_specific_behavior -v>`
-- **RED failure:** <失败信息摘要，说明它因缺失行为失败，而不是导入、拼写或环境问题>
-- **GREEN change:** <最小实现摘要>
-- **GREEN command:** `<pytest tests/path/test_file.py::test_specific_behavior -v>`
-- **REFACTOR command:** `<pytest tests/path/test_file.py -v>`
-- **Final verification:** <最终相关测试、构建或校验命令和结果>
+- **规格/缺陷/验收:** <REQ-001、bug 复现链接或验收标准>
+- **RED 测试:** `<tests/path/test_file.py::test_specific_behavior>`
+- **RED 命令:** `<pytest tests/path/test_file.py::test_specific_behavior -v>`
+- **RED 失败:** <失败信息摘要，说明它因缺失行为失败，而不是导入、拼写或环境问题>
+- **GREEN 变更:** <最小实现摘要>
+- **GREEN 命令:** `<pytest tests/path/test_file.py::test_specific_behavior -v>`
+- **REFACTOR 命令:** `<pytest tests/path/test_file.py -v>`
+- **最终验证:** <最终相关测试、构建或校验命令和结果>
 
-## Task <N>: <无法自动测试的任务名称>
+## 任务 <N>：<无法自动测试的任务名称>
 
-### TDD Exception Record
+### TDD 例外记录
 
-- **Reason:** <为什么无法先写失败测试>
-- **User approval:** <用户同意的原话或明确说明>
-- **Alternative verification:** <替代验证命令、日志、截图或人工验收步骤>
-- **Risk:** <剩余风险和后续补测试计划>
+- **原因:** <为什么无法先写失败测试>
+- **用户批准:** <用户同意的原话或明确说明>
+- **替代验证:** <替代验证命令、日志、截图或人工验收步骤>
+- **风险:** <剩余风险和后续补测试计划>

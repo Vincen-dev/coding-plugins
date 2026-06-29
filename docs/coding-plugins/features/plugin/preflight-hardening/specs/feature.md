@@ -50,7 +50,7 @@ related_specs:
 | REQ-003 | 必须 | `docs/coding-plugins/features/{area}/{capability}/specs/{file}.md` 必须和规格 metadata 的 `area`、`capability` 一致。 | 单元测试 `test_document_path_metadata_check_rejects_mismatched_spec_metadata`。 |
 | REQ-004 | 必须 | `docs/coding-plugins/features/{area}/{capability}/evidence/tdd-evidence.md` 中引用的 Spec ID 必须能在同 capability 的规格文件中找到。 | 单元测试 `test_evidence_spec_id_check_rejects_unknown_ids`。 |
 | REQ-005 | 必须 | README、安装说明和工作链路文档必须包含关键路径：总索引、hook 配置、preflight 命令。 | 单元测试 `test_docs_sync_check_rejects_missing_key_paths`。 |
-| REQ-006 | 必须 | preflight 必须拒绝活跃文档、hook、skill、脚本和测试中的旧 TDD Evidence 路径 `docs/coding-plugins/evidence/`。 | 单元测试 `test_legacy_tdd_evidence_path_references_are_rejected`。 |
+| REQ-006 | 必须 | preflight 必须拒绝活跃文档、hook、skill、脚本和测试中的旧 TDD 证据 路径 `docs/coding-plugins/evidence/`。 | 单元测试 `test_legacy_tdd_evidence_path_references_are_rejected`。 |
 | REQ-007 | 必须 | preflight 必须拒绝活跃技能和 hook 中的 `superpowers` 品牌或路径残留；测试 fixture、preflight 拦截规则和 release 历史可以保留必要字面量。 | 单元测试 `test_superpowers_references_are_rejected_in_active_guidance`。 |
 
 ## 错误和边界情况

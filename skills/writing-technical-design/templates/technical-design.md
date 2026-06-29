@@ -28,7 +28,7 @@ related_evidence:
 | 能力 | <capability> |
 | 规格 | `docs/coding-plugins/features/<area>/<capability>/specs/feature.md` |
 | 计划 | `docs/coding-plugins/features/<area>/<capability>/plans/implementation.md` |
-| TDD Evidence | `docs/coding-plugins/features/<area>/<capability>/evidence/tdd-evidence.md` |
+| TDD 证据| `docs/coding-plugins/features/<area>/<capability>/evidence/tdd-evidence.md` |
 | 已实现提交 | [] |
 | 验证方式 | <验证命令或人工验证记录> |
 
@@ -47,13 +47,13 @@ related_evidence:
 
 ## 规格到设计映射
 
-| Spec ID | 规格摘要 | 技术落点 | 关键决策 ID | 影响文件/符号 | 验证命令 | Evidence |
+| 规格 ID | 规格摘要 | 技术落点 | 关键决策 ID | 影响文件/符号 | 验证命令 | 证据 |
 | --- | --- | --- | --- | --- | --- | --- |
 | REQ-001 | <规格摘要> | `<path>::<symbol>` 或 <具体模块落点> | TD-001 | `<path>` | <测试命令或测试名称> | `docs/coding-plugins/features/<area>/<capability>/evidence/tdd-evidence.md` |
 
 ## 无需技术设计的规格
 
-| Spec ID | 原因 |
+| 规格 ID | 原因 |
 | --- | --- |
 | 无 | <如所有 MUST 规格都有技术落点，保留本行；否则逐项写明无需技术设计的原因。> |
 
@@ -65,7 +65,7 @@ related_evidence:
 
 ## 影响组件
 
-| 组件 | 变更 | 相关 Spec ID |
+| 组件 | 变更 | 相关规格 ID |
 | --- | --- | --- |
 | `<path>` | <改动说明> | REQ-001 |
 
@@ -83,7 +83,7 @@ related_evidence:
 
 ## 测试策略
 
-<Spec ID 对应测试层级、RED/GREEN 命令和 TDD Evidence 记录方式。>
+<Spec ID 对应测试层级、RED/GREEN 命令和 TDD 证据记录方式。>
 
 ## 风险和缓解
 

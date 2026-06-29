@@ -27,7 +27,7 @@ related_evidence:
 | 能力 | technical-design-validator |
 | 规格 | `docs/coding-plugins/features/plugin/technical-design-validator/specs/feature.md` |
 | 计划 | `docs/coding-plugins/features/plugin/technical-design-validator/plans/implementation.md` |
-| TDD Evidence | `docs/coding-plugins/features/plugin/technical-design-validator/evidence/tdd-evidence.md` |
+| TDD 证据 | `docs/coding-plugins/features/plugin/technical-design-validator/evidence/tdd-evidence.md` |
 
 ## 设计摘要
 
@@ -44,7 +44,7 @@ related_evidence:
 
 ## 规格到设计映射
 
-| Spec ID | 规格摘要 | 技术落点 | 关键决策 ID | 影响文件/符号 | 验证命令 | Evidence |
+| 规格 ID | 规格摘要 | 技术落点 | 关键决策 ID | 影响文件/符号 | 验证命令 | 证据 |
 | --- | --- | --- | --- | --- | --- | --- |
 | REQ-001 | 提供 `skills/writing-technical-design/scripts/validate_technical_design.py`，支持校验单个 technical 文件或仓库内全部 technical 文件，并支持 `--root` 指定仓库根用于测试或非标准工作区。 | `skills/writing-technical-design/scripts/validate_technical_design.py`：新增 CLI、结构校验、warning/strict 规则和仓库扫描能力<br>`skills/writing-technical-design/scripts/test_validate_technical_design.py`：覆盖 validator 的 RED/GREEN 单测 | TD-001 | `skills/writing-technical-design/scripts/validate_technical_design.py`<br>`skills/writing-technical-design/scripts/test_validate_technical_design.py` | `test_cli_validates_repository_technical_docs` | `docs/coding-plugins/features/plugin/technical-design-validator/evidence/tdd-evidence.md` |
 | REQ-002 | validator 必须复用或等价覆盖现有 technical 结构门禁：必需章节、MUST Spec ID 映射或豁免、related metadata 路径真实存在。 | `skills/writing-technical-design/scripts/validate_technical_design.py`：新增 CLI、结构校验、warning/strict 规则和仓库扫描能力<br>`skills/writing-technical-design/scripts/test_validate_technical_design.py`：覆盖 validator 的 RED/GREEN 单测 | TD-002 | `skills/writing-technical-design/scripts/validate_technical_design.py`<br>`skills/writing-technical-design/scripts/test_validate_technical_design.py` | `test_validator_rejects_missing_required_sections`、`test_validator_rejects_missing_must_spec_mapping`、`test_validator_rejects_missing_related_metadata_path` | `docs/coding-plugins/features/plugin/technical-design-validator/evidence/tdd-evidence.md` |
@@ -60,7 +60,7 @@ related_evidence:
 
 ## 无需技术设计的规格
 
-| Spec ID | 原因 |
+| 规格 ID | 原因 |
 | --- | --- |
 | 无 | 本 capability 的 MUST 规格均有 technical 落点。 |
 
@@ -78,7 +78,7 @@ related_evidence:
 
 ## 影响组件
 
-| 组件 | 变更 | 相关 Spec ID |
+| 组件 | 变更 | 相关规格 ID |
 | --- | --- | --- |
 | `skills/writing-technical-design/scripts/validate_technical_design.py` | 新增 CLI、结构校验、warning/strict、7 列映射、TD ID、lifecycle、hidden requirement 和仓库扫描能力 | REQ-001, REQ-002, REQ-003, REQ-004, REQ-007, REQ-008, REQ-009, REQ-010 |
 | `skills/writing-technical-design/scripts/test_validate_technical_design.py` | 覆盖 validator 的 RED/GREEN 单测 | REQ-001, REQ-002, REQ-003, REQ-004, REQ-007, REQ-008, REQ-009, REQ-010 |

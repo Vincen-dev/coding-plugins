@@ -6,7 +6,7 @@
 
 ```text
 Task tool (general-purpose):
-  description: "Review spec compliance for Task N"
+  description: "Review spec compliance for 任务 N"
   prompt: |
     你正在评审一个实现是否符合规格。
 
@@ -43,11 +43,11 @@ Task tool (general-purpose):
 	    - 是否存在有规格但无测试/验证的 MUST 要求？
 
 	    **TDD 证据：**
-	    - 功能、bugfix、重构或行为变更是否提供 TDD Evidence？
-	    - RED failure 是否来自缺失行为，而不是导入、拼写、环境或测试框架错误？
-	    - RED test 是否能追溯到 Spec ID、bug 复现或明确验收标准？
+	    - 功能、bugfix、重构或行为变更是否提供 TDD 证据？
+	    - RED 失败 是否来自缺失行为，而不是导入、拼写、环境或测试框架错误？
+	    - RED 测试 是否能追溯到 Spec ID、bug 复现或明确验收标准？
 	    - 是否存在先实现后补测的迹象？
-	    - 如果没有 TDD Evidence，是否有用户同意的 TDD Exception Record 和替代验证？
+	    - 如果没有 TDD 证据，是否有用户同意的 TDD 例外记录 和替代验证？
 
 	    **缺失需求：**
     - 是否实现了全部要求？

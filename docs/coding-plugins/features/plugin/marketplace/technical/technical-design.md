@@ -26,7 +26,7 @@ related_plans:
 | 领域 | plugin |
 | 能力 | marketplace |
 | 规格 | `docs/coding-plugins/features/plugin/marketplace/specs/feature.md` |
-| TDD Evidence | `docs/coding-plugins/features/plugin/marketplace/evidence/tdd-evidence.md` |
+| TDD 证据 | `docs/coding-plugins/features/plugin/marketplace/evidence/tdd-evidence.md` |
 
 ## 设计摘要
 
@@ -43,7 +43,7 @@ marketplace 能力由仓库内 `.agents/plugins/marketplace.json`、Codex manife
 
 ## 规格到设计映射
 
-| Spec ID | 规格摘要 | 技术落点 | 关键决策 ID | 影响文件/符号 | 验证命令 | Evidence |
+| 规格 ID | 规格摘要 | 技术落点 | 关键决策 ID | 影响文件/符号 | 验证命令 | 证据 |
 | --- | --- | --- | --- | --- | --- | --- |
 | REQ-001 | 仓库必须包含 Codex 可读取的 marketplace 文件，marketplace 名称为 `coding-plugins`。 | `.agents/plugins/marketplace.json`：声明 marketplace 名称、插件名称、source path、安装策略和分类 | TD-001 | `.agents/plugins/marketplace.json` | `codex plugin marketplace add /Users/vincen/workspace/plugins/coding-plugins` 可注册该 marketplace。 | `docs/coding-plugins/features/plugin/marketplace/evidence/tdd-evidence.md` |
 | REQ-002 | marketplace 中必须暴露名为 `coding-plugins` 的插件，并指向当前单插件仓库根目录。 | `.agents/plugins/marketplace.json`：声明 marketplace 名称、插件名称、source path、安装策略和分类 | TD-002 | `.agents/plugins/marketplace.json` | 检查 `.agents/plugins/marketplace.json` 中 plugin name 和 source path。 | `docs/coding-plugins/features/plugin/marketplace/evidence/tdd-evidence.md` |
@@ -53,7 +53,7 @@ marketplace 能力由仓库内 `.agents/plugins/marketplace.json`、Codex manife
 
 ## 无需技术设计的规格
 
-| Spec ID | 原因 |
+| 规格 ID | 原因 |
 | --- | --- |
 | 无 | 本 capability 的 MUST 规格均有 technical 落点。 |
 
@@ -68,7 +68,7 @@ marketplace 能力由仓库内 `.agents/plugins/marketplace.json`、Codex manife
 
 ## 影响组件
 
-| 组件 | 变更 | 相关 Spec ID |
+| 组件 | 变更 | 相关规格 ID |
 | --- | --- | --- |
 | `.agents/plugins/marketplace.json` | 声明 marketplace 名称、插件名称、source path、安装策略和分类 | REQ-001, REQ-002, ERR-001, AC-001 |
 | `.codex-plugin/plugin.json` | 提供 Codex 插件 manifest、展示元数据、技能目录和 hook 配置 | REQ-005, AC-005 |
@@ -117,14 +117,14 @@ flowchart TD
 
 ## 测试策略
 
-| Spec ID | Test Strategy |
+| 规格 ID | 测试策略 |
 | --- | --- |
 | REQ-001, REQ-002, ERR-001, AC-001 | 人工和 preflight 文件检查 `.agents/plugins/marketplace.json` |
 | REQ-003, REQ-004, ERR-002, ERR-003, AC-002, AC-004 | 文档评审 `README.md` 和 `docs/installation.md` |
 | REQ-005, AC-005 | `python3 scripts/preflight.py`、`claude plugin validate /Users/vincen/workspace/plugins/coding-plugins --strict` |
 | REQ-006, AC-003 | `codex plugin add coding-plugins@personal` |
 
-TDD Evidence 记录在 `docs/coding-plugins/features/plugin/marketplace/evidence/tdd-evidence.md`。本轮为历史文档回填，不改变运行时行为，因此使用 TDD Exception Record 记录替代验证。
+TDD 证据 记录在 `docs/coding-plugins/features/plugin/marketplace/evidence/tdd-evidence.md`。本轮为历史文档回填，不改变运行时行为，因此使用 TDD 例外记录 记录替代验证。
 
 ## 风险和缓解
 
