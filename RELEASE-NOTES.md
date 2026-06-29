@@ -1,5 +1,11 @@
 # Release Notes
 
+## 0.6.21 - 2026-06-29
+
+- 修正 Codex SessionStart hook 中的 TDD Evidence 路径，统一为 feature-first 路径。
+- 移除 worktree 和分支收尾技能中的旧品牌兼容路径说明。
+- 增强 preflight，拦截活跃入口、hooks、skills 和文档中的旧路径、旧入口和旧品牌残留。
+
 ## 0.6.20 - 2026-06-29
 
 - 增加生成式 `docs/coding-plugins/INDEX.md`，通过 `python3 scripts/preflight.py --write-index` 根据 feature-first 文件树刷新总索引。
