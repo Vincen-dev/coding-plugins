@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import importlib.util
 import re
 import subprocess
 import sys
@@ -142,6 +143,17 @@ DOC_SYNC_REFERENCES = (
 
 def repo_root() -> Path:
     return Path(__file__).resolve().parents[1]
+
+
+def load_technical_design_validator(root: Path):
+    validator_path = repo_root() / "skills" / "writing-technical-design" / "scripts" / "validate_technical_design.py"
+    spec = importlib.util.spec_from_file_location("validate_technical_design", validator_path)
+    if spec is None or spec.loader is None:
+        raise PreflightError(f"Cannot load technical design validator: {validator_path}.")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
 
 
 def run_manifest_check(check: Callable[[Path], object], root: Path) -> object:
@@ -619,6 +631,13 @@ def check_technical_design_related_metadata(root: Path) -> None:
         raise PreflightError("Technical design related metadata is invalid: " + "; ".join(offenders) + ".")
 
 
+def check_technical_design_validator(root: Path) -> None:
+    validator = load_technical_design_validator(root)
+    result = validator.validate_repository(root, strict=False)
+    if not result.ok:
+        raise PreflightError("Technical design validation failed: " + "; ".join(result.errors) + ".")
+
+
 def specs_for_area_capability(root: Path, document_root_name: str, document_file: Path) -> list[Path]:
     feature_context = feature_root_for_document(root, document_file)
     if feature_context is None:
@@ -791,6 +810,7 @@ def build_validation_commands(
         [python, "-m", "unittest", "tests.behavior.test_routing"],
         [python, "-m", "unittest", "skills/spec-driven-development/scripts/test_validate_spec.py"],
         [python, "-m", "unittest", "skills/test-driven-development/scripts/test_validate_tdd_evidence.py"],
+        [python, "-m", "unittest", "skills/writing-technical-design/scripts/test_validate_technical_design.py"],
         ["bash", "tests/hooks/test-session-start.sh"],
     ]
 
@@ -841,6 +861,7 @@ def run_static_checks(root: Path) -> None:
     check_technical_design_required_sections(root)
     check_technical_design_must_spec_coverage(root)
     check_technical_design_related_metadata(root)
+    check_technical_design_validator(root)
     check_artifact_index_covers_documents(root)
     check_spec_technical_design_references(root)
     check_plan_technical_design_references(root)

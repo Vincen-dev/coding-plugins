@@ -235,10 +235,35 @@ class PreflightTests(unittest.TestCase):
         self.assertIn("scripts/test_docs_index.py", command_text)
         self.assertIn("scripts/test_manifest_checks.py", command_text)
         self.assertIn("scripts/test_remote_audit.py", command_text)
+        self.assertIn("test_validate_technical_design.py", command_text)
         self.assertIn("tests.behavior.test_routing", command_text)
         self.assertIn("tests/hooks/test-session-start.sh", command_text)
         self.assertIn("validate_spec.py", command_text)
         self.assertIn("--strict docs/coding-plugins/features/plugin/preflight/evidence/tdd-evidence.md", command_text)
+
+    def test_preflight_uses_technical_design_validator_errors(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature_dir = root / "docs" / "coding-plugins" / "features" / "plugin" / "routing"
+            (feature_dir / "specs").mkdir(parents=True)
+            (feature_dir / "technical").mkdir()
+            (feature_dir / "specs" / "feature.md").write_text(
+                "---\nstatus: approved\narea: plugin\ncapability: routing\nupdated: 2026-06-29\n---\n"
+                "| 编号 | 优先级 | 需求 | 验证方式 |\n"
+                "| --- | --- | --- | --- |\n"
+                "| REQ-001 | 必须 | 需要映射 | 单测 |\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "technical" / "technical-design.md").write_text(
+                "---\nstatus: approved\narea: plugin\ncapability: routing\nupdated: 2026-06-29\n---\n"
+                "# 技术设计\n\n"
+                "## 设计摘要\n\n"
+                "缺少规格到设计映射。\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Technical design validation failed"):
+                preflight.check_technical_design_validator(root)
 
     def test_sdd_template_check_rejects_english_headings(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

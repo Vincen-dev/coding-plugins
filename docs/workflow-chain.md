@@ -419,6 +419,14 @@ docs/coding-plugins/features/<area>/<capability>/technical/technical-design.md
 
 当同一 feature 已存在 spec、plan 或 TDD Evidence 时，technical frontmatter 必须分别维护 `related_specs`、`related_plans` 和 `related_evidence`。这些路径用于把规格契约、技术方案、实现计划和验证证据连成可检索链路，preflight 会校验引用路径真实存在。
 
+technical 可单独运行 validator：
+
+```text
+python3 skills/writing-technical-design/scripts/validate_technical_design.py docs/coding-plugins/features/<area>/<capability>/technical/technical-design.md
+```
+
+普通模式只让结构错误失败；泛化映射和 spec `updated` 晚于 technical 的 stale 情况会作为 warning 暴露。迁移或发布前质量审计可使用 `--strict`，把这些 warning 升级为失败。
+
 ### 计划层
 
 `writing-plans` 把技术设计转成可执行计划。计划要求引用 `Technical Design Source`，明确精确文件路径、完整代码片段、测试命令、预期输出和 Spec ID -> Test -> Task 追踪矩阵。

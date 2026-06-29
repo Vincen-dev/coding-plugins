@@ -78,8 +78,9 @@ docs/coding-plugins/INDEX.md
 5. 创建或更新 `technical/technical-design.md`，正文标题默认使用中文，并补齐 `related_specs`、`related_plans`、`related_evidence`。
 6. 在规格 metadata 或正文中引用 technical design 路径；metadata key 保持英文，正文使用 `## 文档信息` 展示中文摘要。
 7. 更新 `docs/coding-plugins/INDEX.md`。
-8. 运行 `python3 scripts/preflight.py` 或至少运行相关 preflight 单测。
-9. 交接给 `writing-plans`，计划必须写 `Technical Design Source`。
+8. 运行 `python3 skills/writing-technical-design/scripts/validate_technical_design.py <technical-path>` 做 technical 单文档校验；迁移或发布前质量审计可加 `--strict`。
+9. 运行 `python3 scripts/preflight.py` 或至少运行相关 preflight 单测。
+10. 交接给 `writing-plans`，计划必须写 `Technical Design Source`。
 
 ## 模板
 
@@ -95,15 +96,18 @@ skills/writing-technical-design/templates/technical-design.md
 
 - 是否每个 MUST Spec ID 都在设计中有落地点。
 - 是否每个 MUST Spec ID 都出现在 `## 规格到设计映射` 或 `## 无需技术设计的规格` 中。
+- `## 规格到设计映射` 是否避免“见本设计章节”“按本 technical 落地”等泛化映射。
 - 是否完成 `## 规格缺口审查`，且没有未处理、待处理或需澄清的缺口。
 - 是否没有在 technical 中新增需求、验收标准或外部行为；如有，是否已回写 spec。
 - 是否在 metadata 中链接了已存在的 spec、plan 和 TDD Evidence。
+- related spec 的 `updated` 是否晚于 technical；若晚于，先更新 technical 或标记 stale。
 - 是否把关键决策、代价和风险写清楚。
 - 是否明确受影响文件或模块。
 - 是否说明兼容、迁移或为什么不适用。
 - 是否说明测试策略和 TDD Evidence 目标。
 - 是否没有任务清单膨胀；任务拆分留给 `writing-plans`。
 - 是否同步两个索引。
+- 是否运行 technical validator；需要审计历史文档质量时是否运行 `--strict`。
 
 ## 交接
 
