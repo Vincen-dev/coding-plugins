@@ -113,7 +113,7 @@ claude --plugin-dir /Users/vincen/workspace/plugins/coding-plugins
 提升版本时运行：
 
 ```bash
-python3 scripts/bump_version.py 0.6.16
+python3 scripts/bump_version.py <version>
 ```
 
 版本同步目标由 [.version-bump.json](../.version-bump.json) 维护。提升版本后更新 [RELEASE-NOTES.md](../RELEASE-NOTES.md) 中对应版本的变更记录。
@@ -126,3 +126,13 @@ python3 scripts/preflight.py
 codex plugin add coding-plugins@personal
 claude plugin validate /Users/vincen/workspace/plugins/coding-plugins --strict
 ```
+
+提交并确认工作区干净后，准备 GitHub Release：
+
+```bash
+python3 scripts/prepare_release.py --notes-out /tmp/coding-plugins-release-notes.md
+git tag -a v<version> -m "coding-plugins <version>"
+git push origin v<version>
+```
+
+推送 `v*` tag 后，`.github/workflows/release.yml` 会运行 preflight，校验 tag 与 manifest 版本一致，并调用 `gh release create` 使用当前版本 release notes 创建 GitHub Release。

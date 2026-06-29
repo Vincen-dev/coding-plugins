@@ -1,0 +1,139 @@
+---
+title: 插件发布和版本管理实现计划
+status: completed
+area: plugin
+capability: release-management
+created: 2026-06-29
+updated: 2026-06-29
+related_specs:
+  - docs/coding-plugins/features/plugin/release-management/specs/feature.md
+related_technical:
+  - docs/coding-plugins/features/plugin/release-management/technical-design.md
+related_evidence:
+  - docs/coding-plugins/features/plugin/release-management/evidence/tdd-evidence.md
+---
+
+# 插件发布和版本管理实现计划
+
+## 文档信息
+
+| 字段 | 内容 |
+| --- | --- |
+| 状态 | 已完成 |
+| 领域 | plugin |
+| 能力 | release-management |
+| 规格 | `docs/coding-plugins/features/plugin/release-management/specs/feature.md` |
+| 技术设计 | `docs/coding-plugins/features/plugin/release-management/technical-design.md` |
+| TDD Evidence | `docs/coding-plugins/features/plugin/release-management/evidence/tdd-evidence.md` |
+
+**Goal:** 补齐 release tag 和 GitHub Release 的可重复发布链路。
+
+**Architecture:** 版本同步、release metadata 准备和 GitHub Release 创建拆成独立步骤。`scripts/prepare_release.py` 提供本地和 GitHub Actions 共用的 release metadata 契约，`.github/workflows/release.yml` 在 tag push 时执行发布。
+
+**Tech Stack:** Python 标准库、Git CLI、GitHub Actions、GitHub CLI。
+
+**Spec Source:** `docs/coding-plugins/features/plugin/release-management/specs/feature.md`
+
+**Technical Design Source:** `docs/coding-plugins/features/plugin/release-management/technical-design.md`
+
+## Technical Design Snapshot
+
+**Design Summary:** `scripts/bump_version.py` 保持版本同步职责；新增 `scripts/prepare_release.py` 负责生成 `v<version>` tag 名和当前版本 release notes 正文；GitHub Actions 在 `v*` tag push 后运行 preflight 并创建 GitHub Release。preflight 只检查 release automation 文件和测试，不做网络发布。
+
+**Key Decisions:**
+
+| Decision | Rationale | Tradeoff |
+| --- | --- | --- |
+| 新增独立 release 准备脚本 | 让本地和 CI 共享 release metadata 规则 | 增加一个测试入口 |
+| GitHub Release 只由 tag workflow 创建 | 避免 preflight 或普通 push 触发发布 | 发布依赖维护者 push tag |
+| release notes 从 `RELEASE-NOTES.md` 当前版本提取 | 保持发布说明单一来源 | 标题格式必须稳定 |
+
+**Affected Components:**
+
+| Component | Change | Related Spec IDs |
+| --- | --- | --- |
+| `scripts/test_prepare_release.py` | 新增 RED 测试覆盖 tag 名和 release notes 提取 | REQ-006, ERR-005, AC-003 |
+| `scripts/prepare_release.py` | 新增 release metadata 校验和输出 | REQ-006, ERR-005, AC-003 |
+| `scripts/test_preflight.py` | 要求 preflight 运行 release 单测并检查 release automation 文件 | REQ-004, REQ-008, ERR-004 |
+| `scripts/preflight.py` | 增加 release automation 文件和 workflow 内容检查 | REQ-004, REQ-008, ERR-004 |
+| `.github/workflows/release.yml` | 新增 tag workflow 和 GitHub Release 创建步骤 | REQ-007, ERR-006, AC-004 |
+
+**Data Flow / Control Flow:** 维护者提升版本并更新 release notes 后运行 preflight；本地用 `prepare_release.py` 生成 release metadata；维护者 push `v<version>` tag；GitHub Actions 运行 preflight、准备 notes、校验 tag 与 manifest 一致，并调用 `gh release create`。
+
+**Interfaces and Contracts:** `scripts/prepare_release.py --notes-out <path> --github-output <path>` 输出 release notes 正文、`version` 和 `tag`。tag contract 固定为 `v<version>`。
+
+**Migration / Compatibility:** 现有 bump 和 preflight 命令继续可用；新增 release workflow 只响应 tag push。
+
+**Test Strategy:** 先写 `scripts/test_prepare_release.py` 和 preflight release automation 测试，确认 RED；实现后运行 `python3 -m unittest scripts/test_prepare_release.py` 和 `python3 -m unittest scripts/test_preflight.py`；最终运行 `python3 scripts/preflight.py`。
+
+**TDD Evidence Target:** `docs/coding-plugins/features/plugin/release-management/evidence/tdd-evidence.md`
+
+**Risks and Mitigations:**
+
+| Risk | Mitigation |
+| --- | --- |
+| release workflow 与 manifest 版本不一致 | workflow 在创建 GitHub Release 前比较 GitHub ref 和脚本输出 tag |
+| release notes 提取错误 | 单测覆盖当前版本段落提取和缺失版本失败 |
+| 本地误创建重复 tag | `prepare_release.py` 默认检查 tag 是否已存在 |
+
+## Spec Traceability
+
+| Spec ID | Test file / command | Test name or assertion | TDD evidence file / field | Implementation task |
+| --- | --- | --- | --- | --- |
+| REQ-001 | `python3 -m unittest scripts/test_preflight.py` | `test_release_management_check_rejects_missing_release_notes_version` | `docs/coding-plugins/features/plugin/release-management/evidence/tdd-evidence.md` / Task 1 | Task 1 |
+| REQ-002 | `python3 -m unittest scripts/test_preflight.py` | `test_release_management_check_rejects_mismatched_config_version` | `docs/coding-plugins/features/plugin/release-management/evidence/tdd-evidence.md` / Task 1 | Task 1 |
+| REQ-003 | `python3 -m unittest scripts/test_bump_version.py` | `test_update_versions_updates_manifests_and_config` | `docs/coding-plugins/features/plugin/release-management/evidence/tdd-evidence.md` / Task 1 | Task 1 |
+| REQ-004 | `python3 -m unittest scripts/test_preflight.py` | `test_build_commands_include_core_validation_steps` | `docs/coding-plugins/features/plugin/release-management/evidence/tdd-evidence.md` / Task 2 | Task 2 |
+| REQ-005 | `python3 -m unittest scripts/test_preflight.py` | `test_release_management_check_rejects_missing_release_notes_version` | `docs/coding-plugins/features/plugin/release-management/evidence/tdd-evidence.md` / Task 1 | Task 1 |
+| REQ-006 | `python3 -m unittest scripts/test_prepare_release.py` | `test_tag_name_for_version_uses_v_prefix_and_semver`, `test_extract_release_notes_section_for_version`, `test_validate_release_metadata_returns_version_tag_and_notes` | `docs/coding-plugins/features/plugin/release-management/evidence/tdd-evidence.md` / Task 2 | Task 2 |
+| REQ-007 | `python3 -m unittest scripts/test_preflight.py` | `test_release_management_check_rejects_missing_release_automation` and workflow review | `docs/coding-plugins/features/plugin/release-management/evidence/tdd-evidence.md` / Task 2 | Task 2 |
+| REQ-008 | `python3 -m unittest scripts/test_preflight.py` | `test_release_management_check_rejects_missing_release_automation` | `docs/coding-plugins/features/plugin/release-management/evidence/tdd-evidence.md` / Task 2 | Task 2 |
+| ERR-001 | `python3 -m unittest scripts/test_bump_version.py` | `test_validate_version_rejects_invalid_semver` | `docs/coding-plugins/features/plugin/release-management/evidence/tdd-evidence.md` / Task 1 | Task 1 |
+| ERR-002 | `python3 -m unittest scripts/test_preflight.py` | version config missing path in `check_release_management_files` | `docs/coding-plugins/features/plugin/release-management/evidence/tdd-evidence.md` / Task 1 | Task 1 |
+| ERR-003 | `python3 -m unittest scripts/test_preflight.py` | `test_release_management_check_rejects_missing_release_notes_version` | `docs/coding-plugins/features/plugin/release-management/evidence/tdd-evidence.md` / Task 1 | Task 1 |
+| ERR-004 | `python3 -m unittest scripts/test_preflight.py` | `test_release_management_check_rejects_missing_release_automation` | `docs/coding-plugins/features/plugin/release-management/evidence/tdd-evidence.md` / Task 2 | Task 2 |
+| ERR-005 | `python3 -m unittest scripts/test_prepare_release.py` | `test_extract_release_notes_rejects_missing_version` | `docs/coding-plugins/features/plugin/release-management/evidence/tdd-evidence.md` / Task 2 | Task 2 |
+| ERR-006 | `.github/workflows/release.yml` | tag 校验步骤 | `docs/coding-plugins/features/plugin/release-management/evidence/tdd-evidence.md` / Task 2 | Task 2 |
+| AC-003 | `python3 scripts/prepare_release.py --skip-git-checks --notes-out /tmp/plugin-release-notes.md` | 输出 `Release ready: v<version>` 并生成 notes | `docs/coding-plugins/features/plugin/release-management/evidence/tdd-evidence.md` / Task 2 | Task 2 |
+| AC-004 | `.github/workflows/release.yml` | tag push release workflow | `docs/coding-plugins/features/plugin/release-management/evidence/tdd-evidence.md` / Task 2 | Task 2 |
+
+## Task 2: Release tag 和 GitHub Release 自动化
+
+**Spec IDs:** REQ-006, REQ-007, REQ-008, ERR-004, ERR-005, ERR-006, AC-003, AC-004
+
+**Files:**
+
+- Create: `scripts/prepare_release.py`
+- Create: `scripts/test_prepare_release.py`
+- Create: `.github/workflows/release.yml`
+- Modify: `scripts/preflight.py`
+- Modify: `scripts/test_preflight.py`
+- Modify: `docs/coding-plugins/features/plugin/release-management/evidence/tdd-evidence.md`
+
+- [x] **Step 1: Write failing tests from Spec IDs**
+
+新增 `scripts/test_prepare_release.py` 覆盖 `tag_name_for_version()`、`extract_release_notes_section()` 和 `validate_release_metadata()`；修改 `scripts/test_preflight.py` 要求 validation commands 包含 `scripts/test_prepare_release.py`，并要求缺少 release automation 文件时失败。
+
+- [x] **Step 2: Run tests to verify RED**
+
+Run: `python3 -m unittest scripts/test_prepare_release.py`
+Expected: FAIL with `ModuleNotFoundError: No module named 'prepare_release'`
+
+Run: `python3 -m unittest scripts/test_preflight.py`
+Expected: FAIL because `test_prepare_release.py` is not in validation commands and release automation is not checked.
+
+- [x] **Step 3: Write minimal implementation after RED**
+
+新增 `scripts/prepare_release.py`，并让 `scripts/preflight.py` 检查 `scripts/prepare_release.py`、`scripts/test_prepare_release.py`、`.github/workflows/release.yml` 和 workflow 中的 release 创建命令。
+
+- [x] **Step 4: Run tests to verify GREEN**
+
+Run: `python3 -m unittest scripts/test_prepare_release.py`
+Expected: PASS
+
+Run: `python3 -m unittest scripts/test_preflight.py`
+Expected: PASS
+
+- [x] **Step 5: Record TDD Evidence**
+
+更新 `docs/coding-plugins/features/plugin/release-management/evidence/tdd-evidence.md` 的 Task 2。

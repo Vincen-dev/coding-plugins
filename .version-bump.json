@@ -1,5 +1,5 @@
 {
-  "version": "0.6.21",
+  "version": "0.6.22",
   "files": [
     {
       "path": ".codex-plugin/plugin.json",
@@ -15,5 +15,6 @@
     }
   ],
   "releaseNotes": "RELEASE-NOTES.md",
+  "releasePrepare": "python3 scripts/prepare_release.py --notes-out /tmp/coding-plugins-release-notes.md",
   "preflight": "python3 scripts/preflight.py"
 }

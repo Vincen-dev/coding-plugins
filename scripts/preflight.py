@@ -163,6 +163,21 @@ def check_release_management_files(root: Path) -> None:
     if f"## {version}" not in release_notes:
         raise PreflightError(f"RELEASE-NOTES.md must include current version: {version}.")
 
+    release_script_path = root / "scripts" / "prepare_release.py"
+    release_test_path = root / "scripts" / "test_prepare_release.py"
+    release_workflow_path = root / ".github" / "workflows" / "release.yml"
+    missing_release_files = [
+        str(path.relative_to(root))
+        for path in (release_script_path, release_test_path, release_workflow_path)
+        if not path.exists()
+    ]
+    if missing_release_files:
+        raise PreflightError("Missing release automation: " + ", ".join(missing_release_files) + ".")
+
+    release_workflow = release_workflow_path.read_text(encoding="utf-8")
+    if "scripts/prepare_release.py" not in release_workflow or "gh release create" not in release_workflow:
+        raise PreflightError("Release workflow must prepare release metadata and create a GitHub Release.")
+
 
 def check_codex_hook_config_declared(root: Path) -> None:
     codex_manifest = read_json(root / ".codex-plugin" / "plugin.json")
@@ -754,6 +769,7 @@ def build_validation_commands(
     commands = [
         [python, "-m", "unittest", "scripts/test_preflight.py"],
         [python, "-m", "unittest", "scripts/test_bump_version.py"],
+        [python, "-m", "unittest", "scripts/test_prepare_release.py"],
         [python, "-m", "unittest", "tests.behavior.test_routing"],
         [python, "-m", "unittest", "skills/spec-driven-development/scripts/test_validate_spec.py"],
         [python, "-m", "unittest", "skills/test-driven-development/scripts/test_validate_tdd_evidence.py"],

@@ -312,9 +312,14 @@ flowchart TD
   A["准备发布插件变更"] --> B["python3 scripts/bump_version.py <version>"]
   B --> C["同步 .codex-plugin/plugin.json、.claude-plugin/plugin.json 和 .version-bump.json"]
   C --> D["更新 RELEASE-NOTES.md"]
-  D --> E["python3 scripts/preflight.py"]
-  E --> F["Codex/Claude 插件校验"]
-  F --> G["提交、tag 或分发"]
+  D --> E["python3 scripts/preflight.py --write-index"]
+  E --> F["python3 scripts/preflight.py"]
+  F --> G["python3 scripts/prepare_release.py --notes-out <file>"]
+  G --> H["Codex/Claude 插件校验"]
+  H --> I["提交变更"]
+  I --> J["git tag -a v<version>"]
+  J --> K["git push origin v<version>"]
+  K --> L["GitHub Actions 创建 GitHub Release"]
 ```
 
 ### 并行任务

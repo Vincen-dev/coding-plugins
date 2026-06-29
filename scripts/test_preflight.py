@@ -179,6 +179,7 @@ class PreflightTests(unittest.TestCase):
         self.assertIn("test_validate_spec.py", command_text)
         self.assertIn("test_validate_tdd_evidence.py", command_text)
         self.assertIn("test_bump_version.py", command_text)
+        self.assertIn("test_prepare_release.py", command_text)
         self.assertIn("tests.behavior.test_routing", command_text)
         self.assertIn("tests/hooks/test-session-start.sh", command_text)
         self.assertIn("validate_spec.py", command_text)
@@ -677,6 +678,27 @@ class PreflightTests(unittest.TestCase):
             (root / "RELEASE-NOTES.md").write_text("# Release Notes\n\n## 1.2.3\n", encoding="utf-8")
 
             with self.assertRaisesRegex(preflight.PreflightError, "Version bump config version differs"):
+                preflight.check_release_management_files(root)
+
+    def test_release_management_check_rejects_missing_release_automation(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / ".codex-plugin").mkdir()
+            (root / ".claude-plugin").mkdir()
+            (root / ".github" / "workflows").mkdir(parents=True)
+            (root / "scripts").mkdir()
+            (root / ".codex-plugin" / "plugin.json").write_text(
+                json.dumps({"version": "1.2.3"}),
+                encoding="utf-8",
+            )
+            (root / ".claude-plugin" / "plugin.json").write_text(
+                json.dumps({"version": "1.2.3"}),
+                encoding="utf-8",
+            )
+            (root / ".version-bump.json").write_text(json.dumps({"version": "1.2.3"}), encoding="utf-8")
+            (root / "RELEASE-NOTES.md").write_text("# Release Notes\n\n## 1.2.3\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Missing release automation"):
                 preflight.check_release_management_files(root)
 
 

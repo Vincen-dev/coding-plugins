@@ -111,7 +111,7 @@ claude --plugin-dir /Users/vincen/workspace/plugins/coding-plugins
 提升版本时运行：
 
 ```bash
-python3 scripts/bump_version.py 0.6.16
+python3 scripts/bump_version.py <version>
 ```
 
 版本同步目标由 [.version-bump.json](.version-bump.json) 维护。然后更新 [RELEASE-NOTES.md](RELEASE-NOTES.md) 中对应版本的变更记录。
@@ -124,6 +124,21 @@ python3 scripts/preflight.py
 ```
 
 该命令会运行 SDD/TDD 校验器单测、真实规格样例校验、manifest 版本一致性检查和旧入口残留扫描。GitHub Actions 会在 push 和 pull request 时运行同一命令。
+
+提交并确认工作区干净后，准备公开 release metadata：
+
+```bash
+python3 scripts/prepare_release.py --notes-out /tmp/coding-plugins-release-notes.md
+```
+
+确认输出 `Release ready: v<version>` 后创建并推送 tag：
+
+```bash
+git tag -a v<version> -m "coding-plugins <version>"
+git push origin v<version>
+```
+
+`.github/workflows/release.yml` 会在 `v*` tag push 后运行 preflight、校验 tag 与 manifest 版本一致，并用当前版本 release notes 创建 GitHub Release。
 
 ### Codex
 

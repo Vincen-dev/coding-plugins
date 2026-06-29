@@ -1,5 +1,11 @@
 # Release Notes
 
+## 0.6.22 - 2026-06-29
+
+- 增加 `scripts/prepare_release.py`，用于校验 release metadata、生成类似 `v0.6.22` 的 tag 名并提取当前版本 release notes。
+- 增加 `.github/workflows/release.yml`，在 `v*` tag push 后运行 preflight、校验 tag 与 manifest 版本一致，并创建 GitHub Release。
+- 补齐 `release-management` 的技术设计、实现计划和 TDD Evidence，并让 preflight 校验 release automation 文件。
+
 ## 0.6.21 - 2026-06-29
 
 - 修正 Codex SessionStart hook 中的 TDD Evidence 路径，统一为 feature-first 路径。
