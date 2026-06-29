@@ -1,10 +1,13 @@
 ---
 title: Coding Plugins 产物总索引生成器技术设计
 status: approved
+lifecycle_status: implemented
 area: plugin
 capability: artifact-index
 created: 2026-06-29
 updated: 2026-06-29
+implemented_commits: historical
+validated_by: python3 scripts/preflight.py
 related_specs:
   - docs/coding-plugins/features/plugin/artifact-index/specs/feature.md
 related_plans:
@@ -41,15 +44,15 @@ related_evidence:
 
 ## 规格到设计映射
 
-| Spec ID | 技术落点 | 设计决策 | 测试策略 |
-| --- | --- | --- | --- |
-| REQ-001 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
-| REQ-002 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
-| REQ-003 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
-| REQ-004 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
-| REQ-005 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
-| REQ-006 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
-| REQ-007 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
+| Spec ID | 规格摘要 | 技术落点 | 关键决策 ID | 影响文件/符号 | 验证命令 | Evidence |
+| --- | --- | --- | --- | --- | --- | --- |
+| REQ-001 | 仓库必须提供 `docs/coding-plugins/INDEX.md` 作为规格、计划和证据的统一检索入口。 | `docs/coding-plugins/INDEX.md`：改为由生成器重写，内容和 feature-first 文件树完全一致 | TD-001 | `docs/coding-plugins/INDEX.md` | 单元测试 `test_artifact_index_requires_index_file`。 | `docs/coding-plugins/features/plugin/artifact-index/evidence/tdd-evidence.md` |
+| REQ-002 | 总索引必须包含 `Area`、`Capability`、`Feature Root`、`Spec`、`Technical Design`、`Implementation Plan`、`Evidence`、`Tags`、`Updated` 列。 | `docs/coding-plugins/INDEX.md`：改为由生成器重写，内容和 feature-first 文件树完全一致 | TD-002 | `docs/coding-plugins/INDEX.md` | 单元测试 `test_artifact_index_requires_expected_headers`。 | `docs/coding-plugins/features/plugin/artifact-index/evidence/tdd-evidence.md` |
+| REQ-003 | preflight 必须校验所有真实规格文件都出现在总索引中。 | `docs/coding-plugins/features/plugin/artifact-index/technical/technical-design.md` 中的影响组件追踪 | TD-003 | `python3 -m unittest scripts/test_preflight.py` | 单元测试 `test_artifact_index_requires_spec_paths`。 | `docs/coding-plugins/features/plugin/artifact-index/evidence/tdd-evidence.md` |
+| REQ-004 | preflight 必须校验所有计划文件都出现在总索引中。 | `docs/coding-plugins/features/plugin/artifact-index/technical/technical-design.md` 中的影响组件追踪 | TD-004 | `python3 -m unittest scripts/test_preflight.py` | 单元测试 `test_artifact_index_requires_plan_paths`。 | `docs/coding-plugins/features/plugin/artifact-index/evidence/tdd-evidence.md` |
+| REQ-005 | preflight 必须校验所有 TDD Evidence 文件都出现在总索引中。 | `docs/coding-plugins/features/plugin/artifact-index/technical/technical-design.md` 中的影响组件追踪 | TD-005 | `python3 -m unittest scripts/test_preflight.py` | 单元测试 `test_artifact_index_requires_evidence_paths`。 | `docs/coding-plugins/features/plugin/artifact-index/evidence/tdd-evidence.md` |
+| REQ-006 | 仓库必须提供标准库实现的索引生成器，能根据 feature root、README metadata、spec、technical design、implementation plan 和 evidence 生成完整 `docs/coding-plugins/INDEX.md` 内容。 | `scripts/docs_index.py`：提供 `render_artifact_index()`、`write_artifact_index()`、README metadata 解析、路径单元格渲染和索引一致性校验<br>`scripts/preflight.py`：保留 `--write-index` CLI 和发布门禁调用，委托 `docs_index` 执行索引生成与校验<br>`scripts/test_docs_index.py`：覆盖生成器模块边界和 preflight 委托关系<br>`scripts/test_preflight.py`：保留旧调用方兼容测试，并确认 preflight 验证链路包含 `scripts/test_docs_index.py` | TD-005 | `scripts/docs_index.py`<br>`scripts/preflight.py`<br>`scripts/test_docs_index.py`<br>`scripts/test_preflight.py` | 单元测试 `test_render_artifact_index_includes_feature_metadata_and_documents`。 | `docs/coding-plugins/features/plugin/artifact-index/evidence/tdd-evidence.md` |
+| REQ-007 | preflight 必须校验当前 `docs/coding-plugins/INDEX.md` 与生成器输出完全一致，防止人工编辑造成漂移。 | `scripts/docs_index.py`：提供 `render_artifact_index()`、`write_artifact_index()`、README metadata 解析、路径单元格渲染和索引一致性校验<br>`scripts/preflight.py`：保留 `--write-index` CLI 和发布门禁调用，委托 `docs_index` 执行索引生成与校验<br>`scripts/test_docs_index.py`：覆盖生成器模块边界和 preflight 委托关系<br>`scripts/test_preflight.py`：保留旧调用方兼容测试，并确认 preflight 验证链路包含 `scripts/test_docs_index.py` | TD-005 | `scripts/docs_index.py`<br>`scripts/preflight.py`<br>`scripts/test_docs_index.py`<br>`scripts/test_preflight.py` | 单元测试 `test_artifact_index_requires_generated_content_match`。 | `docs/coding-plugins/features/plugin/artifact-index/evidence/tdd-evidence.md` |
 
 ## 无需技术设计的规格
 
@@ -59,13 +62,13 @@ related_evidence:
 
 ## 关键决策
 
-| 决策 | 原因 | 取舍 |
-| --- | --- | --- |
-| 生成器放在 `scripts/docs_index.py` | 文档索引是独立职责，拆出后避免 `preflight.py` 继续膨胀 | 需要通过 preflight 兼容 wrapper 保持旧调用方稳定 |
-| README 只作为 tags 来源 | README 已经是人工可读 feature 摘要，适合维护检索标签 | README 缺少 `标签` 时只能输出 `-` |
-| `Updated` 只取 frontmatter 最大值 | ISO 日期字符串可稳定排序，不依赖 mtime 或 Git 历史 | evidence 没有 frontmatter 时不会影响更新时间 |
-| 先做路径覆盖，再做完整内容比对 | 失败信息更具体，仍能保留旧测试和旧问题定位能力 | 校验流程多一步 |
-| `--write-index` 复用 preflight 入口 | 维护者只需要记住一个命令 | 写入后仍会运行完整 preflight |
+| 决策 ID | 决策 | 原因 | 取舍 |
+| --- | --- | --- | --- |
+| TD-001 | 生成器放在 `scripts/docs_index.py` | 文档索引是独立职责，拆出后避免 `preflight.py` 继续膨胀 | 需要通过 preflight 兼容 wrapper 保持旧调用方稳定 |
+| TD-002 | README 只作为 tags 来源 | README 已经是人工可读 feature 摘要，适合维护检索标签 | README 缺少 `标签` 时只能输出 `-` |
+| TD-003 | `Updated` 只取 frontmatter 最大值 | ISO 日期字符串可稳定排序，不依赖 mtime 或 Git 历史 | evidence 没有 frontmatter 时不会影响更新时间 |
+| TD-004 | 先做路径覆盖，再做完整内容比对 | 失败信息更具体，仍能保留旧测试和旧问题定位能力 | 校验流程多一步 |
+| TD-005 | `--write-index` 复用 preflight 入口 | 维护者只需要记住一个命令 | 写入后仍会运行完整 preflight |
 
 ## 影响组件
 
@@ -111,7 +114,7 @@ flowchart TD
 - `docs_index.check_artifact_index_covers_documents(root)`：仍校验必需表头和所有真实路径；路径覆盖通过后，继续要求索引文本与 `render_artifact_index(root)` 完全一致。
 - `preflight.render_artifact_index`、`preflight.write_artifact_index` 和 `preflight.check_artifact_index_covers_documents` 保留为兼容入口。
 - 多个同类文件按路径排序，并用 `<br>` 连接；没有文件时输出 `-`。
-- README 缺少 `标签` 行或文档缺少 `updated` frontmatter 时输出 `-`，不得推断不稳定值。
+- README 缺少 `标签` 行或文档缺少 `updated` frontmatter 时输出 `-`，不得推断不稳定值。（设计约束）
 
 ## 迁移 / 兼容性
 

@@ -407,7 +407,9 @@ docs/coding-plugins/features/<area>/<capability>/specs/<spec-kind>.md
 
 技术设计阶段必须先完成 `## 规格缺口审查`。如果发现未覆盖需求、验收标准不清、新增外部行为、错误边界或兼容要求不清，停止 technical，回到 `spec-driven-development` 更新 spec、重新校验并取得确认，再继续 technical。preflight 会校验 technical 文档包含规格缺口审查，并拦截未处理、待处理、需澄清、不清楚或待确认的缺口。
 
-技术设计还必须完成 `## 规格到设计映射` 和 `## 无需技术设计的规格`。同一 capability 下 approved spec 中的每个 MUST Spec ID，都要出现在映射表里并说明技术落点、设计决策和测试策略；确实无需技术设计的，必须在豁免表中写明原因。preflight 会从 approved spec 反向提取 MUST ID，拦截 technical 未覆盖或未豁免的规格。
+技术设计还必须完成 `## 规格到设计映射` 和 `## 无需技术设计的规格`。同一 capability 下 approved spec 中的每个 MUST Spec ID，都要出现在映射表里；映射表使用 7 列：`Spec ID`、`规格摘要`、`技术落点`、`关键决策 ID`、`影响文件/符号`、`验证命令`、`Evidence`。确实无需技术设计的，必须在豁免表中写明原因。preflight 会从 approved spec 反向提取 MUST ID，拦截 technical 未覆盖或未豁免的规格。
+
+技术设计的关键决策必须使用 `TD-001`、`TD-002` 这类稳定 ID。映射表中的 `关键决策 ID` 必须能在 `## 关键决策` 表中找到，避免规格到技术落点之间只留下泛化描述。
 
 默认技术设计路径：
 
@@ -419,13 +421,17 @@ docs/coding-plugins/features/<area>/<capability>/technical/technical-design.md
 
 当同一 feature 已存在 spec、plan 或 TDD Evidence 时，technical frontmatter 必须分别维护 `related_specs`、`related_plans` 和 `related_evidence`。这些路径用于把规格契约、技术方案、实现计划和验证证据连成可检索链路，preflight 会校验引用路径真实存在。
 
+technical frontmatter 还必须维护 `lifecycle_status`、`implemented_commits` 和 `validated_by`。`lifecycle_status` 只允许 `draft`、`approved`、`implemented`、`stale`、`superseded`；如果 related approved spec 的 `updated` 晚于 technical 的 `updated`，strict validator 会判定 technical stale。
+
 technical 可单独运行 validator：
 
 ```text
 python3 skills/writing-technical-design/scripts/validate_technical_design.py docs/coding-plugins/features/<area>/<capability>/technical/technical-design.md
 ```
 
-普通模式只让结构错误失败；泛化映射和 spec `updated` 晚于 technical 的 stale 情况会作为 warning 暴露。迁移或发布前质量审计可使用 `--strict`，把这些 warning 升级为失败。
+普通模式只让结构错误失败；`--strict` 会把泛化映射、stale technical、缺 lifecycle metadata、缺 TD 决策 ID、隐藏需求和旧映射表头都升级为失败。preflight 默认调用 strict validator，因此发布前不能留下 warning。
+
+没有 technical/plan 的轻量 capability 必须在 README 的 `## 轻量例外` 中写明 `Reason`、`Verification`，并补充 `Spec ID -> Evidence` 表。该表必须覆盖 approved spec 的所有 MUST Spec ID，并指向真实存在的 evidence 文件。
 
 ### 计划层
 

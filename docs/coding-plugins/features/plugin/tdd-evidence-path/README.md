@@ -22,3 +22,12 @@
 
 - **Reason:** 该 feature 固定的是 TDD Evidence 路径和校验入口，实施细节已经由规格、模板和 Evidence 记录覆盖；单独 technical/plan 会重复路径契约。
 - **Verification:** python3 scripts/preflight.py
+
+| Spec ID | Evidence |
+| --- | --- |
+| NON-003 | `docs/coding-plugins/features/plugin/tdd-evidence-path/evidence/tdd-evidence.md` |
+| REQ-001 | `docs/coding-plugins/features/plugin/tdd-evidence-path/evidence/tdd-evidence.md` |
+| REQ-002 | `docs/coding-plugins/features/plugin/tdd-evidence-path/evidence/tdd-evidence.md` |
+| REQ-003 | `docs/coding-plugins/features/plugin/tdd-evidence-path/evidence/tdd-evidence.md` |
+| REQ-004 | `docs/coding-plugins/features/plugin/tdd-evidence-path/evidence/tdd-evidence.md` |
+| REQ-005 | `docs/coding-plugins/features/plugin/tdd-evidence-path/evidence/tdd-evidence.md` |

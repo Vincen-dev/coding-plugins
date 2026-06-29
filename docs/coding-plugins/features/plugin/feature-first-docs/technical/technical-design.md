@@ -1,10 +1,13 @@
 ---
 title: Feature-first 文档结构迁移技术设计
 status: approved
+lifecycle_status: implemented
 area: plugin
 capability: feature-first-docs
 created: 2026-06-26
 updated: 2026-06-29
+implemented_commits: historical
+validated_by: python3 scripts/preflight.py
 related_specs:
   - docs/coding-plugins/features/plugin/feature-first-docs/specs/maintenance.md
 related_plans:
@@ -40,17 +43,17 @@ related_evidence:
 
 ## 规格到设计映射
 
-| Spec ID | 技术落点 | 设计决策 | 测试策略 |
-| --- | --- | --- | --- |
-| NFR-001 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
-| NFR-002 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
-| NFR-003 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
-| NFR-004 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
-| NFR-005 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
-| NFR-006 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
-| NFR-007 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
-| NFR-008 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
-| NFR-009 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
+| Spec ID | 规格摘要 | 技术落点 | 关键决策 ID | 影响文件/符号 | 验证命令 | Evidence |
+| --- | --- | --- | --- | --- | --- | --- |
+| NFR-001 | 新文档根必须是 `docs/coding-plugins/features/{area}/{capability}/`。 | `scripts/preflight.py`：改为扫描 `features/<area>/<capability>`，拒绝旧 docs root 和 flat feature-root 技术/计划文件，校验 README、metadata 和索引<br>`scripts/test_preflight.py`：更新 RED/GREEN 单元测试，覆盖新路径和旧路径拒绝 | TD-001 | `scripts/preflight.py`<br>`scripts/test_preflight.py` | 单元测试 `test_collect_spec_files_uses_feature_first_path`。 | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` |
+| NFR-002 | 规格必须保存到 `docs/coding-plugins/features/{area}/{capability}/specs/{spec-kind}.md`。 | `docs/coding-plugins/features/plugin/feature-first-docs/technical/technical-design.md` 中的影响组件追踪 | TD-002 | `python3 -m unittest scripts/test_preflight.py` | 单元测试和 `python3 scripts/preflight.py`。 | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` |
+| NFR-003 | 技术设计必须保存到 `docs/coding-plugins/features/{area}/{capability}/technical/technical-design.md`。 | `docs/coding-plugins/features/plugin/feature-first-docs/technical/technical-design.md` 中的影响组件追踪 | TD-003 | `python3 -m unittest scripts/test_preflight.py` | 单元测试 `test_collect_technical_design_files_uses_feature_first_technical_subdir`。 | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` |
+| NFR-004 | 实现计划必须保存到 `docs/coding-plugins/features/{area}/{capability}/plans/implementation.md`。 | `docs/coding-plugins/features/plugin/feature-first-docs/technical/technical-design.md` 中的影响组件追踪 | TD-004 | `python3 -m unittest scripts/test_preflight.py` | 单元测试 `test_collect_plan_files_uses_feature_first_plans_subdir`。 | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` |
+| NFR-005 | TDD Evidence 必须保存到 `docs/coding-plugins/features/{area}/{capability}/evidence/tdd-evidence.md`。 | `docs/coding-plugins/features/plugin/feature-first-docs/technical/technical-design.md` 中的影响组件追踪 | TD-004 | `python3 -m unittest scripts/test_preflight.py` | 单元测试 `test_collect_tdd_evidence_files_uses_feature_first_path`。 | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` |
+| NFR-006 | 每个 feature root 必须包含 `README.md` 作为该 capability 的人工入口。 | `scripts/test_preflight.py`：更新 RED/GREEN 单元测试，覆盖新路径和旧路径拒绝 | TD-004 | `scripts/test_preflight.py` | 单元测试 `test_feature_roots_require_readme`。 | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` |
+| NFR-007 | `docs/coding-plugins/INDEX.md` 必须覆盖每个 feature root 和每个真实文档路径。 | `scripts/preflight.py`：改为扫描 `features/<area>/<capability>`，拒绝旧 docs root 和 flat feature-root 技术/计划文件，校验 README、metadata 和索引 | TD-004 | `scripts/preflight.py` | 单元测试 `test_artifact_index_requires_feature_root_paths` 和 preflight。 | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` |
+| NFR-008 | 活跃文档、skill、模板、测试和 README 中不得继续使用旧四类目录作为默认路径。 | `skills/*/SKILL.md` 和模板：更新默认落地路径和示例路径 | TD-004 | `skills/*/SKILL.md` 和模板 | 旧路径扫描命令必须无活跃命中。 | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` |
+| NFR-009 | feature root 下不得裸露 `technical-design.md` 或 `implementation.md`；这两个产物必须分别位于 `technical/` 和 `plans/` 子目录。 | `docs/coding-plugins/features/plugin/feature-first-docs/technical/technical-design.md` 中的影响组件追踪 | TD-004 | `python3 -m unittest scripts/test_preflight.py` | 单元测试 `test_flat_feature_root_technical_and_plan_files_are_rejected`。 | `docs/coding-plugins/features/plugin/feature-first-docs/evidence/tdd-evidence.md` |
 
 ## 无需技术设计的规格
 
@@ -60,12 +63,12 @@ related_evidence:
 
 ## 关键决策
 
-| 决策 | 原因 | 取舍 |
-| --- | --- | --- |
-| 不保留旧路径兼容层 | 当前未生产落地，两套路径会长期增加模板和 preflight 成本 | 需要一次性更新所有引用和历史文档路径 |
-| 每个 feature root 必须有 README | 人工检索入口集中，避免上下文继续分散 | 每个 capability 多一个短文档 |
-| 只保留 `docs/coding-plugins/INDEX.md` | feature-first 后总索引可直接覆盖完整链路 | 删除旧的分类索引会改变旧工作流 |
-| preflight 用 feature root 派生 area/capability | 避免每个产物类型各自维护路径推导 | collector 逻辑比旧目录扫描稍复杂 |
+| 决策 ID | 决策 | 原因 | 取舍 |
+| --- | --- | --- | --- |
+| TD-001 | 不保留旧路径兼容层 | 当前未生产落地，两套路径会长期增加模板和 preflight 成本 | 需要一次性更新所有引用和历史文档路径 |
+| TD-002 | 每个 feature root 必须有 README | 人工检索入口集中，避免上下文继续分散 | 每个 capability 多一个短文档 |
+| TD-003 | 只保留 `docs/coding-plugins/INDEX.md` | feature-first 后总索引可直接覆盖完整链路 | 删除旧的分类索引会改变旧工作流 |
+| TD-004 | preflight 用 feature root 派生 area/capability | 避免每个产物类型各自维护路径推导 | collector 逻辑比旧目录扫描稍复杂 |
 
 ## 影响组件
 
@@ -106,9 +109,7 @@ flowchart TD
 - Implementation plan: `docs/coding-plugins/features/<area>/<capability>/plans/implementation.md`
 - Evidence files: `docs/coding-plugins/features/<area>/<capability>/evidence/tdd-evidence.md`
 - Frontmatter `area` and `capability` must match feature root path.
-- `docs/coding-plugins/INDEX.md` must reference every feature root and every collected document path.
-
-## 迁移 / 兼容性
+- `docs/coding-plugins/INDEX.md` must reference every feature root and every collected document path.## 迁移 / 兼容性
 
 旧四类产物目录不再是活跃路径。迁移后 preflight 应在发现旧根目录下仍有 Markdown 文件时失败。`RELEASE-NOTES.md` 中的历史版本记录可以保留旧路径文字；活跃 README、docs、skills、scripts 和 tests 不应继续使用旧路径作为默认路径。
 

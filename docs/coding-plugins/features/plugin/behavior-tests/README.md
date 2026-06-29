@@ -22,3 +22,11 @@
 
 - **Reason:** 该 feature 范围只包含本地行为测试补充，已由规格和 TDD Evidence 明确测试文件、失败原因和最终验证；单独 technical/plan 会重复 evidence 中的任务。
 - **Verification:** python3 scripts/preflight.py
+
+| Spec ID | Evidence |
+| --- | --- |
+| REQ-001 | `docs/coding-plugins/features/plugin/behavior-tests/evidence/tdd-evidence.md` |
+| REQ-002 | `docs/coding-plugins/features/plugin/behavior-tests/evidence/tdd-evidence.md` |
+| REQ-003 | `docs/coding-plugins/features/plugin/behavior-tests/evidence/tdd-evidence.md` |
+| REQ-004 | `docs/coding-plugins/features/plugin/behavior-tests/evidence/tdd-evidence.md` |
+| REQ-005 | `docs/coding-plugins/features/plugin/behavior-tests/evidence/tdd-evidence.md` |

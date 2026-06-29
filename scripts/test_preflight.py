@@ -186,7 +186,11 @@ class PreflightTests(unittest.TestCase):
                 encoding="utf-8",
             )
             (feature_dir / "specs" / "feature.md").write_text(
-                "---\nstatus: approved\narea: plugin\ncapability: routing\n---\n# Feature\n",
+                "---\nstatus: approved\narea: plugin\ncapability: routing\n---\n"
+                "# Feature\n\n"
+                "| 编号 | 优先级 | 需求 | 验证方式 |\n"
+                "| --- | --- | --- | --- |\n"
+                "| REQ-001 | 必须 | 轻量功能仍需追踪证据 | TDD Evidence |\n",
                 encoding="utf-8",
             )
             (feature_dir / "evidence" / "tdd-evidence.md").write_text("# Evidence\n", encoding="utf-8")
@@ -205,6 +209,46 @@ class PreflightTests(unittest.TestCase):
                 "## 轻量例外\n\n"
                 "- **Reason:** 已由规格和 TDD Evidence 完成，技术设计和计划只会重复既有证据。\n"
                 "- **Verification:** python3 scripts/preflight.py\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Lightweight exception traceability is incomplete"):
+                preflight.check_feature_document_chain_closure(root)
+
+            (feature_dir / "README.md").write_text(
+                "# Routing\n\n"
+                "## 文档信息\n\n"
+                "| 字段 | 内容 |\n"
+                "| --- | --- |\n"
+                "| 状态 | 已批准 |\n"
+                "| 领域 | plugin |\n"
+                "| 能力 | routing |\n\n"
+                "## 轻量例外\n\n"
+                "- **Reason:** 已由规格和 TDD Evidence 完成，技术设计和计划只会重复既有证据。\n"
+                "- **Verification:** python3 scripts/preflight.py\n\n"
+                "| Spec ID | Evidence |\n"
+                "| --- | --- |\n"
+                "| REQ-001 | `docs/coding-plugins/features/plugin/routing/technical/technical-design.md` |\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Lightweight exception traceability is incomplete"):
+                preflight.check_feature_document_chain_closure(root)
+
+            (feature_dir / "README.md").write_text(
+                "# Routing\n\n"
+                "## 文档信息\n\n"
+                "| 字段 | 内容 |\n"
+                "| --- | --- |\n"
+                "| 状态 | 已批准 |\n"
+                "| 领域 | plugin |\n"
+                "| 能力 | routing |\n\n"
+                "## 轻量例外\n\n"
+                "- **Reason:** 已由规格和 TDD Evidence 完成，技术设计和计划只会重复既有证据。\n"
+                "- **Verification:** python3 scripts/preflight.py\n\n"
+                "| Spec ID | Evidence |\n"
+                "| --- | --- |\n"
+                "| REQ-001 | `docs/coding-plugins/features/plugin/routing/evidence/tdd-evidence.md` |\n",
                 encoding="utf-8",
             )
 
@@ -264,6 +308,24 @@ class PreflightTests(unittest.TestCase):
 
             with self.assertRaisesRegex(preflight.PreflightError, "Technical design validation failed"):
                 preflight.check_technical_design_validator(root)
+
+    def test_preflight_runs_technical_design_validator_in_strict_mode(self) -> None:
+        calls: list[bool] = []
+
+        class FakeValidator:
+            @staticmethod
+            def validate_repository(root: Path, *, strict: bool):
+                calls.append(strict)
+                return type("Result", (), {"ok": True, "errors": []})()
+
+        original_loader = preflight.load_technical_design_validator
+        preflight.load_technical_design_validator = lambda root: FakeValidator
+        try:
+            preflight.check_technical_design_validator(Path("/repo"))
+        finally:
+            preflight.load_technical_design_validator = original_loader
+
+        self.assertEqual(calls, [True])
 
     def test_sdd_template_check_rejects_english_headings(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

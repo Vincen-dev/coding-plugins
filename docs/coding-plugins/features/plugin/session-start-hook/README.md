@@ -22,3 +22,13 @@
 
 - **Reason:** 该 feature 只涉及 Codex hook 配置、脚本和 hook 测试，规格与 TDD Evidence 已覆盖全部文件和验证命令；单独 technical/plan 不会增加新的执行信息。
 - **Verification:** python3 scripts/preflight.py
+
+| Spec ID | Evidence |
+| --- | --- |
+| REQ-001 | `docs/coding-plugins/features/plugin/session-start-hook/evidence/tdd-evidence.md` |
+| REQ-002 | `docs/coding-plugins/features/plugin/session-start-hook/evidence/tdd-evidence.md` |
+| REQ-003 | `docs/coding-plugins/features/plugin/session-start-hook/evidence/tdd-evidence.md` |
+| REQ-004 | `docs/coding-plugins/features/plugin/session-start-hook/evidence/tdd-evidence.md` |
+| REQ-005 | `docs/coding-plugins/features/plugin/session-start-hook/evidence/tdd-evidence.md` |
+| REQ-006 | `docs/coding-plugins/features/plugin/session-start-hook/evidence/tdd-evidence.md` |
+| REQ-007 | `docs/coding-plugins/features/plugin/session-start-hook/evidence/tdd-evidence.md` |

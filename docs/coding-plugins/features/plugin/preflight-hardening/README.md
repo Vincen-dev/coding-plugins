@@ -22,3 +22,13 @@
 
 - **Reason:** 该 feature 是对既有 preflight 检查的分批增强，具体实现步骤已经在 TDD Evidence 的 Task 1 和 Task 2 中记录；完整 technical/plan 会重复已完成的测试驱动记录。
 - **Verification:** python3 scripts/preflight.py
+
+| Spec ID | Evidence |
+| --- | --- |
+| REQ-001 | `docs/coding-plugins/features/plugin/preflight-hardening/evidence/tdd-evidence.md` |
+| REQ-002 | `docs/coding-plugins/features/plugin/preflight-hardening/evidence/tdd-evidence.md` |
+| REQ-003 | `docs/coding-plugins/features/plugin/preflight-hardening/evidence/tdd-evidence.md` |
+| REQ-004 | `docs/coding-plugins/features/plugin/preflight-hardening/evidence/tdd-evidence.md` |
+| REQ-005 | `docs/coding-plugins/features/plugin/preflight-hardening/evidence/tdd-evidence.md` |
+| REQ-006 | `docs/coding-plugins/features/plugin/preflight-hardening/evidence/tdd-evidence.md` |
+| REQ-007 | `docs/coding-plugins/features/plugin/preflight-hardening/evidence/tdd-evidence.md` |

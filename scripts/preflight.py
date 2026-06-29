@@ -123,12 +123,14 @@ SPEC_ID_RE = re.compile(r"\b(?:REQ|API|SCHEMA|STATE|ERR|AC|NFR|MIG|OBS|NON)-\d{3
 TECHNICAL_DESIGN_PATH_RE = re.compile(
     r"docs/coding-plugins/features/[A-Za-z0-9_.\-/]+/technical/technical-design\.md"
 )
+EVIDENCE_PATH_RE = re.compile(r"docs/coding-plugins/features/[A-Za-z0-9_.\-/]+/evidence/[A-Za-z0-9_.\-/]+\.md")
 PLAN_METADATA_REQUIRED_FIELDS = ("title", "status", "area", "capability", "created", "updated")
 CHINESE_DOCUMENT_INFO_REQUIRED_TERMS = ("## 文档信息", "状态", "领域", "能力")
 TECHNICAL_GAP_REVIEW_REQUIRED_TERMS = ("未覆盖需求", "验收标准", "外部行为", "处理状态")
 TECHNICAL_GAP_REVIEW_UNRESOLVED_TERMS = ("未处理", "待处理", "需澄清", "不清楚", "待确认")
 TECHNICAL_DESIGN_REQUIRED_SECTIONS = ("规格到设计映射", "无需技术设计的规格")
 LIGHTWEIGHT_EXCEPTION_REQUIRED_TERMS = ("## 轻量例外", "Reason", "Verification")
+LIGHTWEIGHT_EXCEPTION_TRACE_HEADERS = ("Spec ID", "Evidence")
 DOC_SYNC_REFERENCES = (
     "docs/coding-plugins/INDEX.md",
     "docs/coding-plugins/features",
@@ -379,8 +381,78 @@ def feature_has_lightweight_exception(feature_root: Path) -> bool:
     return all(term in text for term in LIGHTWEIGHT_EXCEPTION_REQUIRED_TERMS)
 
 
+def parse_markdown_table(section: str) -> tuple[list[str], list[list[str]]]:
+    lines = section.splitlines()
+    for index, line in enumerate(lines[:-1]):
+        if not line.lstrip().startswith("|"):
+            continue
+        headers = [cell.strip() for cell in line.strip().strip("|").split("|")]
+        separator = [cell.strip() for cell in lines[index + 1].strip().strip("|").split("|")]
+        if not separator or not all(cell.replace(":", "").strip("-") == "" and "---" in cell for cell in separator):
+            continue
+        rows: list[list[str]] = []
+        for row in lines[index + 2 :]:
+            if not row.lstrip().startswith("|"):
+                break
+            cells = [cell.strip() for cell in row.strip().strip("|").split("|")]
+            if len(cells) == len(headers):
+                rows.append(cells)
+        return headers, rows
+    return [], []
+
+
+def lightweight_exception_traceability_errors(root: Path, feature_root: Path) -> list[str]:
+    readme = feature_root / "README.md"
+    if not readme.exists():
+        return [str(feature_root.relative_to(root))]
+
+    required_ids = required_spec_ids_from_specs(approved_spec_files_for_feature(feature_root))
+    if not required_ids:
+        return []
+
+    text = readme.read_text(encoding="utf-8")
+    section = markdown_section(text, "轻量例外")
+    if section is None:
+        return [str(readme.relative_to(root))]
+
+    headers, rows = parse_markdown_table(section)
+    if tuple(headers[:2]) != LIGHTWEIGHT_EXCEPTION_TRACE_HEADERS:
+        return [f"{readme.relative_to(root)} missing Spec ID -> Evidence table"]
+
+    covered: set[str] = set()
+    missing_evidence_paths: list[str] = []
+    missing_evidence_for_ids: list[str] = []
+    for row in rows:
+        ids = set(SPEC_ID_RE.findall(row[0]))
+        evidence_paths = EVIDENCE_PATH_RE.findall(row[1])
+        if ids and not evidence_paths:
+            missing_evidence_for_ids.extend(sorted(ids))
+            continue
+        row_missing_paths: list[str] = []
+        for evidence_path in evidence_paths:
+            if not (root / evidence_path).exists():
+                row_missing_paths.append(evidence_path)
+        missing_evidence_paths.extend(row_missing_paths)
+        if not row_missing_paths:
+            covered.update(ids)
+
+    missing_ids = sorted(required_ids - covered)
+    errors: list[str] = []
+    if missing_ids:
+        errors.append(f"{readme.relative_to(root)} missing Spec IDs: {', '.join(missing_ids)}")
+    if missing_evidence_paths:
+        errors.append(f"{readme.relative_to(root)} references missing evidence: {', '.join(sorted(set(missing_evidence_paths)))}")
+    if missing_evidence_for_ids:
+        errors.append(
+            f"{readme.relative_to(root)} missing Evidence paths for: "
+            + ", ".join(sorted(set(missing_evidence_for_ids)))
+        )
+    return errors
+
+
 def check_feature_document_chain_closure(root: Path) -> None:
     offenders: list[str] = []
+    lightweight_traceability_offenders: list[str] = []
     for feature_root in collect_feature_roots(root):
         if not feature_has_approved_spec(feature_root):
             continue
@@ -389,6 +461,7 @@ def check_feature_document_chain_closure(root: Path) -> None:
         if has_technical and has_plan:
             continue
         if feature_has_lightweight_exception(feature_root):
+            lightweight_traceability_offenders.extend(lightweight_exception_traceability_errors(root, feature_root))
             continue
         offenders.append(str(feature_root.relative_to(root)))
 
@@ -396,6 +469,12 @@ def check_feature_document_chain_closure(root: Path) -> None:
         raise PreflightError(
             "Feature document chain is incomplete; add technical/plan or README lightweight exception: "
             + ", ".join(offenders)
+            + "."
+        )
+    if lightweight_traceability_offenders:
+        raise PreflightError(
+            "Lightweight exception traceability is incomplete: "
+            + "; ".join(lightweight_traceability_offenders)
             + "."
         )
 
@@ -633,7 +712,7 @@ def check_technical_design_related_metadata(root: Path) -> None:
 
 def check_technical_design_validator(root: Path) -> None:
     validator = load_technical_design_validator(root)
-    result = validator.validate_repository(root, strict=False)
+    result = validator.validate_repository(root, strict=True)
     if not result.ok:
         raise PreflightError("Technical design validation failed: " + "; ".join(result.errors) + ".")
 

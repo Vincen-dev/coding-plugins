@@ -22,7 +22,12 @@ from docs_index import feature_root_for_document, parse_frontmatter  # noqa: E40
 
 
 SPEC_ID_RE = re.compile(r"\b(?:REQ|API|SCHEMA|STATE|ERR|AC|NFR|MIG|OBS|NON)-\d{3,}\b")
+TD_ID_RE = re.compile(r"\bTD-\d{3,}\b")
 TECHNICAL_DESIGN_REQUIRED_SECTIONS = ("规格到设计映射", "无需技术设计的规格")
+TECHNICAL_MAPPING_HEADERS = ("Spec ID", "规格摘要", "技术落点", "关键决策 ID", "影响文件/符号", "验证命令", "Evidence")
+TECHNICAL_DECISION_HEADERS = ("决策 ID", "决策", "原因", "取舍")
+TECHNICAL_LIFECYCLE_STATUSES = {"draft", "approved", "implemented", "stale", "superseded"}
+TECHNICAL_LIFECYCLE_REQUIRED_FIELDS = ("lifecycle_status", "implemented_commits", "validated_by")
 GENERIC_MAPPING_PATTERNS = (
     "见本设计的 `影响组件`",
     "见本设计的",
@@ -30,6 +35,8 @@ GENERIC_MAPPING_PATTERNS = (
     "见 `## 测试策略`",
     "对应计划追踪",
 )
+HIDDEN_REQUIREMENT_TERMS = ("必须", "不得", "禁止", "MUST", "SHOULD")
+HIDDEN_REQUIREMENT_EXCLUDED_SECTIONS = ("规格缺口审查", "规格到设计映射", "无需技术设计的规格", "测试策略")
 
 
 @dataclass(frozen=True)
@@ -63,6 +70,39 @@ def markdown_section(text: str, heading: str) -> str | None:
     if next_match is None:
         return text[match.start() :]
     return text[match.start() : match.end() + next_match.start()]
+
+
+def markdown_sections(text: str) -> list[tuple[str, str]]:
+    matches = list(re.finditer(r"^##[ \t]+(.+?)[ \t]*$", text, re.MULTILINE))
+    sections: list[tuple[str, str]] = []
+    for index, match in enumerate(matches):
+        end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
+        sections.append((match.group(1).strip(), text[match.start() : end]))
+    return sections
+
+
+def parse_markdown_table(section: str) -> tuple[list[str], list[list[str]]]:
+    lines = section.splitlines()
+    for index, line in enumerate(lines[:-1]):
+        if not line.lstrip().startswith("|"):
+            continue
+        header = [cell.strip() for cell in line.strip().strip("|").split("|")]
+        separator = [cell.strip() for cell in lines[index + 1].strip().strip("|").split("|")]
+        if not separator or not all(cell.replace(":", "").strip("-") == "" and "---" in cell for cell in separator):
+            continue
+        rows: list[list[str]] = []
+        for row in lines[index + 2 :]:
+            if not row.lstrip().startswith("|"):
+                break
+            cells = [cell.strip() for cell in row.strip().strip("|").split("|")]
+            if len(cells) == len(header):
+                rows.append(cells)
+        return header, rows
+    return [], []
+
+
+def relative_path(root: Path, path: Path) -> str:
+    return str(path.relative_to(root)) if path.is_relative_to(root) else str(path)
 
 
 def frontmatter_list_values(text: str, key: str) -> list[str]:
@@ -131,6 +171,22 @@ def technical_design_coverage_ids(technical_text: str) -> set[str]:
     return ids
 
 
+def validate_lifecycle_metadata(root: Path, technical_file: Path, text: str) -> list[str]:
+    metadata = parse_frontmatter(text)
+    errors: list[str] = []
+    missing = [field for field in TECHNICAL_LIFECYCLE_REQUIRED_FIELDS if not metadata.get(field)]
+    if missing:
+        errors.append(f"{relative_path(root, technical_file)} lifecycle metadata missing {', '.join(missing)}")
+        return errors
+
+    status = metadata["lifecycle_status"]
+    if status not in TECHNICAL_LIFECYCLE_STATUSES:
+        errors.append(
+            f"{relative_path(root, technical_file)} lifecycle metadata has invalid lifecycle_status={status}"
+        )
+    return errors
+
+
 def validate_required_sections(root: Path, technical_file: Path, text: str) -> list[str]:
     missing = [section for section in TECHNICAL_DESIGN_REQUIRED_SECTIONS if markdown_section(text, section) is None]
     if not missing:
@@ -183,6 +239,90 @@ def validate_related_metadata(root: Path, technical_file: Path, text: str) -> li
             errors.append(
                 f"{technical_file.relative_to(root)} related metadata {key} references missing "
                 + ", ".join(missing_existing)
+            )
+    return errors
+
+
+def validate_mapping_table_schema(root: Path, technical_file: Path, text: str) -> list[str]:
+    section = markdown_section(text, "规格到设计映射")
+    if section is None:
+        return []
+
+    header, rows = parse_markdown_table(section)
+    errors: list[str] = []
+    if tuple(header) != TECHNICAL_MAPPING_HEADERS:
+        errors.append(
+            f"{relative_path(root, technical_file)} mapping table header must be: "
+            + " | ".join(TECHNICAL_MAPPING_HEADERS)
+        )
+        return errors
+
+    for index, row in enumerate(rows, start=1):
+        if not SPEC_ID_RE.search(row[0]):
+            continue
+        empty_columns = [TECHNICAL_MAPPING_HEADERS[column] for column, value in enumerate(row) if not value]
+        if empty_columns:
+            errors.append(
+                f"{relative_path(root, technical_file)} mapping table row {index} has empty columns: "
+                + ", ".join(empty_columns)
+            )
+    return errors
+
+
+def decision_ids_from_design(text: str) -> set[str]:
+    section = markdown_section(text, "关键决策")
+    if section is None:
+        return set()
+    header, rows = parse_markdown_table(section)
+    if tuple(header) != TECHNICAL_DECISION_HEADERS:
+        return set()
+    return {decision_id for row in rows for decision_id in TD_ID_RE.findall(row[0])}
+
+
+def validate_decision_id_references(root: Path, technical_file: Path, text: str) -> list[str]:
+    section = markdown_section(text, "规格到设计映射")
+    if section is None:
+        return []
+    header, rows = parse_markdown_table(section)
+    if tuple(header) != TECHNICAL_MAPPING_HEADERS:
+        return []
+
+    declared_ids = decision_ids_from_design(text)
+    errors: list[str] = []
+    if not declared_ids:
+        errors.append(f"{relative_path(root, technical_file)} missing key decision table with TD decision IDs")
+        return errors
+
+    decision_column = header.index("关键决策 ID")
+    referenced_ids = sorted({decision_id for row in rows for decision_id in TD_ID_RE.findall(row[decision_column])})
+    missing = sorted(set(referenced_ids) - declared_ids)
+    if missing:
+        errors.append(
+            f"{relative_path(root, technical_file)} references unknown decision IDs: " + ", ".join(missing)
+        )
+    return errors
+
+
+def validate_hidden_requirements(root: Path, technical_file: Path, text: str) -> list[str]:
+    errors: list[str] = []
+    in_code_fence = False
+    for heading, section in markdown_sections(text):
+        if heading in HIDDEN_REQUIREMENT_EXCLUDED_SECTIONS:
+            continue
+        for line_number, line in enumerate(section.splitlines(), start=1):
+            stripped = line.strip()
+            if stripped.startswith("```"):
+                in_code_fence = not in_code_fence
+                continue
+            if in_code_fence or not stripped or stripped.startswith("#"):
+                continue
+            if not any(term in stripped for term in HIDDEN_REQUIREMENT_TERMS):
+                continue
+            if SPEC_ID_RE.search(stripped) or TD_ID_RE.search(stripped) or "设计约束" in stripped:
+                continue
+            errors.append(
+                f"{relative_path(root, technical_file)} hidden requirement in {heading} line {line_number}: "
+                + stripped
             )
     return errors
 
@@ -245,8 +385,12 @@ def validate_repository(
             continue
         text = technical_file.read_text(encoding="utf-8")
         errors.extend(validate_required_sections(root, technical_file, text))
+        errors.extend(validate_lifecycle_metadata(root, technical_file, text))
         errors.extend(validate_must_spec_coverage(root, technical_file, text))
         errors.extend(validate_related_metadata(root, technical_file, text))
+        errors.extend(validate_mapping_table_schema(root, technical_file, text))
+        errors.extend(validate_decision_id_references(root, technical_file, text))
+        errors.extend(validate_hidden_requirements(root, technical_file, text))
         warnings.extend(generic_mapping_warnings(root, technical_file, text))
         warnings.extend(stale_warnings(root, technical_file, text))
 

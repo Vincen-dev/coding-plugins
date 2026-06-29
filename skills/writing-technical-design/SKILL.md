@@ -57,9 +57,10 @@ docs/coding-plugins/INDEX.md
 
 - **设计摘要**：2 到 5 句话说明整体方案。
 - **规格缺口审查**：确认是否存在未覆盖需求、验收标准不清或新增外部行为；有缺口必须先回到 spec。
-- **规格到设计映射**：每个 MUST Spec ID 对应技术落点、设计决策和测试策略。
+- **生命周期 metadata**：frontmatter 必须包含 `lifecycle_status`、`implemented_commits` 和 `validated_by`；生命周期值只允许 `draft`、`approved`、`implemented`、`stale`、`superseded`。
+- **规格到设计映射**：每个 MUST Spec ID 对应 `规格摘要`、具体技术落点、`TD-xxx` 关键决策 ID、影响文件或符号、验证命令和 Evidence 路径。
 - **无需技术设计的规格**：只有当某个 MUST Spec ID 确实不需要技术方案时才填写豁免原因。
-- **关键决策**：关键决策、原因、代价。
+- **关键决策**：每条关键决策必须有 `TD-xxx` ID、原因和代价；映射表中的关键决策 ID 必须能在这里找到。
 - **影响组件**：模块、文件、服务或数据结构怎么变。
 - **数据流 / 控制流**：核心数据流或控制流。
 - **接口和契约**：内部接口、外部 API、schema、状态机如何落地。
@@ -78,7 +79,7 @@ docs/coding-plugins/INDEX.md
 5. 创建或更新 `technical/technical-design.md`，正文标题默认使用中文，并补齐 `related_specs`、`related_plans`、`related_evidence`。
 6. 在规格 metadata 或正文中引用 technical design 路径；metadata key 保持英文，正文使用 `## 文档信息` 展示中文摘要。
 7. 更新 `docs/coding-plugins/INDEX.md`。
-8. 运行 `python3 skills/writing-technical-design/scripts/validate_technical_design.py <technical-path>` 做 technical 单文档校验；迁移或发布前质量审计可加 `--strict`。
+8. 运行 `python3 skills/writing-technical-design/scripts/validate_technical_design.py <technical-path>` 做 technical 单文档校验；发布前和 preflight 使用 strict 质量门禁。
 9. 运行 `python3 scripts/preflight.py` 或至少运行相关 preflight 单测。
 10. 交接给 `writing-plans`，计划必须写 `Technical Design Source`。
 
@@ -96,9 +97,13 @@ skills/writing-technical-design/templates/technical-design.md
 
 - 是否每个 MUST Spec ID 都在设计中有落地点。
 - 是否每个 MUST Spec ID 都出现在 `## 规格到设计映射` 或 `## 无需技术设计的规格` 中。
+- 映射表是否使用完整 7 列：`Spec ID`、`规格摘要`、`技术落点`、`关键决策 ID`、`影响文件/符号`、`验证命令`、`Evidence`。
+- 映射表中的 `关键决策 ID` 是否都能在 `## 关键决策` 表中找到。
 - `## 规格到设计映射` 是否避免“见本设计章节”“按本 technical 落地”等泛化映射。
 - 是否完成 `## 规格缺口审查`，且没有未处理、待处理或需澄清的缺口。
 - 是否没有在 technical 中新增需求、验收标准或外部行为；如有，是否已回写 spec。
+- 是否没有隐藏需求：出现必须、不得、禁止、MUST、SHOULD 类约束时，要么引用 Spec ID，要么明确标注“设计约束”。
+- 是否维护 `lifecycle_status`、`implemented_commits` 和 `validated_by`。
 - 是否在 metadata 中链接了已存在的 spec、plan 和 TDD Evidence。
 - related spec 的 `updated` 是否晚于 technical；若晚于，先更新 technical 或标记 stale。
 - 是否把关键决策、代价和风险写清楚。
@@ -107,7 +112,7 @@ skills/writing-technical-design/templates/technical-design.md
 - 是否说明测试策略和 TDD Evidence 目标。
 - 是否没有任务清单膨胀；任务拆分留给 `writing-plans`。
 - 是否同步两个索引。
-- 是否运行 technical validator；需要审计历史文档质量时是否运行 `--strict`。
+- 是否运行 technical validator；发布前使用 `--strict`，确保泛化映射和 stale technical 会失败。
 
 ## 交接
 

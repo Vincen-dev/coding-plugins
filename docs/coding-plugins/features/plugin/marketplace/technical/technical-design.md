@@ -1,10 +1,13 @@
 ---
 title: 插件 marketplace 安装入口技术设计
 status: approved
+lifecycle_status: implemented
 area: plugin
 capability: marketplace
 created: 2026-06-29
 updated: 2026-06-29
+implemented_commits: historical
+validated_by: python3 scripts/preflight.py
 related_specs:
   - docs/coding-plugins/features/plugin/marketplace/specs/feature.md
 related_evidence:
@@ -40,13 +43,13 @@ marketplace 能力由仓库内 `.agents/plugins/marketplace.json`、Codex manife
 
 ## 规格到设计映射
 
-| Spec ID | 技术落点 | 设计决策 | 测试策略 |
-| --- | --- | --- | --- |
-| REQ-001 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
-| REQ-002 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
-| REQ-003 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
-| REQ-004 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
-| REQ-005 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
+| Spec ID | 规格摘要 | 技术落点 | 关键决策 ID | 影响文件/符号 | 验证命令 | Evidence |
+| --- | --- | --- | --- | --- | --- | --- |
+| REQ-001 | 仓库必须包含 Codex 可读取的 marketplace 文件，marketplace 名称为 `coding-plugins`。 | `.agents/plugins/marketplace.json`：声明 marketplace 名称、插件名称、source path、安装策略和分类 | TD-001 | `.agents/plugins/marketplace.json` | `codex plugin marketplace add /Users/vincen/workspace/plugins/coding-plugins` 可注册该 marketplace。 | `docs/coding-plugins/features/plugin/marketplace/evidence/tdd-evidence.md` |
+| REQ-002 | marketplace 中必须暴露名为 `coding-plugins` 的插件，并指向当前单插件仓库根目录。 | `.agents/plugins/marketplace.json`：声明 marketplace 名称、插件名称、source path、安装策略和分类 | TD-002 | `.agents/plugins/marketplace.json` | 检查 `.agents/plugins/marketplace.json` 中 plugin name 和 source path。 | `docs/coding-plugins/features/plugin/marketplace/evidence/tdd-evidence.md` |
+| REQ-003 | README 必须包含安装入口，并链接到完整安装说明。 | `README.md`：提供入口级安装说明并链接完整文档 | TD-003 | `README.md` | 人工评审 README 安装章节。 | `docs/coding-plugins/features/plugin/marketplace/evidence/tdd-evidence.md` |
+| REQ-004 | 完整安装说明必须覆盖 GitHub 安装、本地安装、个人 marketplace 安装、Claude Code 加载和发布前检查。 | `docs/installation.md`：覆盖 GitHub、本地、个人 marketplace、Claude Code 和发布前检查 | TD-004 | `docs/installation.md` | 人工评审 `docs/installation.md`。 | `docs/coding-plugins/features/plugin/marketplace/evidence/tdd-evidence.md` |
+| REQ-005 | Codex 与 Claude manifest 版本必须保持一致。 | `.codex-plugin/plugin.json`：提供 Codex 插件 manifest、展示元数据、技能目录和 hook 配置<br>`.claude-plugin/plugin.json`：提供 Claude Code 插件 manifest、版本和仓库元数据 | TD-004 | `.codex-plugin/plugin.json`<br>`.claude-plugin/plugin.json` | `python3 scripts/preflight.py`。 | `docs/coding-plugins/features/plugin/marketplace/evidence/tdd-evidence.md` |
 
 ## 无需技术设计的规格
 
@@ -56,12 +59,12 @@ marketplace 能力由仓库内 `.agents/plugins/marketplace.json`、Codex manife
 
 ## 关键决策
 
-| 决策 | 原因 | 取舍 |
-| --- | --- | --- |
-| marketplace source path 使用 `.` | 当前仓库根目录就是插件根目录，覆盖 REQ-001、REQ-002、ERR-001 | 不支持同仓多插件目录布局 |
-| Codex 和 Claude Code 安装说明分开写 | 两个平台加载机制不同，覆盖 REQ-003、REQ-004、ERR-003、AC-004 | 文档需要同时维护两套命令 |
-| 个人 marketplace 使用本机路径说明 | 覆盖本机安装和 `coding-plugins@personal` 使用场景，覆盖 REQ-006、ERR-002、AC-003 | 路径是用户机器约定，公开用户需要按文档替换 |
-| 发布前检查统一引用 preflight | marketplace 安装前复用同一仓库质量门禁，覆盖 REQ-005、AC-005 | Codex marketplace 注册本身仍需人工执行 |
+| 决策 ID | 决策 | 原因 | 取舍 |
+| --- | --- | --- | --- |
+| TD-001 | marketplace source path 使用 `.` | 当前仓库根目录就是插件根目录，覆盖 REQ-001、REQ-002、ERR-001 | 不支持同仓多插件目录布局 |
+| TD-002 | Codex 和 Claude Code 安装说明分开写 | 两个平台加载机制不同，覆盖 REQ-003、REQ-004、ERR-003、AC-004 | 文档需要同时维护两套命令 |
+| TD-003 | 个人 marketplace 使用本机路径说明 | 覆盖本机安装和 `coding-plugins@personal` 使用场景，覆盖 REQ-006、ERR-002、AC-003 | 路径是用户机器约定，公开用户需要按文档替换 |
+| TD-004 | 发布前检查统一引用 preflight | marketplace 安装前复用同一仓库质量门禁，覆盖 REQ-005、AC-005 | Codex marketplace 注册本身仍需人工执行 |
 
 ## 影响组件
 
@@ -90,7 +93,7 @@ flowchart TD
 
 ## 接口和契约
 
-`.agents/plugins/marketplace.json` 必须保持以下契约：
+`.agents/plugins/marketplace.json` 必须保持以下契约：（设计约束）
 
 | 字段 | 契约 |
 | --- | --- |

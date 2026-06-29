@@ -1,10 +1,13 @@
 ---
 title: 插件发布前检查技术设计
 status: approved
+lifecycle_status: implemented
 area: plugin
 capability: preflight
 created: 2026-06-29
 updated: 2026-06-29
+implemented_commits: historical
+validated_by: python3 scripts/preflight.py
 related_specs:
   - docs/coding-plugins/features/plugin/preflight/specs/feature.md
 related_evidence:
@@ -40,17 +43,17 @@ preflight 是插件仓库的本地发布门禁，入口固定为 `python3 script
 
 ## 规格到设计映射
 
-| Spec ID | 技术落点 | 设计决策 | 测试策略 |
-| --- | --- | --- | --- |
-| REQ-001 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
-| REQ-002 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
-| REQ-003 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
-| REQ-004 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
-| REQ-005 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
-| REQ-006 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
-| REQ-007 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
-| REQ-008 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
-| REQ-009 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
+| Spec ID | 规格摘要 | 技术落点 | 关键决策 ID | 影响文件/符号 | 验证命令 | Evidence |
+| --- | --- | --- | --- | --- | --- | --- |
+| REQ-001 | preflight 命令运行 SDD 校验器、TDD Evidence 校验器和 preflight 逻辑的仓库单测。 | `scripts/preflight.py`：提供静态检查、索引生成、验证命令构建和主入口<br>`scripts/test_preflight.py`：覆盖 manifest、旧入口残留、索引、metadata、release 和命令构建规则 | TD-001 | `scripts/preflight.py`<br>`scripts/test_preflight.py` | 追踪矩阵中的单测命令。 | `docs/coding-plugins/features/plugin/preflight/evidence/tdd-evidence.md` |
+| REQ-002 | preflight 命令校验 `docs/coding-plugins/features/**/specs/*.md` 下的真实规格文档。 | `scripts/preflight.py`：提供静态检查、索引生成、验证命令构建和主入口 | TD-002 | `scripts/preflight.py` | 追踪矩阵中的 strict 规格校验命令。 | `docs/coding-plugins/features/plugin/preflight/evidence/tdd-evidence.md` |
+| REQ-003 | preflight 命令拒绝 Codex 和 Claude 插件 manifest 版本不一致的仓库状态。 | `scripts/preflight.py`：提供静态检查、索引生成、验证命令构建和主入口<br>`scripts/manifest_checks.py`：提供 manifest 版本、必需文件、Codex hook 和 manifest asset 路径检查<br>`scripts/test_preflight.py`：覆盖 manifest、旧入口残留、索引、metadata、release 和命令构建规则 | TD-003 | `scripts/preflight.py`<br>`scripts/manifest_checks.py`<br>`scripts/test_preflight.py` | 单测 `test_manifest_version_check_rejects_mismatched_versions`。 | `docs/coding-plugins/features/plugin/preflight/evidence/tdd-evidence.md` |
+| REQ-004 | preflight 命令拒绝 Git 内部目录之外仍引用已移除旧入口的仓库状态。 | `scripts/preflight.py`：提供静态检查、索引生成、验证命令构建和主入口<br>`scripts/test_preflight.py`：覆盖 manifest、旧入口残留、索引、metadata、release 和命令构建规则 | TD-004 | `scripts/preflight.py`<br>`scripts/test_preflight.py` | 单测 `test_removed_entry_scan_ignores_git_and_detects_active_references`。 | `docs/coding-plugins/features/plugin/preflight/evidence/tdd-evidence.md` |
+| REQ-005 | GitHub Actions 在 push 到 `main` 和面向 `main` 的 pull request 中运行同一个 preflight 命令。 | `.github/workflows/ci.yml`：push 和 pull request 时运行 `python3 scripts/preflight.py` | TD-005 | `.github/workflows/ci.yml` | 追踪矩阵中的 workflow 文件检查和命令执行。 | `docs/coding-plugins/features/plugin/preflight/evidence/tdd-evidence.md` |
+| REQ-006 | preflight 命令运行 Codex SessionStart hook 测试，防止入口注入链路发布时失效。 | `scripts/preflight.py`：提供静态检查、索引生成、验证命令构建和主入口<br>`scripts/test_preflight.py`：覆盖 manifest、旧入口残留、索引、metadata、release 和命令构建规则<br>`tests/hooks/test-session-start.sh`：验证 Codex SessionStart hook 配置和 wrapper 行为 | TD-006 | `scripts/preflight.py`<br>`scripts/test_preflight.py`<br>`tests/hooks/test-session-start.sh` | 单测 `test_build_commands_include_core_validation_steps` 和 hook 测试命令。 | `docs/coding-plugins/features/plugin/preflight/evidence/tdd-evidence.md` |
+| REQ-007 | preflight 命令校验 `docs/coding-plugins/INDEX.md` 覆盖所有真实 spec、plan 和 TDD Evidence 文件。 | `scripts/preflight.py`：提供静态检查、索引生成、验证命令构建和主入口<br>`scripts/docs_index.py`：提供 feature root 收集、索引渲染、`--write-index` 写入和索引内容一致性校验<br>`scripts/test_preflight.py`：覆盖 manifest、旧入口残留、索引、metadata、release 和命令构建规则<br>`docs/coding-plugins/INDEX.md`：由 `--write-index` 生成并由 preflight 校验一致性 | TD-006 | `scripts/preflight.py`<br>`scripts/docs_index.py`<br>`scripts/test_preflight.py`<br>`docs/coding-plugins/INDEX.md` | 单测 `test_artifact_index_requires_spec_paths`、`test_artifact_index_requires_plan_paths` 和 `test_artifact_index_requires_evidence_paths`。 | `docs/coding-plugins/features/plugin/preflight/evidence/tdd-evidence.md` |
+| REQ-008 | 文档索引生成、写入和内容一致性校验必须封装在 `scripts/docs_index.py`，`scripts/preflight.py` 只保留 CLI 和发布门禁编排。 | `scripts/docs_index.py`：提供 feature root 收集、索引渲染、`--write-index` 写入和索引内容一致性校验<br>`scripts/test_docs_index.py`：覆盖 docs index 模块边界，确保索引职责不回流到 preflight | TD-006 | `scripts/docs_index.py`<br>`scripts/test_docs_index.py` | 单测 `test_docs_index_module_exposes_index_contract` 和 `test_preflight_delegates_artifact_index_checks_to_docs_index`。 | `docs/coding-plugins/features/plugin/preflight/evidence/tdd-evidence.md` |
+| REQ-009 | manifest 相关检查必须封装在 `scripts/manifest_checks.py`，`scripts/preflight.py` 只保留错误转换、CLI 和发布门禁编排。 | `scripts/manifest_checks.py`：提供 manifest 版本、必需文件、Codex hook 和 manifest asset 路径检查<br>`scripts/test_manifest_checks.py`：覆盖 manifest checks 模块边界，确保 manifest 职责不回流到 preflight | TD-006 | `scripts/manifest_checks.py`<br>`scripts/test_manifest_checks.py` | 单测 `test_manifest_checks_module_exposes_manifest_contract` 和 `test_preflight_converts_manifest_check_errors`。 | `docs/coding-plugins/features/plugin/preflight/evidence/tdd-evidence.md` |
 
 ## 无需技术设计的规格
 
@@ -60,14 +63,14 @@ preflight 是插件仓库的本地发布门禁，入口固定为 `python3 script
 
 ## 关键决策
 
-| 决策 | 原因 | 取舍 |
-| --- | --- | --- |
-| 单入口 `scripts/preflight.py` | 维护者和 CI 使用同一命令，覆盖 REQ-001、REQ-005、AC-001、AC-002 | 脚本职责较多，后续可能需要拆模块 |
-| 独立 `scripts/docs_index.py` | 文档索引渲染、写入和漂移校验是独立职责，拆出后降低 `preflight.py` 膨胀风险 | 需要保留 preflight 的兼容 wrapper，避免现有测试和调用方断裂 |
-| 独立 `scripts/manifest_checks.py` | manifest 结构、版本、资源和 Codex hook 配置是独立职责，拆出后便于后续扩展 release 和 marketplace 检查 | 需要通过 preflight wrapper 将模块错误转换为 `PreflightError` |
-| 静态检查先于命令调度 | 快速发现 manifest、文档路径、索引和残留入口问题 | 部分规则需要持续维护白名单 |
-| 严格校验真实规格和 Evidence | 覆盖 REQ-002、REQ-007，防止示例文档和真实文档标准不一致 | 新增文档时需要同步 metadata 和索引 |
-| hook 和行为测试纳入 preflight | 覆盖 REQ-006，避免入口注入和路由测试在发布时被漏跑 | 增加 preflight 执行时间 |
+| 决策 ID | 决策 | 原因 | 取舍 |
+| --- | --- | --- | --- |
+| TD-001 | 单入口 `scripts/preflight.py` | 维护者和 CI 使用同一命令，覆盖 REQ-001、REQ-005、AC-001、AC-002 | 脚本职责较多，后续可能需要拆模块 |
+| TD-002 | 独立 `scripts/docs_index.py` | 文档索引渲染、写入和漂移校验是独立职责，拆出后降低 `preflight.py` 膨胀风险 | 需要保留 preflight 的兼容 wrapper，避免现有测试和调用方断裂 |
+| TD-003 | 独立 `scripts/manifest_checks.py` | manifest 结构、版本、资源和 Codex hook 配置是独立职责，拆出后便于后续扩展 release 和 marketplace 检查 | 需要通过 preflight wrapper 将模块错误转换为 `PreflightError` |
+| TD-004 | 静态检查先于命令调度 | 快速发现 manifest、文档路径、索引和残留入口问题 | 部分规则需要持续维护白名单 |
+| TD-005 | 严格校验真实规格和 Evidence | 覆盖 REQ-002、REQ-007，防止示例文档和真实文档标准不一致 | 新增文档时需要同步 metadata 和索引 |
+| TD-006 | hook 和行为测试纳入 preflight | 覆盖 REQ-006，避免入口注入和路由测试在发布时被漏跑 | 增加 preflight 执行时间 |
 
 ## 影响组件
 

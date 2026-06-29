@@ -25,10 +25,21 @@ class TechnicalDesignValidatorTests(unittest.TestCase):
         *,
         spec_updated: str = "2026-06-29",
         technical_updated: str = "2026-06-29",
-        mapping_rows: str = "| REQ-001 | `scripts/preflight.py` | 具体设计 | 单测 |\n",
+        mapping_rows: str = (
+            "| REQ-001 | 技术设计校验规格 | `scripts/preflight.py::check_technical_design_validator` | "
+            "TD-001 | `scripts/preflight.py` | `python3 -m unittest scripts/test_preflight.py` | "
+            "`docs/coding-plugins/features/plugin/routing/evidence/tdd-evidence.md` |\n"
+        ),
+        decision_rows: str = (
+            "| TD-001 | 使用独立 validator 作为 technical 规则来源 | 避免 preflight 和 validator 规则漂移 | 需要维护 validator 单测 |\n"
+        ),
+        lifecycle_status: str = "approved",
+        implemented_commits: str = "[]",
+        validated_by: str = "python3 scripts/preflight.py",
         related_evidence: bool = True,
         include_mapping_section: bool = True,
         include_technical_updated: bool = True,
+        extra_body: str = "",
     ) -> Path:
         feature_root = root / "docs" / "coding-plugins" / "features" / "plugin" / "routing"
         spec_dir = feature_root / "specs"
@@ -65,8 +76,8 @@ class TechnicalDesignValidatorTests(unittest.TestCase):
         )
         mapping_section = (
             "## 规格到设计映射\n\n"
-            "| Spec ID | 技术落点 | 设计决策 | 测试策略 |\n"
-            "| --- | --- | --- | --- |\n"
+            "| Spec ID | 规格摘要 | 技术落点 | 关键决策 ID | 影响文件/符号 | 验证命令 | Evidence |\n"
+            "| --- | --- | --- | --- | --- | --- | --- |\n"
             f"{mapping_rows}\n"
             if include_mapping_section
             else ""
@@ -76,10 +87,13 @@ class TechnicalDesignValidatorTests(unittest.TestCase):
             "---\n"
             "title: 技术设计\n"
             "status: approved\n"
+            f"lifecycle_status: {lifecycle_status}\n"
             "area: plugin\n"
             "capability: routing\n"
             "created: 2026-06-29\n"
             f"{updated_line}"
+            f"implemented_commits: {implemented_commits}\n"
+            f"validated_by: {validated_by}\n"
             "related_specs:\n"
             "  - docs/coding-plugins/features/plugin/routing/specs/feature.md\n"
             "related_plans:\n"
@@ -106,7 +120,12 @@ class TechnicalDesignValidatorTests(unittest.TestCase):
             "## 无需技术设计的规格\n\n"
             "| Spec ID | 原因 |\n"
             "| --- | --- |\n"
-            "| 无 | 全部 MUST 规格都有技术落点。 |\n",
+            "| 无 | 全部 MUST 规格都有技术落点。 |\n\n"
+            "## 关键决策\n\n"
+            "| 决策 ID | 决策 | 原因 | 取舍 |\n"
+            "| --- | --- | --- | --- |\n"
+            f"{decision_rows}\n"
+            f"{extra_body}",
             encoding="utf-8",
         )
         return technical
@@ -124,7 +143,14 @@ class TechnicalDesignValidatorTests(unittest.TestCase):
     def test_validator_rejects_missing_must_spec_mapping(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            self.write_feature(root, mapping_rows="| REQ-999 | `scripts/preflight.py` | 错误映射 | 单测 |\n")
+            self.write_feature(
+                root,
+                mapping_rows=(
+                    "| REQ-999 | 错误规格 | `scripts/preflight.py` | TD-001 | `scripts/preflight.py` | "
+                    "`python3 -m unittest scripts/test_preflight.py` | "
+                    "`docs/coding-plugins/features/plugin/routing/evidence/tdd-evidence.md` |\n"
+                ),
+            )
 
             result = validator.validate_repository(root, strict=False)
 
@@ -149,8 +175,9 @@ class TechnicalDesignValidatorTests(unittest.TestCase):
             self.write_feature(
                 root,
                 mapping_rows=(
-                    "| REQ-001 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 "
-                    "| 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |\n"
+                    "| REQ-001 | 规格摘要 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 "
+                    "| TD-001 | `scripts/preflight.py` | 见 `## 测试策略` 和对应计划追踪 | "
+                    "`docs/coding-plugins/features/plugin/routing/evidence/tdd-evidence.md` |\n"
                 ),
             )
 
@@ -165,8 +192,9 @@ class TechnicalDesignValidatorTests(unittest.TestCase):
             self.write_feature(
                 root,
                 mapping_rows=(
-                    "| REQ-001 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 "
-                    "| 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |\n"
+                    "| REQ-001 | 规格摘要 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 "
+                    "| TD-001 | `scripts/preflight.py` | 见 `## 测试策略` 和对应计划追踪 | "
+                    "`docs/coding-plugins/features/plugin/routing/evidence/tdd-evidence.md` |\n"
                 ),
             )
 
@@ -204,6 +232,71 @@ class TechnicalDesignValidatorTests(unittest.TestCase):
 
             self.assertTrue(result.ok)
             self.assertNotIn("stale technical", "\n".join(result.errors + result.warnings))
+
+    def test_validator_rejects_legacy_mapping_header(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            technical = self.write_feature(root)
+            text = technical.read_text(encoding="utf-8")
+            technical.write_text(
+                text.replace(
+                    "| Spec ID | 规格摘要 | 技术落点 | 关键决策 ID | 影响文件/符号 | 验证命令 | Evidence |\n"
+                    "| --- | --- | --- | --- | --- | --- | --- |",
+                    "| Spec ID | 技术落点 | 设计决策 | 测试策略 |\n"
+                    "| --- | --- | --- | --- |",
+                ),
+                encoding="utf-8",
+            )
+
+            result = validator.validate_repository(root, strict=False)
+
+            self.assertFalse(result.ok)
+            self.assertIn("mapping table header", "\n".join(result.errors))
+
+    def test_validator_rejects_mapping_without_existing_decision_id(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self.write_feature(
+                root,
+                mapping_rows=(
+                    "| REQ-001 | 技术设计校验规格 | `scripts/preflight.py::check_technical_design_validator` | "
+                    "TD-999 | `scripts/preflight.py` | `python3 -m unittest scripts/test_preflight.py` | "
+                    "`docs/coding-plugins/features/plugin/routing/evidence/tdd-evidence.md` |\n"
+                ),
+            )
+
+            result = validator.validate_repository(root, strict=False)
+
+            self.assertFalse(result.ok)
+            self.assertIn("unknown decision IDs", "\n".join(result.errors))
+
+    def test_validator_rejects_missing_lifecycle_metadata(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            technical = self.write_feature(root)
+            text = technical.read_text(encoding="utf-8")
+            technical.write_text(text.replace("lifecycle_status: approved\n", ""), encoding="utf-8")
+
+            result = validator.validate_repository(root, strict=False)
+
+            self.assertFalse(result.ok)
+            self.assertIn("lifecycle metadata", "\n".join(result.errors))
+
+    def test_validator_rejects_hidden_requirement_without_spec_reference(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self.write_feature(
+                root,
+                extra_body=(
+                    "\n## 接口和契约\n\n"
+                    "- 必须自动生成全新的外部行为，但这里没有引用任何 Spec ID。\n"
+                ),
+            )
+
+            result = validator.validate_repository(root, strict=False)
+
+            self.assertFalse(result.ok)
+            self.assertIn("hidden requirement", "\n".join(result.errors))
 
     def test_cli_validates_repository_technical_docs(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

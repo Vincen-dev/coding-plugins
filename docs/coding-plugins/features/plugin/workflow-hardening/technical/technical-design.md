@@ -1,10 +1,13 @@
 ---
 title: 插件工作链路硬化技术设计
 status: approved
+lifecycle_status: implemented
 area: plugin
 capability: workflow-hardening
 created: 2026-06-29
 updated: 2026-06-29
+implemented_commits: historical
+validated_by: python3 scripts/preflight.py
 related_specs:
   - docs/coding-plugins/features/plugin/workflow-hardening/specs/maintenance.md
 related_evidence:
@@ -40,13 +43,13 @@ related_plans:
 
 ## 规格到设计映射
 
-| Spec ID | 技术落点 | 设计决策 | 测试策略 |
-| --- | --- | --- | --- |
-| NFR-001 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
-| NFR-002 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
-| NFR-003 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
-| NFR-004 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
-| NFR-005 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
+| Spec ID | 规格摘要 | 技术落点 | 关键决策 ID | 影响文件/符号 | 验证命令 | Evidence |
+| --- | --- | --- | --- | --- | --- | --- |
+| NFR-001 | 行为测试必须覆盖新需求、bug、直接提交、完成收尾、插件维护和并行任务的技能顺序，不只检查技能名存在。 | `tests/behavior/test_routing.py`：增加场景顺序和 Claude 启动提示测试<br>`docs/workflow-chain.md`：增加场景链路说明，供行为测试校验 | TD-001 | `tests/behavior/test_routing.py`<br>`docs/workflow-chain.md` | `python3 -m unittest tests.behavior.test_routing`。 | `docs/coding-plugins/features/plugin/workflow-hardening/evidence/tdd-evidence.md` |
+| NFR-002 | approved feature 如果没有 technical/plan，必须在 README 中声明轻量例外原因，preflight 必须校验该例外。 | `scripts/preflight.py`：增加轻量 feature 例外校验，并运行 remote audit 单测 | TD-002 | `scripts/preflight.py` | `python3 -m unittest scripts/test_preflight.py`。 | `docs/coding-plugins/features/plugin/workflow-hardening/evidence/tdd-evidence.md` |
+| NFR-003 | 仓库必须提供手动远程审计脚本，验证目标 tag 的 release 状态和直接 push 协作者只包含维护者。 | `scripts/preflight.py`：增加轻量 feature 例外校验，并运行 remote audit 单测<br>`scripts/remote_audit.py`：新增远程 release/tag/push 权限审计脚本<br>`scripts/test_remote_audit.py`：覆盖远程审计的纯函数和命令计划 | TD-003 | `scripts/preflight.py`<br>`scripts/remote_audit.py`<br>`scripts/test_remote_audit.py` | `python3 -m unittest scripts/test_remote_audit.py`。 | `docs/coding-plugins/features/plugin/workflow-hardening/evidence/tdd-evidence.md` |
+| NFR-004 | Claude Code 文档必须提供可复制的会话启动入口提示，明确先调用 `/coding-plugins:using-coding-plugins`。 | `tests/behavior/test_routing.py`：增加场景顺序和 Claude 启动提示测试<br>`docs/claude-code-usage.md`：增加 Claude Code 启动提示 | TD-004 | `tests/behavior/test_routing.py`<br>`docs/claude-code-usage.md` | `python3 -m unittest tests.behavior.test_routing`。 | `docs/coding-plugins/features/plugin/workflow-hardening/evidence/tdd-evidence.md` |
+| NFR-005 | SDD 和 TDD validator 单测必须包含真实 fixture 样例，覆盖通过样例和失败样例。 | `skills/*/fixtures/`：增加 validator 好/坏样例 | TD-005 | `skills/*/fixtures/` | `python3 -m unittest skills/spec-driven-development/scripts/test_validate_spec.py skills/test-driven-development/scripts/test_validate_tdd_evidence.py`。 | `docs/coding-plugins/features/plugin/workflow-hardening/evidence/tdd-evidence.md` |
 
 ## 无需技术设计的规格
 
@@ -56,13 +59,13 @@ related_plans:
 
 ## 关键决策
 
-| 决策 | 原因 | 取舍 |
-| --- | --- | --- |
-| 行为测试使用文档和入口文本的场景顺序断言 | 插件行为主要由技能文档驱动，没有运行时路由函数 | 仍不能替代真实代理会话测试 |
-| 轻量 feature 使用 README 例外说明而不是强制补全技术计划 | 避免把历史小型 feature 膨胀成重复文档 | 需要 preflight 校验例外格式 |
-| 远程审计脚本不进入默认 preflight | GitHub API 需要认证和网络，默认门禁应可离线运行 | 发布前需要维护者显式执行 |
-| Claude 使用可复制启动提示 | Claude 当前没有 Codex SessionStart 等价 hook | 仍依赖用户在会话开始时使用提示 |
-| validator fixture 放在各 skill 的 `fixtures/` 目录 | 样例和校验器同目录维护，便于扩展 | 增加少量测试文件 |
+| 决策 ID | 决策 | 原因 | 取舍 |
+| --- | --- | --- | --- |
+| TD-001 | 行为测试使用文档和入口文本的场景顺序断言 | 插件行为主要由技能文档驱动，没有运行时路由函数 | 仍不能替代真实代理会话测试 |
+| TD-002 | 轻量 feature 使用 README 例外说明而不是强制补全技术计划 | 避免把历史小型 feature 膨胀成重复文档 | 需要 preflight 校验例外格式 |
+| TD-003 | 远程审计脚本不进入默认 preflight | GitHub API 需要认证和网络，默认门禁应可离线运行 | 发布前需要维护者显式执行 |
+| TD-004 | Claude 使用可复制启动提示 | Claude 当前没有 Codex SessionStart 等价 hook | 仍依赖用户在会话开始时使用提示 |
+| TD-005 | validator fixture 放在各 skill 的 `fixtures/` 目录 | 样例和校验器同目录维护，便于扩展 | 增加少量测试文件 |
 
 ## 影响组件
 
@@ -98,8 +101,7 @@ python3 scripts/remote_audit.py --owner Vincen-dev --repo coding-plugins --tag v
 
 轻量 feature 例外契约：
 
-```text
-## 轻量例外
+```text## 轻量例外
 
 - **Reason:** 该 feature 已由规格和 TDD Evidence 完成，技术方案和计划只会重复 evidence 中的任务。
 - **Verification:** python3 scripts/preflight.py
