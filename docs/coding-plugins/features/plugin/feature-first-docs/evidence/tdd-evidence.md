@@ -1,3 +1,17 @@
+---
+title: Feature-first 文档结构迁移
+status: approved
+area: plugin
+capability: feature-first-docs
+created: 2026-06-29
+updated: 2026-06-29
+related_specs:
+  - docs/coding-plugins/features/plugin/feature-first-docs/specs/maintenance.md
+related_technical:
+  - docs/coding-plugins/features/plugin/feature-first-docs/technical/technical-design.md
+related_plans:
+  - docs/coding-plugins/features/plugin/feature-first-docs/plans/implementation.md
+---
 # Feature-first 文档结构迁移
 
 ## 任务 1： Preflight feature-first contract

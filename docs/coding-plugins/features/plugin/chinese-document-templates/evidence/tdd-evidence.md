@@ -1,3 +1,17 @@
+---
+title: 中文文档模板展示字段 TDD 证据
+status: approved
+area: plugin
+capability: chinese-document-templates
+created: 2026-06-29
+updated: 2026-06-29
+related_specs:
+  - docs/coding-plugins/features/plugin/chinese-document-templates/specs/feature.md
+related_technical:
+  - docs/coding-plugins/features/plugin/chinese-document-templates/technical/technical-design.md
+related_plans:
+  - docs/coding-plugins/features/plugin/chinese-document-templates/plans/implementation.md
+---
 # 中文文档模板展示字段 TDD 证据
 
 ## 任务 1：更新校验器和 RED/GREEN 单测

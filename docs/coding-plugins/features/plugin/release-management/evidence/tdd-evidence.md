@@ -1,3 +1,17 @@
+---
+title: 插件发布和版本管理
+status: approved
+area: plugin
+capability: release-management
+created: 2026-06-29
+updated: 2026-06-29
+related_specs:
+  - docs/coding-plugins/features/plugin/release-management/specs/feature.md
+related_technical:
+  - docs/coding-plugins/features/plugin/release-management/technical/technical-design.md
+related_plans:
+  - docs/coding-plugins/features/plugin/release-management/plans/implementation.md
+---
 # 插件发布和版本管理
 
 ## 任务 1： 版本 bump 脚本和 release 校验

@@ -52,6 +52,7 @@ docs/coding-plugins/INDEX.md
 | 技术设计 | 架构方案、关键决策、影响组件、数据流、接口落地、兼容策略、测试策略 | 逐步执行清单 |
 | 实现计划 | 任务拆分、文件修改步骤、RED/GREEN 命令、Spec ID 到测试和任务的追踪 | 重复完整技术方案 |
 | 证据 | 实际 RED/GREEN/REFACTOR 和最终验证证据 | 设计讨论 |
+| INDEX/metadata | 关联文档、标签、状态、生命周期和检索路径 | 需求、方案或任务正文 |
 
 ## 必须覆盖
 
@@ -72,12 +73,12 @@ docs/coding-plugins/INDEX.md
 
 ## 流程
 
-1. 读取批准规格和相关现有代码。
+1. 读取批准规格和相关现有代码；先读目标 feature README 和相关文档 frontmatter，再读正文。
 2. 做规格缺口审查：逐项确认未覆盖需求、验收标准不清、外部行为新增、错误边界和兼容要求。
 3. 如果发现缺口，不要在 technical 中顺手补需求；回到 `spec-driven-development` 更新 spec、重新运行规格校验并等待用户确认。
 4. 确认 area/capability，并检查是否已有技术设计。
-5. 创建或更新 `technical/technical-design.md`，正文标题默认使用中文，并补齐 `related_specs`、`related_plans`、`related_evidence`。
-6. 在规格 metadata 或正文中引用 technical design 路径；metadata key 保持英文，正文使用 `## 文档信息` 展示中文摘要。
+5. 创建或更新 `technical/technical-design.md`，正文标题默认使用中文，并补齐 `related_specs`、`related_plans`、`related_evidence`；关联关系以 frontmatter 为机器源。
+6. 在规格 metadata 或正文中引用 technical design 路径；metadata key 保持英文，正文使用 `## 文档信息` 展示中文摘要。不要在 README 正文增加手写 `产物链路` 或 `文档链路`，完整链路由 `docs/coding-plugins/INDEX.md` 生成。
 7. 更新 `docs/coding-plugins/INDEX.md`。
 8. 运行 `python3 skills/writing-technical-design/scripts/validate_technical_design.py <technical-path>` 做 technical 单文档校验；发布前和 preflight 使用 strict 质量门禁。
 9. 运行 `python3 scripts/preflight.py` 或至少运行相关 preflight 单测。

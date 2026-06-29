@@ -10,13 +10,14 @@
 2. 新需求先进入 SDD，写成可追踪、可测试、可评审的规格。
 3. 已批准规格再写独立技术设计，定义工程方案、关键决策和测试策略。
 4. 基于技术设计写计划，并建立 Spec ID -> 测试 -> 任务 追踪。
-5. 按计划隔离执行。
-6. 实现阶段遵守 TDD，测试必须来自规格、bug 复现或明确验收标准，并留下 TDD 证据。
-7. 每个任务通过规格符合性和代码质量评审。
-8. 完成前必须验证规格覆盖和测试证据。
-9. 如有未提交变更，在完成阶段提示是否提交。
-10. 提交必须使用中文 Conventional Commit，在 footer 添加本人 `Authored-by` 署名，且禁止 AI 作者。
-11. 最后做分支收尾和集成选择。
+5. 读取文档时先读 frontmatter metadata，再读正文；关系源、索引边界和 README 规则见 `docs/coding-plugins/document-contract.md`。
+6. 按计划隔离执行。
+7. 实现阶段遵守 TDD，测试必须来自规格、bug 复现或明确验收标准，并留下 TDD 证据。
+8. 每个任务通过规格符合性和代码质量评审。
+9. 完成前必须验证规格覆盖和测试证据。
+10. 如有未提交变更，在完成阶段提示是否提交。
+11. 提交必须使用中文 Conventional Commit，在 footer 添加本人 `Authored-by` 署名，且禁止 AI 作者。
+12. 最后做分支收尾和集成选择。
 
 ## 阶段划分
 
@@ -30,15 +31,16 @@
 | 3 | 需求规格 | `spec-driven-development` | `docs/coding-plugins/features/<area>/<capability>/specs/<spec-kind>.md`, 生成式总索引, Spec ID, Traceability Matrix |
 | 4 | 技术设计 | `writing-technical-design` | `docs/coding-plugins/features/<area>/<capability>/technical/technical-design.md`, 规格到设计映射, 生成式总索引, 技术方案和测试策略 |
 | 5 | 实现计划 | `writing-plans` | `docs/coding-plugins/features/<area>/<capability>/plans/implementation.md`, 技术设计来源, Spec ID -> 测试 -> 任务 追踪 |
-| 6 | 隔离工作区 | `using-git-worktrees` | 独立 worktree 或确认在当前工作区执行 |
-| 7 | 执行调度 | `subagent-driven-development`, `executing-plans`, `dispatching-parallel-agents` | 子任务执行、批次执行或并行任务结果 |
-| 8 | TDD 实现 | `test-driven-development` | RED -> GREEN -> REFACTOR，`docs/coding-plugins/features/<area>/<capability>/evidence/tdd-evidence.md` |
-| 9 | 系统化调试 | `systematic-debugging` | 复现路径、根因、可测试修复入口 |
-| 10 | 评审门禁 | `spec-reviewer`, `code-quality-reviewer`, `requesting-code-review`, `receiving-code-review` | 规格符合性评审、代码质量评审、反馈处理 |
-| 11 | 完成前验证 | `verification-before-completion` | 测试、构建、规格覆盖或人工验收证据 |
-| 12 | 提交 | `git-commit` | 中文 Conventional Commit，`Authored-by` footer，无 AI 作者 |
-| 13 | 分支收尾 | `finishing-a-development-branch` | merge、PR、保留或丢弃选择，必要时清理 worktree |
-| 14 | 插件维护 | `writing-skills` | skill、prompt、脚本、manifest 或文档更新，并通过插件校验 |
+| 6 | 文档契约 | `docs/coding-plugins/document-contract.md`, `scripts/preflight.py` | metadata-first 读取顺序、README 边界、Evidence related metadata、生成式索引 |
+| 7 | 隔离工作区 | `using-git-worktrees` | 独立 worktree 或确认在当前工作区执行 |
+| 8 | 执行调度 | `subagent-driven-development`, `executing-plans`, `dispatching-parallel-agents` | 子任务执行、批次执行或并行任务结果 |
+| 9 | TDD 实现 | `test-driven-development` | RED -> GREEN -> REFACTOR，`docs/coding-plugins/features/<area>/<capability>/evidence/tdd-evidence.md` |
+| 10 | 系统化调试 | `systematic-debugging` | 复现路径、根因、可测试修复入口 |
+| 11 | 评审门禁 | `spec-reviewer`, `code-quality-reviewer`, `requesting-code-review`, `receiving-code-review` | 规格符合性评审、代码质量评审、反馈处理 |
+| 12 | 完成前验证 | `verification-before-completion` | 测试、构建、规格覆盖或人工验收证据 |
+| 13 | 提交 | `git-commit` | 中文 Conventional Commit，`Authored-by` footer，无 AI 作者 |
+| 14 | 分支收尾 | `finishing-a-development-branch` | merge、PR、保留或丢弃选择，必要时清理 worktree |
+| 15 | 插件维护 | `writing-skills` | skill、prompt、脚本、manifest 或文档更新，并通过插件校验 |
 
 ## 主链路（完整总览）
 
@@ -82,7 +84,8 @@ flowchart TD
   DEV_KIND -->|bug/CI/测试/构建失败或异常行为| DEBUG["systematic-debugging"]
 
   SDD --> SPEC["写规格、生成/校验 INDEX、运行 validate_spec.py"]
-  SPEC --> SPEC_OK{"用户确认规格？"}
+  SPEC --> CONTRACT["读取/维护 metadata-first 文档契约"]
+  CONTRACT --> SPEC_OK{"用户确认规格？"}
   SPEC_OK -->|需要修改| SPEC
   SPEC_OK -->|确认| TECH
 

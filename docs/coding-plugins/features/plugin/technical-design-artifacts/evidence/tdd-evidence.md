@@ -1,3 +1,17 @@
+---
+title: 技术设计产物独立维护
+status: approved
+area: plugin
+capability: technical-design-artifacts
+created: 2026-06-29
+updated: 2026-06-29
+related_specs:
+  - docs/coding-plugins/features/plugin/technical-design-artifacts/specs/feature.md
+related_technical:
+  - docs/coding-plugins/features/plugin/technical-design-artifacts/technical/technical-design.md
+related_plans:
+  - docs/coding-plugins/features/plugin/technical-design-artifacts/plans/implementation.md
+---
 # 技术设计产物独立维护
 
 ## 任务 1： technical 文档层和 preflight 校验

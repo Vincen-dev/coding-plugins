@@ -138,6 +138,8 @@ docs/coding-plugins/features/auth/login/evidence/tdd-evidence.md
 
 如果项目已有测试报告或 ADR 约定，优先使用项目约定，但最终报告必须写明实际 evidence 文件路径。
 
+Evidence 文件必须包含 frontmatter metadata。读取或更新 evidence 时，先确认 `area`、`capability`、`related_specs`、`related_technical` 和 `related_plans`，再追加正文证据。相关规则见 `docs/coding-plugins/document-contract.md`。
+
 一个文件可以记录同一 capability 下多个任务。每个任务使用二级标题，例如：
 
 ```markdown

@@ -43,6 +43,12 @@ codex plugin marketplace list
 docs/coding-plugins/INDEX.md
 ```
 
+文档关系以各文件 frontmatter 中的 `related_*` 和 README `tags` 为准，正式规则见：
+
+```text
+docs/coding-plugins/document-contract.md
+```
+
 文档按 feature-first 结构集中维护：
 
 ```text

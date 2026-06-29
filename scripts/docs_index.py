@@ -39,6 +39,30 @@ def parse_frontmatter(text: str) -> dict[str, str]:
     return metadata
 
 
+def frontmatter_list_values(text: str, key: str) -> list[str]:
+    if not text.startswith("---\n"):
+        return []
+    end = text.find("\n---", 4)
+    if end == -1:
+        return []
+
+    values: list[str] = []
+    in_key = False
+    for line in text[4:end].splitlines():
+        stripped = line.strip()
+        if not stripped:
+            continue
+        if line.startswith(" ") and in_key and stripped.startswith("- "):
+            values.append(stripped[2:].strip().strip('"').strip("'"))
+            continue
+        if ":" in line and not line.startswith(" "):
+            current_key, value = line.split(":", 1)
+            in_key = current_key.strip() == key
+            if in_key and value.strip():
+                values.append(value.strip().strip('"').strip("'"))
+    return values
+
+
 def feature_docs_root(root: Path) -> Path:
     return root / "docs" / "coding-plugins" / "features"
 
@@ -131,8 +155,8 @@ def feature_tags(feature_root: Path) -> str:
     readme = feature_root / "README.md"
     if not readme.exists():
         return "-"
-    metadata = parse_chinese_document_info(readme.read_text(encoding="utf-8"))
-    return metadata.get("标签", "").strip() or "-"
+    tags = frontmatter_list_values(readme.read_text(encoding="utf-8"), "tags")
+    return ", ".join(tags) if tags else "-"
 
 
 def feature_updated(feature_root: Path) -> str:
@@ -192,7 +216,7 @@ def render_artifact_index(root: Path) -> str:
             "- `技术设计` 指向默认技术设计 `docs/coding-plugins/features/<area>/<capability>/technical/technical-design.md`；没有技术设计时使用 `-`。",
             "- `实现计划` 指向默认实现计划 `docs/coding-plugins/features/<area>/<capability>/plans/implementation.md`；没有计划时使用 `-`。",
             "- `证据` 指向该 capability 的 evidence 文件；有多个 evidence 时在同一个单元格用 `<br>` 分隔；没有 evidence 时使用 `-`。",
-            "- `标签` 来自 feature README 的 `标签` 行；日期来自规格、技术设计或计划 frontmatter 的最大 `updated` 值。",
+            "- `标签` 来自 feature README frontmatter 的 `tags` 列表；日期来自规格、技术设计或计划 frontmatter 的最大 `updated` 值。",
         ]
     )
     return "\n".join(lines) + "\n"

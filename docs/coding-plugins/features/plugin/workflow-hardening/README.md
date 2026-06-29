@@ -1,3 +1,16 @@
+---
+title: 工作链路硬化
+status: approved
+area: plugin
+capability: workflow-hardening
+updated: 2026-06-29
+tags:
+  - workflow
+  - routing
+  - remote-audit
+  - claude-code
+  - validators
+---
 # 工作链路硬化
 
 ## 文档信息
@@ -7,13 +20,3 @@
 | 状态 | 已批准 |
 | 领域 | plugin |
 | 能力 | workflow-hardening |
-| 标签 | workflow, routing, remote-audit, claude-code, validators |
-
-## 产物链路
-
-| 产物 | 路径 |
-| --- | --- |
-| 规格 | `specs/maintenance.md` |
-| 技术设计 | `technical/technical-design.md` |
-| 实现计划 | `plans/implementation.md` |
-| TDD 证据| `evidence/tdd-evidence.md` |

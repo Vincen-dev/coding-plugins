@@ -32,6 +32,8 @@ related_evidence:
 | 已实现提交 | [] |
 | 验证方式 | <验证命令或人工验证记录> |
 
+关联关系以 frontmatter 的 `related_specs`、`related_plans`、`related_evidence` 为准；本表只提供人工阅读摘要。
+
 ## 设计摘要
 
 <2 到 5 句话说明整体技术方案。>

@@ -1,3 +1,13 @@
+---
+title: Codex 会话启动入口注入
+status: approved
+area: plugin
+capability: session-start-hook
+created: 2026-06-29
+updated: 2026-06-29
+related_specs:
+  - docs/coding-plugins/features/plugin/session-start-hook/specs/feature.md
+---
 # Codex 会话启动入口注入
 
 ## 任务 1： SessionStart hook 注入入口规则

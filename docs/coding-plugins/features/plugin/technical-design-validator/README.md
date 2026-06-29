@@ -1,3 +1,16 @@
+---
+title: Technical Design Validator
+status: approved
+area: plugin
+capability: technical-design-validator
+updated: 2026-06-29
+tags:
+  - technical-design
+  - validator
+  - preflight
+  - stale
+  - traceability
+---
 # Technical Design Validator
 
 ## 文档信息
@@ -7,7 +20,6 @@
 | 状态 | 已批准 |
 | 领域 | plugin |
 | 能力 | technical-design-validator |
-| 标签 | technical-design, validator, preflight, stale, traceability |
 
 ## 摘要
 

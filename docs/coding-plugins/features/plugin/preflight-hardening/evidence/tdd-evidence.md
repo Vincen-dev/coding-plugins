@@ -1,3 +1,13 @@
+---
+title: Preflight 覆盖面增强
+status: approved
+area: plugin
+capability: preflight-hardening
+created: 2026-06-29
+updated: 2026-06-29
+related_specs:
+  - docs/coding-plugins/features/plugin/preflight-hardening/specs/feature.md
+---
 # Preflight 覆盖面增强
 
 ## 任务 1： 增强插件结构和追踪校验

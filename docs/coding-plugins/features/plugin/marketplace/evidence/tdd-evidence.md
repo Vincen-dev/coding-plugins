@@ -1,3 +1,17 @@
+---
+title: 插件 Marketplace 安装入口
+status: approved
+area: plugin
+capability: marketplace
+created: 2026-06-29
+updated: 2026-06-29
+related_specs:
+  - docs/coding-plugins/features/plugin/marketplace/specs/feature.md
+related_technical:
+  - docs/coding-plugins/features/plugin/marketplace/technical/technical-design.md
+related_plans:
+  - docs/coding-plugins/features/plugin/marketplace/plans/implementation.md
+---
 # 插件 Marketplace 安装入口
 
 ## 任务 1： Marketplace 文档闭环回填

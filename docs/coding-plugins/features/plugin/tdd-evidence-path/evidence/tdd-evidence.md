@@ -1,3 +1,13 @@
+---
+title: TDD 证据 固定落地路径
+status: approved
+area: plugin
+capability: tdd-evidence-path
+created: 2026-06-29
+updated: 2026-06-29
+related_specs:
+  - docs/coding-plugins/features/plugin/tdd-evidence-path/specs/feature.md
+---
 # TDD 证据 固定落地路径
 
 ## 任务 1： preflight 校验 evidence 文件

@@ -1,3 +1,15 @@
+---
+title: TDD 证据固定落地路径
+status: approved
+area: plugin
+capability: tdd-evidence-path
+updated: 2026-06-29
+tags:
+  - tdd
+  - evidence
+  - traceability
+  - validation
+---
 # TDD 证据固定落地路径
 
 ## 文档信息
@@ -7,16 +19,6 @@
 | 状态 | 已批准 |
 | 领域 | plugin |
 | 能力 | tdd-evidence-path |
-| 标签 | tdd, evidence, traceability, validation |
-
-## 产物链路
-
-| 产物 | 路径 |
-| --- | --- |
-| 规格 | `specs/feature.md` |
-| 技术设计 | - |
-| 实现计划 | - |
-| TDD 证据| `evidence/tdd-evidence.md` |
 
 ## 轻量例外
 

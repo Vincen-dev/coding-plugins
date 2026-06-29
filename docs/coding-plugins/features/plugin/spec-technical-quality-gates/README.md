@@ -1,3 +1,15 @@
+---
+title: Spec Technical Quality Gates
+status: approved
+area: plugin
+capability: spec-technical-quality-gates
+updated: 2026-06-29
+tags:
+  - spec
+  - technical-design
+  - preflight
+  - traceability
+---
 # Spec Technical Quality Gates
 
 ## 文档信息
@@ -7,7 +19,6 @@
 | 状态 | 已批准 |
 | 领域 | plugin |
 | 能力 | spec-technical-quality-gates |
-| 标签 | spec, technical-design, preflight, traceability |
 
 ## 摘要
 

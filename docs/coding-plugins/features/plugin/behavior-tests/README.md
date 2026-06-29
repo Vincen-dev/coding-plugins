@@ -1,3 +1,15 @@
+---
+title: 插件行为级测试
+status: approved
+area: plugin
+capability: behavior-tests
+updated: 2026-06-29
+tags:
+  - testing
+  - routing
+  - hooks
+  - claude-code
+---
 # 插件行为级测试
 
 ## 文档信息
@@ -7,16 +19,6 @@
 | 状态 | 已批准 |
 | 领域 | plugin |
 | 能力 | behavior-tests |
-| 标签 | testing, routing, hooks, claude-code |
-
-## 产物链路
-
-| 产物 | 路径 |
-| --- | --- |
-| 规格 | `specs/feature.md` |
-| 技术设计 | - |
-| 实现计划 | - |
-| TDD 证据| `evidence/tdd-evidence.md` |
 
 ## 轻量例外
 

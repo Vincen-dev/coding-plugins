@@ -1,3 +1,17 @@
+---
+title: 插件发布前检查
+status: approved
+area: plugin
+capability: preflight
+created: 2026-06-29
+updated: 2026-06-29
+related_specs:
+  - docs/coding-plugins/features/plugin/preflight/specs/feature.md
+related_technical:
+  - docs/coding-plugins/features/plugin/preflight/technical/technical-design.md
+related_plans:
+  - docs/coding-plugins/features/plugin/preflight/plans/implementation.md
+---
 # 插件发布前检查
 
 ## 任务 1： Preflight 文档闭环回填

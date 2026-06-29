@@ -1,4 +1,27 @@
+---
+title: <能力> TDD 证据
+status: draft
+area: <area>
+capability: <capability>
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
+related_specs:
+  - docs/coding-plugins/features/<area>/<capability>/specs/feature.md
+related_technical:
+  - docs/coding-plugins/features/<area>/<capability>/technical/technical-design.md
+related_plans:
+  - docs/coding-plugins/features/<area>/<capability>/plans/implementation.md
+---
+
 # <能力> TDD 证据
+
+## 文档信息
+
+| 字段 | 内容 |
+| --- | --- |
+| 状态 | 草稿 |
+| 领域 | <area> |
+| 能力 | <capability> |
 
 ## 任务 <N>：<任务名称>
 

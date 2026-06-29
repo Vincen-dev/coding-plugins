@@ -12,6 +12,9 @@ tags:
 related_code:
   - <path>
 related_specs: []
+related_technical: []
+related_plans: []
+related_evidence: []
 ---
 
 # <功能名称>规格

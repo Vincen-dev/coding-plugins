@@ -1,3 +1,17 @@
+---
+title: Spec 与 Technical 质量门禁
+status: approved
+area: plugin
+capability: spec-technical-quality-gates
+created: 2026-06-29
+updated: 2026-06-29
+related_specs:
+  - docs/coding-plugins/features/plugin/spec-technical-quality-gates/specs/feature.md
+related_technical:
+  - docs/coding-plugins/features/plugin/spec-technical-quality-gates/technical/technical-design.md
+related_plans:
+  - docs/coding-plugins/features/plugin/spec-technical-quality-gates/plans/implementation.md
+---
 # Spec 与 Technical 质量门禁
 
 ## 任务 1： Technical template and section gates

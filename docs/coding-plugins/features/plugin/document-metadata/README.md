@@ -1,3 +1,15 @@
+---
+title: 文档元数据中文展示优化
+status: approved
+area: plugin
+capability: document-metadata
+updated: 2026-06-29
+tags:
+  - metadata
+  - chinese
+  - plan
+  - preflight
+---
 # 文档元数据中文展示优化
 
 ## 文档信息
@@ -7,14 +19,3 @@
 | 状态 | 已批准 |
 | 领域 | plugin |
 | 能力 | document-metadata |
-| 标签 | metadata, chinese, plan, preflight |
-
-## 产物链路
-
-| 产物 | 路径 |
-| --- | --- |
-| 规格 | `specs/feature.md` |
-| 技术设计 | `technical/technical-design.md` |
-| 实现计划 | `plans/implementation.md` |
-| TDD 证据| `evidence/tdd-evidence.md` |
-

@@ -1,3 +1,13 @@
+---
+title: 插件行为级测试
+status: approved
+area: plugin
+capability: behavior-tests
+created: 2026-06-29
+updated: 2026-06-29
+related_specs:
+  - docs/coding-plugins/features/plugin/behavior-tests/specs/feature.md
+---
 # 插件行为级测试
 
 ## 任务 1： 入口路由和平台行为测试

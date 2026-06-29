@@ -26,6 +26,7 @@ docs/coding-plugins/features/<area>/<capability>/technical/technical-design.md
 ## 前置条件
 
 - 如果任务有已批准规格，先读取规格文件。
+- 读取规格、技术设计、README 或 Evidence 时，先读 frontmatter metadata，再读正文；关联关系以 `related_*`、README `tags` 和 `docs/coding-plugins/document-contract.md` 为准。
 - 如果任务没有规格但属于新功能、契约、schema、状态机或验收标准不清，先使用 `spec-driven-development`。
 - 如果任务有已批准规格但没有技术设计，先使用 `writing-technical-design`。
 - 非平凡任务必须有 Spec ID。极小修改可以在计划开头写 1 到 3 条 inline spec，再继续计划。
@@ -79,7 +80,7 @@ docs/coding-plugins/features/<area>/<capability>/technical/technical-design.md
 
 每个计划必须以类似结构开头：
 
-机器可读 frontmatter 的 key 保持英文稳定；中文展示写在 `## 文档信息` 表中。不要把 frontmatter key 改成中文。
+机器可读 frontmatter 的 key 保持英文稳定；中文展示写在 `## 文档信息` 表中。不要把 frontmatter key 改成中文。`related_*` 是计划文档的关系源；正文中的 `技术设计来源` 是执行入口，不要额外维护手写产物链路表。
 
 ```markdown
 ---

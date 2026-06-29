@@ -186,6 +186,9 @@ TECHNICAL_DESIGN_PATH_RE = re.compile(
     r"docs/coding-plugins/features/[A-Za-z0-9_.\-/]+/technical/technical-design\.md"
 )
 EVIDENCE_PATH_RE = re.compile(r"docs/coding-plugins/features/[A-Za-z0-9_.\-/]+/evidence/[A-Za-z0-9_.\-/]+\.md")
+FEATURE_README_METADATA_REQUIRED_FIELDS = ("title", "status", "area", "capability", "updated")
+FEATURE_README_HANDWRITTEN_LINK_SECTIONS = ("产物链路", "文档链路")
+EVIDENCE_METADATA_REQUIRED_FIELDS = ("title", "status", "area", "capability", "created", "updated")
 PLAN_METADATA_REQUIRED_FIELDS = ("title", "status", "area", "capability", "created", "updated")
 CHINESE_DOCUMENT_INFO_REQUIRED_TERMS = ("## 文档信息", "状态", "领域", "能力")
 TECHNICAL_GAP_REVIEW_REQUIRED_TERMS = ("未覆盖需求", "验收标准", "外部行为", "处理状态")
@@ -445,6 +448,53 @@ def check_feature_readmes(root: Path) -> None:
         raise PreflightError("Feature root is missing README: " + ", ".join(missing) + ".")
 
 
+def check_feature_readme_metadata_contract(root: Path) -> None:
+    incomplete: list[str] = []
+    mismatches: list[str] = []
+    handwritten_link_sections: list[str] = []
+
+    for feature_root in collect_feature_roots(root):
+        readme = feature_root / "README.md"
+        if not readme.exists():
+            continue
+
+        text = readme.read_text(encoding="utf-8")
+        metadata = parse_frontmatter(text)
+        missing_fields = [field for field in FEATURE_README_METADATA_REQUIRED_FIELDS if not metadata.get(field)]
+        if not frontmatter_list_values(text, "tags"):
+            missing_fields.append("tags")
+        if missing_fields:
+            incomplete.append(f"{readme.relative_to(root)} missing {', '.join(missing_fields)}")
+            continue
+
+        feature_context = feature_root_for_document(root, readme)
+        if feature_context is None:
+            mismatches.append(f"{readme.relative_to(root)} is not under features/<area>/<capability>/")
+        else:
+            path_area, path_capability, _feature_root = feature_context
+            if metadata.get("area") != path_area:
+                mismatches.append(f"{readme.relative_to(root)} area={metadata.get('area')} path={path_area}")
+            if metadata.get("capability") != path_capability:
+                mismatches.append(
+                    f"{readme.relative_to(root)} capability={metadata.get('capability')} path={path_capability}"
+                )
+
+        for section in FEATURE_README_HANDWRITTEN_LINK_SECTIONS:
+            if markdown_section(text, section) is not None:
+                handwritten_link_sections.append(f"{readme.relative_to(root)} has ## {section}")
+
+    if incomplete:
+        raise PreflightError("Feature README metadata is invalid: " + "; ".join(incomplete) + ".")
+    if mismatches:
+        raise PreflightError("Feature README metadata does not match path: " + "; ".join(mismatches) + ".")
+    if handwritten_link_sections:
+        raise PreflightError(
+            "Feature README must not contain handwritten document link sections: "
+            + "; ".join(handwritten_link_sections)
+            + "."
+        )
+
+
 def check_feature_first_document_layout(root: Path) -> None:
     offenders: list[str] = []
     for feature_root in collect_feature_roots(root):
@@ -631,6 +681,56 @@ def check_plan_metadata(root: Path) -> None:
         raise PreflightError("Plan metadata is incomplete: " + "; ".join(incomplete) + ".")
     if mismatches:
         raise PreflightError("Plan metadata does not match path: " + "; ".join(mismatches) + ".")
+
+
+def check_evidence_metadata(root: Path) -> None:
+    incomplete: list[str] = []
+    mismatches: list[str] = []
+    relation_errors: list[str] = []
+
+    for path in collect_tdd_evidence_files(root):
+        text = path.read_text(encoding="utf-8")
+        metadata = parse_frontmatter(text)
+        missing_fields = [field for field in EVIDENCE_METADATA_REQUIRED_FIELDS if not metadata.get(field)]
+        if missing_fields:
+            incomplete.append(f"{path.relative_to(root)} missing {', '.join(missing_fields)}")
+            continue
+
+        feature_context = feature_root_for_document(root, path)
+        if feature_context is None:
+            mismatches.append(f"{path.relative_to(root)} is not under features/<area>/<capability>/")
+            continue
+        path_area, path_capability, feature_root = feature_context
+        if metadata.get("area") != path_area:
+            mismatches.append(f"{path.relative_to(root)} area={metadata.get('area')} path={path_area}")
+        if metadata.get("capability") != path_capability:
+            mismatches.append(f"{path.relative_to(root)} capability={metadata.get('capability')} path={path_capability}")
+
+        expected_by_key = {
+            "related_specs": docs_index.feature_spec_files(feature_root),
+            "related_technical": docs_index.feature_technical_design_files(feature_root),
+            "related_plans": docs_index.feature_plan_files(feature_root),
+        }
+        for key, expected_paths in expected_by_key.items():
+            if not expected_paths:
+                continue
+            actual_values = set(frontmatter_list_values(text, key))
+            expected_values = {str(expected_path.relative_to(root)) for expected_path in expected_paths}
+            missing_values = sorted(expected_values - actual_values)
+            missing_existing = sorted(
+                value for value in actual_values if value.startswith("docs/coding-plugins/") and not (root / value).exists()
+            )
+            if missing_values:
+                relation_errors.append(f"{path.relative_to(root)} {key} missing {', '.join(missing_values)}")
+            if missing_existing:
+                relation_errors.append(f"{path.relative_to(root)} {key} references missing {', '.join(missing_existing)}")
+
+    if incomplete:
+        raise PreflightError("Evidence metadata is incomplete: " + "; ".join(incomplete) + ".")
+    if mismatches:
+        raise PreflightError("Evidence metadata does not match path: " + "; ".join(mismatches) + ".")
+    if relation_errors:
+        raise PreflightError("Evidence related metadata is invalid: " + "; ".join(relation_errors) + ".")
 
 
 def check_chinese_document_info_sections(root: Path) -> None:
@@ -1027,10 +1127,12 @@ def run_static_checks(root: Path) -> None:
     check_skill_agent_metadata(root)
     check_legacy_docs_roots(root)
     check_feature_readmes(root)
+    check_feature_readme_metadata_contract(root)
     check_feature_first_document_layout(root)
     check_feature_document_chain_closure(root)
     check_document_path_metadata(root)
     check_plan_metadata(root)
+    check_evidence_metadata(root)
     check_chinese_document_info_sections(root)
     check_technical_design_gap_review(root)
     check_technical_design_required_sections(root)

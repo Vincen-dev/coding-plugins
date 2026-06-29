@@ -1,3 +1,17 @@
+---
+title: Technical Design Validator
+status: approved
+area: plugin
+capability: technical-design-validator
+created: 2026-06-29
+updated: 2026-06-29
+related_specs:
+  - docs/coding-plugins/features/plugin/technical-design-validator/specs/feature.md
+related_technical:
+  - docs/coding-plugins/features/plugin/technical-design-validator/technical/technical-design.md
+related_plans:
+  - docs/coding-plugins/features/plugin/technical-design-validator/plans/implementation.md
+---
 # Technical Design Validator
 
 ## 任务 1： Standalone validator structural checks

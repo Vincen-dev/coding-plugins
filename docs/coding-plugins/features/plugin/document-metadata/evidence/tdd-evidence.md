@@ -1,3 +1,17 @@
+---
+title: 文档元数据中文展示优化
+status: approved
+area: plugin
+capability: document-metadata
+created: 2026-06-29
+updated: 2026-06-29
+related_specs:
+  - docs/coding-plugins/features/plugin/document-metadata/specs/feature.md
+related_technical:
+  - docs/coding-plugins/features/plugin/document-metadata/technical/technical-design.md
+related_plans:
+  - docs/coding-plugins/features/plugin/document-metadata/plans/implementation.md
+---
 # 文档元数据中文展示优化
 
 ## 任务 1： Plan metadata and Chinese summary checks

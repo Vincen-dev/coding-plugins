@@ -1,3 +1,17 @@
+---
+title: 插件工作链路硬化
+status: approved
+area: plugin
+capability: workflow-hardening
+created: 2026-06-29
+updated: 2026-06-29
+related_specs:
+  - docs/coding-plugins/features/plugin/workflow-hardening/specs/maintenance.md
+related_technical:
+  - docs/coding-plugins/features/plugin/workflow-hardening/technical/technical-design.md
+related_plans:
+  - docs/coding-plugins/features/plugin/workflow-hardening/plans/implementation.md
+---
 # 插件工作链路硬化
 
 ## 任务 1： 行为场景顺序测试

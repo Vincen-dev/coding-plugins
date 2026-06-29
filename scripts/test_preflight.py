@@ -169,6 +169,40 @@ class PreflightTests(unittest.TestCase):
             with self.assertRaisesRegex(preflight.PreflightError, "Feature root is missing README"):
                 preflight.check_feature_readmes(root)
 
+    def test_feature_readme_metadata_contract_rejects_missing_frontmatter(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature_dir = root / "docs" / "coding-plugins" / "features" / "plugin" / "routing"
+            feature_dir.mkdir(parents=True)
+            (feature_dir / "README.md").write_text("# Routing\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Feature README metadata is invalid"):
+                preflight.check_feature_readme_metadata_contract(root)
+
+    def test_feature_readme_metadata_contract_rejects_handwritten_link_sections(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature_dir = root / "docs" / "coding-plugins" / "features" / "plugin" / "routing"
+            feature_dir.mkdir(parents=True)
+            (feature_dir / "README.md").write_text(
+                "---\n"
+                "title: 路由\n"
+                "status: approved\n"
+                "area: plugin\n"
+                "capability: routing\n"
+                "updated: 2026-06-29\n"
+                "tags:\n"
+                "  - routing\n"
+                "---\n"
+                "# Routing\n\n"
+                "## 产物链路\n\n"
+                "| 文档类型 | 路径 |\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Feature README must not contain handwritten document link sections"):
+                preflight.check_feature_readme_metadata_contract(root)
+
     def test_feature_document_chain_requires_plan_or_lightweight_exception(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -546,14 +580,17 @@ class PreflightTests(unittest.TestCase):
             (feature_dir / "specs").mkdir(parents=True)
             (feature_dir / "evidence").mkdir()
             (feature_dir / "README.md").write_text(
-                "# Search\n\n"
-                "## 文档信息\n\n"
-                "| 字段 | 内容 |\n"
-                "| --- | --- |\n"
-                "| 状态 | 已批准 |\n"
-                "| 领域 | plugin |\n"
-                "| 能力 | search |\n"
-                "| 标签 | search, index |\n",
+                "---\n"
+                "title: 搜索\n"
+                "status: approved\n"
+                "area: plugin\n"
+                "capability: search\n"
+                "updated: 2026-06-29\n"
+                "tags:\n"
+                "  - search\n"
+                "  - index\n"
+                "---\n"
+                "# Search\n",
                 encoding="utf-8",
             )
             (feature_dir / "specs" / "feature.md").write_text(
@@ -590,8 +627,32 @@ class PreflightTests(unittest.TestCase):
             beta = features_root / "plugin" / "beta"
             (alpha / "specs").mkdir(parents=True)
             (beta / "specs").mkdir(parents=True)
-            (alpha / "README.md").write_text("| 字段 | 内容 |\n| --- | --- |\n| 标签 | alpha |\n", encoding="utf-8")
-            (beta / "README.md").write_text("| 字段 | 内容 |\n| --- | --- |\n| 标签 | beta |\n", encoding="utf-8")
+            (alpha / "README.md").write_text(
+                "---\n"
+                "title: Alpha\n"
+                "status: approved\n"
+                "area: plugin\n"
+                "capability: alpha\n"
+                "updated: 2026-06-29\n"
+                "tags:\n"
+                "  - alpha\n"
+                "---\n"
+                "# Alpha\n",
+                encoding="utf-8",
+            )
+            (beta / "README.md").write_text(
+                "---\n"
+                "title: Beta\n"
+                "status: approved\n"
+                "area: plugin\n"
+                "capability: beta\n"
+                "updated: 2026-06-29\n"
+                "tags:\n"
+                "  - beta\n"
+                "---\n"
+                "# Beta\n",
+                encoding="utf-8",
+            )
             (alpha / "specs" / "schema.md").write_text("---\nupdated: 2026-06-28\n---\n# Schema\n", encoding="utf-8")
             (alpha / "specs" / "feature.md").write_text("---\nupdated: 2026-06-29\n---\n# Feature\n", encoding="utf-8")
             (beta / "specs" / "feature.md").write_text("---\nupdated: 2026-06-27\n---\n# Feature\n", encoding="utf-8")
@@ -621,7 +682,19 @@ class PreflightTests(unittest.TestCase):
             root = Path(tmp)
             feature_dir = root / "docs" / "coding-plugins" / "features" / "plugin" / "search"
             (feature_dir / "specs").mkdir(parents=True)
-            (feature_dir / "README.md").write_text("| 字段 | 内容 |\n| --- | --- |\n| 标签 | search |\n", encoding="utf-8")
+            (feature_dir / "README.md").write_text(
+                "---\n"
+                "title: 搜索\n"
+                "status: approved\n"
+                "area: plugin\n"
+                "capability: search\n"
+                "updated: 2026-06-29\n"
+                "tags:\n"
+                "  - search\n"
+                "---\n"
+                "# Search\n",
+                encoding="utf-8",
+            )
             (feature_dir / "specs" / "feature.md").write_text("# Feature\n", encoding="utf-8")
 
             rendered = preflight.render_artifact_index(root)
@@ -634,7 +707,19 @@ class PreflightTests(unittest.TestCase):
             docs = root / "docs" / "coding-plugins"
             feature_dir = docs / "features" / "plugin" / "search"
             (feature_dir / "specs").mkdir(parents=True)
-            (feature_dir / "README.md").write_text("| 字段 | 内容 |\n| --- | --- |\n| 标签 | search |\n", encoding="utf-8")
+            (feature_dir / "README.md").write_text(
+                "---\n"
+                "title: 搜索\n"
+                "status: approved\n"
+                "area: plugin\n"
+                "capability: search\n"
+                "updated: 2026-06-29\n"
+                "tags:\n"
+                "  - search\n"
+                "---\n"
+                "# Search\n",
+                encoding="utf-8",
+            )
             (feature_dir / "specs" / "feature.md").write_text("---\nupdated: 2026-06-29\n---\n# Feature\n", encoding="utf-8")
             (docs / "INDEX.md").write_text(
                 "# Coding Plugins Feature 索引\n\n"
@@ -682,6 +767,16 @@ class PreflightTests(unittest.TestCase):
 
             with self.assertRaisesRegex(preflight.PreflightError, "Spec metadata does not match path"):
                 preflight.check_document_path_metadata(root)
+
+    def test_document_path_metadata_check_rejects_missing_evidence_metadata(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            evidence_dir = root / "docs" / "coding-plugins" / "features" / "plugin" / "routing" / "evidence"
+            evidence_dir.mkdir(parents=True)
+            (evidence_dir / "tdd-evidence.md").write_text("# TDD 证据\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Evidence metadata is incomplete"):
+                preflight.check_evidence_metadata(root)
 
     def test_plan_metadata_check_rejects_missing_frontmatter(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

@@ -1,3 +1,17 @@
+---
+title: Coding Plugins 产物总索引
+status: approved
+area: plugin
+capability: artifact-index
+created: 2026-06-29
+updated: 2026-06-29
+related_specs:
+  - docs/coding-plugins/features/plugin/artifact-index/specs/feature.md
+related_technical:
+  - docs/coding-plugins/features/plugin/artifact-index/technical/technical-design.md
+related_plans:
+  - docs/coding-plugins/features/plugin/artifact-index/plans/implementation.md
+---
 # Coding Plugins 产物总索引
 
 ## 任务 1： preflight 校验总索引覆盖
