@@ -1,5 +1,11 @@
 # Release Notes
 
+## 0.6.25 - 2026-06-29
+
+- 拆出 `scripts/docs_index.py`，统一承接 feature-first 文档索引生成、写入和一致性校验。
+- 将 `scripts/test_docs_index.py` 纳入 preflight 验证链路，防止索引职责回流到 `scripts/preflight.py`。
+- 回填 active specs 的完成状态，并记录 preflight 模块拆分的 TDD Evidence。
+
 ## 0.6.24 - 2026-06-29
 
 - 将 feature-first 技术设计和实现计划从 feature root 裸文件迁移到 `technical/technical-design.md` 与 `plans/implementation.md`。

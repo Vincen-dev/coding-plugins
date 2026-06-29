@@ -13,6 +13,7 @@ tags:
   - release-gate
 related_code:
   - scripts/preflight.py
+  - scripts/docs_index.py
   - .github/workflows/ci.yml
   - tests/hooks/test-session-start.sh
   - docs/coding-plugins/INDEX.md
@@ -59,6 +60,7 @@ related_specs: []
 | REQ-005 | 必须 | GitHub Actions 在 push 到 `main` 和面向 `main` 的 pull request 中运行同一个 preflight 命令。 | 追踪矩阵中的 workflow 文件检查和命令执行。 |
 | REQ-006 | 必须 | preflight 命令运行 Codex SessionStart hook 测试，防止入口注入链路发布时失效。 | 单测 `test_build_commands_include_core_validation_steps` 和 hook 测试命令。 |
 | REQ-007 | 必须 | preflight 命令校验 `docs/coding-plugins/INDEX.md` 覆盖所有真实 spec、plan 和 TDD Evidence 文件。 | 单测 `test_artifact_index_requires_spec_paths`、`test_artifact_index_requires_plan_paths` 和 `test_artifact_index_requires_evidence_paths`。 |
+| REQ-008 | 必须 | 文档索引生成、写入和内容一致性校验必须封装在 `scripts/docs_index.py`，`scripts/preflight.py` 只保留 CLI 和发布门禁编排。 | 单测 `test_docs_index_module_exposes_index_contract` 和 `test_preflight_delegates_artifact_index_checks_to_docs_index`。 |
 
 ## 错误和边界情况
 
@@ -86,8 +88,9 @@ related_specs: []
 | REQ-005 | workflow 检查 | `.github/workflows/ci.yml` 包含 `python3 scripts/preflight.py` | Task 2 | 已覆盖 |
 | REQ-006 | hook 测试 | `bash tests/hooks/test-session-start.sh` | Task 2 | 已覆盖 |
 | REQ-007 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 3 | 已覆盖 |
+| REQ-008 | 单元测试 | `python3 -m unittest scripts/test_docs_index.py scripts/test_preflight.py` | Task 2 | 已覆盖 |
 | ERR-001 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
 | ERR-002 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
-| ERR-003 | 手工验证 | 在临时 checkout 删除一个 manifest 后运行 `python3 scripts/preflight.py` | Task 1 | 计划中 |
+| ERR-003 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
 | AC-001 | 命令验证 | `python3 scripts/preflight.py` | Task 3 | 已覆盖 |
 | AC-002 | workflow 评审 | `.github/workflows/ci.yml` | Task 2 | 已覆盖 |

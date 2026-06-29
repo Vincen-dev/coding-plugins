@@ -102,23 +102,23 @@ related_specs:
 
 | 规格 ID | 验证类型 | 测试文件 / 命令 | 计划任务 | 状态 |
 | --- | --- | --- | --- | --- |
-| NFR-001 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 计划中 |
-| NFR-002 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 计划中 |
-| NFR-003 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 计划中 |
-| NFR-004 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 计划中 |
-| NFR-005 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 计划中 |
-| NFR-006 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 计划中 |
-| NFR-007 | 单元测试和命令验证 | `python3 scripts/preflight.py` | Task 3 | 计划中 |
-| NFR-008 | 命令验证 | 旧路径扫描命令 | Task 4 | 计划中 |
-| NFR-009 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 计划中 |
-| ERR-001 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 计划中 |
-| ERR-002 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 计划中 |
-| ERR-003 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 计划中 |
-| ERR-004 | 命令验证 | 旧路径扫描命令 | Task 4 | 计划中 |
-| ERR-005 | 单元测试和 preflight | `python3 scripts/preflight.py` | Task 2 | 计划中 |
-| ERR-006 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 计划中 |
-| MIG-001 | Git 状态检查 | `git status --short` | Task 2 | 计划中 |
-| MIG-002 | 单元测试和文件检查 | `python3 -m unittest scripts/test_preflight.py` | Task 2 | 计划中 |
-| MIG-003 | 命令验证 | `python3 scripts/preflight.py` | Task 4 | 计划中 |
-| MIG-004 | 命令验证 | `find docs/coding-plugins/features -maxdepth 3 -type f \( -name technical-design.md -o -name implementation.md \)` | Task 2 | 计划中 |
-| OBS-001 | 命令验证 | `python3 scripts/preflight.py` | Task 5 | 计划中 |
+| NFR-001 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
+| NFR-002 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
+| NFR-003 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
+| NFR-004 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
+| NFR-005 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
+| NFR-006 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
+| NFR-007 | 单元测试和命令验证 | `python3 scripts/preflight.py` | Task 3 | 已覆盖 |
+| NFR-008 | 命令验证 | 旧路径扫描命令 | Task 4 | 已覆盖 |
+| NFR-009 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
+| ERR-001 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
+| ERR-002 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
+| ERR-003 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
+| ERR-004 | 命令验证 | 旧路径扫描命令 | Task 4 | 已覆盖 |
+| ERR-005 | 单元测试和 preflight | `python3 scripts/preflight.py` | Task 2 | 已覆盖 |
+| ERR-006 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
+| MIG-001 | Git 状态检查 | `git status --short` | Task 2 | 已覆盖 |
+| MIG-002 | 单元测试和文件检查 | `python3 -m unittest scripts/test_preflight.py` | Task 2 | 已覆盖 |
+| MIG-003 | 命令验证 | `python3 scripts/preflight.py` | Task 4 | 已覆盖 |
+| MIG-004 | 命令验证 | `find docs/coding-plugins/features -maxdepth 3 -type f \( -name technical-design.md -o -name implementation.md \)` | Task 2 | 已覆盖 |
+| OBS-001 | 命令验证 | `python3 scripts/preflight.py` | Task 5 | 已覆盖 |

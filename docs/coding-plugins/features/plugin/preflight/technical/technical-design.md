@@ -25,13 +25,14 @@ related_evidence:
 
 ## Design Summary
 
-preflight 是插件仓库的本地发布门禁，入口固定为 `python3 scripts/preflight.py`。它先运行静态结构检查，再调度单元测试、行为测试、hook 测试、严格规格校验和严格 TDD Evidence 校验。GitHub Actions 的 `ci` workflow 复用同一命令，确保本地和远程门禁一致。
+preflight 是插件仓库的本地发布门禁，入口固定为 `python3 scripts/preflight.py`。它先运行静态结构检查，再调度单元测试、行为测试、hook 测试、严格规格校验和严格 TDD Evidence 校验。文档索引生成和一致性校验独立封装到 `scripts/docs_index.py`，避免发布门禁脚本继续承担全部文档索引细节。GitHub Actions 的 `ci` workflow 复用同一命令，确保本地和远程门禁一致。
 
 ## Key Decisions
 
 | Decision | Rationale | Tradeoff |
 | --- | --- | --- |
 | 单入口 `scripts/preflight.py` | 维护者和 CI 使用同一命令，覆盖 REQ-001、REQ-005、AC-001、AC-002 | 脚本职责较多，后续可能需要拆模块 |
+| 独立 `scripts/docs_index.py` | 文档索引渲染、写入和漂移校验是独立职责，拆出后降低 `preflight.py` 膨胀风险 | 需要保留 preflight 的兼容 wrapper，避免现有测试和调用方断裂 |
 | 静态检查先于命令调度 | 快速发现 manifest、文档路径、索引和残留入口问题 | 部分规则需要持续维护白名单 |
 | 严格校验真实规格和 Evidence | 覆盖 REQ-002、REQ-007，防止示例文档和真实文档标准不一致 | 新增文档时需要同步 metadata 和索引 |
 | hook 和行为测试纳入 preflight | 覆盖 REQ-006，避免入口注入和路由测试在发布时被漏跑 | 增加 preflight 执行时间 |
@@ -41,7 +42,9 @@ preflight 是插件仓库的本地发布门禁，入口固定为 `python3 script
 | Component | Change | Related Spec IDs |
 | --- | --- | --- |
 | `scripts/preflight.py` | 提供静态检查、索引生成、验证命令构建和主入口 | REQ-001, REQ-002, REQ-003, REQ-004, REQ-006, REQ-007, ERR-001, ERR-002, ERR-003, AC-001 |
+| `scripts/docs_index.py` | 提供 feature root 收集、索引渲染、`--write-index` 写入和索引内容一致性校验 | REQ-007, REQ-008 |
 | `scripts/test_preflight.py` | 覆盖 manifest、旧入口残留、索引、metadata、release 和命令构建规则 | REQ-001, REQ-003, REQ-004, REQ-006, REQ-007, ERR-001, ERR-002, ERR-003 |
+| `scripts/test_docs_index.py` | 覆盖 docs index 模块边界，确保索引职责不回流到 preflight | REQ-008 |
 | `.github/workflows/ci.yml` | push 和 pull request 时运行 `python3 scripts/preflight.py` | REQ-005, AC-002 |
 | `tests/hooks/test-session-start.sh` | 验证 Codex SessionStart hook 配置和 wrapper 行为 | REQ-006 |
 | `docs/coding-plugins/INDEX.md` | 由 `--write-index` 生成并由 preflight 校验一致性 | REQ-007 |
@@ -102,7 +105,7 @@ TDD Evidence 记录在 `docs/coding-plugins/features/plugin/preflight/evidence/t
 
 | Risk | Mitigation |
 | --- | --- |
-| `preflight.py` 持续膨胀 | 技术设计记录拆分风险，后续可把索引和 manifest 检查拆出模块 |
+| `preflight.py` 持续膨胀 | 先拆出 `scripts/docs_index.py`，后续如 manifest 规则继续增长再拆 `scripts/manifest_checks.py` |
 | 新文档加入后忘记刷新索引 | `python3 scripts/preflight.py --write-index` 和生成内容一致性校验 |
 | 本地和 CI 门禁不一致 | CI 只调用同一个 `python3 scripts/preflight.py` 命令 |
 | 旧路径残留误伤历史记录 | residue scan 只扫描活跃说明、hooks、skills、manifest 和 CI，允许 release history |
