@@ -298,6 +298,113 @@ class PreflightTests(unittest.TestCase):
             with self.assertRaisesRegex(preflight.PreflightError, "Artifact index is missing document paths"):
                 preflight.check_artifact_index_covers_documents(root)
 
+    def test_render_artifact_index_includes_feature_metadata_and_documents(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature_dir = root / "docs" / "coding-plugins" / "features" / "plugin" / "search"
+            (feature_dir / "specs").mkdir(parents=True)
+            (feature_dir / "evidence").mkdir()
+            (feature_dir / "README.md").write_text(
+                "# Search\n\n"
+                "## 文档信息\n\n"
+                "| 字段 | 内容 |\n"
+                "| --- | --- |\n"
+                "| 状态 | 已批准 |\n"
+                "| 领域 | plugin |\n"
+                "| 能力 | search |\n"
+                "| 标签 | search, index |\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "specs" / "feature.md").write_text(
+                "---\nupdated: 2026-06-29\n---\n# Feature\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "technical-design.md").write_text(
+                "---\nupdated: 2026-06-28\n---\n# Technical\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "implementation.md").write_text(
+                "---\nupdated: 2026-06-27\n---\n# Plan\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "evidence" / "tdd-evidence.md").write_text("# Evidence\n", encoding="utf-8")
+
+            rendered = preflight.render_artifact_index(root)
+
+            self.assertIn("| plugin | search |", rendered)
+            self.assertIn("`docs/coding-plugins/features/plugin/search`", rendered)
+            self.assertIn("`docs/coding-plugins/features/plugin/search/specs/feature.md`", rendered)
+            self.assertIn("`docs/coding-plugins/features/plugin/search/technical-design.md`", rendered)
+            self.assertIn("`docs/coding-plugins/features/plugin/search/implementation.md`", rendered)
+            self.assertIn("`docs/coding-plugins/features/plugin/search/evidence/tdd-evidence.md`", rendered)
+            self.assertIn("| search, index | 2026-06-29 |", rendered)
+
+    def test_render_artifact_index_sorts_rows_and_joins_multiple_files(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            features_root = root / "docs" / "coding-plugins" / "features"
+            alpha = features_root / "plugin" / "alpha"
+            beta = features_root / "plugin" / "beta"
+            (alpha / "specs").mkdir(parents=True)
+            (beta / "specs").mkdir(parents=True)
+            (alpha / "README.md").write_text("| 字段 | 内容 |\n| --- | --- |\n| 标签 | alpha |\n", encoding="utf-8")
+            (beta / "README.md").write_text("| 字段 | 内容 |\n| --- | --- |\n| 标签 | beta |\n", encoding="utf-8")
+            (alpha / "specs" / "schema.md").write_text("---\nupdated: 2026-06-28\n---\n# Schema\n", encoding="utf-8")
+            (alpha / "specs" / "feature.md").write_text("---\nupdated: 2026-06-29\n---\n# Feature\n", encoding="utf-8")
+            (beta / "specs" / "feature.md").write_text("---\nupdated: 2026-06-27\n---\n# Feature\n", encoding="utf-8")
+
+            rendered = preflight.render_artifact_index(root)
+
+            self.assertLess(rendered.index("| plugin | alpha |"), rendered.index("| plugin | beta |"))
+            self.assertIn(
+                "`docs/coding-plugins/features/plugin/alpha/specs/feature.md`<br>"
+                "`docs/coding-plugins/features/plugin/alpha/specs/schema.md`",
+                rendered,
+            )
+
+    def test_render_artifact_index_handles_missing_tags(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature_dir = root / "docs" / "coding-plugins" / "features" / "plugin" / "search"
+            feature_dir.mkdir(parents=True)
+            (feature_dir / "README.md").write_text("# Search\n", encoding="utf-8")
+
+            rendered = preflight.render_artifact_index(root)
+
+            self.assertIn("| plugin | search | `docs/coding-plugins/features/plugin/search` | - | - | - | - | - | - |", rendered)
+
+    def test_render_artifact_index_handles_missing_updated_metadata(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature_dir = root / "docs" / "coding-plugins" / "features" / "plugin" / "search"
+            (feature_dir / "specs").mkdir(parents=True)
+            (feature_dir / "README.md").write_text("| 字段 | 内容 |\n| --- | --- |\n| 标签 | search |\n", encoding="utf-8")
+            (feature_dir / "specs" / "feature.md").write_text("# Feature\n", encoding="utf-8")
+
+            rendered = preflight.render_artifact_index(root)
+
+            self.assertIn("| search | - |", rendered)
+
+    def test_artifact_index_requires_generated_content_match(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            docs = root / "docs" / "coding-plugins"
+            feature_dir = docs / "features" / "plugin" / "search"
+            (feature_dir / "specs").mkdir(parents=True)
+            (feature_dir / "README.md").write_text("| 字段 | 内容 |\n| --- | --- |\n| 标签 | search |\n", encoding="utf-8")
+            (feature_dir / "specs" / "feature.md").write_text("---\nupdated: 2026-06-29\n---\n# Feature\n", encoding="utf-8")
+            (docs / "INDEX.md").write_text(
+                "# Coding Plugins Feature 索引\n\n"
+                "本索引用于按 `Area` 和 `Capability` 检索 feature-first 文档链路。新增、移动、批准、废弃或拆分相关产物时同步更新本文件。\n\n"
+                "| Area | Capability | Feature Root | Spec | Technical Design | Implementation Plan | Evidence | Tags | Updated |\n"
+                "| --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
+                "| plugin | search | `docs/coding-plugins/features/plugin/search` | `docs/coding-plugins/features/plugin/search/specs/feature.md` | - | - | - | wrong-tag | 2026-06-29 |\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Artifact index does not match generated content"):
+                preflight.check_artifact_index_covers_documents(root)
+
     def test_skill_agent_metadata_check_rejects_missing_agent_file(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

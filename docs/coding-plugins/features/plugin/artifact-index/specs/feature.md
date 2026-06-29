@@ -6,7 +6,7 @@ status: approved
 area: plugin
 capability: artifact-index
 created: 2026-06-26
-updated: 2026-06-26
+updated: 2026-06-29
 tags:
   - index
   - retrieval
@@ -18,6 +18,10 @@ related_code:
   - scripts/test_preflight.py
 related_specs:
   - docs/coding-plugins/features/plugin/preflight/specs/feature.md
+related_technical:
+  - docs/coding-plugins/features/plugin/artifact-index/technical-design.md
+related_plans:
+  - docs/coding-plugins/features/plugin/artifact-index/implementation.md
 ---
 
 # Coding Plugins 产物总索引规格
@@ -30,13 +34,13 @@ related_specs:
 
 | 编号 | 非目标 |
 | --- | --- |
-| NON-001 | 不替代 `docs/coding-plugins/INDEX.md` 的规格专用索引。 |
-| NON-002 | 不自动生成索引文件；本次只提供人工维护格式和 preflight 覆盖校验。 |
-| NON-003 | 不要求每个 capability 都必须同时拥有 spec、plan 和 evidence。 |
+| NON-001 | 不引入数据库、外部索引服务或非 Markdown 格式。 |
+| NON-002 | 不要求每个 capability 都必须同时拥有 spec、technical design、implementation plan 和 evidence。 |
+| NON-003 | 不从 Git 历史、文件 mtime 或网络服务推断更新时间；更新时间只来自文档 frontmatter。 |
 
 ## 背景
 
-- 当前行为：规格有 `docs/coding-plugins/INDEX.md`，但 plans 和 evidence 没有统一入口；使用者需要记住路径或全文搜索。
+- 当前行为：feature-first 迁移后，规格、技术设计、计划和证据已经集中到 `docs/coding-plugins/features/{area}/{capability}/`，但总索引仍需要人工同步，容易在功能增多后产生漂移。
 - 目标用户或调用方：插件维护者、实现代理、评审代理、后续接手者。
 - 约束：索引文件必须是普通 Markdown 表格；preflight 校验只依赖 Python 标准库。
 
@@ -45,10 +49,13 @@ related_specs:
 | 编号 | 优先级 | 需求 | 验证方式 |
 | --- | --- | --- | --- |
 | REQ-001 | 必须 | 仓库必须提供 `docs/coding-plugins/INDEX.md` 作为规格、计划和证据的统一检索入口。 | 单元测试 `test_artifact_index_requires_index_file`。 |
-| REQ-002 | 必须 | 总索引必须包含 `Area`、`Capability`、`Spec`、`Plan`、`Evidence`、`Tags`、`Updated` 列。 | 单元测试 `test_artifact_index_requires_expected_headers`。 |
+| REQ-002 | 必须 | 总索引必须包含 `Area`、`Capability`、`Feature Root`、`Spec`、`Technical Design`、`Implementation Plan`、`Evidence`、`Tags`、`Updated` 列。 | 单元测试 `test_artifact_index_requires_expected_headers`。 |
 | REQ-003 | 必须 | preflight 必须校验所有真实规格文件都出现在总索引中。 | 单元测试 `test_artifact_index_requires_spec_paths`。 |
 | REQ-004 | 必须 | preflight 必须校验所有计划文件都出现在总索引中。 | 单元测试 `test_artifact_index_requires_plan_paths`。 |
 | REQ-005 | 必须 | preflight 必须校验所有 TDD Evidence 文件都出现在总索引中。 | 单元测试 `test_artifact_index_requires_evidence_paths`。 |
+| REQ-006 | 必须 | 仓库必须提供标准库实现的索引生成器，能根据 feature root、README metadata、spec、technical design、implementation plan 和 evidence 生成完整 `docs/coding-plugins/INDEX.md` 内容。 | 单元测试 `test_render_artifact_index_includes_feature_metadata_and_documents`。 |
+| REQ-007 | 必须 | preflight 必须校验当前 `docs/coding-plugins/INDEX.md` 与生成器输出完全一致，防止人工编辑造成漂移。 | 单元测试 `test_artifact_index_requires_generated_content_match`。 |
+| REQ-008 | 应该 | 索引生成器应该按 `Area`、`Capability` 稳定排序，并在单元格内用 HTML 换行标记连接同类多文件路径。 | 单元测试 `test_render_artifact_index_sorts_rows_and_joins_multiple_files`。 |
 
 ## 错误和边界情况
 
@@ -57,13 +64,16 @@ related_specs:
 | ERR-001 | `docs/coding-plugins` 下没有任何 spec、plan 或 evidence 文件。 | preflight 不要求总索引存在。 | 单元测试或函数评审。 |
 | ERR-002 | 总索引缺少必需表头。 | preflight 失败并指出缺失表头。 | 单元测试 `test_artifact_index_requires_expected_headers`。 |
 | ERR-003 | 新增 evidence 文件但没有更新总索引。 | preflight 失败并指出缺失路径。 | 单元测试 `test_artifact_index_requires_evidence_paths`。 |
+| ERR-004 | feature README 缺少 `标签` 行。 | 生成器输出 `Tags` 为 `-`，preflight 仍校验路径覆盖和内容一致。 | 单元测试 `test_render_artifact_index_handles_missing_tags`。 |
+| ERR-005 | feature 没有任何 frontmatter `updated`。 | 生成器输出 `Updated` 为 `-`，不得使用不稳定 mtime。 | 单元测试 `test_render_artifact_index_handles_missing_updated_metadata`。 |
 
 ## 验收标准
 
 | 编号 | 场景 | 前置条件 | 操作 | 期望结果 |
 | --- | --- | --- | --- | --- |
 | AC-001 | 使用者查找 capability 全链路产物 | 已知 area/capability | 打开 `docs/coding-plugins/INDEX.md` | 能看到对应 spec、plan 和 evidence 路径。 |
-| AC-002 | 维护者发布前检查 | 新增或修改规格、计划、证据 | 运行 `python3 scripts/preflight.py` | 未更新总索引时失败，更新后通过。 |
+| AC-002 | 维护者发布前检查 | 新增或修改规格、计划、证据 | 运行 `python3 scripts/preflight.py` | 索引缺失路径或和生成器输出不一致时失败，重新生成后通过。 |
+| AC-003 | 维护者刷新索引 | feature 文档结构已经变化 | 运行 `python3 scripts/preflight.py --write-index` | `docs/coding-plugins/INDEX.md` 被重写为生成器输出。 |
 
 ## 追踪矩阵
 
@@ -74,8 +84,14 @@ related_specs:
 | REQ-003 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
 | REQ-004 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
 | REQ-005 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
+| REQ-006 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 2 | 已覆盖 |
+| REQ-007 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 2 | 已覆盖 |
+| REQ-008 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 2 | 已覆盖 |
 | ERR-001 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
 | ERR-002 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
 | ERR-003 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
+| ERR-004 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 2 | 已覆盖 |
+| ERR-005 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 2 | 已覆盖 |
 | AC-001 | 文件检查 | `docs/coding-plugins/INDEX.md` | Task 2 | 已覆盖 |
 | AC-002 | 命令验证 | `python3 scripts/preflight.py` | Task 3 | 已覆盖 |
+| AC-003 | 命令验证 | `python3 scripts/preflight.py --write-index` | Task 3 | 已覆盖 |

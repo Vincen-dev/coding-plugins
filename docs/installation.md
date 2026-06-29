@@ -49,6 +49,12 @@ docs/coding-plugins/INDEX.md
 docs/coding-plugins/features/<area>/<capability>/
 ```
 
+新增、移动或删除 feature 文档后，运行以下命令重新生成总索引并执行完整检查：
+
+```bash
+python3 scripts/preflight.py --write-index
+```
+
 ## 个人 Marketplace 安装
 
 个人 marketplace 文件位于：
@@ -115,6 +121,7 @@ python3 scripts/bump_version.py 0.6.16
 提交、push 或分发前运行：
 
 ```bash
+python3 scripts/preflight.py --write-index
 python3 scripts/preflight.py
 codex plugin add coding-plugins@personal
 claude plugin validate /Users/vincen/workspace/plugins/coding-plugins --strict

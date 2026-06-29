@@ -14,7 +14,6 @@
 | 产物 | 路径 |
 | --- | --- |
 | 规格 | `specs/feature.md` |
-| 技术设计 | - |
-| 实现计划 | - |
+| 技术设计 | `technical-design.md` |
+| 实现计划 | `implementation.md` |
 | TDD Evidence | `evidence/tdd-evidence.md` |
-

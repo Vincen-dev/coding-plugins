@@ -27,8 +27,8 @@
 | 0 | 平台加载 | `.agents/plugins/marketplace.json`, `.codex-plugin/plugin.json`, `.claude-plugin/plugin.json`, `hooks/hooks-codex.json` | Codex marketplace、Codex SessionStart hook、Codex / Claude Code 识别插件和 skills |
 | 1 | 入口路由 | `using-coding-plugins` | 判断直接意图和开发任务类型 |
 | 2 | 直接意图处理 | `requesting-code-review`, `receiving-code-review`, `verification-before-completion`, `git-commit`, `finishing-a-development-branch`, `writing-skills`, `using-git-worktrees`, `dispatching-parallel-agents` | 直接完成查询、评审、验证、提交、收尾、隔离或维护任务 |
-| 3 | 需求规格 | `spec-driven-development` | `docs/coding-plugins/features/<area>/<capability>/specs/<spec-kind>.md`, 总索引, Spec ID, Traceability Matrix |
-| 4 | 技术设计 | `writing-technical-design` | `docs/coding-plugins/features/<area>/<capability>/technical-design.md`, 总索引, 技术方案和测试策略 |
+| 3 | 需求规格 | `spec-driven-development` | `docs/coding-plugins/features/<area>/<capability>/specs/<spec-kind>.md`, 生成式总索引, Spec ID, Traceability Matrix |
+| 4 | 技术设计 | `writing-technical-design` | `docs/coding-plugins/features/<area>/<capability>/technical-design.md`, 生成式总索引, 技术方案和测试策略 |
 | 5 | 实现计划 | `writing-plans` | `docs/coding-plugins/features/<area>/<capability>/implementation.md`, Technical Design Source, Spec ID -> Test -> Task 追踪 |
 | 6 | 隔离工作区 | `using-git-worktrees` | 独立 worktree 或确认在当前工作区执行 |
 | 7 | 执行调度 | `subagent-driven-development`, `executing-plans`, `dispatching-parallel-agents` | 子任务执行、批次执行或并行任务结果 |
@@ -81,7 +81,7 @@ flowchart TD
   DEV_KIND -->|小型明确变更/纯内部重构| TDD["test-driven-development"]
   DEV_KIND -->|bug/CI/测试/构建失败或异常行为| DEBUG["systematic-debugging"]
 
-  SDD --> SPEC["写规格、维护 INDEX、运行 validate_spec.py"]
+  SDD --> SPEC["写规格、生成/校验 INDEX、运行 validate_spec.py"]
   SPEC --> SPEC_OK{"用户确认规格？"}
   SPEC_OK -->|需要修改| SPEC
   SPEC_OK -->|确认| TECH
@@ -181,7 +181,7 @@ flowchart TD
   C --> D["选择规格类型和模板"]
   D --> E["检索既有规格和 INDEX"]
   E --> F["写 features/<area>/<capability>/specs/<spec-kind>.md"]
-  F --> G["维护 docs/coding-plugins/INDEX.md"]
+  F --> G["运行 preflight.py --write-index"]
   G --> H["运行 validate_spec.py"]
   H --> I["规格自审和必要修改"]
   I --> J{"用户确认规格？"}
@@ -351,7 +351,7 @@ Claude Code 侧使用 `.claude-plugin/plugin.json` 识别插件。技能以 `/co
 docs/coding-plugins/features/<area>/<capability>/specs/<spec-kind>.md
 ```
 
-时间、状态、标签和相关代码写入规格 metadata，并同步维护 `docs/coding-plugins/INDEX.md`；文件名不使用日期前缀。
+时间、状态、标签和相关代码写入规格 metadata；新增、移动或删除 feature 文档后运行 `python3 scripts/preflight.py --write-index` 重新生成 `docs/coding-plugins/INDEX.md`，文件名不使用日期前缀。
 
 该阶段输出应包括：
 
@@ -359,7 +359,7 @@ docs/coding-plugins/features/<area>/<capability>/specs/<spec-kind>.md
 - 用户目标、非目标和成功标准。
 - 规格类型选择：feature、API contract、schema、state machine、acceptance criteria。
 - 无新增需求时，只有维护、基线、回归、迁移或可观测性风险需要维护规格。
-- 路径和索引：`<area>/<capability>/<spec-kind>.md`，并更新 `INDEX.md`。
+- 路径和索引：`<area>/<capability>/<spec-kind>.md`，并通过 `python3 scripts/preflight.py --write-index` 更新 `INDEX.md`。
 - 稳定 Spec ID：`REQ/API/SCHEMA/STATE/ERR/AC/NFR/MIG/OBS/NON`。
 - 外部契约示例：请求/响应、schema 样例、状态迁移或错误样例。
 - Traceability Matrix 初稿。
@@ -377,7 +377,7 @@ docs/coding-plugins/features/<area>/<capability>/specs/<spec-kind>.md
 docs/coding-plugins/features/<area>/<capability>/technical-design.md
 ```
 
-技术设计路径的 `<area>/<capability>` 应和规格路径一致，并同步维护 `docs/coding-plugins/INDEX.md`。
+技术设计路径的 `<area>/<capability>` 应和规格路径一致。保存或移动技术设计后运行 `python3 scripts/preflight.py --write-index`，让 `docs/coding-plugins/INDEX.md` 同步反映最新文件树。
 
 ### 计划层
 
@@ -503,7 +503,7 @@ feat(commit): 增加中文提交工作流
 docs/coding-plugins/INDEX.md
 ```
 
-查找某个功能时，先按 `Area`、`Capability` 或 `Tags` 查总索引，再进入对应规格、计划或 TDD Evidence 文件。新增、移动或删除相关产物时必须同步更新总索引；`scripts/preflight.py` 会校验真实 spec、plan 和 evidence 文件都出现在总索引中。
+查找某个功能时，先按 `Area`、`Capability` 或 `Tags` 查总索引，再进入对应规格、计划或 TDD Evidence 文件。新增、移动或删除相关产物时必须运行 `python3 scripts/preflight.py --write-index` 重新生成总索引；`scripts/preflight.py` 会校验索引文本和真实 feature-first 文件树完全一致。
 
 默认路径：
 
@@ -517,6 +517,7 @@ hooks/
 hooks/hooks-codex.json
 scripts/bump_version.py
 python3 scripts/preflight.py
+python3 scripts/preflight.py --write-index
 ```
 
 规格模板和参考：

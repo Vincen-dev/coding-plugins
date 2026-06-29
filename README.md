@@ -6,7 +6,7 @@ Coding Plugins 是中文编码代理方法论插件，支持 Codex 和 Claude Co
 
 Codex 侧包含 SessionStart hook，新建、恢复或清空会话时会注入 `coding-plugins:using-coding-plugins` 入口提示，降低入口技能漏用概率。Claude Code 侧仍通过 `/coding-plugins:<skill-name>` 命名空间手动或按描述触发。
 
-规格、技术设计、计划和 TDD Evidence 的统一检索入口是 [docs/coding-plugins/INDEX.md](docs/coding-plugins/INDEX.md)。文档按 `docs/coding-plugins/features/<area>/<capability>/` 集中维护；新增或移动相关产物时，`python3 scripts/preflight.py` 会检查总索引是否覆盖真实文件。
+规格、技术设计、计划和 TDD Evidence 的统一检索入口是 [docs/coding-plugins/INDEX.md](docs/coding-plugins/INDEX.md)。文档按 `docs/coding-plugins/features/<area>/<capability>/` 集中维护；新增或移动相关产物后运行 `python3 scripts/preflight.py --write-index` 重新生成总索引，`python3 scripts/preflight.py` 会校验索引和真实文件树完全一致。
 
 ## 工作方式
 
@@ -119,6 +119,7 @@ python3 scripts/bump_version.py 0.6.16
 提交、push 或发布前运行：
 
 ```bash
+python3 scripts/preflight.py --write-index
 python3 scripts/preflight.py
 ```
 
