@@ -1,5 +1,11 @@
 # Release Notes
 
+## 0.6.23 - 2026-06-29
+
+- 补齐 `marketplace` feature 的技术设计、实现计划和 TDD Exception Evidence。
+- 补齐 `preflight` feature 的技术设计、实现计划和 TDD Exception Evidence。
+- 刷新 feature-first 总索引，使 marketplace 和 preflight 都进入完整文档闭环。
+
 ## 0.6.22 - 2026-06-29
 
 - 增加 `scripts/prepare_release.py`，用于校验 release metadata、生成类似 `v0.6.22` 的 tag 名并提取当前版本 release notes。

@@ -6,7 +6,7 @@ status: approved
 area: plugin
 capability: marketplace
 created: 2026-06-26
-updated: 2026-06-26
+updated: 2026-06-29
 tags:
   - marketplace
   - installation
@@ -24,6 +24,16 @@ related_specs:
 ---
 
 # 插件 marketplace 安装入口规格
+
+## 文档信息
+
+| 字段 | 内容 |
+| --- | --- |
+| 状态 | 已批准 |
+| 领域 | plugin |
+| 能力 | marketplace |
+| 规格类型 | feature |
+| 技术设计 | `docs/coding-plugins/features/plugin/marketplace/technical-design.md` |
 
 ## 目标
 

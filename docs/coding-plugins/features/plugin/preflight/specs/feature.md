@@ -6,7 +6,7 @@ status: approved
 area: plugin
 capability: preflight
 created: 2026-06-26
-updated: 2026-06-26
+updated: 2026-06-29
 tags:
   - ci
   - validation
@@ -20,6 +20,16 @@ related_specs: []
 ---
 
 # 插件发布前检查规格
+
+## 文档信息
+
+| 字段 | 内容 |
+| --- | --- |
+| 状态 | 已批准 |
+| 领域 | plugin |
+| 能力 | preflight |
+| 规格类型 | feature |
+| 技术设计 | `docs/coding-plugins/features/plugin/preflight/technical-design.md` |
 
 ## 目标
 
