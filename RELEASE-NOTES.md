@@ -1,5 +1,11 @@
 # Release Notes
 
+## 0.6.29 - 2026-06-29
+
+- 新增 `docs/coding-plugins/document-contract.md`，明确 metadata-first 文档读取顺序、README 边界和生成式索引职责。
+- 增强 preflight，校验 feature README frontmatter、禁止 README 手写链路章节，并校验 TDD Evidence metadata 与 related 路径。
+- 将 feature README 标签和 TDD Evidence 关联关系迁移到 frontmatter，索引改为从 README `tags` 生成。
+
 ## 0.6.28 - 2026-06-29
 
 - 增强行为级测试，固定新需求、Bug、提交、收尾、插件维护和并行任务的场景链路顺序。
