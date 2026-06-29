@@ -225,11 +225,11 @@ python3 scripts/preflight.py
 
 预期: PASS。
 
-- [ ] **步骤 2：提交并推送**
+- [x] **步骤 2：提交并推送**
 
 使用 `coding-plugins:git-commit` 生成中文 Conventional Commit，footer 使用 `Authored-by:`，禁止 AI 作者。
 
-- [ ] **步骤 3：刷新本地插件**
+- [x] **步骤 3：刷新本地插件**
 
 运行:
 

@@ -47,7 +47,7 @@
 - **RED 测试:** `python3 scripts/preflight.py`
 - **RED 命令:** `python3 scripts/preflight.py`
 - **RED 失败:** 本任务没有新的失败实现点；使用任务 1 到任务 3 的 RED 失败作为行为证据，最终阶段只验证完整链路。
-- **GREEN 变更:** 写回 evidence 和计划状态，准备提交并刷新本地插件。
+- **GREEN 变更:** 写回 evidence 和计划状态，提交并推送到远程 main，随后刷新本地 personal 插件安装。
 - **GREEN 命令:** `python3 scripts/preflight.py` PASS。
 - **REFACTOR 命令:** `python3 scripts/preflight.py` PASS。
 - **最终验证:** `python3 scripts/preflight.py` PASS。
