@@ -57,6 +57,8 @@ docs/coding-plugins/INDEX.md
 
 - **设计摘要**：2 到 5 句话说明整体方案。
 - **规格缺口审查**：确认是否存在未覆盖需求、验收标准不清或新增外部行为；有缺口必须先回到 spec。
+- **规格到设计映射**：每个 MUST Spec ID 对应技术落点、设计决策和测试策略。
+- **无需技术设计的规格**：只有当某个 MUST Spec ID 确实不需要技术方案时才填写豁免原因。
 - **关键决策**：关键决策、原因、代价。
 - **影响组件**：模块、文件、服务或数据结构怎么变。
 - **数据流 / 控制流**：核心数据流或控制流。
@@ -73,7 +75,7 @@ docs/coding-plugins/INDEX.md
 2. 做规格缺口审查：逐项确认未覆盖需求、验收标准不清、外部行为新增、错误边界和兼容要求。
 3. 如果发现缺口，不要在 technical 中顺手补需求；回到 `spec-driven-development` 更新 spec、重新运行规格校验并等待用户确认。
 4. 确认 area/capability，并检查是否已有技术设计。
-5. 创建或更新 `technical/technical-design.md`，正文标题默认使用中文。
+5. 创建或更新 `technical/technical-design.md`，正文标题默认使用中文，并补齐 `related_specs`、`related_plans`、`related_evidence`。
 6. 在规格 metadata 或正文中引用 technical design 路径；metadata key 保持英文，正文使用 `## 文档信息` 展示中文摘要。
 7. 更新 `docs/coding-plugins/INDEX.md`。
 8. 运行 `python3 scripts/preflight.py` 或至少运行相关 preflight 单测。
@@ -92,8 +94,10 @@ skills/writing-technical-design/templates/technical-design.md
 ## 自审
 
 - 是否每个 MUST Spec ID 都在设计中有落地点。
+- 是否每个 MUST Spec ID 都出现在 `## 规格到设计映射` 或 `## 无需技术设计的规格` 中。
 - 是否完成 `## 规格缺口审查`，且没有未处理、待处理或需澄清的缺口。
 - 是否没有在 technical 中新增需求、验收标准或外部行为；如有，是否已回写 spec。
+- 是否在 metadata 中链接了已存在的 spec、plan 和 TDD Evidence。
 - 是否把关键决策、代价和风险写清楚。
 - 是否明确受影响文件或模块。
 - 是否说明兼容、迁移或为什么不适用。

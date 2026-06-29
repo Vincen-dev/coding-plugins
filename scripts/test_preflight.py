@@ -266,6 +266,19 @@ class PreflightTests(unittest.TestCase):
             with self.assertRaisesRegex(preflight.PreflightError, "Technical template still contains English structure"):
                 preflight.check_technical_templates_are_chinese(root)
 
+    def test_technical_template_requires_spec_design_mapping_sections(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            template_dir = root / "skills" / "writing-technical-design" / "templates"
+            template_dir.mkdir(parents=True)
+            (template_dir / "technical-design.md").write_text(
+                "# 技术设计\n\n## 设计摘要\n\n## 规格缺口审查\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Technical template is missing required section"):
+                preflight.check_technical_template_required_sections(root)
+
     def test_codex_manifest_declares_hook_config(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -722,6 +735,137 @@ class PreflightTests(unittest.TestCase):
 
             with self.assertRaisesRegex(preflight.PreflightError, "Technical design has unresolved spec gaps"):
                 preflight.check_technical_design_gap_review(root)
+
+    def test_technical_design_requires_spec_design_mapping_sections(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            technical_dir = root / "docs" / "coding-plugins" / "features" / "plugin" / "routing" / "technical"
+            technical_dir.mkdir(parents=True)
+            (technical_dir / "technical-design.md").write_text(
+                "---\narea: plugin\ncapability: routing\n---\n"
+                "# 技术设计\n\n"
+                "## 设计摘要\n\n"
+                "## 规格缺口审查\n\n"
+                "| 检查项 | 结论 |\n"
+                "| --- | --- |\n"
+                "| 未覆盖需求 | 无。 |\n"
+                "| 验收标准不清 | 无。 |\n"
+                "| 新增外部行为 | 无。 |\n"
+                "| 处理状态 | 通过，未发现需要回写 spec 的缺口。 |\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Technical design is missing required section"):
+                preflight.check_technical_design_required_sections(root)
+
+    def test_technical_design_must_cover_required_spec_ids(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature_dir = root / "docs" / "coding-plugins" / "features" / "plugin" / "routing"
+            spec_dir = feature_dir / "specs"
+            technical_dir = feature_dir / "technical"
+            spec_dir.mkdir(parents=True)
+            technical_dir.mkdir()
+            (spec_dir / "feature.md").write_text(
+                "---\nstatus: approved\narea: plugin\ncapability: routing\n---\n"
+                "| 编号 | 优先级 | 需求 | 验证方式 |\n"
+                "| --- | --- | --- | --- |\n"
+                "| REQ-001 | 必须 | 已覆盖需求 | 单测 |\n"
+                "| REQ-002 | 必须 | 未覆盖需求 | 单测 |\n",
+                encoding="utf-8",
+            )
+            (technical_dir / "technical-design.md").write_text(
+                "---\narea: plugin\ncapability: routing\n---\n"
+                "# 技术设计\n\n"
+                "## 规格到设计映射\n\n"
+                "| Spec ID | 技术落点 | 设计决策 | 测试策略 |\n"
+                "| --- | --- | --- | --- |\n"
+                "| REQ-001 | `scripts/preflight.py` | 已覆盖 | 单测 |\n\n"
+                "## 无需技术设计的规格\n\n"
+                "| Spec ID | 原因 |\n"
+                "| --- | --- |\n"
+                "| 无 | 无。 |\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Technical design does not cover required Spec IDs"):
+                preflight.check_technical_design_must_spec_coverage(root)
+
+    def test_technical_design_must_coverage_allows_explicit_exemptions(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature_dir = root / "docs" / "coding-plugins" / "features" / "plugin" / "routing"
+            spec_dir = feature_dir / "specs"
+            technical_dir = feature_dir / "technical"
+            spec_dir.mkdir(parents=True)
+            technical_dir.mkdir()
+            (spec_dir / "feature.md").write_text(
+                "---\nstatus: approved\narea: plugin\ncapability: routing\n---\n"
+                "| 编号 | 优先级 | 需求 | 验证方式 |\n"
+                "| --- | --- | --- | --- |\n"
+                "| REQ-001 | 必须 | 有设计落点 | 单测 |\n"
+                "| REQ-002 | 必须 | 无需设计落点 | 单测 |\n",
+                encoding="utf-8",
+            )
+            (technical_dir / "technical-design.md").write_text(
+                "---\narea: plugin\ncapability: routing\n---\n"
+                "# 技术设计\n\n"
+                "## 规格到设计映射\n\n"
+                "| Spec ID | 技术落点 | 设计决策 | 测试策略 |\n"
+                "| --- | --- | --- | --- |\n"
+                "| REQ-001 | `scripts/preflight.py` | 已覆盖 | 单测 |\n\n"
+                "## 无需技术设计的规格\n\n"
+                "| Spec ID | 原因 |\n"
+                "| --- | --- |\n"
+                "| REQ-002 | 该规格只约束人工文档说明。 |\n",
+                encoding="utf-8",
+            )
+
+            preflight.check_technical_design_must_spec_coverage(root)
+
+    def test_technical_design_coverage_uses_heading_lines_not_inline_mentions(self) -> None:
+        text = (
+            "# 技术设计\n\n"
+            "## 设计摘要\n\n"
+            "正文引用 `## 规格到设计映射` 和 `## 无需技术设计的规格`，但这不是章节标题。\n\n"
+            "## 规格到设计映射\n\n"
+            "| Spec ID | 技术落点 | 设计决策 | 测试策略 |\n"
+            "| --- | --- | --- | --- |\n"
+            "| REQ-001 | `scripts/preflight.py` | 已覆盖 | 单测 |\n\n"
+            "## 无需技术设计的规格\n\n"
+            "| Spec ID | 原因 |\n"
+            "| --- | --- |\n"
+            "| REQ-002 | 文档说明，无需技术设计。 |\n"
+        )
+
+        self.assertEqual(preflight.technical_design_coverage_ids(text), {"REQ-001", "REQ-002"})
+
+    def test_technical_metadata_requires_related_chain_paths(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature_dir = root / "docs" / "coding-plugins" / "features" / "plugin" / "routing"
+            (feature_dir / "specs").mkdir(parents=True)
+            (feature_dir / "technical").mkdir()
+            (feature_dir / "plans").mkdir()
+            (feature_dir / "evidence").mkdir()
+            (feature_dir / "specs" / "feature.md").write_text("---\nstatus: approved\n---\n# Feature\n", encoding="utf-8")
+            (feature_dir / "plans" / "implementation.md").write_text("# Plan\n", encoding="utf-8")
+            (feature_dir / "evidence" / "tdd-evidence.md").write_text("# Evidence\n", encoding="utf-8")
+            (feature_dir / "technical" / "technical-design.md").write_text(
+                "---\n"
+                "area: plugin\n"
+                "capability: routing\n"
+                "related_specs:\n"
+                "  - docs/coding-plugins/features/plugin/routing/specs/feature.md\n"
+                "related_plans:\n"
+                "  - docs/coding-plugins/features/plugin/routing/plans/missing.md\n"
+                "---\n"
+                "# 技术设计\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Technical design related metadata is invalid"):
+                preflight.check_technical_design_related_metadata(root)
 
     def test_docs_sync_check_rejects_missing_key_paths(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

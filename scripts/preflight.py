@@ -126,6 +126,7 @@ PLAN_METADATA_REQUIRED_FIELDS = ("title", "status", "area", "capability", "creat
 CHINESE_DOCUMENT_INFO_REQUIRED_TERMS = ("## 文档信息", "状态", "领域", "能力")
 TECHNICAL_GAP_REVIEW_REQUIRED_TERMS = ("未覆盖需求", "验收标准", "外部行为", "处理状态")
 TECHNICAL_GAP_REVIEW_UNRESOLVED_TERMS = ("未处理", "待处理", "需澄清", "不清楚", "待确认")
+TECHNICAL_DESIGN_REQUIRED_SECTIONS = ("规格到设计映射", "无需技术设计的规格")
 LIGHTWEIGHT_EXCEPTION_REQUIRED_TERMS = ("## 轻量例外", "Reason", "Verification")
 DOC_SYNC_REFERENCES = (
     "docs/coding-plugins/INDEX.md",
@@ -277,6 +278,20 @@ def check_technical_templates_are_chinese(root: Path) -> None:
     ]
     if offenders:
         raise PreflightError("Technical template still contains English structure: " + "; ".join(offenders) + ".")
+
+
+def check_technical_template_required_sections(root: Path) -> None:
+    template_path = root / "skills" / "writing-technical-design" / "templates" / "technical-design.md"
+    if not template_path.exists():
+        return
+
+    text = template_path.read_text(encoding="utf-8")
+    missing = [section for section in TECHNICAL_DESIGN_REQUIRED_SECTIONS if markdown_section(text, section) is None]
+    if missing:
+        raise PreflightError(
+            "Technical template is missing required section: "
+            + f"{template_path.relative_to(root)} missing {', '.join(missing)}."
+        )
 
 
 def check_skill_agent_metadata(root: Path) -> None:
@@ -444,15 +459,14 @@ def check_chinese_document_info_sections(root: Path) -> None:
 
 
 def markdown_section(text: str, heading: str) -> str | None:
-    marker = f"## {heading}"
-    start = text.find(marker)
-    if start == -1:
+    match = re.search(rf"^##[ \t]+{re.escape(heading)}[ \t]*$", text, re.MULTILINE)
+    if match is None:
         return None
 
-    next_heading = text.find("\n## ", start + len(marker))
-    if next_heading == -1:
-        return text[start:]
-    return text[start:next_heading]
+    next_match = re.search(r"^##[ \t]+", text[match.end() :], re.MULTILINE)
+    if next_match is None:
+        return text[match.start() :]
+    return text[match.start() : match.end() + next_match.start()]
 
 
 def check_technical_design_gap_review(root: Path) -> None:
@@ -483,6 +497,126 @@ def check_technical_design_gap_review(root: Path) -> None:
         raise PreflightError("Technical design spec gap review is incomplete: " + "; ".join(incomplete) + ".")
     if unresolved:
         raise PreflightError("Technical design has unresolved spec gaps: " + "; ".join(unresolved) + ".")
+
+
+def check_technical_design_required_sections(root: Path) -> None:
+    offenders: list[str] = []
+    for path in collect_technical_design_files(root):
+        text = path.read_text(encoding="utf-8")
+        missing = [section for section in TECHNICAL_DESIGN_REQUIRED_SECTIONS if markdown_section(text, section) is None]
+        if missing:
+            offenders.append(f"{path.relative_to(root)} missing {', '.join(missing)}")
+
+    if offenders:
+        raise PreflightError("Technical design is missing required section: " + "; ".join(offenders) + ".")
+
+
+def approved_spec_files_for_feature(feature_root: Path) -> list[Path]:
+    approved: list[Path] = []
+    for spec_file in docs_index.feature_spec_files(feature_root):
+        metadata = parse_frontmatter(spec_file.read_text(encoding="utf-8"))
+        if metadata.get("status") == "approved":
+            approved.append(spec_file)
+    return approved
+
+
+def required_spec_ids_from_specs(spec_files: list[Path]) -> set[str]:
+    ids: set[str] = set()
+    for spec_file in spec_files:
+        for line in spec_file.read_text(encoding="utf-8").splitlines():
+            cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+            if not cells or not line.lstrip().startswith("|"):
+                continue
+            if any(cell in {"必须", "MUST"} for cell in cells):
+                ids.update(SPEC_ID_RE.findall(line))
+    return ids
+
+
+def technical_design_coverage_ids(technical_text: str) -> set[str]:
+    ids: set[str] = set()
+    for heading in TECHNICAL_DESIGN_REQUIRED_SECTIONS:
+        section = markdown_section(technical_text, heading)
+        if section:
+            ids.update(SPEC_ID_RE.findall(section))
+    return ids
+
+
+def check_technical_design_must_spec_coverage(root: Path) -> None:
+    offenders: list[str] = []
+    for technical_file in collect_technical_design_files(root):
+        feature_context = feature_root_for_document(root, technical_file)
+        if feature_context is None:
+            continue
+        _area, _capability, feature_root = feature_context
+        required_ids = required_spec_ids_from_specs(approved_spec_files_for_feature(feature_root))
+        if not required_ids:
+            continue
+
+        covered_ids = technical_design_coverage_ids(technical_file.read_text(encoding="utf-8"))
+        missing = sorted(required_ids - covered_ids)
+        if missing:
+            offenders.append(f"{technical_file.relative_to(root)} -> {', '.join(missing)}")
+
+    if offenders:
+        raise PreflightError("Technical design does not cover required Spec IDs: " + "; ".join(offenders) + ".")
+
+
+def frontmatter_list_values(text: str, key: str) -> list[str]:
+    if not text.startswith("---\n"):
+        return []
+    end = text.find("\n---", 4)
+    if end == -1:
+        return []
+
+    values: list[str] = []
+    in_key = False
+    for line in text[4:end].splitlines():
+        stripped = line.strip()
+        if not stripped:
+            continue
+        if line.startswith(" ") and in_key and stripped.startswith("- "):
+            values.append(stripped[2:].strip().strip('"').strip("'"))
+            continue
+        if ":" in line and not line.startswith(" "):
+            current_key, value = line.split(":", 1)
+            in_key = current_key.strip() == key
+            if in_key and value.strip():
+                values.append(value.strip().strip('"').strip("'"))
+    return values
+
+
+def check_technical_design_related_metadata(root: Path) -> None:
+    offenders: list[str] = []
+    for technical_file in collect_technical_design_files(root):
+        feature_context = feature_root_for_document(root, technical_file)
+        if feature_context is None:
+            continue
+        _area, _capability, feature_root = feature_context
+        text = technical_file.read_text(encoding="utf-8")
+        expected_by_key = {
+            "related_specs": docs_index.feature_spec_files(feature_root),
+            "related_plans": docs_index.feature_plan_files(feature_root),
+            "related_evidence": docs_index.feature_evidence_files(feature_root),
+        }
+
+        for key, expected_paths in expected_by_key.items():
+            if not expected_paths:
+                continue
+            actual_values = set(frontmatter_list_values(text, key))
+            expected_values = {str(path.relative_to(root)) for path in expected_paths}
+            missing_values = sorted(expected_values - actual_values)
+            missing_existing = sorted(
+                value for value in actual_values if value.startswith("docs/coding-plugins/") and not (root / value).exists()
+            )
+            if missing_values:
+                offenders.append(f"{technical_file.relative_to(root)} {key} missing {', '.join(missing_values)}")
+            if missing_existing:
+                offenders.append(
+                    f"{technical_file.relative_to(root)} {key} references missing {', '.join(missing_existing)}"
+                )
+
+    if offenders:
+        raise PreflightError("Technical design related metadata is invalid: " + "; ".join(offenders) + ".")
 
 
 def specs_for_area_capability(root: Path, document_root_name: str, document_file: Path) -> list[Path]:
@@ -704,6 +838,9 @@ def run_static_checks(root: Path) -> None:
     check_plan_metadata(root)
     check_chinese_document_info_sections(root)
     check_technical_design_gap_review(root)
+    check_technical_design_required_sections(root)
+    check_technical_design_must_spec_coverage(root)
+    check_technical_design_related_metadata(root)
     check_artifact_index_covers_documents(root)
     check_spec_technical_design_references(root)
     check_plan_technical_design_references(root)
@@ -713,6 +850,7 @@ def run_static_checks(root: Path) -> None:
     check_removed_entry_references(root)
     check_sdd_templates_are_chinese(root)
     check_technical_templates_are_chinese(root)
+    check_technical_template_required_sections(root)
 
 
 def main(argv: list[str] | None = None) -> int:

@@ -28,7 +28,7 @@
 | 1 | 入口路由 | `using-coding-plugins` | 判断直接意图和开发任务类型 |
 | 2 | 直接意图处理 | `requesting-code-review`, `receiving-code-review`, `verification-before-completion`, `git-commit`, `finishing-a-development-branch`, `writing-skills`, `using-git-worktrees`, `dispatching-parallel-agents` | 直接完成查询、评审、验证、提交、收尾、隔离或维护任务 |
 | 3 | 需求规格 | `spec-driven-development` | `docs/coding-plugins/features/<area>/<capability>/specs/<spec-kind>.md`, 生成式总索引, Spec ID, Traceability Matrix |
-| 4 | 技术设计 | `writing-technical-design` | `docs/coding-plugins/features/<area>/<capability>/technical/technical-design.md`, 生成式总索引, 技术方案和测试策略 |
+| 4 | 技术设计 | `writing-technical-design` | `docs/coding-plugins/features/<area>/<capability>/technical/technical-design.md`, 规格到设计映射, 生成式总索引, 技术方案和测试策略 |
 | 5 | 实现计划 | `writing-plans` | `docs/coding-plugins/features/<area>/<capability>/plans/implementation.md`, Technical Design Source, Spec ID -> Test -> Task 追踪 |
 | 6 | 隔离工作区 | `using-git-worktrees` | 独立 worktree 或确认在当前工作区执行 |
 | 7 | 执行调度 | `subagent-driven-development`, `executing-plans`, `dispatching-parallel-agents` | 子任务执行、批次执行或并行任务结果 |
@@ -407,6 +407,8 @@ docs/coding-plugins/features/<area>/<capability>/specs/<spec-kind>.md
 
 技术设计阶段必须先完成 `## 规格缺口审查`。如果发现未覆盖需求、验收标准不清、新增外部行为、错误边界或兼容要求不清，停止 technical，回到 `spec-driven-development` 更新 spec、重新校验并取得确认，再继续 technical。preflight 会校验 technical 文档包含规格缺口审查，并拦截未处理、待处理、需澄清、不清楚或待确认的缺口。
 
+技术设计还必须完成 `## 规格到设计映射` 和 `## 无需技术设计的规格`。同一 capability 下 approved spec 中的每个 MUST Spec ID，都要出现在映射表里并说明技术落点、设计决策和测试策略；确实无需技术设计的，必须在豁免表中写明原因。preflight 会从 approved spec 反向提取 MUST ID，拦截 technical 未覆盖或未豁免的规格。
+
 默认技术设计路径：
 
 ```text
@@ -414,6 +416,8 @@ docs/coding-plugins/features/<area>/<capability>/technical/technical-design.md
 ```
 
 技术设计路径的 `<area>/<capability>` 应和规格路径一致。保存或移动技术设计后运行 `python3 scripts/preflight.py --write-index`，让 `docs/coding-plugins/INDEX.md` 同步反映最新文件树。technical 模板正文标题和表头默认使用中文，Spec ID、命令、路径和代码标识可保留英文。
+
+当同一 feature 已存在 spec、plan 或 TDD Evidence 时，technical frontmatter 必须分别维护 `related_specs`、`related_plans` 和 `related_evidence`。这些路径用于把规格契约、技术方案、实现计划和验证证据连成可检索链路，preflight 会校验引用路径真实存在。
 
 ### 计划层
 

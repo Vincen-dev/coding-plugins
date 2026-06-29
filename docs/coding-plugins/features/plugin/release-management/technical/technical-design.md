@@ -9,6 +9,8 @@ related_specs:
   - docs/coding-plugins/features/plugin/release-management/specs/feature.md
 related_evidence:
   - docs/coding-plugins/features/plugin/release-management/evidence/tdd-evidence.md
+related_plans:
+  - docs/coding-plugins/features/plugin/release-management/plans/implementation.md
 ---
 
 # 插件发布和版本管理技术设计
@@ -35,6 +37,27 @@ related_evidence:
 | 验收标准不清 | 无。 |
 | 新增外部行为 | 无。 |
 | 处理状态 | 通过，未发现需要回写 spec 的缺口。 |
+
+## 规格到设计映射
+
+| Spec ID | 技术落点 | 设计决策 | 测试策略 |
+| --- | --- | --- | --- |
+| REQ-001 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
+| REQ-002 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
+| REQ-003 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
+| REQ-004 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
+| REQ-005 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
+| REQ-006 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
+| REQ-007 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
+| REQ-008 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
+| REQ-009 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
+| REQ-010 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 | 按本 technical 的关键决策落地该规格 | 见 `## 测试策略` 和对应计划追踪 |
+
+## 无需技术设计的规格
+
+| Spec ID | 原因 |
+| --- | --- |
+| 无 | 本 capability 的 MUST 规格均有 technical 落点。 |
 
 ## 关键决策
 
