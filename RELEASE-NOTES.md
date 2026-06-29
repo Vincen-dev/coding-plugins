@@ -1,5 +1,11 @@
 # Release Notes
 
+## 0.6.20 - 2026-06-29
+
+- 增加生成式 `docs/coding-plugins/INDEX.md`，通过 `python3 scripts/preflight.py --write-index` 根据 feature-first 文件树刷新总索引。
+- 增强 preflight，校验当前总索引和生成器输出完全一致，防止人工编辑造成索引漂移。
+- 补齐 `artifact-index` 的技术设计、实现计划和 TDD Evidence，记录 RED/GREEN/REFACTOR 证据。
+
 ## 0.6.19 - 2026-06-26
 
 - 将 `docs/coding-plugins` 迁移为 feature-first 结构，按 `features/<area>/<capability>` 集中维护规格、技术设计、计划和 TDD Evidence。
