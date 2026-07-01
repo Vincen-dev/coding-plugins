@@ -186,6 +186,9 @@ SPEC_ID_RE = re.compile(r"\b(?:REQ|API|SCHEMA|STATE|ERR|AC|NFR|MIG|OBS|NON)(?:-[
 TECHNICAL_DESIGN_PATH_RE = re.compile(
     r"docs/coding-plugins/features/[A-Za-z0-9_.\-/]+/technicals/[A-Za-z0-9_.\-]+-TDD\.md"
 )
+TECHNICAL_IMPLEMENTATION_PATH_RE = re.compile(
+    r"docs/coding-plugins/features/[A-Za-z0-9_.\-/]+/technicals/[A-Za-z0-9_.\-]+-TID\.md"
+)
 EVIDENCE_PATH_RE = re.compile(
     r"docs/coding-plugins/features/[A-Za-z0-9_.\-/]+/evidences/[A-Za-z0-9_.\-/]+\.md"
 )
@@ -655,6 +658,7 @@ def check_document_path_metadata(root: Path) -> None:
     for label, files in (
         ("spec", collect_spec_files(root)),
         ("technical design", collect_technical_design_files(root)),
+        ("technical implementation", collect_technical_implementation_files(root)),
     ):
         for path in files:
             feature_context = feature_root_for_document(root, path)
@@ -667,6 +671,7 @@ def check_document_path_metadata(root: Path) -> None:
                 mismatches.append(f"{path.relative_to(root)} feature={metadata.get('feature')} path={path_feature}")
 
     for label, files in (
+        ("test cases", collect_test_case_files(root)),
         ("plan", collect_plan_files(root)),
         ("evidence", collect_tdd_evidence_files(root)),
     ):
@@ -725,7 +730,8 @@ def check_evidence_metadata(root: Path) -> None:
 
         expected_by_key = {
             "related_specs": docs_index.feature_spec_files(feature_root),
-            "related_technical": docs_index.feature_technical_design_files(feature_root),
+            "related_technical": docs_index.feature_technical_design_files(feature_root)
+            + docs_index.feature_technical_implementation_files(feature_root),
             "related_test_cases": docs_index.feature_test_case_files(feature_root),
             "related_plans": docs_index.feature_plan_files(feature_root),
         }
@@ -781,7 +787,14 @@ def check_archived_evidence_metadata(root: Path) -> None:
 
 def check_external_references(root: Path) -> None:
     missing: list[str] = []
-    for path in collect_spec_files(root) + collect_technical_design_files(root) + collect_plan_files(root) + collect_tdd_evidence_files(root):
+    for path in (
+        collect_spec_files(root)
+        + collect_technical_design_files(root)
+        + collect_technical_implementation_files(root)
+        + collect_test_case_files(root)
+        + collect_plan_files(root)
+        + collect_tdd_evidence_files(root)
+    ):
         text = path.read_text(encoding="utf-8")
         for reference in frontmatter_list_values(text, "external_references"):
             reference_path = Path(reference).expanduser()
@@ -994,6 +1007,7 @@ def check_technical_design_related_metadata(root: Path) -> None:
         text = technical_file.read_text(encoding="utf-8")
         expected_by_key = {
             "related_specs": docs_index.feature_spec_files(feature_root),
+            "related_technical": docs_index.feature_technical_implementation_files(feature_root),
             "related_test_cases": docs_index.feature_test_case_files(feature_root),
             "related_plans": docs_index.feature_plan_files(feature_root),
             "related_evidence": docs_index.feature_evidence_files(feature_root),
@@ -1089,6 +1103,10 @@ def extract_technical_design_paths(text: str) -> set[str]:
     return set(TECHNICAL_DESIGN_PATH_RE.findall(text))
 
 
+def extract_technical_implementation_paths(text: str) -> set[str]:
+    return set(TECHNICAL_IMPLEMENTATION_PATH_RE.findall(text))
+
+
 def check_spec_technical_design_references(root: Path) -> None:
     missing: list[str] = []
     for spec_file in collect_spec_files(root):
@@ -1098,6 +1116,17 @@ def check_spec_technical_design_references(root: Path) -> None:
 
     if missing:
         raise PreflightError("Spec references missing technical design: " + "; ".join(missing) + ".")
+
+
+def check_spec_technical_implementation_references(root: Path) -> None:
+    missing: list[str] = []
+    for spec_file in collect_spec_files(root):
+        for relative_path in sorted(extract_technical_implementation_paths(spec_file.read_text(encoding="utf-8"))):
+            if not (root / relative_path).exists():
+                missing.append(f"{spec_file.relative_to(root)} -> {relative_path}")
+
+    if missing:
+        raise PreflightError("Spec references missing technical implementation: " + "; ".join(missing) + ".")
 
 
 def check_plan_technical_design_references(root: Path) -> None:
@@ -1117,6 +1146,34 @@ def check_plan_technical_design_references(root: Path) -> None:
         raise PreflightError("Plan is missing 技术设计来源: " + ", ".join(offenders) + ".")
     if missing:
         raise PreflightError("Plan references missing technical design: " + "; ".join(missing) + ".")
+
+
+def check_plan_technical_implementation_references(root: Path) -> None:
+    offenders: list[str] = []
+    missing: list[str] = []
+    for plan_file in collect_plan_files(root):
+        feature_context = feature_root_for_document(root, plan_file)
+        if feature_context is None:
+            continue
+        _feature, feature_root = feature_context
+        expected_paths = docs_index.feature_technical_implementation_files(feature_root)
+        if not expected_paths:
+            continue
+
+        text = plan_file.read_text(encoding="utf-8")
+        refs = sorted(extract_technical_implementation_paths(text))
+        expected_values = {str(path.relative_to(root)) for path in expected_paths}
+        if "技术实现来源" not in text or not expected_values <= set(refs):
+            offenders.append(str(plan_file.relative_to(root)))
+            continue
+        for relative_path in refs:
+            if not (root / relative_path).exists():
+                missing.append(f"{plan_file.relative_to(root)} -> {relative_path}")
+
+    if offenders:
+        raise PreflightError("Plan is missing 技术实现来源: " + ", ".join(offenders) + ".")
+    if missing:
+        raise PreflightError("Plan references missing technical implementation: " + "; ".join(missing) + ".")
 
 
 def check_documentation_path_references(root: Path) -> None:
@@ -1164,10 +1221,24 @@ def collect_plan_files(root: Path) -> list[Path]:
     return sorted(files)
 
 
+def collect_test_case_files(root: Path) -> list[Path]:
+    files: list[Path] = []
+    for feature_root in collect_feature_roots(root):
+        files.extend(docs_index.feature_test_case_files(feature_root))
+    return sorted(files)
+
+
 def collect_technical_design_files(root: Path) -> list[Path]:
     files: list[Path] = []
     for feature_root in collect_feature_roots(root):
         files.extend(docs_index.feature_technical_design_files(feature_root))
+    return sorted(files)
+
+
+def collect_technical_implementation_files(root: Path) -> list[Path]:
+    files: list[Path] = []
+    for feature_root in collect_feature_roots(root):
+        files.extend(docs_index.feature_technical_implementation_files(feature_root))
     return sorted(files)
 
 
@@ -1252,7 +1323,9 @@ def run_static_checks(root: Path) -> None:
     check_technical_design_validator(root)
     check_artifact_index_covers_documents(root)
     check_spec_technical_design_references(root)
+    check_spec_technical_implementation_references(root)
     check_plan_technical_design_references(root)
+    check_plan_technical_implementation_references(root)
     check_technical_design_spec_ids(root)
     check_tdd_evidence_spec_ids(root)
     check_lifecycle_state_consistency(root)

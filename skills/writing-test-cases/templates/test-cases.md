@@ -8,6 +8,7 @@ related_specs:
   - docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md
 related_technical:
   - docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TDD.md
+  - docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TID.md
 related_plans:
   - docs/coding-plugins/features/<feature-name>/plans/<feature-name>-IPD.md
 related_evidence:
@@ -23,7 +24,8 @@ related_evidence:
 | 状态 | 草稿 |
 | Feature | <feature-name> |
 | 需求文档 | `docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md` |
-| 技术方案 | `docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TDD.md` |
+| 技术设计 | `docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TDD.md` |
+| 技术实现 | `docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TID.md` |
 | 实现计划 | `docs/coding-plugins/features/<feature-name>/plans/<feature-name>-IPD.md` |
 | TDD 证据 | `docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md` |
 
@@ -52,5 +54,5 @@ related_evidence:
 ## 执行提示
 
 - 实现阶段使用 `test-driven-development`。
-- 实际 RED/GREEN/REFACTOR 输出写入 TDD evidence，不写入本文档。
-- 如果 implementation plan 改变测试顺序，必须回看本文档，确认 Spec ID 覆盖没有丢失。
+- 实际 RED/GREEN/REFACTOR 输出写入 TED，不写入本文档。
+- 如果 IPD 改变测试顺序，必须回看本文档，确认 Spec ID 覆盖没有丢失。

@@ -168,6 +168,19 @@ class PreflightTests(unittest.TestCase):
                 [design],
             )
 
+    def test_collect_technical_implementation_files_uses_feature_first_technicals_subdir(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            technicals_dir = root / "docs" / "coding-plugins" / "features" / "preflight" / "technicals"
+            technicals_dir.mkdir(parents=True)
+            implementation = technicals_dir / f"{technicals_dir.parent.name}-TID.md"
+            implementation.write_text("# 技术实现", encoding="utf-8")
+
+            self.assertEqual(
+                preflight.collect_technical_implementation_files(root),
+                [implementation],
+            )
+
     def test_flat_feature_root_technical_and_plan_files_are_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -988,6 +1001,21 @@ class PreflightTests(unittest.TestCase):
             with self.assertRaisesRegex(preflight.PreflightError, "Spec references missing technical design"):
                 preflight.check_spec_technical_design_references(root)
 
+    def test_spec_technical_implementation_reference_check_rejects_missing_paths(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            spec_dir = root / "docs" / "coding-plugins" / "features" / "routing" / "requirements"
+            spec_dir.mkdir(parents=True)
+            (spec_dir / f"{spec_dir.parent.name}-PRD.md").write_text(
+                "---\nfeature: routing\nrelated_technical:\n"
+                "  - docs/coding-plugins/features/routing/technicals/routing-TID.md\n---\n"
+                "# Feature\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Spec references missing technical implementation"):
+                preflight.check_spec_technical_implementation_references(root)
+
     def test_plan_technical_design_source_check_rejects_missing_source(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -997,6 +1025,56 @@ class PreflightTests(unittest.TestCase):
 
             with self.assertRaisesRegex(preflight.PreflightError, "Plan is missing 技术设计来源"):
                 preflight.check_plan_technical_design_references(root)
+
+    def test_plan_technical_implementation_source_check_rejects_missing_source_when_tid_exists(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature_dir = root / "docs" / "coding-plugins" / "features" / "routing"
+            plan_dir = feature_dir / "plans"
+            technicals_dir = feature_dir / "technicals"
+            plan_dir.mkdir(parents=True)
+            technicals_dir.mkdir()
+            (technicals_dir / f"{feature_dir.name}-TID.md").write_text("# 技术实现\n", encoding="utf-8")
+            (plan_dir / f"{feature_dir.name}-IPD.md").write_text(
+                "# Plan\n\n"
+                "**技术设计来源:** `docs/coding-plugins/features/routing/technicals/routing-TDD.md`\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Plan is missing 技术实现来源"):
+                preflight.check_plan_technical_implementation_references(root)
+
+    def test_evidence_metadata_requires_existing_technical_implementation_relation(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature_dir = root / "docs" / "coding-plugins" / "features" / "routing"
+            (feature_dir / "requirements").mkdir(parents=True)
+            (feature_dir / "technicals").mkdir()
+            (feature_dir / "evidences").mkdir()
+            (feature_dir / "requirements" / f"{feature_dir.name}-PRD.md").write_text(
+                "---\ntitle: Routing PRD\nstatus: approved\nfeature: routing\ncreated: 2026-07-01\nupdated: 2026-07-01\n---\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "technicals" / f"{feature_dir.name}-TDD.md").write_text("# 技术设计\n", encoding="utf-8")
+            (feature_dir / "technicals" / f"{feature_dir.name}-TID.md").write_text("# 技术实现\n", encoding="utf-8")
+            (feature_dir / "evidences" / f"{feature_dir.name}-TED.md").write_text(
+                "---\n"
+                "title: Routing TED\n"
+                "status: draft\n"
+                "feature: routing\n"
+                "created: 2026-07-01\n"
+                "updated: 2026-07-01\n"
+                "related_specs:\n"
+                "  - docs/coding-plugins/features/routing/requirements/routing-PRD.md\n"
+                "related_technical:\n"
+                "  - docs/coding-plugins/features/routing/technicals/routing-TDD.md\n"
+                "---\n"
+                "# TDD 证据\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "related_technical missing"):
+                preflight.check_evidence_metadata(root)
 
     def test_technical_design_spec_id_check_rejects_unknown_ids(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -1167,6 +1245,7 @@ class PreflightTests(unittest.TestCase):
             (feature_dir / "plans").mkdir()
             (feature_dir / "evidences").mkdir()
             (feature_dir / "requirements" / f"{feature_dir.name}-PRD.md").write_text("---\nstatus: approved\n---\n# Feature\n", encoding="utf-8")
+            (feature_dir / "technicals" / f"{feature_dir.name}-TID.md").write_text("# 技术实现\n", encoding="utf-8")
             (feature_dir / "plans" / f"{feature_dir.name}-IPD.md").write_text("# Plan\n", encoding="utf-8")
             (feature_dir / "evidences" / f"{feature_dir.name}-TED.md").write_text("# Evidence\n", encoding="utf-8")
             (feature_dir / "technicals" / f"{feature_dir.name}-TDD.md").write_text(
@@ -1175,7 +1254,9 @@ class PreflightTests(unittest.TestCase):
                 "related_specs:\n"
                 "  - docs/coding-plugins/features/routing/requirements/routing-PRD.md\n"
                 "related_plans:\n"
-                "  - docs/coding-plugins/features/routing/plans/missing.md\n"
+                "  - docs/coding-plugins/features/routing/plans/routing-IPD.md\n"
+                "related_evidence:\n"
+                "  - docs/coding-plugins/features/routing/evidences/routing-TED.md\n"
                 "---\n"
                 "# 技术设计\n",
                 encoding="utf-8",

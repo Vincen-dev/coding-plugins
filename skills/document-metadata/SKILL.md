@@ -7,7 +7,7 @@ description: Use when reading, creating, updating, migrating, or auditing Coding
 
 ## 总览
 
-文档 metadata 是 Coding Plugins 文档系统的机器可读入口。读取或维护 `docs/coding-plugins/features/<feature-name>/` 下的 README、spec、technical、plan、evidence 时，先读 frontmatter，再读正文。
+文档 metadata 是 Coding Plugins 文档系统的机器可读入口。读取或维护 `docs/coding-plugins/features/<feature-name>/` 下的 README、PRD、TDD、TID、TCD、IPD、TED 时，先读 frontmatter，再读正文。
 
 **核心原则：**文档之间的关系以 metadata 为准，正文负责需求、设计、计划和证据，不负责维护索引型链路。
 
@@ -18,7 +18,7 @@ description: Use when reading, creating, updating, migrating, or auditing Coding
 使用本技能：
 
 - 读取 feature 文档并需要理解上下游关系。
-- 创建或更新 README、requirement spec、technical design、test cases、implementation plan 或 TDD evidence。
+- 创建或更新 README、PRD、TDD 技术设计、TID 技术实现、TCD 测试用例、IPD 实现计划或 TED 证据。
 - 维护 `related_specs`、`related_technical`、`related_plans`、`related_evidence`、`external_references`。
 - 迁移、审计或修复 frontmatter metadata。
 - 需要使用 `templates/document-metadata.md` 作为文档 metadata 模板。
@@ -28,7 +28,7 @@ description: Use when reading, creating, updating, migrating, or auditing Coding
 
 - 只解释普通代码，不读取 Coding Plugins 文档。
 - 只运行测试或提交代码，且不涉及文档关系。
-- 编写具体 spec、technical、plan 或 TDD evidence 时，本技能只负责 metadata；正文仍由对应技能负责。
+- 编写具体 PRD、TDD、TID、TCD、IPD 或 TED 时，本技能只负责 metadata；正文仍由对应技能负责。
 
 ## 读取顺序
 
@@ -49,11 +49,11 @@ description: Use when reading, creating, updating, migrating, or auditing Coding
 | `feature` | feature 归属 | 必须匹配 `docs/coding-plugins/features/<feature-name>/` |
 | `created` / `updated` | 生命周期日期 | 使用 `YYYY-MM-DD`，不要写进文件名 |
 | `tags` | README 检索标签 | README 必填，`INDEX.md` 从 README frontmatter 读取 |
-| `lifecycle_status` | technical 生命周期 | technical design 使用：`draft`、`approved`、`implemented`、`stale`、`superseded` |
-| `implemented_commits` | 已落地提交 | technical design 使用；未落地时保留空列表 |
-| `validated_by` | 验证记录 | technical design 使用，写命令或人工验证记录 |
+| `lifecycle_status` | technical 生命周期 | TDD/TID 使用：`draft`、`approved`、`implemented`、`stale`、`superseded` |
+| `implemented_commits` | 已落地提交 | TDD/TID 使用；未落地时保留空列表 |
+| `validated_by` | 验证记录 | TDD/TID 使用，写命令或人工验证记录 |
 | `related_specs` | 当前仓库 spec 路径 | 只写 `docs/coding-plugins/...` 相对路径 |
-| `related_technical` | 当前仓库 technical 路径 | 只写 `docs/coding-plugins/...` 相对路径 |
+| `related_technical` | 当前仓库 technical 路径 | 同一 feature 下可同时包含 TDD 技术设计和 TID 技术实现，只写 `docs/coding-plugins/...` 相对路径 |
 | `related_test_cases` | 当前仓库 test cases 路径 | 只写 `docs/coding-plugins/...` 相对路径 |
 | `related_plans` | 当前仓库 plan 路径 | 只写 `docs/coding-plugins/...` 相对路径 |
 | `related_evidence` | 当前仓库 evidence 路径 | 只写 `docs/coding-plugins/...` 相对路径 |
@@ -65,11 +65,12 @@ description: Use when reading, creating, updating, migrating, or auditing Coding
 | 文档 | 必备 metadata | 关系要求 |
 | --- | --- | --- |
 | README | `title`、`status`、`feature`、`updated`、`tags` | 作为人工总览和检索入口，不维护手写 `产物链路` 或 `文档链路` |
-| Spec | `spec_id`、`title`、`type`、`status`、`feature`、`created`、`updated`、`tags` | 可链接 `related_specs`、`related_technical`、`related_code` |
-| Technical | `title`、`status`、`lifecycle_status`、`feature`、`created`、`updated`、`implemented_commits`、`validated_by` | 必须补齐存在的 `related_specs`、`related_plans`、`related_evidence` |
-| Test cases | `title`、`status`、`feature`、`created`、`updated` | 必须链接存在的规格、技术设计、计划和 evidence |
-| Plan | `title`、`status`、`feature`、`created`、`updated` | 必须链接规格、技术设计和 evidence |
-| Active evidence | `title`、`status`、`feature`、`created`、`updated` | 必须链接存在的规格、技术设计和计划 |
+| PRD | `spec_id`、`title`、`type`、`status`、`feature`、`created`、`updated`、`tags` | 可链接 `related_specs`、`related_technical`、`related_code` |
+| TDD 技术设计 | `title`、`status`、`lifecycle_status`、`feature`、`created`、`updated`、`implemented_commits`、`validated_by` | 必须补齐存在的 `related_specs`、`related_technical`、`related_plans`、`related_evidence` |
+| TID 技术实现 | `title`、`status`、`lifecycle_status`、`feature`、`created`、`updated`、`implemented_commits`、`validated_by` | 必须链接 TDD、PRD、TCD、IPD 和 TED |
+| TCD 测试用例 | `title`、`status`、`feature`、`created`、`updated` | 必须链接存在的 PRD、TDD/TID、计划和 evidence |
+| IPD 实现计划 | `title`、`status`、`feature`、`created`、`updated` | 必须链接 PRD、TDD/TID、TCD 和 evidence |
+| TED 证据 | `title`、`status`、`feature`、`created`、`updated` | 必须链接存在的 PRD、TDD/TID 和计划 |
 | Archived evidence | active evidence 字段外加 `validation_mode`、`archive_of`、`archived_at` | `status: archived` 且 `validation_mode: historical` |
 
 ## 创建或更新流程
