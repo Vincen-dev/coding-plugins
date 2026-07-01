@@ -3,6 +3,7 @@ title: Spec 与 Technical 质量门禁技术设计
 status: approved
 lifecycle_status: implemented
 feature: spec-technical-quality-gates
+doc_id: spec-technical-quality-gates
 created: 2026-06-29
 updated: 2026-06-29
 implemented_commits: historical

@@ -1585,6 +1585,44 @@ class PreflightTests(unittest.TestCase):
             with self.assertRaisesRegex(preflight.PreflightError, "Technical design related metadata is invalid"):
                 preflight.check_technical_design_related_metadata(root)
 
+    def test_all_artifact_metadata_requires_related_chain_paths(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature_dir = root / "docs" / "coding-plugins" / "features" / "routing"
+            for directory in ("requirements", "plans"):
+                (feature_dir / directory).mkdir(parents=True, exist_ok=True)
+            (feature_dir / "requirements" / "routing-PRD.md").write_text(
+                "---\n"
+                "title: 路由需求文档\n"
+                "type: feature\n"
+                "status: approved\n"
+                "feature: routing\n"
+                "doc_id: routing\n"
+                "created: 2026-07-01\n"
+                "updated: 2026-07-01\n"
+                "tags:\n"
+                "  - routing\n"
+                "---\n"
+                "# PRD\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "plans" / "routing-IPD.md").write_text(
+                "---\n"
+                "title: 路由实现计划\n"
+                "status: draft\n"
+                "feature: routing\n"
+                "doc_id: routing\n"
+                "created: 2026-07-01\n"
+                "updated: 2026-07-01\n"
+                "related_specs: []\n"
+                "---\n"
+                "# IPD\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Document related metadata is invalid"):
+                preflight.check_document_related_metadata(root)
+
     def test_docs_sync_check_rejects_missing_key_paths(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

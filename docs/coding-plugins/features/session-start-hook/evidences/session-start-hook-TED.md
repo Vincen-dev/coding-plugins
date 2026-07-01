@@ -2,6 +2,7 @@
 title: Codex 会话启动入口注入
 status: approved
 feature: session-start-hook
+doc_id: session-start-hook
 created: 2026-06-29
 updated: 2026-06-29
 related_specs:

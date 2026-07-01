@@ -508,13 +508,7 @@ def check_feature_first_document_layout(root: Path) -> None:
                 offenders.append(str(flat_path.relative_to(root)))
         if (feature_root / "evidence").exists():
             offenders.append(str((feature_root / "evidence").relative_to(root)))
-        expected_patterns = {
-            "requirements": re.compile(r"^[A-Za-z0-9_.-]+-PRD\.md$"),
-            "technicals": re.compile(r"^[A-Za-z0-9_.-]+-(?:TDD|TID)\.md$"),
-            "test-cases": re.compile(r"^[A-Za-z0-9_.-]+-TCD\.md$"),
-            "plans": re.compile(r"^[A-Za-z0-9_.-]+-IPD\.md$"),
-            "evidences": re.compile(r"^[A-Za-z0-9_.-]+-TED\.md$"),
-        }
+        expected_patterns = document_metadata.filename_patterns_by_directory()
         for directory, allowed_pattern in expected_patterns.items():
             artifact_dir = feature_root / directory
             if not artifact_dir.exists():
@@ -1086,6 +1080,45 @@ def expected_related_paths_for_doc_id(
     return document_metadata.expected_related_paths_for_doc_id(feature_root, doc_id, source_path)
 
 
+def document_related_metadata_errors(root: Path, document_file: Path) -> list[str]:
+    feature_context = feature_root_for_document(root, document_file)
+    if feature_context is None:
+        return []
+
+    _feature, feature_root = feature_context
+    doc_id = docs_index.document_doc_id(document_file)
+    text = document_file.read_text(encoding="utf-8")
+    expected_by_key = expected_related_paths_for_doc_id(feature_root, doc_id, document_file)
+    errors: list[str] = []
+
+    for key, expected_paths in expected_by_key.items():
+        actual_values = set(frontmatter_list_values(text, key))
+        missing_existing = sorted(
+            value for value in actual_values if value.startswith("docs/coding-plugins/") and not (root / value).exists()
+        )
+        if missing_existing:
+            errors.append(f"{document_file.relative_to(root)} {key} references missing {', '.join(missing_existing)}")
+        if not expected_paths:
+            continue
+        expected_values = {str(path.relative_to(root)) for path in expected_paths}
+        missing_values = sorted(expected_values - actual_values)
+        if missing_values:
+            errors.append(f"{document_file.relative_to(root)} {key} missing {', '.join(missing_values)}")
+
+    return errors
+
+
+def check_document_related_metadata(root: Path) -> None:
+    offenders: list[str] = []
+    for feature_root in collect_feature_roots(root):
+        for artifact in document_metadata.DOCUMENT_ARTIFACTS:
+            for document_file in document_metadata.artifact_files(feature_root, artifact.suffix):
+                offenders.extend(document_related_metadata_errors(root, document_file))
+
+    if offenders:
+        raise PreflightError("Document related metadata is invalid: " + "; ".join(offenders) + ".")
+
+
 def related_paths_from_metadata(root: Path, text: str, key: str) -> list[Path]:
     paths: list[Path] = []
     for value in frontmatter_list_values(text, key):
@@ -1415,6 +1448,7 @@ def run_static_checks(root: Path) -> None:
     check_feature_document_chain_closure(root)
     check_document_path_metadata(root)
     check_document_doc_id_metadata(root)
+    check_document_related_metadata(root)
     check_prd_related_metadata(root)
     check_document_sync_freshness(root)
     check_plan_metadata(root)

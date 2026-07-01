@@ -3,6 +3,7 @@ title: 文档契约和 metadata-first 读取规则技术设计
 status: approved
 lifecycle_status: implemented
 feature: document-contract
+doc_id: document-contract
 created: 2026-06-29
 updated: 2026-06-29
 implemented_commits: pending-this-change

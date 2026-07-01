@@ -16,11 +16,24 @@ import document_metadata
 class DocumentMetadataTests(unittest.TestCase):
     def test_registry_defines_active_document_artifacts(self) -> None:
         self.assertEqual(("PRD", "TDD", "TID", "TCD", "IPD", "TED"), document_metadata.ARTIFACT_SUFFIXES)
-        self.assertTrue(document_metadata.artifact_for_suffix("PRD").doc_id_required)
+        for suffix in document_metadata.ARTIFACT_SUFFIXES:
+            with self.subTest(suffix=suffix):
+                self.assertTrue(document_metadata.artifact_for_suffix(suffix).doc_id_required)
         self.assertEqual(
             ("PRD", "TDD", "TID", "TCD", "IPD"),
             document_metadata.DOCUMENT_SYNC_DEPENDENCIES["TED"],
         )
+
+    def test_filename_patterns_are_derived_from_registry(self) -> None:
+        patterns = document_metadata.filename_patterns_by_directory()
+
+        self.assertTrue(patterns["requirements"].fullmatch("routing-login-PRD.md"))
+        self.assertTrue(patterns["technicals"].fullmatch("routing-login-TDD.md"))
+        self.assertTrue(patterns["technicals"].fullmatch("routing-login-TID.md"))
+        self.assertTrue(patterns["test-cases"].fullmatch("routing-login-TCD.md"))
+        self.assertTrue(patterns["plans"].fullmatch("routing-login-IPD.md"))
+        self.assertTrue(patterns["evidences"].fullmatch("routing-login-TED.md"))
+        self.assertFalse(patterns["plans"].fullmatch("routing-login-TED.md"))
 
     def test_doc_id_is_derived_from_registered_suffix(self) -> None:
         self.assertEqual("routing-login", document_metadata.document_doc_id(Path("routing-login-PRD.md")))

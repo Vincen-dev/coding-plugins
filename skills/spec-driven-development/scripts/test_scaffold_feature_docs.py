@@ -44,6 +44,22 @@ class ScaffoldFeatureDocsTests(unittest.TestCase):
             self.assertIn("related_test_cases: []", prd)
             self.assertIn("## 追踪矩阵", prd)
 
+    def test_creates_artifact_directories_from_metadata_registry(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            original = scaffold_feature_docs.document_metadata.artifact_directories
+            scaffold_feature_docs.document_metadata.artifact_directories = lambda: (
+                *original(),
+                "reviews",
+            )
+            try:
+                scaffold_feature_docs.scaffold_feature(root, "metadata-chain", "文档关系链路")
+            finally:
+                scaffold_feature_docs.document_metadata.artifact_directories = original
+
+            feature_root = root / "docs" / "coding-plugins" / "features" / "metadata-chain"
+            self.assertTrue((feature_root / "reviews").is_dir())
+
     def test_creates_custom_doc_id_prd_inside_feature(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

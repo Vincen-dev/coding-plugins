@@ -3,6 +3,7 @@ title: 插件工作链路硬化技术设计
 status: approved
 lifecycle_status: implemented
 feature: workflow-hardening
+doc_id: workflow-hardening
 created: 2026-06-29
 updated: 2026-06-29
 implemented_commits: historical

@@ -3,6 +3,7 @@ title: Technical Design Validator 技术设计
 status: approved
 lifecycle_status: implemented
 feature: technical-design-validator
+doc_id: technical-design-validator
 created: 2026-06-29
 updated: 2026-06-29
 implemented_commits: historical

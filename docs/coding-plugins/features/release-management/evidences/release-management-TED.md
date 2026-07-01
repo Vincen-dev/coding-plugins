@@ -2,6 +2,7 @@
 title: 插件发布和版本管理
 status: approved
 feature: release-management
+doc_id: release-management
 created: 2026-06-29
 updated: 2026-06-29
 related_specs:

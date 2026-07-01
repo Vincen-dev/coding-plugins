@@ -2,6 +2,7 @@
 title: Spec 与 Technical 质量门禁
 status: approved
 feature: spec-technical-quality-gates
+doc_id: spec-technical-quality-gates
 created: 2026-06-29
 updated: 2026-06-29
 related_specs:

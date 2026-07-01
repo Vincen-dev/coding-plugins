@@ -2,6 +2,7 @@
 title: 插件发布前检查
 status: approved
 feature: preflight
+doc_id: preflight
 created: 2026-06-29
 updated: 2026-06-29
 related_specs:

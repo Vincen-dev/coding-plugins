@@ -2,6 +2,7 @@
 title: Coding Plugins 产物总索引生成器实现计划
 status: approved
 feature: artifact-index
+doc_id: artifact-index
 created: 2026-06-29
 updated: 2026-06-29
 related_specs:

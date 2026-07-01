@@ -2,6 +2,7 @@
 title: 插件工作链路硬化实现计划
 status: completed
 feature: workflow-hardening
+doc_id: workflow-hardening
 created: 2026-06-29
 updated: 2026-06-29
 related_specs:

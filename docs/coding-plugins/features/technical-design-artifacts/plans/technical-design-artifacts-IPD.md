@@ -2,6 +2,7 @@
 title: 技术设计产物独立维护实现计划
 status: approved
 feature: technical-design-artifacts
+doc_id: technical-design-artifacts
 created: 2026-06-26
 updated: 2026-06-29
 related_specs:

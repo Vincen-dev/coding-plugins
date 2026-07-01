@@ -2,6 +2,7 @@
 title: 插件 marketplace 安装入口实现计划
 status: completed
 feature: marketplace
+doc_id: marketplace
 created: 2026-06-29
 updated: 2026-06-29
 related_specs:

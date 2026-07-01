@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -15,7 +16,7 @@ class DocumentArtifact:
     suffix: str
     directory: str
     relation_key: str
-    doc_id_required: bool = False
+    doc_id_required: bool = True
     sync_upstream: tuple[str, ...] = ()
 
 
@@ -34,7 +35,7 @@ ARCHIVED_EVIDENCE_METADATA_REQUIRED_FIELDS = (
 PLAN_METADATA_REQUIRED_FIELDS = ("title", "status", "feature", "created", "updated")
 
 DOCUMENT_ARTIFACTS = (
-    DocumentArtifact("PRD", "PRD", "requirements", "related_specs", doc_id_required=True),
+    DocumentArtifact("PRD", "PRD", "requirements", "related_specs"),
     DocumentArtifact("TDD", "TDD", "technicals", "related_technical", sync_upstream=("PRD",)),
     DocumentArtifact("TID", "TID", "technicals", "related_technical", sync_upstream=("PRD", "TDD")),
     DocumentArtifact("TCD", "TCD", "test-cases", "related_test_cases", sync_upstream=("PRD", "TDD", "TID")),
@@ -117,6 +118,21 @@ def artifact_for_suffix(suffix: str) -> DocumentArtifact:
         return ARTIFACTS_BY_SUFFIX[suffix]
     except KeyError as error:
         raise ValueError(f"Unknown document artifact suffix: {suffix}") from error
+
+
+def artifact_directories() -> tuple[str, ...]:
+    return tuple(dict.fromkeys(artifact.directory for artifact in DOCUMENT_ARTIFACTS))
+
+
+def filename_patterns_by_directory() -> dict[str, re.Pattern[str]]:
+    suffixes_by_directory: dict[str, list[str]] = {}
+    for artifact in DOCUMENT_ARTIFACTS:
+        suffixes_by_directory.setdefault(artifact.directory, []).append(artifact.suffix)
+
+    return {
+        directory: re.compile(r"^[A-Za-z0-9_.-]+-(?:" + "|".join(map(re.escape, suffixes)) + r")\.md$")
+        for directory, suffixes in suffixes_by_directory.items()
+    }
 
 
 def document_doc_id(path: Path) -> str:

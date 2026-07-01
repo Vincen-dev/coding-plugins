@@ -3,6 +3,7 @@ title: 中文文档模板展示字段技术设计
 status: approved
 lifecycle_status: approved
 feature: chinese-document-templates
+doc_id: chinese-document-templates
 created: 2026-06-29
 updated: 2026-06-29
 implemented_commits: []

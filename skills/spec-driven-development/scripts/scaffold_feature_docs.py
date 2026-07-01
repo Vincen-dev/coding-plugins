@@ -11,6 +11,14 @@ from datetime import date
 from pathlib import Path
 
 
+REPO_ROOT = Path(__file__).resolve().parents[3]
+SCRIPTS_DIR = REPO_ROOT / "scripts"
+if str(SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS_DIR))
+
+import document_metadata  # noqa: E402
+
+
 FEATURE_NAME_RE = re.compile(r"^[A-Za-z0-9_.-]+$")
 
 
@@ -146,12 +154,12 @@ def scaffold_feature(
     tags = tags or [feature]
 
     feature_root = root / "docs" / "coding-plugins" / "features" / feature
-    for directory in ("requirements", "technicals", "test-cases", "plans", "evidences"):
+    for directory in document_metadata.artifact_directories():
         (feature_root / directory).mkdir(parents=True, exist_ok=True)
 
     targets = {
         feature_root / "README.md": render_readme(feature, title, status, current_date, tags),
-        feature_root / "requirements" / f"{doc_id}-PRD.md": render_prd(
+        document_metadata.artifact_file(feature_root, "PRD", doc_id): render_prd(
             feature, doc_id, title, status, current_date, tags
         ),
     }

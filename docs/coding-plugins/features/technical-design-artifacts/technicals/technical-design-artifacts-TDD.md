@@ -3,6 +3,7 @@ title: 技术设计产物独立维护技术设计
 status: approved
 lifecycle_status: implemented
 feature: technical-design-artifacts
+doc_id: technical-design-artifacts
 created: 2026-06-26
 updated: 2026-06-29
 implemented_commits: historical

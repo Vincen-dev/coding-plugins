@@ -2,6 +2,7 @@
 title: 插件 Marketplace 安装入口
 status: approved
 feature: marketplace
+doc_id: marketplace
 created: 2026-06-29
 updated: 2026-06-29
 related_specs:

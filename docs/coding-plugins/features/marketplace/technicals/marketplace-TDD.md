@@ -3,6 +3,7 @@ title: 插件 marketplace 安装入口技术设计
 status: approved
 lifecycle_status: implemented
 feature: marketplace
+doc_id: marketplace
 created: 2026-06-29
 updated: 2026-06-29
 implemented_commits: historical

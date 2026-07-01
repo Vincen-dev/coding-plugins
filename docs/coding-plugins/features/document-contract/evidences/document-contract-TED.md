@@ -2,6 +2,7 @@
 title: 文档契约和 metadata-first 读取规则 TDD 证据
 status: approved
 feature: document-contract
+doc_id: document-contract
 created: 2026-06-29
 updated: 2026-06-29
 related_specs:

@@ -3,6 +3,7 @@ title: Coding Plugins 产物总索引生成器技术设计
 status: approved
 lifecycle_status: implemented
 feature: artifact-index
+doc_id: artifact-index
 created: 2026-06-29
 updated: 2026-06-29
 implemented_commits: historical

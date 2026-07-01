@@ -95,3 +95,17 @@ related_plans:
 - **GREEN 命令:** `python3 -m unittest scripts/test_preflight.py skills/spec-driven-development/scripts/test_scaffold_feature_docs.py` PASS
 - **REFACTOR 命令:** `python3 -m py_compile scripts/preflight.py skills/spec-driven-development/scripts/scaffold_feature_docs.py` PASS；`rg "^spec_id:" .` 无结果
 - **最终验证:** `python3 scripts/preflight.py --write-index`、`python3 scripts/preflight.py`。
+
+## 任务 7：Centralized metadata registry hardening
+
+### TDD 证据
+
+- **规格/缺陷/验收:** metadata 规则中心化优化：全链路 `doc_id` 必填、路径规则从 registry 推导、所有 artifact 统一校验 `related_*`。
+- **测试类型:** unit
+- **RED 测试:** `scripts.test_document_metadata.DocumentMetadataTests.test_registry_defines_active_document_artifacts`、`test_filename_patterns_are_derived_from_registry`、`scripts.test_preflight.PreflightTests.test_all_artifact_metadata_requires_related_chain_paths`、`skills/spec-driven-development/scripts/test_scaffold_feature_docs.py::ScaffoldFeatureDocsTests.test_creates_artifact_directories_from_metadata_registry`
+- **RED 命令:** `python3 -m unittest scripts.test_document_metadata`、`python3 -m unittest scripts.test_preflight.PreflightTests.test_all_artifact_metadata_requires_related_chain_paths`、`python3 -m unittest skills/spec-driven-development/scripts/test_scaffold_feature_docs.py`
+- **RED 失败:** `document_metadata` 尚未要求 TDD/TID/TCD/IPD/TED 声明 `doc_id`，没有 `filename_patterns_by_directory()`；`preflight` 没有统一 `check_document_related_metadata()`；scaffold 仍手写 artifact 目录。
+- **GREEN 变更:** `DocumentArtifact.doc_id_required` 改为全链路默认必填；新增 registry 派生的 artifact 目录和文件名 pattern；`preflight` 使用 registry 校验路径并新增全 artifact `related_*` 校验；scaffold 使用 registry 创建目录和 PRD 路径；历史 TDD/IPD/TED 文档补齐 `doc_id`。
+- **GREEN 命令:** `python3 -m unittest scripts.test_document_metadata scripts.test_preflight skills.spec-driven-development.scripts.test_scaffold_feature_docs skills.writing-technicals.scripts.test_validate_technicals` PASS
+- **REFACTOR 命令:** `git diff --check` PASS
+- **最终验证:** `python3 scripts/preflight.py` PASS。

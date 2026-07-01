@@ -3,6 +3,7 @@ title: 插件发布前检查技术设计
 status: approved
 lifecycle_status: implemented
 feature: preflight
+doc_id: preflight
 created: 2026-06-29
 updated: 2026-06-29
 implemented_commits: historical

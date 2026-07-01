@@ -2,6 +2,7 @@
 title: 下游项目兼容性和证据生命周期实现计划
 status: approved
 feature: downstream-compatibility
+doc_id: downstream-compatibility
 created: 2026-07-01
 updated: 2026-07-01
 related_specs:

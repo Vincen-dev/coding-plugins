@@ -2,6 +2,7 @@
 title: Feature-first 文档结构迁移实现计划
 status: approved
 feature: feature-first-docs
+doc_id: feature-first-docs
 created: 2026-06-26
 updated: 2026-07-01
 related_specs:

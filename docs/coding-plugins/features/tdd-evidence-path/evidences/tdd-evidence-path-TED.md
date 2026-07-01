@@ -2,6 +2,7 @@
 title: TDD 证据 固定落地路径
 status: approved
 feature: tdd-evidence-path
+doc_id: tdd-evidence-path
 created: 2026-06-29
 updated: 2026-06-29
 related_specs:

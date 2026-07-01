@@ -3,6 +3,7 @@ title: 插件发布和版本管理技术设计
 status: approved
 lifecycle_status: implemented
 feature: release-management
+doc_id: release-management
 created: 2026-06-29
 updated: 2026-06-29
 implemented_commits: historical
