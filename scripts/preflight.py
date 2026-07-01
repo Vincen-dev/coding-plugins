@@ -757,6 +757,43 @@ def check_evidence_metadata(root: Path) -> None:
         raise PreflightError("Evidence related metadata is invalid: " + "; ".join(relation_errors) + ".")
 
 
+def check_prd_related_metadata(root: Path) -> None:
+    offenders: list[str] = []
+    for spec_file in collect_spec_files(root):
+        feature_context = feature_root_for_document(root, spec_file)
+        if feature_context is None:
+            continue
+        _feature, feature_root = feature_context
+        text = spec_file.read_text(encoding="utf-8")
+        expected_by_key = {
+            "related_technical": docs_index.feature_technical_design_files(feature_root)
+            + docs_index.feature_technical_implementation_files(feature_root),
+            "related_test_cases": docs_index.feature_test_case_files(feature_root),
+            "related_plans": docs_index.feature_plan_files(feature_root),
+            "related_evidence": docs_index.feature_evidence_files(feature_root),
+        }
+
+        for key in ("related_specs", *expected_by_key.keys()):
+            actual_values = set(frontmatter_list_values(text, key))
+            missing_existing = sorted(
+                value for value in actual_values if value.startswith("docs/coding-plugins/") and not (root / value).exists()
+            )
+            if missing_existing:
+                offenders.append(f"{spec_file.relative_to(root)} {key} references missing {', '.join(missing_existing)}")
+
+        for key, expected_paths in expected_by_key.items():
+            if not expected_paths:
+                continue
+            actual_values = set(frontmatter_list_values(text, key))
+            expected_values = {str(path.relative_to(root)) for path in expected_paths}
+            missing_values = sorted(expected_values - actual_values)
+            if missing_values:
+                offenders.append(f"{spec_file.relative_to(root)} {key} missing {', '.join(missing_values)}")
+
+    if offenders:
+        raise PreflightError("PRD related metadata is invalid: " + "; ".join(offenders) + ".")
+
+
 def check_archived_evidence_metadata(root: Path) -> None:
     incomplete: list[str] = []
     mismatches: list[str] = []
@@ -1265,6 +1302,7 @@ def build_validation_commands(
         [python, "-m", "unittest", "scripts/test_prepare_release.py"],
         [python, "-m", "unittest", "tests.behavior.test_routing"],
         [python, "-m", "unittest", "skills/spec-driven-development/scripts/test_validate_spec.py"],
+        [python, "-m", "unittest", "skills/spec-driven-development/scripts/test_scaffold_feature_docs.py"],
         [python, "-m", "unittest", "skills/test-driven-development/scripts/test_validate_tdd_evidence.py"],
         [python, "-m", "unittest", "skills/writing-technicals/scripts/test_validate_technicals.py"],
         ["bash", "tests/hooks/test-session-start.sh"],
@@ -1312,6 +1350,7 @@ def run_static_checks(root: Path) -> None:
     check_feature_first_document_layout(root)
     check_feature_document_chain_closure(root)
     check_document_path_metadata(root)
+    check_prd_related_metadata(root)
     check_plan_metadata(root)
     check_evidence_metadata(root)
     check_archived_evidence_metadata(root)

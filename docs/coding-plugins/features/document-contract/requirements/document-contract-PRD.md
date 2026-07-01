@@ -22,6 +22,10 @@ related_specs:
   - docs/coding-plugins/features/artifact-index/requirements/artifact-index-PRD.md
 related_technical:
   - docs/coding-plugins/features/document-contract/technicals/document-contract-TDD.md
+related_plans:
+  - docs/coding-plugins/features/document-contract/plans/document-contract-IPD.md
+related_evidence:
+  - docs/coding-plugins/features/document-contract/evidences/document-contract-TED.md
 ---
 
 # 文档契约和 metadata-first 读取规则规格

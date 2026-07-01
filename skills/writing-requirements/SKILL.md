@@ -34,22 +34,23 @@ description: Use when writing or updating Coding Plugins PRD requirement documen
 
 | 场景 | 文档 | 模板 |
 | --- | --- | --- |
-| 普通功能、用户流程、可见行为 | `docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md` | `templates/feature-spec.md` |
-| HTTP/RPC/API/SDK/CLI 契约 | `docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md` | `templates/api-contract-spec.md` |
-| 数据结构、配置、事件 payload | `docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md` | `templates/schema-spec.md` |
-| 状态、工作流、生命周期 | `docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md` | `templates/state-machine-spec.md` |
-| 验收标准不清 | `docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md` | `templates/acceptance-criteria.md` |
-| 维护、重构、升级、迁移、回归风险 | `docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md` | `templates/maintenance-spec.md` |
+| 所有新 PRD | `docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md` | `templates/product-requirements-document.md` |
+| 普通功能、用户流程、可见行为 | 同一个 PRD | 参考 `templates/feature-spec.md` 补齐 Feature 需求章节 |
+| HTTP/RPC/API/SDK/CLI 契约 | 同一个 PRD | 参考 `templates/api-contract-spec.md` 补齐 API / SDK / CLI 契约章节 |
+| 数据结构、配置、事件 payload | 同一个 PRD | 参考 `templates/schema-spec.md` 补齐 Schema / 数据契约章节 |
+| 状态、工作流、生命周期 | 同一个 PRD | 参考 `templates/state-machine-spec.md` 补齐状态机 / 生命周期章节 |
+| 验收标准不清 | 同一个 PRD | 参考 `templates/acceptance-criteria.md` 补齐验收标准章节 |
+| 维护、重构、升级、迁移、回归风险 | 同一个 PRD | 参考 `templates/maintenance-spec.md` 补齐维护 / 迁移 / 回归约束章节 |
 
-同一 feature 只维护一个 PRD。不同场景使用不同模板补齐 PRD 中的章节和追踪矩阵；横跨多个独立 feature 时，拆成多个 feature root，并用 `related_specs` 互链。
+同一 feature 只维护一个 PRD。`product-requirements-document.md` 是默认骨架；不同场景模板只作为章节参考，不决定最终文件名。横跨多个独立 feature 时，拆成多个 feature root，并用 `related_specs` 互链。
 
 ## 编写流程
 
 1. 使用 `document-metadata` 读取 feature README 和相关文档 frontmatter。
 2. 检索现有需求文档：`docs/coding-plugins/INDEX.md`、feature、tag、Spec ID、相关代码路径。
 3. 选择一个或多个需求章节类型；不要为了形式创建不需要的章节。
-4. 用对应模板写入 `docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md`。
-5. 补齐 frontmatter：`spec_id`、`title`、`type`、`status`、`feature`、`created`、`updated`、`tags`、`related_code`、`related_specs`。
+4. 用 `templates/product-requirements-document.md` 写入 `docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md`；场景模板只用于补齐对应章节。
+5. 补齐 frontmatter：`spec_id`、`title`、`type`、`status`、`feature`、`created`、`updated`、`tags`、`related_code`、`related_specs`、`related_technical`、`related_test_cases`、`related_plans`、`related_evidence`。
 6. 写正文 `## 文档信息`，保持中文展示；机器 key 不翻译。
 7. 为 MUST 需求分配稳定 ID：`REQ/API/SCHEMA/STATE/ERR/AC/NFR/MIG/OBS/NON`。
 8. 在 `## 追踪矩阵` 中写验证方式种子，但不写具体测试步骤；测试步骤属于 `writing-test-cases`。

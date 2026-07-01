@@ -20,6 +20,12 @@ related_code:
   - .claude-plugin/plugin.json
 related_specs:
   - docs/coding-plugins/features/preflight/requirements/preflight-PRD.md
+related_technical:
+  - docs/coding-plugins/features/marketplace/technicals/marketplace-TDD.md
+related_plans:
+  - docs/coding-plugins/features/marketplace/plans/marketplace-IPD.md
+related_evidence:
+  - docs/coding-plugins/features/marketplace/evidences/marketplace-TED.md
 ---
 
 # 插件 marketplace 安装入口规格

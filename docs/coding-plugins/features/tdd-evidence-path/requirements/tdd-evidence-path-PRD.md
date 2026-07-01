@@ -18,6 +18,8 @@ related_code:
   - scripts/preflight.py
 related_specs:
   - docs/coding-plugins/features/preflight/requirements/preflight-PRD.md
+related_evidence:
+  - docs/coding-plugins/features/tdd-evidence-path/evidences/tdd-evidence-path-TED.md
 ---
 
 # TDD 证据 固定落地路径规格

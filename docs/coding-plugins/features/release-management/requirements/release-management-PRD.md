@@ -22,6 +22,12 @@ related_code:
   - .github/workflows/release.yml
 related_specs:
   - docs/coding-plugins/features/preflight/requirements/preflight-PRD.md
+related_technical:
+  - docs/coding-plugins/features/release-management/technicals/release-management-TDD.md
+related_plans:
+  - docs/coding-plugins/features/release-management/plans/release-management-IPD.md
+related_evidence:
+  - docs/coding-plugins/features/release-management/evidences/release-management-TED.md
 ---
 
 # 插件发布和版本管理规格

@@ -20,6 +20,10 @@ related_code:
   - scripts/migrate_document_contract.py
 related_technical:
   - docs/coding-plugins/features/downstream-compatibility/technicals/downstream-compatibility-TDD.md
+related_plans:
+  - docs/coding-plugins/features/downstream-compatibility/plans/downstream-compatibility-IPD.md
+related_evidence:
+  - docs/coding-plugins/features/downstream-compatibility/evidences/downstream-compatibility-TED.md
 ---
 
 # 下游项目兼容性和证据生命周期维护规格

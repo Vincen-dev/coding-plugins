@@ -21,6 +21,12 @@ related_code:
 related_specs:
   - docs/coding-plugins/features/artifact-index/requirements/artifact-index-PRD.md
   - docs/coding-plugins/features/document-metadata/requirements/document-metadata-PRD.md
+related_technical:
+  - docs/coding-plugins/features/feature-first-docs/technicals/feature-first-docs-TDD.md
+related_plans:
+  - docs/coding-plugins/features/feature-first-docs/plans/feature-first-docs-IPD.md
+related_evidence:
+  - docs/coding-plugins/features/feature-first-docs/evidences/feature-first-docs-TED.md
 ---
 
 # Feature-first 文档结构迁移规格

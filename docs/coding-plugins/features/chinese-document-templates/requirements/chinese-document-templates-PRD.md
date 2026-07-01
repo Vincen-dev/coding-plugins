@@ -20,6 +20,10 @@ related_code:
 related_specs: []
 related_technical:
   - docs/coding-plugins/features/chinese-document-templates/technicals/chinese-document-templates-TDD.md
+related_plans:
+  - docs/coding-plugins/features/chinese-document-templates/plans/chinese-document-templates-IPD.md
+related_evidence:
+  - docs/coding-plugins/features/chinese-document-templates/evidences/chinese-document-templates-TED.md
 ---
 
 # 中文文档模板展示字段规格

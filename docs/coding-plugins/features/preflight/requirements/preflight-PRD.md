@@ -18,6 +18,12 @@ related_code:
   - tests/hooks/test-session-start.sh
   - docs/coding-plugins/INDEX.md
 related_specs: []
+related_technical:
+  - docs/coding-plugins/features/preflight/technicals/preflight-TDD.md
+related_plans:
+  - docs/coding-plugins/features/preflight/plans/preflight-IPD.md
+related_evidence:
+  - docs/coding-plugins/features/preflight/evidences/preflight-TED.md
 ---
 
 # 插件发布前检查规格

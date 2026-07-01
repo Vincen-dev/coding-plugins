@@ -342,10 +342,80 @@ class PreflightTests(unittest.TestCase):
         self.assertIn("scripts/test_manifest_checks.py", command_text)
         self.assertIn("scripts/test_remote_audit.py", command_text)
         self.assertIn("test_validate_technicals.py", command_text)
+        self.assertIn("test_scaffold_feature_docs.py", command_text)
         self.assertIn("tests.behavior.test_routing", command_text)
         self.assertIn("tests/hooks/test-session-start.sh", command_text)
         self.assertIn("validate_spec.py", command_text)
         self.assertIn("--strict docs/coding-plugins/features/preflight/evidences/preflight-TED.md", command_text)
+
+    def test_prd_metadata_requires_existing_related_artifacts(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature_dir = root / "docs" / "coding-plugins" / "features" / "routing"
+            (feature_dir / "requirements").mkdir(parents=True)
+            (feature_dir / "technicals").mkdir()
+            (feature_dir / "test-cases").mkdir()
+            (feature_dir / "plans").mkdir()
+            (feature_dir / "evidences").mkdir()
+            (feature_dir / "requirements" / "routing-PRD.md").write_text(
+                "---\n"
+                "feature: routing\n"
+                "related_technical:\n"
+                "  - docs/coding-plugins/features/routing/technicals/routing-TDD.md\n"
+                "related_plans:\n"
+                "  - docs/coding-plugins/features/routing/plans/routing-IPD.md\n"
+                "related_evidence:\n"
+                "  - docs/coding-plugins/features/routing/evidences/routing-TED.md\n"
+                "---\n"
+                "# Routing\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "technicals" / "routing-TDD.md").write_text("# TDD\n", encoding="utf-8")
+            (feature_dir / "technicals" / "routing-TID.md").write_text("# TID\n", encoding="utf-8")
+            (feature_dir / "test-cases" / "routing-TCD.md").write_text("# TCD\n", encoding="utf-8")
+            (feature_dir / "plans" / "routing-IPD.md").write_text("# IPD\n", encoding="utf-8")
+            (feature_dir / "evidences" / "routing-TED.md").write_text("# TED\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(preflight.PreflightError, "PRD related metadata is invalid"):
+                preflight.check_prd_related_metadata(root)
+
+    def test_prd_metadata_rejects_missing_related_paths(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            requirements = root / "docs" / "coding-plugins" / "features" / "routing" / "requirements"
+            requirements.mkdir(parents=True)
+            (requirements / "routing-PRD.md").write_text(
+                "---\n"
+                "feature: routing\n"
+                "related_specs:\n"
+                "  - docs/coding-plugins/features/missing/requirements/missing-PRD.md\n"
+                "---\n"
+                "# Routing\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "references missing"):
+                preflight.check_prd_related_metadata(root)
+
+    def test_prd_metadata_allows_no_downstream_docs(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            requirements = root / "docs" / "coding-plugins" / "features" / "routing" / "requirements"
+            requirements.mkdir(parents=True)
+            (requirements / "routing-PRD.md").write_text(
+                "---\n"
+                "feature: routing\n"
+                "related_specs: []\n"
+                "related_technical: []\n"
+                "related_test_cases: []\n"
+                "related_plans: []\n"
+                "related_evidence: []\n"
+                "---\n"
+                "# Routing\n",
+                encoding="utf-8",
+            )
+
+            preflight.check_prd_related_metadata(root)
 
     def test_preflight_uses_technical_design_validator_errors(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

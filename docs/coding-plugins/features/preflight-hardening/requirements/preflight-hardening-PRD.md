@@ -18,6 +18,8 @@ related_code:
   - docs/coding-plugins/INDEX.md
 related_specs:
   - docs/coding-plugins/features/preflight/requirements/preflight-PRD.md
+related_evidence:
+  - docs/coding-plugins/features/preflight-hardening/evidences/preflight-hardening-TED.md
 ---
 
 # Preflight 覆盖面增强规格

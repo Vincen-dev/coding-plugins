@@ -21,6 +21,8 @@ related_technical:
   - docs/coding-plugins/features/artifact-index/technicals/artifact-index-TDD.md
 related_plans:
   - docs/coding-plugins/features/artifact-index/plans/artifact-index-IPD.md
+related_evidence:
+  - docs/coding-plugins/features/artifact-index/evidences/artifact-index-TED.md
 ---
 
 # Coding Plugins 产物总索引规格

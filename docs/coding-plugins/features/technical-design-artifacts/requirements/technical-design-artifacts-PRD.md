@@ -21,6 +21,10 @@ related_code:
 related_specs: []
 related_technical:
   - docs/coding-plugins/features/technical-design-artifacts/technicals/technical-design-artifacts-TDD.md
+related_plans:
+  - docs/coding-plugins/features/technical-design-artifacts/plans/technical-design-artifacts-IPD.md
+related_evidence:
+  - docs/coding-plugins/features/technical-design-artifacts/evidences/technical-design-artifacts-TED.md
 ---
 
 # 技术设计产物独立维护规格

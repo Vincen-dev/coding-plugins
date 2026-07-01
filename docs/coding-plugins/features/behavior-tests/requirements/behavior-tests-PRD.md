@@ -17,6 +17,8 @@ related_code:
   - scripts/preflight.py
 related_specs:
   - docs/coding-plugins/features/session-start-hook/requirements/session-start-hook-PRD.md
+related_evidence:
+  - docs/coding-plugins/features/behavior-tests/evidences/behavior-tests-TED.md
 ---
 
 # 插件行为级测试规格

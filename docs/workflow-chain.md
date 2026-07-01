@@ -30,7 +30,7 @@
 | 0 | 平台加载 | `.agents/plugins/marketplace.json`, `.codex-plugin/plugin.json`, `.claude-plugin/plugin.json`, `hooks/hooks-codex.json` | Codex marketplace、Codex SessionStart hook、Codex / Claude Code 识别插件和 skills |
 | 1 | 入口路由 | `using-coding-plugins` | 判断直接意图和开发任务类型 |
 | 2 | 直接意图处理 | `requesting-code-review`, `receiving-code-review`, `verification-before-completion`, `git-commit`, `finishing-a-development-branch`, `writing-skills`, `using-git-worktrees`, `dispatching-parallel-agents` | 直接完成查询、评审、验证、提交、收尾、隔离或维护任务 |
-| 3 | SDD 文档编排 | `spec-driven-development` | 确认 README、需求文档、技术设计、技术实现、测试用例、计划、证据和 INDEX 的落地链路 |
+| 3 | SDD 文档编排 | `spec-driven-development` | 确认 README、需求文档、技术设计、技术实现、测试用例、计划、证据和 INDEX 的落地链路；新 feature 可创建文档骨架 |
 | 4 | 需求文档 | `writing-requirements` | `docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md`, Spec ID, Traceability Matrix |
 | 5 | 技术文档 | `writing-technicals` | `docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TDD.md`, `docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TID.md`, 规格到设计映射, 模块级实现和测试策略 |
 | 6 | 测试用例 | `writing-test-cases` | `docs/coding-plugins/features/<feature-name>/test-cases/<feature-name>-TCD.md`, Spec ID -> 测试用例 |
@@ -187,7 +187,8 @@ flowchart TD
 flowchart TD
   A["新需求/行为变更/契约不清"] --> B["spec-driven-development"]
   B --> C["探索上下文并确认落地文档链路"]
-  C --> META["document-metadata"]
+  C --> SCAFFOLD["创建 README、PRD 和标准子目录文档骨架"]
+  SCAFFOLD --> META["document-metadata"]
   META --> D["writing-requirements"]
   D --> E["按场景写 requirements/<feature-name>-PRD.md"]
   E --> F["运行 validate_spec.py"]

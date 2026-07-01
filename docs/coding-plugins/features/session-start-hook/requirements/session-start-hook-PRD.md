@@ -21,6 +21,8 @@ related_code:
   - scripts/preflight.py
 related_specs:
   - docs/coding-plugins/features/preflight/requirements/preflight-PRD.md
+related_evidence:
+  - docs/coding-plugins/features/session-start-hook/evidences/session-start-hook-TED.md
 ---
 
 # Codex 会话启动入口注入规格

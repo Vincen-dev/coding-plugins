@@ -24,6 +24,10 @@ related_specs:
   - docs/coding-plugins/features/technical-design-artifacts/requirements/technical-design-artifacts-PRD.md
 related_technical:
   - docs/coding-plugins/features/document-metadata/technicals/document-metadata-TDD.md
+related_plans:
+  - docs/coding-plugins/features/document-metadata/plans/document-metadata-IPD.md
+related_evidence:
+  - docs/coding-plugins/features/document-metadata/evidences/document-metadata-TED.md
 ---
 
 # 文档元数据规则和技能化规格

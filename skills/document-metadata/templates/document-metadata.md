@@ -13,8 +13,7 @@ created: YYYY-MM-DD
 updated: YYYY-MM-DD
 tags:
   - <检索标签>
-related_specs:
-  - docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md
+related_specs: []
 related_technical:
   - docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TDD.md
   - docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TID.md
@@ -46,11 +45,16 @@ tags:
   - <检索标签>
 related_code:
   - <代码路径>
-related_specs:
-  - docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md
+related_specs: []
 related_technical:
   - docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TDD.md
   - docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TID.md
+related_test_cases:
+  - docs/coding-plugins/features/<feature-name>/test-cases/<feature-name>-TCD.md
+related_plans:
+  - docs/coding-plugins/features/<feature-name>/plans/<feature-name>-IPD.md
+related_evidence:
+  - docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md
 ---
 ```
 
