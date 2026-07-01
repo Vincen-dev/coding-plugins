@@ -53,6 +53,7 @@ related_evidence:
 | REQ-007 | `python3 -m unittest tests.behavior.test_routing` | using entry and Claude namespace cover `document-metadata` | `docs/coding-plugins/features/document-metadata/evidences/document-metadata-TED.md` / 任务 3 | 任务 4 |
 | REQ-008 | `python3 scripts/preflight.py` | skill template and agent metadata pass plugin checks | `docs/coding-plugins/features/document-metadata/evidences/document-metadata-TED.md` / 任务 3 | 任务 4 |
 | REQ-009 | `rg "document-metadata" skills docs README.md` | primary document skills reference metadata skill | `docs/coding-plugins/features/document-metadata/evidences/document-metadata-TED.md` / 任务 3 | 任务 4 |
+| REQ-010 | `python3 -m unittest scripts/test_preflight.py` | `test_document_sync_freshness_rejects_stale_downstream_doc` | `docs/coding-plugins/features/document-metadata/evidences/document-metadata-TED.md` / 任务 5 | 任务 5 |
 
 ## 任务 1： Plan metadata and Chinese summary checks
 
@@ -147,3 +148,26 @@ Add document-metadata rows and record TDD 证据.
 - [x] **步骤 4：Validate**
 
 运行行为测试、preflight 和 source scan，确认 skill 可发现、模板存在、metadata-first 规则可被后续代理读取。
+
+## 任务 5：Document sync freshness gate
+
+**规格 ID:** REQ-010, ERR-006, AC-004
+
+**文件:**
+- 修改: `scripts/preflight.py`
+- 修改: `scripts/test_preflight.py`
+- 修改: `skills/document-metadata/SKILL.md`
+- 修改: `skills/document-metadata/templates/document-metadata.md`
+- 修改: `docs/workflow-chain.md`
+
+- [x] **步骤 1：Write failing tests**
+
+增加 stale downstream 测试：PRD 晚于 TDD、TCD 晚于 IPD 时必须失败；下游日期等于或晚于上游时必须通过。
+
+- [x] **步骤 2：Implement sync freshness check**
+
+在 preflight 中按 `PRD -> TDD -> TID -> TCD -> IPD -> TED` 依赖图比较 `updated`。
+
+- [x] **步骤 3：Document the workflow**
+
+在 `document-metadata` skill、模板和 workflow-chain 中说明同步更新规则。

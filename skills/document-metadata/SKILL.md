@@ -47,7 +47,7 @@ description: Use when reading, creating, updating, migrating, or auditing Coding
 | `title` | 文档标题 | 面向索引和人工检索，保持稳定清晰 |
 | `status` | 文档状态 | 常用值：`draft`、`approved`、`superseded`、`archived` |
 | `feature` | feature 归属 | 必须匹配 `docs/coding-plugins/features/<feature-name>/` |
-| `created` / `updated` | 生命周期日期 | 使用 `YYYY-MM-DD`，不要写进文件名 |
+| `created` / `updated` | 生命周期日期 | 使用 `YYYY-MM-DD`，不要写进文件名；`updated` 同时表示文档已按上游变更完成同步评审 |
 | `tags` | README 检索标签 | README 必填，`INDEX.md` 从 README frontmatter 读取 |
 | `lifecycle_status` | technical 生命周期 | TDD/TID 使用：`draft`、`approved`、`implemented`、`stale`、`superseded` |
 | `implemented_commits` | 已落地提交 | TDD/TID 使用；未落地时保留空列表 |
@@ -79,18 +79,45 @@ description: Use when reading, creating, updating, migrating, or auditing Coding
 2. 保持机器 key 为英文；中文展示写入正文 `## 文档信息`。
 3. 所有 `related_*` 值使用当前仓库内 `docs/coding-plugins/...` 路径。
 4. README 只写人工摘要、标签和轻量例外追踪；不要维护索引型链路表。
-5. 新增、移动、批准、废弃或拆分文档后运行：
+5. 修改 PRD、TDD、TID、TCD、IPD 或 TED 后，按下方“同步更新机制”检查并更新相关下游文档。
+6. 新增、移动、批准、废弃或拆分文档后运行：
 
 ```bash
 python3 scripts/preflight.py --write-index
 python3 scripts/preflight.py
 ```
 
-6. 需要检查跨仓库路径时额外运行：
+7. 需要检查跨仓库路径时额外运行：
 
 ```bash
 python3 scripts/preflight.py --check-external-references
 ```
+
+## 同步更新机制
+
+`document-metadata` 负责提供同步关系图，`scripts/preflight.py` 负责执行门禁。同步方向不是双向平均更新，而是从上游约束传递到下游产物：
+
+```text
+PRD -> TDD -> TID -> TCD -> IPD -> TED
+```
+
+实际依赖规则：
+
+| 文档变更 | 必须同步评审的下游文档 |
+| --- | --- |
+| PRD | TDD、TID、TCD、IPD、TED |
+| TDD | TID、TCD、IPD、TED |
+| TID | TCD、IPD、TED |
+| TCD | IPD、TED |
+| IPD | TED |
+| TED | 不反向要求上游更新，但会影响索引更新时间 |
+
+同步动作：
+
+1. 先通过 `related_*` 找到同 feature 的相关文档。
+2. 判断上游变更是否影响下游正文；影响时更新下游正文和 `updated`。
+3. 如果确认不影响下游正文，也必须更新下游 `updated`，表示已完成同步评审。
+4. 运行 `python3 scripts/preflight.py --write-index`。preflight 会拒绝 `updated` 早于上游文档的下游文档。
 
 ## 常见错误
 
@@ -102,6 +129,7 @@ python3 scripts/preflight.py --check-external-references
 | `feature` 与路径不一致 | 以路径 `features/<feature-name>` 为准修正 metadata |
 | 中文 `文档信息` 和 frontmatter 不一致 | 以 frontmatter 为准更新中文摘要 |
 | 新增文档后忘记 INDEX | 运行 `python3 scripts/preflight.py --write-index` |
+| 改了 PRD 但没有同步 TDD/TID/TCD/IPD/TED | 按同步更新机制评审下游文档，更新正文或至少更新 `updated` |
 
 ## 相关契约
 

@@ -417,6 +417,74 @@ class PreflightTests(unittest.TestCase):
 
             preflight.check_prd_related_metadata(root)
 
+    def test_document_sync_freshness_rejects_stale_downstream_doc(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature_dir = root / "docs" / "coding-plugins" / "features" / "routing"
+            (feature_dir / "requirements").mkdir(parents=True)
+            (feature_dir / "technicals").mkdir()
+            (feature_dir / "requirements" / "routing-PRD.md").write_text(
+                "---\nupdated: 2026-07-02\n---\n# PRD\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "technicals" / "routing-TDD.md").write_text(
+                "---\nupdated: 2026-07-01\n---\n# TDD\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Document sync freshness is invalid"):
+                preflight.check_document_sync_freshness(root)
+
+    def test_document_sync_freshness_rejects_plan_older_than_test_cases(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature_dir = root / "docs" / "coding-plugins" / "features" / "routing"
+            (feature_dir / "requirements").mkdir(parents=True)
+            (feature_dir / "test-cases").mkdir()
+            (feature_dir / "plans").mkdir()
+            (feature_dir / "requirements" / "routing-PRD.md").write_text(
+                "---\nupdated: 2026-07-01\n---\n# PRD\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "test-cases" / "routing-TCD.md").write_text(
+                "---\nupdated: 2026-07-03\n---\n# TCD\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "plans" / "routing-IPD.md").write_text(
+                "---\nupdated: 2026-07-02\n---\n# IPD\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "routing-IPD.md updated 2026-07-02"):
+                preflight.check_document_sync_freshness(root)
+
+    def test_document_sync_freshness_allows_equal_or_newer_downstream_docs(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature_dir = root / "docs" / "coding-plugins" / "features" / "routing"
+            (feature_dir / "requirements").mkdir(parents=True)
+            (feature_dir / "technicals").mkdir()
+            (feature_dir / "plans").mkdir()
+            (feature_dir / "evidences").mkdir()
+            (feature_dir / "requirements" / "routing-PRD.md").write_text(
+                "---\nupdated: 2026-07-01\n---\n# PRD\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "technicals" / "routing-TDD.md").write_text(
+                "---\nupdated: 2026-07-01\n---\n# TDD\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "plans" / "routing-IPD.md").write_text(
+                "---\nupdated: 2026-07-02\n---\n# IPD\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "evidences" / "routing-TED.md").write_text(
+                "---\nupdated: 2026-07-02\n---\n# TED\n",
+                encoding="utf-8",
+            )
+
+            preflight.check_document_sync_freshness(root)
+
     def test_preflight_uses_technical_design_validator_errors(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

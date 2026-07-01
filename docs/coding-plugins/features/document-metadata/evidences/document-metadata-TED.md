@@ -52,3 +52,17 @@ related_plans:
 - **GREEN 命令:** `python3 -m unittest tests.behavior.test_routing`
 - **REFACTOR 命令:** `rg "document-metadata" skills docs README.md`
 - **最终验证:** `python3 scripts/preflight.py --write-index`、`python3 scripts/preflight.py`。
+
+## 任务 4：Document sync freshness gate
+
+### TDD 证据
+
+- **规格/缺陷/验收:** REQ-010 / ERR-006 / AC-004
+- **测试类型:** unit
+- **RED 测试:** `scripts/test_preflight.py::PreflightTests.test_document_sync_freshness_rejects_stale_downstream_doc`
+- **RED 命令:** `python3 -m unittest scripts/test_preflight.py`
+- **RED 失败:** 新增测试期望 preflight 拦截上游 PRD 晚于下游 TDD、TCD 晚于 IPD 的情况，但旧 preflight 没有文档同步新鲜度校验。
+- **GREEN 变更:** `scripts/preflight.py` 新增 `check_document_sync_freshness`，按 `PRD -> TDD -> TID -> TCD -> IPD -> TED` 依赖图比较 `updated`；`document-metadata` skill 和模板补充同步更新规则。
+- **GREEN 命令:** `python3 -m unittest scripts/test_preflight.py` PASS
+- **REFACTOR 命令:** `python3 -m py_compile scripts/preflight.py` PASS；`git diff --check` PASS
+- **最终验证:** `python3 scripts/preflight.py --write-index` PASS。

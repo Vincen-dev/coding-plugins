@@ -453,6 +453,8 @@ docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TID.md
 
 当同一 feature 已存在 PRD、TID、TCD、IPD 或 TED 时，TDD frontmatter 应维护 `related_specs`、`related_technical`、`related_test_cases`、`related_plans` 和 `related_evidence`。TID frontmatter 应反向链接 TDD，并链接 PRD、TCD、IPD 和 TED。这些路径用于把需求契约、技术设计、技术实现、测试用例、实现计划和验证证据连成可检索链路。
 
+文档变更必须沿 metadata 关系向下游同步：`PRD -> TDD -> TID -> TCD -> IPD -> TED`。如果上游文档的 `updated` 晚于下游，说明下游还没有完成同步评审；preflight 会失败。下游正文确实无需变更时，也要更新下游 `updated`，表示已确认不受影响。
+
 technical frontmatter 还必须维护 `lifecycle_status`、`implemented_commits` 和 `validated_by`。`lifecycle_status` 只允许 `draft`、`approved`、`implemented`、`stale`、`superseded`；如果 related approved spec 的 `updated` 晚于 technical 的 `updated`，strict validator 会判定 technical stale。
 
 technical 可单独运行 validator：

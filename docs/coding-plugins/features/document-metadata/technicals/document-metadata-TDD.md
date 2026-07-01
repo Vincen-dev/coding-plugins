@@ -52,6 +52,7 @@ related_evidence:
 | REQ-007 | 插件必须提供 `document-metadata` skill，明确读取文档时先读 frontmatter metadata，再读正文。 | 新增 `skills/document-metadata/SKILL.md`，固化 metadata-first 读取顺序、字段职责和常见错误 | TD-004 | `skills/document-metadata/SKILL.md`<br>`skills/document-metadata/agents/openai.yaml`<br>`tests/behavior/test_routing.py` | `python3 -m unittest tests.behavior.test_routing` | `docs/coding-plugins/features/document-metadata/evidences/document-metadata-TED.md` |
 | REQ-008 | 插件必须提供 `document-metadata.md` 模板，覆盖 README、Spec、Technical、Plan、Evidence 和 Archived evidence 的 metadata 关系。 | 新增 `skills/document-metadata/templates/document-metadata.md`，提供通用和分类型 frontmatter 块 | TD-005 | `skills/document-metadata/templates/document-metadata.md` | 文档评审和 preflight。 | `docs/coding-plugins/features/document-metadata/evidences/document-metadata-TED.md` |
 | REQ-009 | 入口技能和 SDD/TDD/Technical/Plan 技能必须把文档关系读取导向 `document-metadata`。 | 更新 `using-coding-plugins`、SDD、TDD、technical、plan、README、workflow-chain 和 document-contract 引用 | TD-006 | `skills/using-coding-plugins/SKILL.md`<br>`skills/spec-driven-development/SKILL.md`<br>`skills/test-driven-development/SKILL.md`<br>`skills/writing-technicals/SKILL.md`<br>`skills/writing-plans/SKILL.md` | `python3 -m unittest tests.behavior.test_routing`<br>`rg "document-metadata" skills docs README.md` | `docs/coding-plugins/features/document-metadata/evidences/document-metadata-TED.md` |
+| REQ-010 | preflight 必须按 metadata 关系校验文档同步新鲜度。 | `scripts/preflight.py`：按 PRD、TDD、TID、TCD、IPD、TED 依赖图比较 `updated`；`scripts/test_preflight.py`：覆盖 PRD 到 TDD、TCD 到 IPD 和正常同步场景 | TD-007 | `scripts/preflight.py`<br>`scripts/test_preflight.py`<br>`skills/document-metadata/SKILL.md` | 单元测试 `test_document_sync_freshness_rejects_stale_downstream_doc`。 | `docs/coding-plugins/features/document-metadata/evidences/document-metadata-TED.md` |
 
 ## 无需技术设计的规格
 
@@ -69,6 +70,7 @@ related_evidence:
 | TD-004 | 新增 `document-metadata` skill | 单靠文档契约不容易触发代理读取顺序，skill 能进入任务路由 | 多一个技能入口需要维护展示 metadata 和 Claude namespace |
 | TD-005 | `document-metadata.md` 模板放在 skill 内 | 模板和操作规则同域维护，避免再散落在 spec 模板中 | 具体 spec/technical/plan 模板仍保留各自最小模板 |
 | TD-006 | 现有主链路技能引用 `document-metadata` | 让 SDD、TDD、technical 和 plan 在读写文档前显式走 metadata 规则 | 需要避免重复复制完整规则 |
+| TD-007 | 用 `updated` 做同步新鲜度门禁 | 不引入额外数据库或状态文件，直接复用已有 metadata 生命周期字段 | 同一天内的多次变更只按日期粒度判断，仍需要人工评审正文影响 |
 
 ## 影响组件
 
@@ -83,6 +85,8 @@ related_evidence:
 | `skills/document-metadata/templates/document-metadata.md` | 新增通用 metadata 模板 | REQ-008 |
 | `skills/using-coding-plugins/references/claude-tools.md` | 增加 Claude namespace 显式技能入口 | REQ-007 |
 | `README.md` / `docs/workflow-chain.md` / `docs/coding-plugins/document-contract.md` | 将文档关系读取入口指向 `document-metadata` | REQ-009 |
+| `scripts/preflight.py` | 增加文档同步新鲜度校验 | REQ-010 |
+| `scripts/test_preflight.py` | 增加过期下游文档和正常同步场景单元测试 | REQ-010 |
 
 ## 数据流 / 控制流
 
@@ -105,6 +109,7 @@ flowchart TD
 - `document-metadata` skill must include `agents/openai.yaml`.
 - `document-metadata.md` template must keep machine key names English and show document relations through `related_*`.
 - Frontmatter key names remain English.
+- Document sync freshness follows `PRD -> TDD -> TID -> TCD -> IPD -> TED`; downstream `updated` must not be older than upstream `updated`.
 
 ## 迁移 / 兼容性
 

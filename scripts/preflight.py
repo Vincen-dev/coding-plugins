@@ -7,6 +7,7 @@ import importlib.util
 import re
 import subprocess
 import sys
+from datetime import date
 from pathlib import Path
 from typing import Callable
 
@@ -794,6 +795,58 @@ def check_prd_related_metadata(root: Path) -> None:
         raise PreflightError("PRD related metadata is invalid: " + "; ".join(offenders) + ".")
 
 
+def document_updated_date(root: Path, path: Path) -> date | None:
+    metadata = parse_frontmatter(path.read_text(encoding="utf-8"))
+    value = metadata.get("updated")
+    if not value:
+        return None
+    try:
+        return date.fromisoformat(value)
+    except ValueError as error:
+        raise PreflightError(f"Document updated metadata is invalid: {path.relative_to(root)} updated={value}.") from error
+
+
+def check_document_sync_freshness(root: Path) -> None:
+    offenders: list[str] = []
+    for feature_root in collect_feature_roots(root):
+        documents_by_label = {
+            "PRD": docs_index.feature_spec_files(feature_root),
+            "TDD": docs_index.feature_technical_design_files(feature_root),
+            "TID": docs_index.feature_technical_implementation_files(feature_root),
+            "TCD": docs_index.feature_test_case_files(feature_root),
+            "IPD": docs_index.feature_plan_files(feature_root),
+            "TED": docs_index.feature_evidence_files(feature_root),
+        }
+        dependency_labels = {
+            "TDD": ("PRD",),
+            "TID": ("PRD", "TDD"),
+            "TCD": ("PRD", "TDD", "TID"),
+            "IPD": ("PRD", "TDD", "TID", "TCD"),
+            "TED": ("PRD", "TDD", "TID", "TCD", "IPD"),
+        }
+
+        for downstream_label, upstream_labels in dependency_labels.items():
+            for downstream in documents_by_label[downstream_label]:
+                downstream_updated = document_updated_date(root, downstream)
+                if downstream_updated is None:
+                    offenders.append(f"{downstream.relative_to(root)} missing updated metadata")
+                    continue
+                for upstream_label in upstream_labels:
+                    for upstream in documents_by_label[upstream_label]:
+                        upstream_updated = document_updated_date(root, upstream)
+                        if upstream_updated is None:
+                            offenders.append(f"{upstream.relative_to(root)} missing updated metadata")
+                            continue
+                        if downstream_updated < upstream_updated:
+                            offenders.append(
+                                f"{downstream.relative_to(root)} updated {downstream_updated.isoformat()} "
+                                f"is older than {upstream.relative_to(root)} updated {upstream_updated.isoformat()}"
+                            )
+
+    if offenders:
+        raise PreflightError("Document sync freshness is invalid: " + "; ".join(offenders) + ".")
+
+
 def check_archived_evidence_metadata(root: Path) -> None:
     incomplete: list[str] = []
     mismatches: list[str] = []
@@ -1351,6 +1404,7 @@ def run_static_checks(root: Path) -> None:
     check_feature_document_chain_closure(root)
     check_document_path_metadata(root)
     check_prd_related_metadata(root)
+    check_document_sync_freshness(root)
     check_plan_metadata(root)
     check_evidence_metadata(root)
     check_archived_evidence_metadata(root)
