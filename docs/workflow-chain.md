@@ -31,7 +31,7 @@
 | 1 | 入口路由 | `using-coding-plugins` | 判断直接意图和开发任务类型 |
 | 2 | 直接意图处理 | `requesting-code-review`, `receiving-code-review`, `verification-before-completion`, `git-commit`, `finishing-a-development-branch`, `writing-skills`, `using-git-worktrees`, `dispatching-parallel-agents` | 直接完成查询、评审、验证、提交、收尾、隔离或维护任务 |
 | 3 | SDD 文档编排 | `spec-driven-development` | 确认 README、需求文档、技术设计、技术实现、测试用例、计划、证据和 INDEX 的落地链路 |
-| 4 | 需求文档 | `writing-requirements` | `docs/coding-plugins/features/<feature-name>/requirements/<spec-kind>.md`, Spec ID, Traceability Matrix |
+| 4 | 需求文档 | `writing-requirements` | `docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md`, Spec ID, Traceability Matrix |
 | 5 | 技术文档 | `writing-technicals` | `docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TDD.md`, `docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TID.md`, 规格到设计映射, 模块级实现和测试策略 |
 | 6 | 测试用例 | `writing-test-cases` | `docs/coding-plugins/features/<feature-name>/test-cases/<feature-name>-TCD.md`, Spec ID -> 测试用例 |
 | 7 | 实现计划 | `writing-plans` | `docs/coding-plugins/features/<feature-name>/plans/<feature-name>-IPD.md`, 技术设计来源, 技术实现来源, 测试用例来源, Spec ID -> 测试 -> 任务 追踪 |
@@ -189,7 +189,7 @@ flowchart TD
   B --> C["探索上下文并确认落地文档链路"]
   C --> META["document-metadata"]
   META --> D["writing-requirements"]
-  D --> E["按场景写 requirements/<spec-kind>.md"]
+  D --> E["按场景写 requirements/<feature-name>-PRD.md"]
   E --> F["运行 validate_spec.py"]
   F --> G{"用户确认需求文档？"}
   G -->|需要修改| D
@@ -398,16 +398,16 @@ Claude Code 侧使用 `.claude-plugin/plugin.json` 识别插件。技能以 `/co
 - TDD 证据：`test-driven-development` 负责。
 - 全局索引：`docs/coding-plugins/INDEX.md`。
 
-硬门禁：需求文档确认前不得进入 technical；technical 和测试用例文档确认前不得进入 implementation plan；不得写代码、搭脚手架或调用实现技能。
+硬门禁：PRD 确认前不得进入 TDD/TID；TDD/TID 和 TCD 确认前不得进入 IPD；不得写代码、搭脚手架或调用实现技能。
 
 ### 需求文档层
 
-`writing-requirements` 负责把功能、接口、schema、状态机、验收或维护约束写成需求文档。它只定义“要什么”和“如何验收”，不写技术方案、测试用例步骤或实现任务。
+`writing-requirements` 负责把功能、接口、schema、状态机、验收或维护约束写成 PRD 需求文档。它只定义“要什么”和“如何验收”，不写技术设计、技术实现、测试用例步骤或实现任务。
 
 默认需求文档路径：
 
 ```text
-docs/coding-plugins/features/<feature-name>/requirements/<spec-kind>.md
+docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md
 ```
 
 时间、状态、标签和相关代码写入需求文档 metadata；新增、移动或删除 feature 文档后运行 `python3 scripts/preflight.py --write-index` 重新生成 `docs/coding-plugins/INDEX.md`，文件名不使用日期前缀。
@@ -416,9 +416,9 @@ docs/coding-plugins/features/<feature-name>/requirements/<spec-kind>.md
 
 - 项目上下文。
 - 用户目标、非目标和成功标准。
-- 需求文档类型选择：feature、API contract、schema、state machine、acceptance criteria、maintenance。
+- PRD 章节类型选择：feature、API contract、schema、state machine、acceptance criteria、maintenance。
 - 无新增需求时，只有维护、基线、回归、迁移或可观测性风险需要维护需求文档。
-- 路径和索引：`<feature-name>/<spec-kind>.md`，并通过 `python3 scripts/preflight.py --write-index` 更新 `INDEX.md`。
+- 路径和索引：`requirements/<feature-name>-PRD.md`，并通过 `python3 scripts/preflight.py --write-index` 更新 `INDEX.md`。
 - 稳定 Spec ID：`REQ/API/SCHEMA/STATE/ERR/AC/NFR/MIG/OBS/NON`。
 - 外部契约示例：请求/响应、schema 样例、状态迁移或错误样例。
 - Traceability Matrix 初稿。

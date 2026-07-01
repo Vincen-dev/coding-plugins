@@ -24,7 +24,7 @@ description: Use after approved requirement documents and technical documents ex
 不使用本技能：
 
 - 需求还没有批准：先用 `writing-requirements`。
-- 技术方案还没有明确：先用 `writing-technicals`。
+- TDD/TID 还没有明确：先用 `writing-technicals`。
 - 正在写实际测试代码和记录 RED/GREEN：使用 `test-driven-development`。
 
 ## 落地路径

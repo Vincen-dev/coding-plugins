@@ -53,9 +53,9 @@ docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TID.md
 - 会一起变化的文件应放在一起。按职责拆分，而不是机械按技术层拆分。
 - 在现有代码库中遵循既有模式。不要单方面重构整个项目；但如果要修改的文件已经臃肿，把局部拆分纳入计划是合理的。
 
-## 技术方案
+## 技术文档
 
-完整技术设计写在 `docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TDD.md`，模块级技术实现写在 `docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TID.md`。计划必须引用 TDD；同一 feature 下存在 TID 时，也必须引用 TID。计划中的技术方案只保留执行所需快照，重点是把设计和实现约束拆成可测试任务。
+完整技术设计写在 `docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TDD.md`，模块级技术实现写在 `docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TID.md`。计划必须引用 TDD；同一 feature 下存在 TID 时，也必须引用 TID。IPD 中的技术内容只保留执行所需快照，重点是把设计和实现约束拆成可测试任务。
 
 必须覆盖：
 
@@ -265,7 +265,7 @@ git commit -m "feat(scope): 增加具体功能"
 - “为上述内容写测试”但不给实际测试代码。
 - “类似 任务 N”而不重复代码。
 - 只描述做什么，不展示怎么做。
-- 有技术方案标题，但没有关键决策、影响组件、测试策略或风险缓解。
+- 有技术文档标题，但没有关键决策、影响组件、测试策略或风险缓解。
 - 引用之前任务没有定义过的类型、函数或方法。
 
 ## 自审
@@ -273,7 +273,7 @@ git commit -m "feat(scope): 增加具体功能"
 写完计划后，对照规格自审：
 
 1. **规格覆盖**：每个规格要求都能指向某个任务吗？列出缺口。
-2. **技术方案落地**：方案是否引用 TDD；存在 TID 时是否引用 TID；是否说明关键决策、影响组件、接口契约、迁移兼容、测试策略和风险缓解。
+2. **技术文档落地**：方案是否引用 TDD；存在 TID 时是否引用 TID；是否说明关键决策、影响组件、接口契约、迁移兼容、测试策略和风险缓解。
 3. **追踪矩阵**：每个 MUST Spec ID 是否映射到测试和任务。
 4. **TDD 证据**：每个会改变行为的任务是否要求写入固定 evidence 文件，并记录 RED/GREEN/REFACTOR Evidence。
 5. **测试来源**：每个失败测试是否来自 Spec ID、bug 复现或明确验收标准。

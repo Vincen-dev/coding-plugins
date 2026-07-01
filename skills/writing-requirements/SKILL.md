@@ -1,13 +1,13 @@
 ---
 name: writing-requirements
-description: Use when writing or updating Coding Plugins requirement documents, including feature, API contract, schema, state-machine, acceptance, or maintenance requirement specs under docs/coding-plugins/features/<feature-name>/requirements/.
+description: Use when writing or updating Coding Plugins PRD requirement documents, including feature, API contract, schema, state-machine, acceptance, or maintenance requirements under docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md.
 ---
 
 # 编写需求文档
 
 ## 总览
 
-本技能负责把需求、契约、schema、状态机、验收标准或维护约束写成可追踪、可验证的需求文档。`spec-driven-development` 负责判断完整文档链路；本技能负责真正编写 `requirements/<spec-kind>.md`。
+本技能负责把需求、契约、schema、状态机、验收标准或维护约束写成可追踪、可验证的 PRD 需求文档。`spec-driven-development` 负责判断完整文档链路；本技能负责真正编写 `requirements/<feature-name>-PRD.md`。
 
 **核心原则：**需求文档只定义“要什么”和“如何验收”，不写技术方案、测试用例步骤或实现计划。
 
@@ -25,8 +25,8 @@ description: Use when writing or updating Coding Plugins requirement documents, 
 
 不使用本技能：
 
-- 已经有已批准需求文档，且只需要技术方案：使用 `writing-technicals`。
-- 已经有技术方案，需要拆任务：使用 `writing-plans`。
+- 已经有已批准 PRD，且只需要 TDD/TID：使用 `writing-technicals`。
+- 已经有 TDD/TID 和 TCD，需要拆任务：使用 `writing-plans`。
 - 只需要测试用例文档：使用 `writing-test-cases`。
 - 只记录实际 RED/GREEN/REFACTOR：使用 `test-driven-development` 的 evidence。
 
@@ -35,20 +35,20 @@ description: Use when writing or updating Coding Plugins requirement documents, 
 | 场景 | 文档 | 模板 |
 | --- | --- | --- |
 | 普通功能、用户流程、可见行为 | `docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md` | `templates/feature-spec.md` |
-| HTTP/RPC/API/SDK/CLI 契约 | `docs/coding-plugins/features/<feature-name>/requirements/api-contract.md` | `templates/api-contract-spec.md` |
-| 数据结构、配置、事件 payload | `docs/coding-plugins/features/<feature-name>/requirements/schema.md` | `templates/schema-spec.md` |
-| 状态、工作流、生命周期 | `docs/coding-plugins/features/<feature-name>/requirements/state-machine.md` | `templates/state-machine-spec.md` |
-| 验收标准不清 | `docs/coding-plugins/features/<feature-name>/requirements/acceptance.md` | `templates/acceptance-criteria.md` |
+| HTTP/RPC/API/SDK/CLI 契约 | `docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md` | `templates/api-contract-spec.md` |
+| 数据结构、配置、事件 payload | `docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md` | `templates/schema-spec.md` |
+| 状态、工作流、生命周期 | `docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md` | `templates/state-machine-spec.md` |
+| 验收标准不清 | `docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md` | `templates/acceptance-criteria.md` |
 | 维护、重构、升级、迁移、回归风险 | `docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md` | `templates/maintenance-spec.md` |
 
-同一 feature 可以有多个需求文档。横跨多个独立能力时，拆成多个 feature，并用 `related_specs` 互链。
+同一 feature 只维护一个 PRD。不同场景使用不同模板补齐 PRD 中的章节和追踪矩阵；横跨多个独立 feature 时，拆成多个 feature root，并用 `related_specs` 互链。
 
 ## 编写流程
 
 1. 使用 `document-metadata` 读取 feature README 和相关文档 frontmatter。
 2. 检索现有需求文档：`docs/coding-plugins/INDEX.md`、feature、tag、Spec ID、相关代码路径。
-3. 选择一个或多个需求文档类型；不要为了形式创建不需要的文档。
-4. 用对应模板写入 `docs/coding-plugins/features/<feature-name>/requirements/<spec-kind>.md`。
+3. 选择一个或多个需求章节类型；不要为了形式创建不需要的章节。
+4. 用对应模板写入 `docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md`。
 5. 补齐 frontmatter：`spec_id`、`title`、`type`、`status`、`feature`、`created`、`updated`、`tags`、`related_code`、`related_specs`。
 6. 写正文 `## 文档信息`，保持中文展示；机器 key 不翻译。
 7. 为 MUST 需求分配稳定 ID：`REQ/API/SCHEMA/STATE/ERR/AC/NFR/MIG/OBS/NON`。
@@ -79,7 +79,7 @@ python3 scripts/preflight.py --write-index
 
 - 每个 MUST 需求是否有稳定 Spec ID。
 - 每个 MUST 需求是否有验证方式。
-- 是否没有把技术方案写进需求文档。
+- 是否没有把技术设计或技术实现写进需求文档。
 - 是否没有把测试用例步骤写进需求文档。
 - 是否已链接相关需求、技术设计、计划、证据或代码路径。
 - 是否运行 `validate_spec.py` 并修复失败项。

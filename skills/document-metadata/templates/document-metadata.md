@@ -47,7 +47,7 @@ tags:
 related_code:
   - <代码路径>
 related_specs:
-  - docs/coding-plugins/features/<feature-name>/requirements/<spec-kind>.md
+  - docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md
 related_technical:
   - docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TDD.md
   - docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TID.md

@@ -1,6 +1,6 @@
 # Choosing Spec Type
 
-根据系统边界选择最小必要规格。一个任务可以组合多种规格，但不要为了形式生成无用章节。
+根据系统边界选择 PRD 中最小必要的需求章节。一个任务可以组合多种规格维度，但不要为了形式生成无用章节。
 
 | 触发信号 | 规格类型 | 模板 |
 | --- | --- | --- |
@@ -18,22 +18,17 @@
 - 有“状态 + 事件 + 转移”时，优先写状态机。
 - 只有内部函数且需求明确时，可写轻量 feature spec。
 - 没有新需求时，不写 feature spec；只有行为、兼容性、迁移、风险或验证口径会变化时才写 maintenance spec。
-- 规格类型不确定时，先问一个会改变规格结构的问题。
+- 规格类型不确定时，先问一个会改变 PRD 章节结构的问题。
 
 ## 文件名选择
 
-规格路径使用 `docs/coding-plugins/features/<feature-name>/requirements/<spec-kind>.md`。
+需求文档路径固定使用：
 
-| 规格类型 | spec-kind |
-| --- | --- |
-| Feature spec | `feature` |
-| API contract spec | `api-contract` |
-| Schema spec | `schema` |
-| State machine spec | `state-machine` |
-| Acceptance criteria | `acceptance` |
-| Maintenance spec | `maintenance` |
+```text
+docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md
+```
 
-同一 feature 可以有多个 spec-kind 文件。日期、状态、标签和相关代码只写 metadata 和 `INDEX.md`，不写入文件名。
+规格类型不再决定文件名。Feature、API contract、schema、state machine、acceptance 和 maintenance 都沉淀为同一个 PRD 中的章节；如果内容属于多个独立 feature，拆成多个 feature root。日期、状态、标签和相关代码只写 metadata 和 `INDEX.md`，不写入文件名。
 
 ## 无新需求时的规格选择
 

@@ -108,10 +108,10 @@ flowchart TD
 
 - Feature root: `docs/coding-plugins/features/<feature-name>/`
 - Feature README: `docs/coding-plugins/features/<feature-name>/README.md`
-- Spec files: `docs/coding-plugins/features/<feature-name>/requirements/<spec-kind>.md`
+- PRD: `docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md`
 - Technical design: `docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TDD.md`
 - Implementation plan: `docs/coding-plugins/features/<feature-name>/plans/<feature-name>-IPD.md`
-- Evidence files: `docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md`
+- TED evidence: `docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md`
 - Frontmatter `feature` must match feature root path.
 - `docs/coding-plugins/INDEX.md` must reference every feature root and every collected document path.
 - Feature root 内不生成局部 `INDEX.md`。

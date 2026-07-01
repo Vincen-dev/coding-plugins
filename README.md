@@ -19,7 +19,7 @@ Codex 侧包含 SessionStart hook，新建、恢复或清空会话时会注入 `
 1. **using-coding-plugins** - 入口技能。先判断直接意图，再判断开发任务类型。
 2. **spec-driven-development** - 实现前激活。编排本 feature 需要沉淀的需求、技术设计、技术实现、测试用例、计划和证据文档。
 3. **document-metadata** - 读取或维护文档关系时先读 frontmatter，再按 `related_*` 串联 README、需求文档、技术设计、测试用例、计划和证据。
-4. **writing-requirements** - 编写 feature、API contract、schema、state machine、acceptance 或 maintenance 需求文档，保存到 `docs/coding-plugins/features/<feature-name>/requirements/<spec-kind>.md`。
+4. **writing-requirements** - 编写 feature、API contract、schema、state machine、acceptance 或 maintenance 需求内容，统一保存到 `docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md`。
 5. **writing-technicals** - 基于已批准需求文档写 TDD 技术设计和必要的 TID 技术实现，保存到 `docs/coding-plugins/features/<feature-name>/technicals/`。
 6. **writing-test-cases** - 基于需求文档、TDD/TID 编写测试用例文档，保存到 `docs/coding-plugins/features/<feature-name>/test-cases/<feature-name>-TCD.md`。
 7. **writing-plans** - 基于已批准需求、TDD/TID 和测试用例写实现计划。任务拆到 2 到 5 分钟粒度，并建立 Spec ID -> Test -> Task 追踪。
