@@ -1,9 +1,9 @@
 ---
-spec_id: plugin-downstream-compatibility-maintenance
 title: 下游项目兼容性和证据生命周期维护规格
 type: maintenance
 status: approved
 feature: downstream-compatibility
+doc_id: downstream-compatibility
 created: 2026-07-01
 updated: 2026-07-01
 tags:

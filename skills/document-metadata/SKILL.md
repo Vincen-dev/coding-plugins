@@ -66,7 +66,7 @@ description: Use when reading, creating, updating, migrating, or auditing Coding
 | 文档 | 必备 metadata | 关系要求 |
 | --- | --- | --- |
 | README | `title`、`status`、`feature`、`updated`、`tags` | 作为人工总览和检索入口，不维护手写 `产物链路` 或 `文档链路` |
-| PRD | `spec_id`、`title`、`type`、`status`、`feature`、`doc_id`、`created`、`updated`、`tags` | 必须在对应下游文档存在时链接同一 `doc_id` 的 `related_technical`、`related_test_cases`、`related_plans`、`related_evidence`，并可链接 `related_specs`、`related_code` |
+| PRD | `title`、`type`、`status`、`feature`、`doc_id`、`created`、`updated`、`tags` | 必须在对应下游文档存在时链接同一 `doc_id` 的 `related_technical`、`related_test_cases`、`related_plans`、`related_evidence`，并可链接 `related_specs`、`related_code` |
 | TDD 技术设计 | `title`、`status`、`lifecycle_status`、`feature`、`doc_id`、`created`、`updated`、`implemented_commits`、`validated_by` | 必须补齐同一 `doc_id` 下存在的 `related_specs`、`related_technical`、`related_plans`、`related_evidence` |
 | TID 技术实现 | `title`、`status`、`lifecycle_status`、`feature`、`doc_id`、`created`、`updated`、`implemented_commits`、`validated_by` | 必须链接同一 `doc_id` 的 TDD、PRD、TCD、IPD 和 TED |
 | TCD 测试用例 | `title`、`status`、`feature`、`doc_id`、`created`、`updated` | 必须链接同一 `doc_id` 下存在的 PRD、TDD/TID、计划和 evidence |

@@ -1,9 +1,9 @@
 ---
-spec_id: plugin-preflight-hardening-feature
 title: Preflight 覆盖面增强
 type: feature
 status: approved
 feature: preflight-hardening
+doc_id: preflight-hardening
 created: 2026-06-26
 updated: 2026-06-29
 tags:

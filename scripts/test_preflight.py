@@ -1054,6 +1054,45 @@ class PreflightTests(unittest.TestCase):
             with self.assertRaisesRegex(preflight.PreflightError, "Spec metadata does not match path"):
                 preflight.check_document_path_metadata(root)
 
+    def test_prd_doc_id_metadata_is_required(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            spec_dir = root / "docs" / "coding-plugins" / "features" / "routing" / "requirements"
+            spec_dir.mkdir(parents=True)
+            (spec_dir / "routing-login-PRD.md").write_text(
+                "---\nfeature: routing\n---\n# Login\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Document doc_id metadata is incomplete"):
+                preflight.check_document_doc_id_metadata(root)
+
+    def test_prd_doc_id_metadata_must_match_filename(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            spec_dir = root / "docs" / "coding-plugins" / "features" / "routing" / "requirements"
+            spec_dir.mkdir(parents=True)
+            (spec_dir / "routing-login-PRD.md").write_text(
+                "---\nfeature: routing\ndoc_id: routing-register\n---\n# Login\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Document doc_id metadata does not match path"):
+                preflight.check_document_doc_id_metadata(root)
+
+    def test_optional_downstream_doc_id_metadata_must_match_filename(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            technicals_dir = root / "docs" / "coding-plugins" / "features" / "routing" / "technicals"
+            technicals_dir.mkdir(parents=True)
+            (technicals_dir / "routing-login-TDD.md").write_text(
+                "---\nfeature: routing\ndoc_id: routing-register\n---\n# TDD\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Document doc_id metadata does not match path"):
+                preflight.check_document_doc_id_metadata(root)
+
     def test_document_path_metadata_check_rejects_missing_evidence_metadata(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

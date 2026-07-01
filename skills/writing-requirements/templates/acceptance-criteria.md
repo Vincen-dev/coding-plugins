@@ -1,9 +1,9 @@
 ---
-spec_id: <feature-name-acceptance>
 title: <验收标准>
 type: acceptance
 status: draft
 feature: <feature-name>
+doc_id: <doc-id>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 tags:
@@ -21,6 +21,7 @@ related_specs: []
 | --- | --- |
 | 状态 | 草稿 |
 | Feature | <feature-name> |
+| Doc ID | <doc-id> |
 | 规格类型 | acceptance |
 
 | 编号 | 场景 | 前置条件 | 操作 | 期望结果 | 验证方式 |

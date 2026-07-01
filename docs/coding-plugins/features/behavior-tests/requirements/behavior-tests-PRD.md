@@ -1,9 +1,9 @@
 ---
-spec_id: plugin-behavior-tests-feature
 title: 插件行为级测试
 type: feature
 status: approved
 feature: behavior-tests
+doc_id: behavior-tests
 created: 2026-06-26
 updated: 2026-06-26
 tags:

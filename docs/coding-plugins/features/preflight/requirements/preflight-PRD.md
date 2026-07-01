@@ -1,9 +1,9 @@
 ---
-spec_id: plugin-preflight-feature
 title: 插件发布前检查
 type: feature
 status: approved
 feature: preflight
+doc_id: preflight
 created: 2026-06-26
 updated: 2026-06-29
 tags:

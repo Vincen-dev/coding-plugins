@@ -57,6 +57,7 @@ related_evidence:
 | REQ-009 | `rg "document-metadata" skills docs README.md` | primary document skills reference metadata skill | `docs/coding-plugins/features/document-metadata/evidences/document-metadata-TED.md` / 任务 3 | 任务 4 |
 | REQ-010 | `python3 -m unittest scripts/test_preflight.py` | `test_document_sync_freshness_rejects_stale_downstream_doc` | `docs/coding-plugins/features/document-metadata/evidences/document-metadata-TED.md` / 任务 5 | 任务 5 |
 | REQ-011 | `python3 -m unittest scripts/test_docs_index.py scripts/test_preflight.py skills/writing-technicals/scripts/test_validate_technicals.py skills/spec-driven-development/scripts/test_scaffold_feature_docs.py` | doc_id index, chain closure, metadata relation, freshness and validator scoping tests | `docs/coding-plugins/features/document-metadata/evidences/document-metadata-TED.md` / 任务 6 | 任务 6 |
+| REQ-012 | `python3 -m unittest scripts/test_preflight.py skills/spec-driven-development/scripts/test_scaffold_feature_docs.py` | PRD doc_id required and scaffold omits document-level spec_id | `docs/coding-plugins/features/document-metadata/evidences/document-metadata-TED.md` / 任务 7 | 任务 7 |
 
 ## 任务 1： Plan metadata and Chinese summary checks
 
@@ -208,3 +209,33 @@ Add document-metadata rows and record TDD 证据.
 - [x] **步骤 3：Update metadata and SDD guidance**
 
 在 metadata 模板、writing-requirements、SDD、README、workflow-chain 和 document-contract 中说明 `feature` 与 `doc_id` 的区别。
+
+## 任务 7：Remove PRD document-level spec_id
+
+**规格 ID:** REQ-012, ERR-008, AC-006
+
+**文件:**
+- 修改: `scripts/preflight.py`
+- 修改: `scripts/test_preflight.py`
+- 修改: `skills/spec-driven-development/scripts/scaffold_feature_docs.py`
+- 修改: `skills/spec-driven-development/scripts/test_scaffold_feature_docs.py`
+- 修改: `skills/document-metadata/SKILL.md`
+- 修改: `skills/document-metadata/templates/document-metadata.md`
+- 修改: `skills/writing-requirements/SKILL.md`
+- 修改: `skills/writing-requirements/templates/*.md`
+- 修改: `skills/spec-driven-development/templates/*.md`
+- 修改: `skills/spec-driven-development/spec-document-reviewer-prompt.md`
+- 修改: `skills/spec-driven-development/references/spec-review-checklist.md`
+- 修改: `docs/coding-plugins/features/*/requirements/*-PRD.md`
+
+- [x] **步骤 1：Add doc_id metadata tests**
+
+增加 PRD 缺少 `doc_id`、PRD `doc_id` 与文件名不一致、下游文档显式 `doc_id` 不一致的 preflight 单元测试。
+
+- [x] **步骤 2：Remove document-level spec_id**
+
+脚手架、模板和真实 PRD 删除文档级 `spec_id`，保留正文条目级 Spec ID。
+
+- [x] **步骤 3：Wire preflight**
+
+接入 `check_document_doc_id_metadata`，要求 PRD 必须声明匹配文件名前缀的 `doc_id`。

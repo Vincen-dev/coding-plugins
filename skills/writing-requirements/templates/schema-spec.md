@@ -1,9 +1,9 @@
 ---
-spec_id: <feature-name-schema>
 title: <数据结构名称>
 type: schema
 status: draft
 feature: <feature-name>
+doc_id: <doc-id>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 tags:
@@ -21,6 +21,7 @@ related_specs: []
 | --- | --- |
 | 状态 | 草稿 |
 | Feature | <feature-name> |
+| Doc ID | <doc-id> |
 | 规格类型 | schema |
 
 ## 目标

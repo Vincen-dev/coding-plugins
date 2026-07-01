@@ -1,9 +1,9 @@
 ---
-spec_id: plugin-release-management-feature
 title: 插件发布和版本管理
 type: feature
 status: approved
 feature: release-management
+doc_id: release-management
 created: 2026-06-26
 updated: 2026-06-29
 tags:

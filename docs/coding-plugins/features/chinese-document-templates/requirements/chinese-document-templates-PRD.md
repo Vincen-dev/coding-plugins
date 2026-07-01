@@ -1,9 +1,9 @@
 ---
-spec_id: plugin-chinese-document-templates-feature
 title: 中文文档模板展示字段规格
 type: feature
 status: approved
 feature: chinese-document-templates
+doc_id: chinese-document-templates
 created: 2026-06-29
 updated: 2026-06-29
 tags:

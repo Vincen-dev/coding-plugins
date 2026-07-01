@@ -51,7 +51,7 @@ description: Use when writing or updating Coding Plugins PRD requirement documen
 3. 选择一个或多个需求章节类型；不要为了形式创建不需要的章节。
 4. 确定 `doc_id`：默认等于 `<feature-name>`；如果同一 feature 下已有其他 PRD，选择能表达本需求链路的稳定短名。
 5. 用 `templates/product-requirements-document.md` 写入 `docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md`；场景模板只用于补齐对应章节。
-6. 补齐 frontmatter：`spec_id`、`title`、`type`、`status`、`feature`、`doc_id`、`created`、`updated`、`tags`、`related_code`、`related_specs`、`related_technical`、`related_test_cases`、`related_plans`、`related_evidence`。
+6. 补齐 frontmatter：`title`、`type`、`status`、`feature`、`doc_id`、`created`、`updated`、`tags`、`related_code`、`related_specs`、`related_technical`、`related_test_cases`、`related_plans`、`related_evidence`。
 7. 写正文 `## 文档信息`，保持中文展示；机器 key 不翻译。
 8. 为 MUST 需求分配稳定 ID：`REQ/API/SCHEMA/STATE/ERR/AC/NFR/MIG/OBS/NON`。
 9. 在 `## 追踪矩阵` 中写验证方式种子，但不写具体测试步骤；测试步骤属于 `writing-test-cases`。

@@ -35,7 +35,6 @@ external_references:
 
 ```yaml
 ---
-spec_id: <doc-id>-prd
 title: <规格标题>
 type: feature | api-contract | schema | state-machine | acceptance | maintenance
 status: draft

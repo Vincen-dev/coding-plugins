@@ -1,9 +1,9 @@
 ---
-spec_id: <feature-name-feature>
 title: <功能名称>
 type: feature
 status: draft
 feature: <feature-name>
+doc_id: <doc-id>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 tags:
@@ -24,6 +24,7 @@ related_evidence: []
 | --- | --- |
 | 状态 | 草稿 |
 | Feature | <feature-name> |
+| Doc ID | <doc-id> |
 | 规格类型 | feature |
 
 ## 目标

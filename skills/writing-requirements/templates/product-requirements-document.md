@@ -1,5 +1,4 @@
 ---
-spec_id: <doc-id>-prd
 title: <功能名称>需求文档
 type: feature
 status: draft

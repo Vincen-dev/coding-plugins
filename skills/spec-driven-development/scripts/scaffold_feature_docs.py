@@ -58,7 +58,6 @@ def render_prd(feature: str, doc_id: str, title: str, status: str, current_date:
     tags_text = yaml_list(tags, fallback=feature)
     return (
         "---\n"
-        f"spec_id: {doc_id}-prd\n"
         f"title: {title}需求文档\n"
         "type: feature\n"
         f"status: {status}\n"

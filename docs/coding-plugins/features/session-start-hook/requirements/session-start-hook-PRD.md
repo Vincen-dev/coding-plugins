@@ -1,9 +1,9 @@
 ---
-spec_id: plugin-session-start-hook-feature
 title: Codex 会话启动入口注入
 type: feature
 status: approved
 feature: session-start-hook
+doc_id: session-start-hook
 created: 2026-06-26
 updated: 2026-06-29
 tags:

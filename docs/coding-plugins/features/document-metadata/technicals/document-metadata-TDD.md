@@ -56,6 +56,7 @@ related_evidence:
 | REQ-009 | 入口技能和 SDD/TDD/Technical/Plan 技能必须把文档关系读取导向 `document-metadata`。 | 更新 `using-coding-plugins`、SDD、TDD、technical、plan、README、workflow-chain 和 document-contract 引用 | TD-006 | `skills/using-coding-plugins/SKILL.md`<br>`skills/spec-driven-development/SKILL.md`<br>`skills/test-driven-development/SKILL.md`<br>`skills/writing-technicals/SKILL.md`<br>`skills/writing-plans/SKILL.md` | `python3 -m unittest tests.behavior.test_routing`<br>`rg "document-metadata" skills docs README.md` | `docs/coding-plugins/features/document-metadata/evidences/document-metadata-TED.md` |
 | REQ-010 | preflight 必须按 metadata 关系校验文档同步新鲜度。 | `scripts/preflight.py`：按 PRD、TDD、TID、TCD、IPD、TED 依赖图比较 `updated`；`scripts/test_preflight.py`：覆盖 PRD 到 TDD、TCD 到 IPD 和正常同步场景 | TD-007 | `scripts/preflight.py`<br>`scripts/test_preflight.py`<br>`skills/document-metadata/SKILL.md` | 单元测试 `test_document_sync_freshness_rejects_stale_downstream_doc`。 | `docs/coding-plugins/features/document-metadata/evidences/document-metadata-TED.md` |
 | REQ-011 | 文档 metadata 必须区分 `feature` 与 `doc_id`。 | `scripts/docs_index.py`：按 Doc ID 分行生成索引<br>`scripts/preflight.py`：按同一 Doc ID 检查链路闭包、related metadata、technical coverage 和同步新鲜度<br>`validate_technicals.py`：按 related specs 或同一 Doc ID 限定 MUST coverage<br>`scaffold_feature_docs.py`：支持 `--doc-id` 和 `doc_id` metadata | TD-008 | `scripts/docs_index.py`<br>`scripts/preflight.py`<br>`skills/writing-technicals/scripts/validate_technicals.py`<br>`skills/spec-driven-development/scripts/scaffold_feature_docs.py` | `python3 -m unittest scripts/test_docs_index.py scripts/test_preflight.py skills/writing-technicals/scripts/test_validate_technicals.py skills/spec-driven-development/scripts/test_scaffold_feature_docs.py` | `docs/coding-plugins/features/document-metadata/evidences/document-metadata-TED.md` |
+| REQ-012 | PRD 不再使用文档级 `spec_id` metadata。 | `scripts/preflight.py`：新增 PRD `doc_id` 必填和路径一致性门禁<br>`scaffold_feature_docs.py` 和 PRD 模板：移除文档级 `spec_id`，保留 `doc_id`<br>真实 PRD：迁移 frontmatter 到 `doc_id` | TD-009 | `scripts/preflight.py`<br>`scripts/test_preflight.py`<br>`skills/spec-driven-development/scripts/scaffold_feature_docs.py`<br>`skills/writing-requirements/templates/product-requirements-document.md`<br>`docs/coding-plugins/features/*/requirements/*-PRD.md` | `python3 -m unittest scripts/test_preflight.py skills/spec-driven-development/scripts/test_scaffold_feature_docs.py` | `docs/coding-plugins/features/document-metadata/evidences/document-metadata-TED.md` |
 
 ## 无需技术设计的规格
 
@@ -75,6 +76,7 @@ related_evidence:
 | TD-006 | 现有主链路技能引用 `document-metadata` | 让 SDD、TDD、technical 和 plan 在读写文档前显式走 metadata 规则 | 需要避免重复复制完整规则 |
 | TD-007 | 用 `updated` 做同步新鲜度门禁 | 不引入额外数据库或状态文件，直接复用已有 metadata 生命周期字段 | 同一天内的多次变更只按日期粒度判断，仍需要人工评审正文影响 |
 | TD-008 | 用 `doc_id` 作为同一 feature 下的链路边界 | 支持一个 feature 模块沉淀多份 PRD，同时避免 technical、plan、evidence 被其他链路误判为缺失或过期 | 旧文档不强制批量迁移，校验器可从文件名前缀推导 doc_id |
+| TD-009 | 移除 PRD 文档级 `spec_id`，由 `doc_id` 承担链路标识 | 避免 `spec_id` 与正文条目级 Spec ID、文件名前缀、doc_id 三套概念并存 | 需要迁移现有 PRD frontmatter，并补 preflight 防止缺失 doc_id |
 
 ## 影响组件
 
@@ -95,6 +97,9 @@ related_evidence:
 | `scripts/preflight.py` | 按 doc_id 限定链路闭包、metadata relation、technical coverage 和同步新鲜度 | REQ-011 |
 | `skills/writing-technicals/scripts/validate_technicals.py` | technical validator 按 related specs 或同一 doc_id 限定 MUST coverage | REQ-011 |
 | `skills/spec-driven-development/scripts/scaffold_feature_docs.py` | 新增 `--doc-id`，生成 `<doc-id>-PRD.md` 和 `doc_id` metadata | REQ-011 |
+| `scripts/preflight.py` | 增加 PRD `doc_id` 必填和路径一致性校验 | REQ-012 |
+| `skills/writing-requirements/templates/*.md` / `skills/spec-driven-development/templates/*.md` | 移除文档级 `spec_id`，补齐 `doc_id` | REQ-012 |
+| `docs/coding-plugins/features/*/requirements/*-PRD.md` | 删除历史 `spec_id` frontmatter，补齐 `doc_id` | REQ-012 |
 
 ## 数据流 / 控制流
 
@@ -113,7 +118,8 @@ flowchart TD
 
 - Plan frontmatter must include `title`、`status`、`feature`、`created`、`updated`。
 - Plan path uses `docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md`。
-- Document path names use `<doc-id>-PRD/TDD/TID/TCD/IPD/TED.md`; when `doc_id` is missing from historical frontmatter, tooling infers it from the filename prefix.
+- Document path names use `<doc-id>-PRD/TDD/TID/TCD/IPD/TED.md`; PRD frontmatter must declare matching `doc_id`; downstream docs may infer doc_id from the filename prefix when frontmatter omits it.
+- PRD frontmatter must not use document-level `spec_id`; concrete requirement traceability stays in body-level Spec IDs such as `REQ-001` and `AC-001`.
 - Plan body must include `## 文档信息` and at least `状态`、`Feature` rows.
 - `document-metadata` skill must include `agents/openai.yaml`.
 - `document-metadata.md` template must keep machine key names English and show document relations through `related_*`.

@@ -687,6 +687,35 @@ def check_document_path_metadata(root: Path) -> None:
         raise PreflightError("Spec metadata does not match path: " + "; ".join(mismatches) + ".")
 
 
+def check_document_doc_id_metadata(root: Path) -> None:
+    incomplete: list[str] = []
+    mismatches: list[str] = []
+    document_groups = (
+        ("PRD", collect_spec_files(root), True),
+        ("TDD", collect_technical_design_files(root), False),
+        ("TID", collect_technical_implementation_files(root), False),
+        ("TCD", collect_test_case_files(root), False),
+        ("IPD", collect_plan_files(root), False),
+        ("TED", collect_tdd_evidence_files(root), False),
+    )
+
+    for _label, files, required in document_groups:
+        for path in files:
+            metadata = parse_frontmatter(path.read_text(encoding="utf-8"))
+            expected_doc_id = docs_index.document_doc_id(path)
+            actual_doc_id = metadata.get("doc_id")
+            if required and not actual_doc_id:
+                incomplete.append(f"{path.relative_to(root)} missing doc_id")
+                continue
+            if actual_doc_id and actual_doc_id != expected_doc_id:
+                mismatches.append(f"{path.relative_to(root)} doc_id={actual_doc_id} path={expected_doc_id}")
+
+    if incomplete:
+        raise PreflightError("Document doc_id metadata is incomplete: " + "; ".join(incomplete) + ".")
+    if mismatches:
+        raise PreflightError("Document doc_id metadata does not match path: " + "; ".join(mismatches) + ".")
+
+
 def check_plan_metadata(root: Path) -> None:
     incomplete: list[str] = []
     mismatches: list[str] = []
@@ -1436,6 +1465,7 @@ def run_static_checks(root: Path) -> None:
     check_feature_first_document_layout(root)
     check_feature_document_chain_closure(root)
     check_document_path_metadata(root)
+    check_document_doc_id_metadata(root)
     check_prd_related_metadata(root)
     check_document_sync_freshness(root)
     check_plan_metadata(root)

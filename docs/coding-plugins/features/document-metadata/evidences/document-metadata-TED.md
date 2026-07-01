@@ -81,3 +81,17 @@ related_plans:
 - **GREEN 命令:** `python3 -m unittest scripts/test_docs_index.py scripts/test_preflight.py skills/writing-technicals/scripts/test_validate_technicals.py skills/spec-driven-development/scripts/test_scaffold_feature_docs.py` PASS
 - **REFACTOR 命令:** `python3 -m py_compile scripts/preflight.py scripts/docs_index.py skills/writing-technicals/scripts/validate_technicals.py skills/spec-driven-development/scripts/scaffold_feature_docs.py` PASS
 - **最终验证:** `python3 scripts/preflight.py --write-index`、`python3 scripts/preflight.py`。
+
+## 任务 6：Remove PRD document-level spec_id
+
+### TDD 证据
+
+- **规格/缺陷/验收:** REQ-012 / ERR-008 / AC-006
+- **测试类型:** unit
+- **RED 测试:** `scripts/test_preflight.py::PreflightTests.test_prd_doc_id_metadata_is_required`、`test_prd_doc_id_metadata_must_match_filename`、`test_optional_downstream_doc_id_metadata_must_match_filename`
+- **RED 命令:** `python3 -m unittest scripts/test_preflight.py skills/spec-driven-development/scripts/test_scaffold_feature_docs.py`
+- **RED 失败:** 旧规则没有要求 PRD `doc_id` 必填，脚手架和模板仍输出文档级 `spec_id`。
+- **GREEN 变更:** 新增 `check_document_doc_id_metadata`；脚手架、模板和真实 PRD 移除文档级 `spec_id`，统一使用 `doc_id` 表达文档链路。
+- **GREEN 命令:** `python3 -m unittest scripts/test_preflight.py skills/spec-driven-development/scripts/test_scaffold_feature_docs.py` PASS
+- **REFACTOR 命令:** `python3 -m py_compile scripts/preflight.py skills/spec-driven-development/scripts/scaffold_feature_docs.py` PASS；`rg "^spec_id:" .` 无结果
+- **最终验证:** `python3 scripts/preflight.py --write-index`、`python3 scripts/preflight.py`。

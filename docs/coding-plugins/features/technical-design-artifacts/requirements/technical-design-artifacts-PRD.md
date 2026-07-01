@@ -1,9 +1,9 @@
 ---
-spec_id: plugin-technical-design-artifacts-feature
 title: 技术设计产物独立维护
 type: feature
 status: approved
 feature: technical-design-artifacts
+doc_id: technical-design-artifacts
 created: 2026-06-26
 updated: 2026-06-29
 tags:

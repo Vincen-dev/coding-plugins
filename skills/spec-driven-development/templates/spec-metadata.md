@@ -1,9 +1,9 @@
 ---
-spec_id: <feature-name-kind>
 title: <规格标题>
 type: feature | api-contract | schema | state-machine | acceptance | maintenance
 status: draft | approved | superseded
 feature: <feature slug>
+doc_id: <doc-id>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 tags:

@@ -1,9 +1,9 @@
 ---
-spec_id: plugin-tdd-evidence-path-feature
 title: TDD 证据 固定落地路径
 type: feature
 status: approved
 feature: tdd-evidence-path
+doc_id: tdd-evidence-path
 created: 2026-06-26
 updated: 2026-06-26
 tags:

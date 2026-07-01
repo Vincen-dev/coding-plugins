@@ -1,9 +1,9 @@
 ---
-spec_id: plugin-marketplace-feature
 title: 插件 marketplace 安装入口
 type: feature
 status: approved
 feature: marketplace
+doc_id: marketplace
 created: 2026-06-26
 updated: 2026-06-29
 tags:

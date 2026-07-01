@@ -1,9 +1,9 @@
 ---
-spec_id: plugin-technical-design-validator-feature
 title: Technical Design Validator
 type: feature
 status: approved
 feature: technical-design-validator
+doc_id: technical-design-validator
 created: 2026-06-29
 updated: 2026-06-29
 tags:
