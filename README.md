@@ -18,15 +18,17 @@ Codex 侧包含 SessionStart hook，新建、恢复或清空会话时会注入 `
 
 1. **using-coding-plugins** - 入口技能。先判断直接意图，再判断开发任务类型。
 2. **spec-driven-development** - 实现前激活。把需求、接口、schema、状态机和验收标准写成可测试规格。
-3. **writing-technical-design** - 基于已批准规格写独立技术设计，保存到 `docs/coding-plugins/features/<feature-name>/technical/technical-design.md`。
-4. **writing-plans** - 基于已批准规格和技术设计写实现计划。任务拆到 2 到 5 分钟粒度，并建立 Spec ID -> Test -> Task 追踪。
-5. **using-git-worktrees** - 执行前使用。创建隔离 worktree 和新分支，避免污染当前工作区。
-6. **subagent-driven-development / executing-plans** - 根据计划执行。优先子代理驱动；没有子代理时内联执行。
-7. **test-driven-development** - 实现时强制 RED-GREEN-REFACTOR：先从规格写失败测试，再最小实现，再重构，并把 TDD Evidence 写入 `docs/coding-plugins/features/<feature-name>/evidence/tdd-evidence.md`。
-8. **requesting-code-review** - 任务之间或合并前评审，按严重级别报告问题。
-9. **receiving-code-review** - 收到评审后先验证反馈，再决定是否修改。
-10. **git-commit** - 用户要求提交或完成阶段需要提交时，生成中文 Conventional Commit，在 footer 添加本人 `Authored-by` 署名，并禁止 AI 作者或 AI 生成声明。
-11. **finishing-a-development-branch** - 所有任务完成后验证测试、提示是否提交、提出合并/PR/保留/丢弃选项并清理。
+3. **document-metadata** - 读取或维护文档关系时先读 frontmatter，再按 `related_*` 串联 README、规格、技术设计、计划和证据。
+4. **writing-technical-design** - 基于已批准规格写独立技术设计，保存到 `docs/coding-plugins/features/<feature-name>/technical/technical-design.md`。
+5. **writing-plans** - 基于已批准规格和技术设计写实现计划。任务拆到 2 到 5 分钟粒度，并建立 Spec ID -> Test -> Task 追踪。
+6. **using-git-worktrees** - 执行前使用。创建隔离 worktree 和新分支，避免污染当前工作区。
+7. **subagent-driven-development / executing-plans** - 根据计划执行。优先子代理驱动；没有子代理时内联执行。
+8. **test-driven-development** - 实现时强制 RED-GREEN-REFACTOR：先从规格写失败测试，再最小实现，再重构，并把 TDD Evidence 写入 `docs/coding-plugins/features/<feature-name>/evidence/tdd-evidence.md`。
+9. **requesting-code-review** - 任务之间或合并前评审，按严重级别报告问题。
+10. **receiving-code-review** - 收到评审后先验证反馈，再决定是否修改。
+11. **verification-before-completion** - 声明完成前运行测试、构建、规格覆盖或人工验收验证。
+12. **git-commit** - 每次完成后必须提交；生成中文 Conventional Commit，在 footer 添加本人 `Authored-by` 署名，并禁止 AI 作者或 AI 生成声明。
+13. **finishing-a-development-branch** - 提交完成后提出合并/PR/保留/丢弃选项并清理。
 
 完整链路说明见 [docs/workflow-chain.md](docs/workflow-chain.md)。安装方式见 [docs/installation.md](docs/installation.md)。
 

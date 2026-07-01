@@ -15,9 +15,9 @@
 7. 实现阶段遵守 TDD，测试必须来自规格、bug 复现或明确验收标准，并留下 TDD 证据。
 8. 每个任务通过规格符合性和代码质量评审。
 9. 完成前必须验证规格覆盖和测试证据。
-10. 如有未提交变更，在完成阶段提示是否提交。
+10. 每次完成验证后必须进入 `git-commit`，按逻辑分批提交。
 11. 提交必须使用中文 Conventional Commit，在 footer 添加本人 `Authored-by` 署名，且禁止 AI 作者。
-12. 最后做分支收尾和集成选择。
+12. 提交完成后做分支收尾和集成选择。
 
 ## 阶段划分
 
@@ -38,7 +38,7 @@
 | 10 | 系统化调试 | `systematic-debugging` | 复现路径、根因、可测试修复入口 |
 | 11 | 评审门禁 | `spec-reviewer`, `code-quality-reviewer`, `requesting-code-review`, `receiving-code-review` | 规格符合性评审、代码质量评审、反馈处理 |
 | 12 | 完成前验证 | `verification-before-completion` | 测试、构建、规格覆盖或人工验收证据 |
-| 13 | 提交 | `git-commit` | 中文 Conventional Commit，`Authored-by` footer，无 AI 作者 |
+| 13 | 提交 | `git-commit` | 完成后必经提交，中文 Conventional Commit，`Authored-by` footer，无 AI 作者 |
 | 14 | 分支收尾 | `finishing-a-development-branch` | merge、PR、保留或丢弃选择，必要时清理 worktree |
 | 15 | 插件维护 | `writing-skills` | skill、prompt、脚本、manifest 或文档更新，并通过插件校验 |
 
@@ -120,21 +120,17 @@ flowchart TD
   FINAL_REVIEW --> VERIFY
 
   VERIFY --> VERIFY_RUN["运行测试/构建/规格覆盖验证"]
-  VERIFY_RUN --> NEED_FINISH{"需要分支收尾？"}
+  VERIFY_RUN --> COMMIT
+  COMMIT_VERIFY --> NEED_FINISH{"需要分支收尾？"}
   NEED_FINISH -->|是| FINISH
   NEED_FINISH -->|否| END
 
   COMMIT --> COMMIT_CHECK["检查 diff、作者身份、敏感文件"]
   COMMIT_CHECK --> COMMIT_MSG["中文 Conventional Commit + Authored-by footer"]
   COMMIT_MSG --> COMMIT_VERIFY["验证最新提交"]
-  COMMIT_VERIFY --> COMMIT_FROM_FINISH{"来自收尾阶段？"}
-  COMMIT_FROM_FINISH -->|是| FINISH_ENV
-  COMMIT_FROM_FINISH -->|否| END
 
   FINISH --> FINISH_TEST["验证测试"]
-  FINISH_TEST --> DIRTY{"有未提交变更？"}
-  DIRTY -->|是，询问用户是否提交| COMMIT
-  DIRTY -->|否或暂不提交| FINISH_ENV["检测分支/worktree/base"]
+  FINISH_TEST --> FINISH_ENV["检测分支/worktree/base"]
   FINISH_ENV --> INTEGRATE{"用户选择集成方式"}
   INTEGRATE -->|本地 merge| MERGE["merge 后重跑验证"]
   INTEGRATE -->|Push + PR| PR["推送并创建 PR"]
@@ -344,7 +340,7 @@ flowchart TD
 
 ### 新需求
 
-`spec-driven-development` -> `writing-technical-design` -> `writing-plans` -> `using-git-worktrees` -> `test-driven-development` -> `verification-before-completion`
+`spec-driven-development` -> `document-metadata` -> `writing-technical-design` -> `writing-plans` -> `using-git-worktrees` -> `test-driven-development` -> `verification-before-completion` -> `git-commit`
 
 ### Bug 修复
 
@@ -356,7 +352,7 @@ flowchart TD
 
 ### 完成收尾
 
-`verification-before-completion` -> `finishing-a-development-branch` -> `git-commit`
+`verification-before-completion` -> `git-commit` -> `finishing-a-development-branch`
 
 ### 插件维护
 

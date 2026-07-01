@@ -19,11 +19,13 @@ class RoutingBehaviorTests(unittest.TestCase):
     WORKFLOW_SCENARIOS = {
         "新需求": (
             "spec-driven-development",
+            "document-metadata",
             "writing-technical-design",
             "writing-plans",
             "using-git-worktrees",
             "test-driven-development",
             "verification-before-completion",
+            "git-commit",
         ),
         "Bug 修复": (
             "systematic-debugging",
@@ -38,8 +40,8 @@ class RoutingBehaviorTests(unittest.TestCase):
         ),
         "完成收尾": (
             "verification-before-completion",
-            "finishing-a-development-branch",
             "git-commit",
+            "finishing-a-development-branch",
         ),
         "插件维护": (
             "writing-skills",
