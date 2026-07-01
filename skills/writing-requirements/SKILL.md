@@ -25,7 +25,7 @@ description: Use when writing or updating Coding Plugins requirement documents, 
 
 不使用本技能：
 
-- 已经有已批准需求文档，且只需要技术方案：使用 `writing-technical-design`。
+- 已经有已批准需求文档，且只需要技术方案：使用 `writing-technicals`。
 - 已经有技术方案，需要拆任务：使用 `writing-plans`。
 - 只需要测试用例文档：使用 `writing-test-cases`。
 - 只记录实际 RED/GREEN/REFACTOR：使用 `test-driven-development` 的 evidence。

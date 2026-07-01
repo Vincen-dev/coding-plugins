@@ -25,9 +25,9 @@ tags:
 
 | 规格 ID | 证据 |
 | --- | --- |
-| NON-003 | `docs/coding-plugins/features/tdd-evidence-path/evidences/tdd-evidence-path-TDD-Evidence.md` |
-| REQ-001 | `docs/coding-plugins/features/tdd-evidence-path/evidences/tdd-evidence-path-TDD-Evidence.md` |
-| REQ-002 | `docs/coding-plugins/features/tdd-evidence-path/evidences/tdd-evidence-path-TDD-Evidence.md` |
-| REQ-003 | `docs/coding-plugins/features/tdd-evidence-path/evidences/tdd-evidence-path-TDD-Evidence.md` |
-| REQ-004 | `docs/coding-plugins/features/tdd-evidence-path/evidences/tdd-evidence-path-TDD-Evidence.md` |
-| REQ-005 | `docs/coding-plugins/features/tdd-evidence-path/evidences/tdd-evidence-path-TDD-Evidence.md` |
+| NON-003 | `docs/coding-plugins/features/tdd-evidence-path/evidences/tdd-evidence-path-TED.md` |
+| REQ-001 | `docs/coding-plugins/features/tdd-evidence-path/evidences/tdd-evidence-path-TED.md` |
+| REQ-002 | `docs/coding-plugins/features/tdd-evidence-path/evidences/tdd-evidence-path-TED.md` |
+| REQ-003 | `docs/coding-plugins/features/tdd-evidence-path/evidences/tdd-evidence-path-TED.md` |
+| REQ-004 | `docs/coding-plugins/features/tdd-evidence-path/evidences/tdd-evidence-path-TED.md` |
+| REQ-005 | `docs/coding-plugins/features/tdd-evidence-path/evidences/tdd-evidence-path-TED.md` |

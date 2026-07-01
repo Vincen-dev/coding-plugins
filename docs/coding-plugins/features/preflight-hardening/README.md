@@ -26,10 +26,10 @@ tags:
 
 | 规格 ID | 证据 |
 | --- | --- |
-| REQ-001 | `docs/coding-plugins/features/preflight-hardening/evidences/preflight-hardening-TDD-Evidence.md` |
-| REQ-002 | `docs/coding-plugins/features/preflight-hardening/evidences/preflight-hardening-TDD-Evidence.md` |
-| REQ-003 | `docs/coding-plugins/features/preflight-hardening/evidences/preflight-hardening-TDD-Evidence.md` |
-| REQ-004 | `docs/coding-plugins/features/preflight-hardening/evidences/preflight-hardening-TDD-Evidence.md` |
-| REQ-005 | `docs/coding-plugins/features/preflight-hardening/evidences/preflight-hardening-TDD-Evidence.md` |
-| REQ-006 | `docs/coding-plugins/features/preflight-hardening/evidences/preflight-hardening-TDD-Evidence.md` |
-| REQ-007 | `docs/coding-plugins/features/preflight-hardening/evidences/preflight-hardening-TDD-Evidence.md` |
+| REQ-001 | `docs/coding-plugins/features/preflight-hardening/evidences/preflight-hardening-TED.md` |
+| REQ-002 | `docs/coding-plugins/features/preflight-hardening/evidences/preflight-hardening-TED.md` |
+| REQ-003 | `docs/coding-plugins/features/preflight-hardening/evidences/preflight-hardening-TED.md` |
+| REQ-004 | `docs/coding-plugins/features/preflight-hardening/evidences/preflight-hardening-TED.md` |
+| REQ-005 | `docs/coding-plugins/features/preflight-hardening/evidences/preflight-hardening-TED.md` |
+| REQ-006 | `docs/coding-plugins/features/preflight-hardening/evidences/preflight-hardening-TED.md` |
+| REQ-007 | `docs/coding-plugins/features/preflight-hardening/evidences/preflight-hardening-TED.md` |

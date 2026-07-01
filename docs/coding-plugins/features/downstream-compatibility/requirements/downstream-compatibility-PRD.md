@@ -19,7 +19,7 @@ related_code:
   - scripts/docs_index.py
   - scripts/migrate_document_contract.py
 related_technical:
-  - docs/coding-plugins/features/downstream-compatibility/technicals/downstream-compatibility-Technical-Design.md
+  - docs/coding-plugins/features/downstream-compatibility/technicals/downstream-compatibility-TDD.md
 ---
 
 # 下游项目兼容性和证据生命周期维护规格
@@ -61,7 +61,7 @@ related_technical:
 | NFR-003 | 必须 | Traceability status 必须兼容真实项目中的 `已实现`、`完成`、`implemented` 和 `done`，并视为已覆盖类状态。 | 单元测试 `test_accepts_scoped_spec_ids_dart_generics_and_implemented_status_alias`。 |
 | NFR-004 | 必须 | TDD evidence 必须支持可选 `测试类型` 字段，并拒绝未知测试类型。 | 单元测试 `test_rejects_unknown_test_type`。 |
 | NFR-005 | 必须 | `source-scan` 不得作为用户行为的主要严格证据；普通模式警告，strict 模式失败。 | 单元测试 `test_strict_rejects_source_scan_for_user_behavior`。 |
-| NFR-006 | 必须 | active evidence 和 archived evidence 必须分离；主索引和 strict TDD 校验只处理 active `evidences/downstream-compatibility-TDD-Evidence.md` 这类按 feature 命名的证据文件。 | 单元测试 `test_collect_tdd_evidence_files_excludes_archived_history`。 |
+| NFR-006 | 必须 | active evidence 和 archived evidence 必须分离；主索引和 strict TDD 校验只处理 active `evidences/downstream-compatibility-TED.md` 这类按 feature 命名的证据文件。 | 单元测试 `test_collect_tdd_evidence_files_excludes_archived_history`。 |
 | NFR-007 | 必须 | archived evidence 必须声明历史 metadata，包括 `status: archived`、`validation_mode: historical`、`archive_of` 和 `archived_at`。 | 单元测试 `test_archived_evidence_metadata_uses_historical_contract`。 |
 | NFR-008 | 必须 | 提供文档契约迁移脚本，将旧状态别名归一化，并把 `related_specs` 中的裸 Spec ID 移到 `related_spec_ids`。 | 单元测试 `scripts/test_document_contract_migration.py`。 |
 | NFR-009 | 必须 | completed evidence 对应的 spec traceability 不得继续保持 `计划中`。 | 单元测试 `test_lifecycle_state_consistency_rejects_completed_evidence_with_planned_status`。 |

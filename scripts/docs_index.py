@@ -15,6 +15,7 @@ ARTIFACT_INDEX_REQUIRED_COLUMNS = (
     "功能根目录",
     "需求文档",
     "技术设计",
+    "技术实现",
     "测试用例",
     "实现计划",
     "证据",
@@ -133,7 +134,7 @@ def feature_spec_files(feature_root: Path) -> list[Path]:
 
 
 def feature_evidence_files(feature_root: Path) -> list[Path]:
-    path = feature_artifact_file(feature_root, "evidences", "TDD-Evidence")
+    path = feature_artifact_file(feature_root, "evidences", "TED")
     return [path] if path.exists() else []
 
 
@@ -145,17 +146,22 @@ def feature_archived_evidence_files(feature_root: Path) -> list[Path]:
 
 
 def feature_technical_design_files(feature_root: Path) -> list[Path]:
-    path = feature_artifact_file(feature_root, "technicals", "Technical-Design")
+    path = feature_artifact_file(feature_root, "technicals", "TDD")
+    return [path] if path.exists() else []
+
+
+def feature_technical_implementation_files(feature_root: Path) -> list[Path]:
+    path = feature_artifact_file(feature_root, "technicals", "TID")
     return [path] if path.exists() else []
 
 
 def feature_plan_files(feature_root: Path) -> list[Path]:
-    path = feature_artifact_file(feature_root, "plans", "Implementation-Plan")
+    path = feature_artifact_file(feature_root, "plans", "IPD")
     return [path] if path.exists() else []
 
 
 def feature_test_case_files(feature_root: Path) -> list[Path]:
-    path = feature_artifact_file(feature_root, "test-cases", "Test-Cases")
+    path = feature_artifact_file(feature_root, "test-cases", "TCD")
     return [path] if path.exists() else []
 
 
@@ -172,6 +178,7 @@ def feature_updated(feature_root: Path) -> str:
     for path in (
         feature_spec_files(feature_root)
         + feature_technical_design_files(feature_root)
+        + feature_technical_implementation_files(feature_root)
         + feature_test_case_files(feature_root)
         + feature_plan_files(feature_root)
     ):
@@ -187,8 +194,8 @@ def render_artifact_index(root: Path) -> str:
         "",
         "本索引用于按 `Feature` 检索 feature-first 文档链路。运行 `python3 scripts/preflight.py --write-index` 可根据 feature root 重新生成本文件。",
         "",
-        "| Feature | 功能根目录 | 需求文档 | 技术设计 | 测试用例 | 实现计划 | 证据 | 标签 | 更新日期 |",
-        "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+        "| Feature | 功能根目录 | 需求文档 | 技术设计 | 技术实现 | 测试用例 | 实现计划 | 证据 | 标签 | 更新日期 |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
 
     for feature_root in collect_feature_roots(root):
@@ -204,6 +211,7 @@ def render_artifact_index(root: Path) -> str:
                     f"`{relative_markdown_path(root, feature_root)}`",
                     format_index_path_cell(root, feature_spec_files(feature_root)),
                     format_index_path_cell(root, feature_technical_design_files(feature_root)),
+                    format_index_path_cell(root, feature_technical_implementation_files(feature_root)),
                     format_index_path_cell(root, feature_test_case_files(feature_root)),
                     format_index_path_cell(root, feature_plan_files(feature_root)),
                     format_index_path_cell(root, feature_evidence_files(feature_root)),
@@ -222,10 +230,11 @@ def render_artifact_index(root: Path) -> str:
             "- `Feature` 必须和 `功能根目录` 路径一致。",
             "- `功能根目录` 指向 `docs/coding-plugins/features/<feature-name>`。",
             "- `需求文档` 指向 `docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md`；没有需求文档时使用 `-`。",
-            "- `技术设计` 指向 `docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-Technical-Design.md`；没有技术设计时使用 `-`。",
-            "- `测试用例` 指向 `docs/coding-plugins/features/<feature-name>/test-cases/<feature-name>-Test-Cases.md`；没有测试用例时使用 `-`。",
-            "- `实现计划` 指向 `docs/coding-plugins/features/<feature-name>/plans/<feature-name>-Implementation-Plan.md`；没有计划时使用 `-`。",
-            "- `证据` 指向 `docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TDD-Evidence.md`；没有证据时使用 `-`。",
+            "- `技术设计` 指向 `docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TDD.md`；没有技术设计时使用 `-`。",
+            "- `技术实现` 指向 `docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TID.md`；没有技术实现文档时使用 `-`。",
+            "- `测试用例` 指向 `docs/coding-plugins/features/<feature-name>/test-cases/<feature-name>-TCD.md`；没有测试用例时使用 `-`。",
+            "- `实现计划` 指向 `docs/coding-plugins/features/<feature-name>/plans/<feature-name>-IPD.md`；没有计划时使用 `-`。",
+            "- `证据` 指向 `docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md`；没有证据时使用 `-`。",
             "- `标签` 来自 feature README frontmatter 的 `tags` 列表；日期来自需求文档、技术设计、测试用例或计划 frontmatter 的最大 `updated` 值。",
         ]
     )
@@ -243,6 +252,7 @@ def collect_index_document_files(root: Path) -> list[Path]:
     for feature_root in collect_feature_roots(root):
         documents.extend(feature_spec_files(feature_root))
         documents.extend(feature_technical_design_files(feature_root))
+        documents.extend(feature_technical_implementation_files(feature_root))
         documents.extend(feature_test_case_files(feature_root))
         documents.extend(feature_plan_files(feature_root))
         documents.extend(feature_evidence_files(feature_root))

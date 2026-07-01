@@ -20,12 +20,12 @@ Codex 侧包含 SessionStart hook，新建、恢复或清空会话时会注入 `
 2. **spec-driven-development** - 实现前激活。编排本 feature 需要沉淀的需求、技术方案、测试用例、计划和证据文档。
 3. **document-metadata** - 读取或维护文档关系时先读 frontmatter，再按 `related_*` 串联 README、需求文档、技术设计、测试用例、计划和证据。
 4. **writing-requirements** - 编写 feature、API contract、schema、state machine、acceptance 或 maintenance 需求文档，保存到 `docs/coding-plugins/features/<feature-name>/requirements/<spec-kind>.md`。
-5. **writing-technical-design** - 基于已批准需求文档写独立技术方案设计，保存到 `docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-Technical-Design.md`。
-6. **writing-test-cases** - 基于需求文档和技术方案编写测试用例文档，保存到 `docs/coding-plugins/features/<feature-name>/test-cases/<feature-name>-Test-Cases.md`。
+5. **writing-technicals** - 基于已批准需求文档写独立技术方案设计，保存到 `docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TDD.md`。
+6. **writing-test-cases** - 基于需求文档和技术方案编写测试用例文档，保存到 `docs/coding-plugins/features/<feature-name>/test-cases/<feature-name>-TCD.md`。
 7. **writing-plans** - 基于已批准需求、技术方案和测试用例写实现计划。任务拆到 2 到 5 分钟粒度，并建立 Spec ID -> Test -> Task 追踪。
 8. **using-git-worktrees** - 执行前使用。创建隔离 worktree 和新分支，避免污染当前工作区。
 9. **subagent-driven-development / executing-plans** - 根据计划执行。优先子代理驱动；没有子代理时内联执行。
-10. **test-driven-development** - 实现时强制 RED-GREEN-REFACTOR：先从规格写失败测试，再最小实现，再重构，并把 TDD Evidence 写入 `docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TDD-Evidence.md`。
+10. **test-driven-development** - 实现时强制 RED-GREEN-REFACTOR：先从规格写失败测试，再最小实现，再重构，并把 TDD Evidence 写入 `docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md`。
 11. **requesting-code-review** - 任务之间或合并前评审，按严重级别报告问题。
 12. **receiving-code-review** - 收到评审后先验证反馈，再决定是否修改。
 13. **verification-before-completion** - 声明完成前运行测试、构建、规格覆盖或人工验收验证。
@@ -50,7 +50,7 @@ Codex 侧包含 SessionStart hook，新建、恢复或清空会话时会注入 `
 - `document-metadata`：读取、创建、迁移或审计文档 frontmatter，先用 metadata 串联 README、spec、technical、plan、evidence 和 INDEX。
 - `spec-driven-development`：规格驱动开发，编排需求、技术方案、测试用例、计划和证据的落地链路。
 - `writing-requirements`：编写需求文档，把功能、接口、schema、状态机、验收和维护约束收敛为可测试契约。
-- `writing-technical-design`：把批准需求转成独立 technical design，维护技术方案索引。
+- `writing-technicals`：把批准需求转成独立 technical design，维护技术方案索引。
 - `writing-test-cases`：在 technical design 后、implementation plan 前编写测试用例文档。
 - `writing-plans`：详细实现计划。
 - `executing-plans`：带检查点的批次执行。

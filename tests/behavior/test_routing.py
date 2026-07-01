@@ -21,7 +21,7 @@ class RoutingBehaviorTests(unittest.TestCase):
             "spec-driven-development",
             "document-metadata",
             "writing-requirements",
-            "writing-technical-design",
+            "writing-technicals",
             "writing-test-cases",
             "writing-plans",
             "using-git-worktrees",
@@ -94,7 +94,7 @@ class RoutingBehaviorTests(unittest.TestCase):
         for skill_name in (
             "spec-driven-development",
             "writing-requirements",
-            "writing-technical-design",
+            "writing-technicals",
             "writing-test-cases",
             "writing-plans",
             "using-git-worktrees",

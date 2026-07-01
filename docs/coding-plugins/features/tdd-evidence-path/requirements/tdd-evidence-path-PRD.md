@@ -44,7 +44,7 @@ related_specs:
 
 | 编号 | 优先级 | 需求 | 验证方式 |
 | --- | --- | --- | --- |
-| REQ-001 | 必须 | TDD 证据 默认保存到 `docs/coding-plugins/features/{feature}/evidences/{feature}-TDD-Evidence.md`。 | 文档评审 `skills/test-driven-development/SKILL.md`。 |
+| REQ-001 | 必须 | TDD 证据 默认保存到 `docs/coding-plugins/features/{feature}/evidences/{feature}-TED.md`。 | 文档评审 `skills/test-driven-development/SKILL.md`。 |
 | REQ-002 | 必须 | feature 必须和规格、计划路径保持一致。 | 文档评审 `skills/writing-plans/SKILL.md` 和 `docs/workflow-chain.md`。 |
 | REQ-003 | 必须 | writing-plans 必须在计划中声明 TDD 证据 Target，并把 Spec ID 映射到 evidence 文件。 | 文档评审 `skills/writing-plans/SKILL.md`。 |
 | REQ-004 | 必须 | 仓库提供 TDD 证据 模板，覆盖 Evidence 和 Exception Record 两种情况。 | 文件检查 `skills/test-driven-development/templates/tdd-evidence.md`。 |
@@ -62,7 +62,7 @@ related_specs:
 
 | 编号 | 场景 | 前置条件 | 操作 | 期望结果 |
 | --- | --- | --- | --- | --- |
-| AC-001 | 用户查找 TDD 最终落地文件 | 已有 feature | 查看 `docs/coding-plugins/features/{feature}/evidences/{feature}-TDD-Evidence.md` | 能找到 TDD 证据 或 Exception Record。 |
+| AC-001 | 用户查找 TDD 最终落地文件 | 已有 feature | 查看 `docs/coding-plugins/features/{feature}/evidences/{feature}-TED.md` | 能找到 TDD 证据 或 Exception Record。 |
 | AC-002 | 计划生成后执行 | 已有规格路径和计划路径 | 阅读 implementation plan | 计划声明对应 TDD 证据 Target。 |
 | AC-003 | 发布前检查 | evidence 文件存在 | 运行 `python3 scripts/preflight.py` | preflight 自动校验证据文件并通过。 |
 
@@ -77,7 +77,7 @@ related_specs:
 | REQ-005 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 2 | 已覆盖 |
 | ERR-001 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 2 | 已覆盖 |
 | ERR-002 | 单元测试 | `python3 -m unittest skills/test-driven-development/scripts/test_validate_tdd_evidence.py` | Task 2 | 已覆盖 |
-| ERR-003 | 文件检查 | `docs/coding-plugins/features/tdd-evidence-path/evidences/tdd-evidence-path-TDD-Evidence.md` | Task 3 | 已覆盖 |
-| AC-001 | 文件检查 | `docs/coding-plugins/features/tdd-evidence-path/evidences/tdd-evidence-path-TDD-Evidence.md` | Task 3 | 已覆盖 |
+| ERR-003 | 文件检查 | `docs/coding-plugins/features/tdd-evidence-path/evidences/tdd-evidence-path-TED.md` | Task 3 | 已覆盖 |
+| AC-001 | 文件检查 | `docs/coding-plugins/features/tdd-evidence-path/evidences/tdd-evidence-path-TED.md` | Task 3 | 已覆盖 |
 | AC-002 | 文档评审 | `skills/writing-plans/SKILL.md` | Task 1 | 已覆盖 |
 | AC-003 | 命令验证 | `python3 scripts/preflight.py` | Task 3 | 已覆盖 |

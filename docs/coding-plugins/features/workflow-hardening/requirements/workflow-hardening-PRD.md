@@ -34,7 +34,7 @@ related_specs:
 | 状态 | 已批准 |
 | Feature | workflow-hardening |
 | 规格类型 | maintenance |
-| 技术设计 | `docs/coding-plugins/features/workflow-hardening/technicals/workflow-hardening-Technical-Design.md` |
+| 技术设计 | `docs/coding-plugins/features/workflow-hardening/technicals/workflow-hardening-TDD.md` |
 
 ## 目标
 

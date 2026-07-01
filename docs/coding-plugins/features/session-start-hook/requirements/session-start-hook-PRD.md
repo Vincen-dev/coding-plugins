@@ -53,7 +53,7 @@ related_specs:
 | REQ-004 | 必须 | `hooks/session-start-codex` 必须输出 JSON，包含 `hookSpecificOutput.hookEventName=SessionStart` 和非空 `additionalContext`。 | `tests/hooks/test-session-start.sh`。 |
 | REQ-005 | 必须 | 注入上下文必须明确要求优先使用 `coding-plugins:using-coding-plugins`，并概述 SDD -> plan -> TDD -> verification -> commit/finish 链路。 | `tests/hooks/test-session-start.sh`。 |
 | REQ-006 | 必须 | preflight 必须运行 hook 测试，避免发布时遗漏启动链路。 | 单元测试 `test_build_commands_include_core_validation_steps` 和 `python3 scripts/preflight.py`。 |
-| REQ-007 | 必须 | 注入上下文中的 TDD 证据 路径必须使用 feature-first 路径 `docs/coding-plugins/features/{feature}/evidences/{feature}-TDD-Evidence.md`。 | `tests/hooks/test-session-start.sh`。 |
+| REQ-007 | 必须 | 注入上下文中的 TDD 证据 路径必须使用 feature-first 路径 `docs/coding-plugins/features/{feature}/evidences/{feature}-TED.md`。 | `tests/hooks/test-session-start.sh`。 |
 
 ## 错误和边界情况
 

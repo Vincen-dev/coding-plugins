@@ -18,7 +18,7 @@
 active evidence 固定使用：
 
 ```text
-docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TDD-Evidence.md
+docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md
 ```
 
 历史证据归档到：

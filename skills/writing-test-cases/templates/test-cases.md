@@ -7,11 +7,11 @@ updated: YYYY-MM-DD
 related_specs:
   - docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md
 related_technical:
-  - docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-Technical-Design.md
+  - docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TDD.md
 related_plans:
-  - docs/coding-plugins/features/<feature-name>/plans/<feature-name>-Implementation-Plan.md
+  - docs/coding-plugins/features/<feature-name>/plans/<feature-name>-IPD.md
 related_evidence:
-  - docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TDD-Evidence.md
+  - docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md
 ---
 
 # <功能名称>测试用例
@@ -23,9 +23,9 @@ related_evidence:
 | 状态 | 草稿 |
 | Feature | <feature-name> |
 | 需求文档 | `docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md` |
-| 技术方案 | `docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-Technical-Design.md` |
-| 实现计划 | `docs/coding-plugins/features/<feature-name>/plans/<feature-name>-Implementation-Plan.md` |
-| TDD 证据 | `docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TDD-Evidence.md` |
+| 技术方案 | `docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TDD.md` |
+| 实现计划 | `docs/coding-plugins/features/<feature-name>/plans/<feature-name>-IPD.md` |
+| TDD 证据 | `docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md` |
 
 ## 测试策略摘要
 
@@ -35,7 +35,7 @@ related_evidence:
 
 | Spec ID | 测试类型 | 测试用例 ID | 测试名称 | 前置条件 | 步骤 | 断言 | 测试数据 | 证据目标 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| REQ-001 | behavior | TC-001 | <测试名称> | <前置条件> | <步骤> | <断言> | <数据> | `docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TDD-Evidence.md` |
+| REQ-001 | behavior | TC-001 | <测试名称> | <前置条件> | <步骤> | <断言> | <数据> | `docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md` |
 
 ## 边界和错误用例
 

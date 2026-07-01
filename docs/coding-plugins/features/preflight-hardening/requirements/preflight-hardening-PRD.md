@@ -47,7 +47,7 @@ related_specs:
 | REQ-001 | 必须 | 每个 `skills/{skill-name}/SKILL.md` 都必须有对应 `skills/{skill-name}/agents/openai.yaml`。 | 单元测试 `test_skill_agent_metadata_check_rejects_missing_agent_file`。 |
 | REQ-002 | 必须 | Codex manifest 中的 `interface.composerIcon`、`interface.logo`、`interface.logoDark` 和 screenshots 路径必须存在。 | 单元测试 `test_manifest_asset_check_rejects_missing_asset`。 |
 | REQ-003 | 必须 | `docs/coding-plugins/features/{feature}/requirements/{file}.md` 必须和规格 metadata 的 `feature` 一致。 | 单元测试 `test_document_path_metadata_check_rejects_mismatched_spec_metadata`。 |
-| REQ-004 | 必须 | `docs/coding-plugins/features/{feature}/evidences/{feature}-TDD-Evidence.md` 中引用的 Spec ID 必须能在同 feature 的规格文件中找到。 | 单元测试 `test_evidence_spec_id_check_rejects_unknown_ids`。 |
+| REQ-004 | 必须 | `docs/coding-plugins/features/{feature}/evidences/{feature}-TED.md` 中引用的 Spec ID 必须能在同 feature 的规格文件中找到。 | 单元测试 `test_evidence_spec_id_check_rejects_unknown_ids`。 |
 | REQ-005 | 必须 | README、安装说明和工作链路文档必须包含关键路径：总索引、hook 配置、preflight 命令。 | 单元测试 `test_docs_sync_check_rejects_missing_key_paths`。 |
 | REQ-006 | 必须 | preflight 必须拒绝活跃文档、hook、skill、脚本和测试中的旧 TDD 证据 路径 `docs/coding-plugins/evidence/`。 | 单元测试 `test_legacy_tdd_evidence_path_references_are_rejected`。 |
 | REQ-007 | 必须 | preflight 必须拒绝活跃技能和 hook 中的 `superpowers` 品牌或路径残留；测试 fixture、preflight 拦截规则和 release 历史可以保留必要字面量。 | 单元测试 `test_superpowers_references_are_rejected_in_active_guidance`。 |

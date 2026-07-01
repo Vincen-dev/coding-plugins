@@ -184,7 +184,7 @@ TDD_EVIDENCE_TEMPLATE_ENGLISH_STRUCTURE = (
 )
 SPEC_ID_RE = re.compile(r"\b(?:REQ|API|SCHEMA|STATE|ERR|AC|NFR|MIG|OBS|NON)(?:-[A-Z0-9]+)*-\d{3,}\b")
 TECHNICAL_DESIGN_PATH_RE = re.compile(
-    r"docs/coding-plugins/features/[A-Za-z0-9_.\-/]+/technicals/[A-Za-z0-9_.\-]+-Technical-Design\.md"
+    r"docs/coding-plugins/features/[A-Za-z0-9_.\-/]+/technicals/[A-Za-z0-9_.\-]+-TDD\.md"
 )
 EVIDENCE_PATH_RE = re.compile(
     r"docs/coding-plugins/features/[A-Za-z0-9_.\-/]+/evidences/[A-Za-z0-9_.\-/]+\.md"
@@ -226,8 +226,8 @@ def repo_root() -> Path:
 
 
 def load_technical_design_validator(root: Path):
-    validator_path = repo_root() / "skills" / "writing-technical-design" / "scripts" / "validate_technical_design.py"
-    spec = importlib.util.spec_from_file_location("validate_technical_design", validator_path)
+    validator_path = repo_root() / "skills" / "writing-technicals" / "scripts" / "validate_technicals.py"
+    spec = importlib.util.spec_from_file_location("validate_technicals", validator_path)
     if spec is None or spec.loader is None:
         raise PreflightError(f"Cannot load technical design validator: {validator_path}.")
     module = importlib.util.module_from_spec(spec)
@@ -358,7 +358,7 @@ def check_sdd_templates_are_chinese(root: Path) -> None:
 
 
 def check_technical_templates_are_chinese(root: Path) -> None:
-    template_path = root / "skills" / "writing-technical-design" / "templates" / "technical-design.md"
+    template_path = root / "skills" / "writing-technicals" / "templates" / "technical-design-document.md"
     if not template_path.exists():
         return
 
@@ -407,7 +407,7 @@ def check_tdd_evidence_templates_are_chinese(root: Path) -> None:
 
 
 def check_technical_template_required_sections(root: Path) -> None:
-    template_path = root / "skills" / "writing-technical-design" / "templates" / "technical-design.md"
+    template_path = root / "skills" / "writing-technicals" / "templates" / "technical-design-document.md"
     if not template_path.exists():
         return
 
@@ -514,10 +514,10 @@ def check_feature_first_document_layout(root: Path) -> None:
             offenders.append(str((feature_root / "evidence").relative_to(root)))
         expected_files = {
             "requirements": {f"{feature_root.name}-PRD.md"},
-            "technicals": {f"{feature_root.name}-Technical-Design.md"},
-            "test-cases": {f"{feature_root.name}-Test-Cases.md"},
-            "plans": {f"{feature_root.name}-Implementation-Plan.md"},
-            "evidences": {f"{feature_root.name}-TDD-Evidence.md"},
+            "technicals": {f"{feature_root.name}-TDD.md", f"{feature_root.name}-TID.md"},
+            "test-cases": {f"{feature_root.name}-TCD.md"},
+            "plans": {f"{feature_root.name}-IPD.md"},
+            "evidences": {f"{feature_root.name}-TED.md"},
         }
         for directory, allowed_names in expected_files.items():
             artifact_dir = feature_root / directory
@@ -1195,7 +1195,7 @@ def build_validation_commands(
         [python, "-m", "unittest", "tests.behavior.test_routing"],
         [python, "-m", "unittest", "skills/spec-driven-development/scripts/test_validate_spec.py"],
         [python, "-m", "unittest", "skills/test-driven-development/scripts/test_validate_tdd_evidence.py"],
-        [python, "-m", "unittest", "skills/writing-technical-design/scripts/test_validate_technical_design.py"],
+        [python, "-m", "unittest", "skills/writing-technicals/scripts/test_validate_technicals.py"],
         ["bash", "tests/hooks/test-session-start.sh"],
     ]
 

@@ -31,7 +31,7 @@ related_specs:
 | 状态 | 已批准 |
 | Feature | marketplace |
 | 规格类型 | feature |
-| 技术设计 | `docs/coding-plugins/features/marketplace/technicals/marketplace-Technical-Design.md` |
+| 技术设计 | `docs/coding-plugins/features/marketplace/technicals/marketplace-TDD.md` |
 
 ## 目标
 

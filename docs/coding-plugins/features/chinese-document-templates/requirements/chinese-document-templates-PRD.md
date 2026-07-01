@@ -13,13 +13,13 @@ tags:
 related_code:
   - skills/writing-plans/SKILL.md
   - skills/test-driven-development/templates/tdd-evidence.md
-  - skills/writing-technical-design/templates/technical-design.md
+  - skills/writing-technicals/templates/technical-design-document.md
   - skills/test-driven-development/scripts/validate_tdd_evidence.py
-  - skills/writing-technical-design/scripts/validate_technical_design.py
+  - skills/writing-technicals/scripts/validate_technicals.py
   - scripts/preflight.py
 related_specs: []
 related_technical:
-  - docs/coding-plugins/features/chinese-document-templates/technicals/chinese-document-templates-Technical-Design.md
+  - docs/coding-plugins/features/chinese-document-templates/technicals/chinese-document-templates-TDD.md
 ---
 
 # 中文文档模板展示字段规格
@@ -31,7 +31,7 @@ related_technical:
 | 状态 | 已批准 |
 | Feature | chinese-document-templates |
 | 规格类型 | feature |
-| 技术设计 | `docs/coding-plugins/features/chinese-document-templates/technicals/chinese-document-templates-Technical-Design.md` |
+| 技术设计 | `docs/coding-plugins/features/chinese-document-templates/technicals/chinese-document-templates-TDD.md` |
 
 ## 目标
 
@@ -57,7 +57,7 @@ related_technical:
 | --- | --- | --- | --- |
 | REQ-001 | 必须 | SDD、technical、plan、TDD 证据 模板中的 Markdown 章节标题、表格展示表头和字段标签必须使用中文。 | 单元测试 `scripts/test_preflight.py` 覆盖模板门禁；`python3 scripts/preflight.py` 覆盖真实模板。 |
 | REQ-002 | 必须 | TDD 证据校验器必须以中文字段为契约，接受 `TDD 证据` 和 `TDD 例外记录`，拒绝旧的英文展示字段。 | 单元测试 `skills/test-driven-development/scripts/test_validate_tdd_evidence.py`。 |
-| REQ-003 | 必须 | Technical design 校验器必须以中文映射表头为契约，使用 `规格 ID` 和 `证据`，拒绝旧的 `Spec ID` 和 `Evidence` 表头。 | 单元测试 `skills/writing-technical-design/scripts/test_validate_technical_design.py`。 |
+| REQ-003 | 必须 | Technical design 校验器必须以中文映射表头为契约，使用 `规格 ID` 和 `证据`，拒绝旧的 `Spec ID` 和 `Evidence` 表头。 | 单元测试 `skills/writing-technicals/scripts/test_validate_technicals.py`。 |
 | REQ-004 | 必须 | feature 索引和轻量例外 README 表格必须使用中文表头，便于所有沉淀文档保持中文展示结构。 | 单元测试 `scripts/test_preflight.py` 和 `scripts/test_docs_index.py`。 |
 | REQ-005 | 必须 | 既有 feature-first 沉淀文档必须迁移为中文展示字段，避免旧文档成为后续复制来源。 | `python3 scripts/preflight.py --write-index` 和 `python3 scripts/preflight.py`。 |
 | REQ-006 | 必须 | metadata frontmatter key、状态枚举、路径、命令、代码符号、测试名称、Spec ID、TD ID 和 HTTP/JSON 等工程标识必须允许保留英文。 | 单元测试和 preflight 不应因为这些机器可读或工程标识失败。 |
@@ -68,7 +68,7 @@ related_technical:
 | --- | --- | --- | --- |
 | ERR-001 | 模板中重新出现 `Goal`、`Task N`、`规格/缺陷/验收`、`最终验证` 等英文展示字段 | preflight 失败并指出对应模板。 | `scripts/test_preflight.py`。 |
 | ERR-002 | TDD 证据 文件只使用旧英文 evidence 字段 | TDD 证据 校验失败。 | `skills/test-driven-development/scripts/test_validate_tdd_evidence.py`。 |
-| ERR-003 | Technical design 使用旧英文映射表头 | Technical validator 校验失败。 | `skills/writing-technical-design/scripts/test_validate_technical_design.py`。 |
+| ERR-003 | Technical design 使用旧英文映射表头 | Technical validator 校验失败。 | `skills/writing-technicals/scripts/test_validate_technicals.py`。 |
 | ERR-004 | 索引或轻量例外 README 使用英文表头 | preflight 或 docs index 校验失败。 | `scripts/test_preflight.py`。 |
 
 ## 验收标准
@@ -86,15 +86,15 @@ related_technical:
 | --- | --- | --- | --- | --- |
 | REQ-001 | 单元测试、仓库校验 | `python3 -m unittest scripts/test_preflight.py`、`python3 scripts/preflight.py` | 任务 1、任务 2、任务 3 | 已覆盖 |
 | REQ-002 | 单元测试 | `python3 -m unittest skills/test-driven-development/scripts/test_validate_tdd_evidence.py` | 任务 1 | 已覆盖 |
-| REQ-003 | 单元测试 | `python3 -m unittest skills/writing-technical-design/scripts/test_validate_technical_design.py` | 任务 1 | 已覆盖 |
+| REQ-003 | 单元测试 | `python3 -m unittest skills/writing-technicals/scripts/test_validate_technicals.py` | 任务 1 | 已覆盖 |
 | REQ-004 | 单元测试 | `python3 -m unittest scripts/test_preflight.py`、`python3 -m unittest scripts/test_docs_index.py` | 任务 1、任务 2 | 已覆盖 |
 | REQ-005 | 仓库校验 | `python3 scripts/preflight.py --write-index`、`python3 scripts/preflight.py` | 任务 3 | 已覆盖 |
 | REQ-006 | 单元测试、仓库校验 | `python3 -m unittest scripts/test_preflight.py`、`python3 scripts/preflight.py` | 任务 1、任务 3 | 已覆盖 |
 | ERR-001 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | 任务 1 | 已覆盖 |
 | ERR-002 | 单元测试 | `python3 -m unittest skills/test-driven-development/scripts/test_validate_tdd_evidence.py` | 任务 1 | 已覆盖 |
-| ERR-003 | 单元测试 | `python3 -m unittest skills/writing-technical-design/scripts/test_validate_technical_design.py` | 任务 1 | 已覆盖 |
+| ERR-003 | 单元测试 | `python3 -m unittest skills/writing-technicals/scripts/test_validate_technicals.py` | 任务 1 | 已覆盖 |
 | ERR-004 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | 任务 1、任务 2 | 已覆盖 |
 | AC-001 | 人工审查、仓库校验 | `skills/test-driven-development/templates/tdd-evidence.md`、`python3 scripts/preflight.py` | 任务 2 | 已覆盖 |
-| AC-002 | 单元测试 | `python3 -m unittest skills/writing-technical-design/scripts/test_validate_technical_design.py` | 任务 1、任务 2 | 已覆盖 |
+| AC-002 | 单元测试 | `python3 -m unittest skills/writing-technicals/scripts/test_validate_technicals.py` | 任务 1、任务 2 | 已覆盖 |
 | AC-003 | 人工审查、仓库校验 | `skills/writing-plans/SKILL.md`、`python3 scripts/preflight.py` | 任务 2 | 已覆盖 |
 | AC-004 | 仓库校验 | `python3 scripts/preflight.py` | 任务 4 | 已覆盖 |

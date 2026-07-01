@@ -18,9 +18,9 @@ related_code:
 related_specs:
   - docs/coding-plugins/features/preflight/requirements/preflight-PRD.md
 related_technical:
-  - docs/coding-plugins/features/artifact-index/technicals/artifact-index-Technical-Design.md
+  - docs/coding-plugins/features/artifact-index/technicals/artifact-index-TDD.md
 related_plans:
-  - docs/coding-plugins/features/artifact-index/plans/artifact-index-Implementation-Plan.md
+  - docs/coding-plugins/features/artifact-index/plans/artifact-index-IPD.md
 ---
 
 # Coding Plugins 产物总索引规格

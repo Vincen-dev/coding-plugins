@@ -19,11 +19,11 @@ related_code:
   - skills/document-metadata/SKILL.md
   - skills/document-metadata/templates/document-metadata.md
   - skills/writing-plans/SKILL.md
-  - skills/writing-technical-design/templates/technical-design.md
+  - skills/writing-technicals/templates/technical-design-document.md
 related_specs:
   - docs/coding-plugins/features/technical-design-artifacts/requirements/technical-design-artifacts-PRD.md
 related_technical:
-  - docs/coding-plugins/features/document-metadata/technicals/document-metadata-Technical-Design.md
+  - docs/coding-plugins/features/document-metadata/technicals/document-metadata-TDD.md
 ---
 
 # 文档元数据规则和技能化规格
@@ -39,7 +39,7 @@ related_technical:
 | 状态 | 已批准 |
 | Feature | document-metadata |
 | 规格类型 | feature |
-| 技术设计 | `docs/coding-plugins/features/document-metadata/technicals/document-metadata-Technical-Design.md` |
+| 技术设计 | `docs/coding-plugins/features/document-metadata/technicals/document-metadata-TDD.md` |
 
 ## 非目标
 
@@ -60,7 +60,7 @@ related_technical:
 | 编号 | 优先级 | 需求 | 验证方式 |
 | --- | --- | --- | --- |
 | REQ-001 | 必须 | Plan 文档必须包含 frontmatter，并声明 `title`、`status`、`feature`、`created`、`updated`。 | 单元测试 `test_plan_metadata_check_rejects_missing_frontmatter`。 |
-| REQ-002 | 必须 | Plan frontmatter 的 `feature` 必须与 `features/document-metadata/plans/document-metadata-Implementation-Plan.md` 这类 feature-first 分层路径一致。 | 单元测试 `test_plan_metadata_check_rejects_mismatched_path_metadata`。 |
+| REQ-002 | 必须 | Plan frontmatter 的 `feature` 必须与 `features/document-metadata/plans/document-metadata-IPD.md` 这类 feature-first 分层路径一致。 | 单元测试 `test_plan_metadata_check_rejects_mismatched_path_metadata`。 |
 | REQ-003 | 必须 | Plan 文档必须包含中文 `## 文档信息` 摘要表。 | 单元测试 `test_document_info_check_rejects_missing_chinese_summary`。 |
 | REQ-004 | 必须 | Technical Design 模板必须包含中文 `## 文档信息` 摘要表。 | 文档评审和 preflight。 |
 | REQ-005 | 必须 | `writing-plans` 计划模板必须包含 frontmatter 和中文 `## 文档信息` 摘要表。 | 文档评审和 preflight。 |
@@ -94,7 +94,7 @@ related_technical:
 | REQ-001 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
 | REQ-002 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
 | REQ-003 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
-| REQ-004 | 文档评审 | `skills/writing-technical-design/templates/technical-design.md` | Task 2 | 已覆盖 |
+| REQ-004 | 文档评审 | `skills/writing-technicals/templates/technical-design-document.md` | Task 2 | 已覆盖 |
 | REQ-005 | 文档评审 | `skills/writing-plans/SKILL.md` | Task 2 | 已覆盖 |
 | REQ-006 | 命令验证 | `python3 scripts/preflight.py` | Task 3 | 已覆盖 |
 | REQ-007 | 行为测试 / 文档评审 | `python3 -m unittest tests.behavior.test_routing` | Task 4 | 已覆盖 |

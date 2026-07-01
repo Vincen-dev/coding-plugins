@@ -33,7 +33,7 @@ related_specs:
 | 状态 | 已批准 |
 | Feature | release-management |
 | 规格类型 | feature |
-| 技术设计 | `docs/coding-plugins/features/release-management/technicals/release-management-Technical-Design.md` |
+| 技术设计 | `docs/coding-plugins/features/release-management/technicals/release-management-TDD.md` |
 
 ## 目标
 

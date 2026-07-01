@@ -13,17 +13,17 @@ tags:
   - stale
   - traceability
 related_code:
-  - skills/writing-technical-design/scripts/validate_technical_design.py
-  - skills/writing-technical-design/scripts/test_validate_technical_design.py
+  - skills/writing-technicals/scripts/validate_technicals.py
+  - skills/writing-technicals/scripts/test_validate_technicals.py
   - scripts/preflight.py
 related_specs:
   - docs/coding-plugins/features/spec-technical-quality-gates/requirements/spec-technical-quality-gates-PRD.md
 related_technical:
-  - docs/coding-plugins/features/technical-design-validator/technicals/technical-design-validator-Technical-Design.md
+  - docs/coding-plugins/features/technical-design-validator/technicals/technical-design-validator-TDD.md
 related_plans:
-  - docs/coding-plugins/features/technical-design-validator/plans/technical-design-validator-Implementation-Plan.md
+  - docs/coding-plugins/features/technical-design-validator/plans/technical-design-validator-IPD.md
 related_evidence:
-  - docs/coding-plugins/features/technical-design-validator/evidences/technical-design-validator-TDD-Evidence.md
+  - docs/coding-plugins/features/technical-design-validator/evidences/technical-design-validator-TED.md
 ---
 
 # Technical Design Validator 规格
@@ -35,9 +35,9 @@ related_evidence:
 | 状态 | 已批准 |
 | Feature | technical-design-validator |
 | 规格类型 | feature |
-| 技术设计 | `docs/coding-plugins/features/technical-design-validator/technicals/technical-design-validator-Technical-Design.md` |
-| 实现计划 | `docs/coding-plugins/features/technical-design-validator/plans/technical-design-validator-Implementation-Plan.md` |
-| TDD 证据 | `docs/coding-plugins/features/technical-design-validator/evidences/technical-design-validator-TDD-Evidence.md` |
+| 技术设计 | `docs/coding-plugins/features/technical-design-validator/technicals/technical-design-validator-TDD.md` |
+| 实现计划 | `docs/coding-plugins/features/technical-design-validator/plans/technical-design-validator-IPD.md` |
+| TDD 证据 | `docs/coding-plugins/features/technical-design-validator/evidences/technical-design-validator-TED.md` |
 
 ## 目标
 
@@ -62,12 +62,12 @@ related_evidence:
 
 | 编号 | 优先级 | 需求 | 验证方式 |
 | --- | --- | --- | --- |
-| REQ-001 | 必须 | 提供 `skills/writing-technical-design/scripts/validate_technical_design.py`，支持校验单个 technical 文件或仓库内全部 technical 文件，并支持 `--root` 指定仓库根用于测试或非标准工作区。 | 单元测试 `test_cli_validates_repository_technical_docs`。 |
+| REQ-001 | 必须 | 提供 `skills/writing-technicals/scripts/validate_technicals.py`，支持校验单个 technical 文件或仓库内全部 technical 文件，并支持 `--root` 指定仓库根用于测试或非标准工作区。 | 单元测试 `test_cli_validates_repository_technical_docs`。 |
 | REQ-002 | 必须 | validator 必须复用或等价覆盖现有 technical 结构门禁：必需章节、MUST Spec ID 映射或豁免、related metadata 路径真实存在。 | 单元测试 `test_validator_rejects_missing_required_sections`、`test_validator_rejects_missing_must_spec_mapping`、`test_validator_rejects_missing_related_metadata_path`。 |
 | REQ-003 | 必须 | validator 必须识别泛化映射短语，并在普通模式输出 warning，在 `--strict` 模式下返回失败。 | 单元测试 `test_validator_warns_about_generic_mapping` 和 `test_strict_validator_rejects_generic_mapping`。 |
 | REQ-004 | 必须 | validator 必须在 related approved spec 的 `updated` 晚于 technical `updated` 时标记 stale；普通模式输出 warning，`--strict` 模式返回失败。 | 单元测试 `test_validator_warns_when_spec_is_newer_than_technical` 和 `test_strict_validator_rejects_stale_technical`。 |
 | REQ-005 | 必须 | `scripts/preflight.py` 必须接入 validator 的 strict 校验路径，泛化映射和 stale warning 在发布前必须失败。 | 单元测试 `test_preflight_runs_technical_design_validator_in_strict_mode` 与 `python3 scripts/preflight.py`。 |
-| REQ-006 | 必须 | `writing-technical-design` skill 必须提示作者可单独运行 validator，并说明 preflight 使用 strict 质量门禁。 | 文档检查和 `python3 scripts/preflight.py`。 |
+| REQ-006 | 必须 | `writing-technicals` skill 必须提示作者可单独运行 validator，并说明 preflight 使用 strict 质量门禁。 | 文档检查和 `python3 scripts/preflight.py`。 |
 | REQ-007 | 必须 | technical 的 `## 规格到设计映射` 必须使用 7 列结构：`Spec ID`、`规格摘要`、`技术落点`、`关键决策 ID`、`影响文件/符号`、`验证命令`、`Evidence`。 | 单元测试 `test_validator_rejects_legacy_mapping_header`。 |
 | REQ-008 | 必须 | technical 的 `## 关键决策` 必须使用 `TD-xxx` 决策 ID，映射表引用的决策 ID 必须存在。 | 单元测试 `test_validator_rejects_mapping_without_existing_decision_id`。 |
 | REQ-009 | 必须 | technical frontmatter 必须维护 `lifecycle_status`、`implemented_commits`、`validated_by`，且 lifecycle status 必须属于允许集合。 | 单元测试 `test_validator_rejects_missing_lifecycle_metadata`。 |
@@ -94,40 +94,40 @@ related_evidence:
 
 | 编号 | 场景 | 前置条件 | 操作 | 期望结果 |
 | --- | --- | --- | --- | --- |
-| AC-001 | 独立校验 technical | 仓库存在 feature-first technical 文档 | 运行 `python3 skills/writing-technical-design/scripts/validate_technical_design.py docs/coding-plugins/features/spec-technical-quality-gates/technicals/spec-technical-quality-gates-Technical-Design.md` | 命令返回 0，并输出校验通过或 warning 摘要。 |
+| AC-001 | 独立校验 technical | 仓库存在 feature-first technical 文档 | 运行 `python3 skills/writing-technicals/scripts/validate_technicals.py docs/coding-plugins/features/spec-technical-quality-gates/technicals/spec-technical-quality-gates-TDD.md` | 命令返回 0，并输出校验通过或 warning 摘要。 |
 | AC-002 | strict 审计泛化映射 | technical 的映射表包含泛化短语 | 运行 validator `--strict` | 命令返回非 0，并指出泛化映射位置。 |
 | AC-003 | strict 审计 stale technical | approved spec 更新时间晚于 technical | 运行 validator `--strict` | 命令返回非 0，并指出 spec 和 technical 的 updated 值。 |
 | AC-004 | 发布前门禁 | 仓库处于当前 technical 状态 | 运行 `python3 scripts/preflight.py` | strict technical validator 通过，泛化映射和 stale warning 均不能残留。 |
-| AC-005 | 维护者审计 technical 全链路 | 仓库存在多个 technical 文档 | 运行 `python3 skills/writing-technical-design/scripts/validate_technical_design.py --strict --format json` | 返回 `ok=true`、`error_count=0`、`warning_count=0`。 |
+| AC-005 | 维护者审计 technical 全链路 | 仓库存在多个 technical 文档 | 运行 `python3 skills/writing-technicals/scripts/validate_technicals.py --strict --format json` | 返回 `ok=true`、`error_count=0`、`warning_count=0`。 |
 
 ## 追踪矩阵
 
 | 规格 ID | 验证类型 | 测试文件 / 命令 | 计划任务 | 状态 |
 | --- | --- | --- | --- | --- |
-| REQ-001 | 单元测试 | `python3 -m unittest skills/writing-technical-design/scripts/test_validate_technical_design.py` | Task 1 | 已覆盖 |
-| REQ-002 | 单元测试 | `python3 -m unittest skills/writing-technical-design/scripts/test_validate_technical_design.py` | Task 1 | 已覆盖 |
-| REQ-003 | 单元测试 | `python3 -m unittest skills/writing-technical-design/scripts/test_validate_technical_design.py` | Task 2 | 已覆盖 |
-| REQ-004 | 单元测试 | `python3 -m unittest skills/writing-technical-design/scripts/test_validate_technical_design.py` | Task 2 | 已覆盖 |
+| REQ-001 | 单元测试 | `python3 -m unittest skills/writing-technicals/scripts/test_validate_technicals.py` | Task 1 | 已覆盖 |
+| REQ-002 | 单元测试 | `python3 -m unittest skills/writing-technicals/scripts/test_validate_technicals.py` | Task 1 | 已覆盖 |
+| REQ-003 | 单元测试 | `python3 -m unittest skills/writing-technicals/scripts/test_validate_technicals.py` | Task 2 | 已覆盖 |
+| REQ-004 | 单元测试 | `python3 -m unittest skills/writing-technicals/scripts/test_validate_technicals.py` | Task 2 | 已覆盖 |
 | REQ-005 | 单元测试 / 命令验证 | `python3 -m unittest scripts/test_preflight.py`、`python3 scripts/preflight.py` | Task 3 | 已覆盖 |
 | REQ-006 | 文档校验 | `python3 scripts/preflight.py` | Task 4 | 已覆盖 |
-| REQ-007 | 单元测试 | `python3 -m unittest skills/writing-technical-design/scripts/test_validate_technical_design.py` | Task 5 | 已覆盖 |
-| REQ-008 | 单元测试 | `python3 -m unittest skills/writing-technical-design/scripts/test_validate_technical_design.py` | Task 5 | 已覆盖 |
-| REQ-009 | 单元测试 | `python3 -m unittest skills/writing-technical-design/scripts/test_validate_technical_design.py` | Task 5 | 已覆盖 |
-| REQ-010 | 单元测试 | `python3 -m unittest skills/writing-technical-design/scripts/test_validate_technical_design.py` | Task 5 | 已覆盖 |
+| REQ-007 | 单元测试 | `python3 -m unittest skills/writing-technicals/scripts/test_validate_technicals.py` | Task 5 | 已覆盖 |
+| REQ-008 | 单元测试 | `python3 -m unittest skills/writing-technicals/scripts/test_validate_technicals.py` | Task 5 | 已覆盖 |
+| REQ-009 | 单元测试 | `python3 -m unittest skills/writing-technicals/scripts/test_validate_technicals.py` | Task 5 | 已覆盖 |
+| REQ-010 | 单元测试 | `python3 -m unittest skills/writing-technicals/scripts/test_validate_technicals.py` | Task 5 | 已覆盖 |
 | REQ-011 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 5 | 已覆盖 |
-| ERR-001 | 单元测试 | `python3 -m unittest skills/writing-technical-design/scripts/test_validate_technical_design.py` | Task 1 | 已覆盖 |
-| ERR-002 | 单元测试 | `python3 -m unittest skills/writing-technical-design/scripts/test_validate_technical_design.py` | Task 1 | 已覆盖 |
-| ERR-003 | 单元测试 | `python3 -m unittest skills/writing-technical-design/scripts/test_validate_technical_design.py` | Task 1 | 已覆盖 |
-| ERR-004 | 单元测试 | `python3 -m unittest skills/writing-technical-design/scripts/test_validate_technical_design.py` | Task 2 | 已覆盖 |
-| ERR-005 | 单元测试 | `python3 -m unittest skills/writing-technical-design/scripts/test_validate_technical_design.py` | Task 2 | 已覆盖 |
-| ERR-006 | 单元测试 | `python3 -m unittest skills/writing-technical-design/scripts/test_validate_technical_design.py` | Task 2 | 已覆盖 |
-| ERR-007 | 单元测试 | `python3 -m unittest skills/writing-technical-design/scripts/test_validate_technical_design.py` | Task 5 | 已覆盖 |
-| ERR-008 | 单元测试 | `python3 -m unittest skills/writing-technical-design/scripts/test_validate_technical_design.py` | Task 5 | 已覆盖 |
-| ERR-009 | 单元测试 | `python3 -m unittest skills/writing-technical-design/scripts/test_validate_technical_design.py` | Task 5 | 已覆盖 |
-| ERR-010 | 单元测试 | `python3 -m unittest skills/writing-technical-design/scripts/test_validate_technical_design.py` | Task 5 | 已覆盖 |
+| ERR-001 | 单元测试 | `python3 -m unittest skills/writing-technicals/scripts/test_validate_technicals.py` | Task 1 | 已覆盖 |
+| ERR-002 | 单元测试 | `python3 -m unittest skills/writing-technicals/scripts/test_validate_technicals.py` | Task 1 | 已覆盖 |
+| ERR-003 | 单元测试 | `python3 -m unittest skills/writing-technicals/scripts/test_validate_technicals.py` | Task 1 | 已覆盖 |
+| ERR-004 | 单元测试 | `python3 -m unittest skills/writing-technicals/scripts/test_validate_technicals.py` | Task 2 | 已覆盖 |
+| ERR-005 | 单元测试 | `python3 -m unittest skills/writing-technicals/scripts/test_validate_technicals.py` | Task 2 | 已覆盖 |
+| ERR-006 | 单元测试 | `python3 -m unittest skills/writing-technicals/scripts/test_validate_technicals.py` | Task 2 | 已覆盖 |
+| ERR-007 | 单元测试 | `python3 -m unittest skills/writing-technicals/scripts/test_validate_technicals.py` | Task 5 | 已覆盖 |
+| ERR-008 | 单元测试 | `python3 -m unittest skills/writing-technicals/scripts/test_validate_technicals.py` | Task 5 | 已覆盖 |
+| ERR-009 | 单元测试 | `python3 -m unittest skills/writing-technicals/scripts/test_validate_technicals.py` | Task 5 | 已覆盖 |
+| ERR-010 | 单元测试 | `python3 -m unittest skills/writing-technicals/scripts/test_validate_technicals.py` | Task 5 | 已覆盖 |
 | ERR-011 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 5 | 已覆盖 |
-| AC-001 | 命令验证 | `python3 skills/writing-technical-design/scripts/validate_technical_design.py docs/coding-plugins/features/spec-technical-quality-gates/technicals/spec-technical-quality-gates-Technical-Design.md` | Task 4 | 已覆盖 |
-| AC-002 | 单元测试 | `python3 -m unittest skills/writing-technical-design/scripts/test_validate_technical_design.py` | Task 2 | 已覆盖 |
-| AC-003 | 单元测试 | `python3 -m unittest skills/writing-technical-design/scripts/test_validate_technical_design.py` | Task 2 | 已覆盖 |
+| AC-001 | 命令验证 | `python3 skills/writing-technicals/scripts/validate_technicals.py docs/coding-plugins/features/spec-technical-quality-gates/technicals/spec-technical-quality-gates-TDD.md` | Task 4 | 已覆盖 |
+| AC-002 | 单元测试 | `python3 -m unittest skills/writing-technicals/scripts/test_validate_technicals.py` | Task 2 | 已覆盖 |
+| AC-003 | 单元测试 | `python3 -m unittest skills/writing-technicals/scripts/test_validate_technicals.py` | Task 2 | 已覆盖 |
 | AC-004 | 命令验证 | `python3 scripts/preflight.py` | Task 4 | 已覆盖 |
-| AC-005 | 命令验证 | `python3 skills/writing-technical-design/scripts/validate_technical_design.py --strict --format json` | Task 5 | 已覆盖 |
+| AC-005 | 命令验证 | `python3 skills/writing-technicals/scripts/validate_technicals.py --strict --format json` | Task 5 | 已覆盖 |

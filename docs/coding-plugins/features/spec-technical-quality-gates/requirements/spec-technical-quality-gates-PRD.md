@@ -14,16 +14,16 @@ tags:
 related_code:
   - scripts/preflight.py
   - scripts/test_preflight.py
-  - skills/writing-technical-design/SKILL.md
-  - skills/writing-technical-design/templates/technical-design.md
+  - skills/writing-technicals/SKILL.md
+  - skills/writing-technicals/templates/technical-design-document.md
 related_specs:
   - docs/coding-plugins/features/technical-design-artifacts/requirements/technical-design-artifacts-PRD.md
 related_technical:
-  - docs/coding-plugins/features/spec-technical-quality-gates/technicals/spec-technical-quality-gates-Technical-Design.md
+  - docs/coding-plugins/features/spec-technical-quality-gates/technicals/spec-technical-quality-gates-TDD.md
 related_plans:
-  - docs/coding-plugins/features/spec-technical-quality-gates/plans/spec-technical-quality-gates-Implementation-Plan.md
+  - docs/coding-plugins/features/spec-technical-quality-gates/plans/spec-technical-quality-gates-IPD.md
 related_evidence:
-  - docs/coding-plugins/features/spec-technical-quality-gates/evidences/spec-technical-quality-gates-TDD-Evidence.md
+  - docs/coding-plugins/features/spec-technical-quality-gates/evidences/spec-technical-quality-gates-TED.md
 ---
 
 # Spec 与 Technical 质量门禁规格
@@ -35,9 +35,9 @@ related_evidence:
 | 状态 | 已批准 |
 | Feature | spec-technical-quality-gates |
 | 规格类型 | feature |
-| 技术设计 | `docs/coding-plugins/features/spec-technical-quality-gates/technicals/spec-technical-quality-gates-Technical-Design.md` |
-| 实现计划 | `docs/coding-plugins/features/spec-technical-quality-gates/plans/spec-technical-quality-gates-Implementation-Plan.md` |
-| TDD 证据 | `docs/coding-plugins/features/spec-technical-quality-gates/evidences/spec-technical-quality-gates-TDD-Evidence.md` |
+| 技术设计 | `docs/coding-plugins/features/spec-technical-quality-gates/technicals/spec-technical-quality-gates-TDD.md` |
+| 实现计划 | `docs/coding-plugins/features/spec-technical-quality-gates/plans/spec-technical-quality-gates-IPD.md` |
+| TDD 证据 | `docs/coding-plugins/features/spec-technical-quality-gates/evidences/spec-technical-quality-gates-TED.md` |
 
 ## 目标
 
@@ -48,7 +48,7 @@ related_evidence:
 | 编号 | 非目标 |
 | --- | --- |
 | NON-001 | 本批不实现 spec.updated 晚于 technical 的过期检查。 |
-| NON-002 | 本批不拆出独立 `validate_technical_design.py`；仍由 `scripts/preflight.py` 承担发布门禁。 |
+| NON-002 | 本批不拆出独立 `validate_technicals.py`；仍由 `scripts/preflight.py` 承担发布门禁。 |
 | NON-003 | 不强制轻量例外 feature 立即补 technical/plan。 |
 
 ## 背景
@@ -66,7 +66,7 @@ related_evidence:
 | REQ-003 | 必须 | preflight 必须校验每个 technical 文档包含 `## 规格到设计映射` 和 `## 无需技术设计的规格`。 | 单元测试 `test_technical_design_requires_spec_design_mapping_sections`。 |
 | REQ-004 | 必须 | preflight 必须校验同 feature 已批准 spec 中的每个 MUST Spec ID，都出现在 technical 的 `规格到设计映射` 或 `无需技术设计的规格` 中。 | 单元测试 `test_technical_design_must_cover_required_spec_ids`。 |
 | REQ-005 | 必须 | preflight 必须校验 technical frontmatter 在对应文件存在时包含 `related_specs`、`related_plans` 和 `related_evidence`，并且路径真实存在。 | 单元测试 `test_technical_metadata_requires_related_chain_paths`。 |
-| REQ-006 | 必须 | `writing-technical-design` skill 必须要求设计阶段填写规格到设计映射，并在自审中检查 MUST Spec ID 覆盖。 | 行为测试或文档测试 `python3 -m unittest tests.behavior.test_routing` 与 preflight。 |
+| REQ-006 | 必须 | `writing-technicals` skill 必须要求设计阶段填写规格到设计映射，并在自审中检查 MUST Spec ID 覆盖。 | 行为测试或文档测试 `python3 -m unittest tests.behavior.test_routing` 与 preflight。 |
 
 ## 错误和边界情况
 
@@ -101,6 +101,6 @@ related_evidence:
 | ERR-003 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 2 | 已覆盖 |
 | ERR-004 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 3 | 已覆盖 |
 | ERR-005 | 回归测试 | `python3 -m unittest scripts/test_preflight.py` | Task 4 | 已覆盖 |
-| AC-001 | 文件检查 | `skills/writing-technical-design/templates/technical-design.md` | Task 1 | 已覆盖 |
+| AC-001 | 文件检查 | `skills/writing-technicals/templates/technical-design-document.md` | Task 1 | 已覆盖 |
 | AC-002 | 命令验证 | `python3 scripts/preflight.py` | Task 4 | 已覆盖 |
 | AC-003 | 命令验证 | `python3 scripts/preflight.py` | Task 4 | 已覆盖 |

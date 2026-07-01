@@ -87,7 +87,7 @@ required = (
     "coding-plugins:using-coding-plugins",
     "SDD",
     "TDD",
-    "docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TDD-Evidence.md",
+    "docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md",
     "verification-before-completion",
     "git-commit",
     "finishing-a-development-branch",

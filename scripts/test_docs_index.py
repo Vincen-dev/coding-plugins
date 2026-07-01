@@ -37,7 +37,7 @@ class DocsIndexTests(unittest.TestCase):
                 encoding="utf-8",
             )
             (feature_dir / "test-cases").mkdir()
-            (feature_dir / "test-cases" / f"{feature_dir.name}-Test-Cases.md").write_text(
+            (feature_dir / "test-cases" / f"{feature_dir.name}-TCD.md").write_text(
                 "---\nupdated: 2026-06-29\n---\n# Test cases\n",
                 encoding="utf-8",
             )
@@ -46,7 +46,7 @@ class DocsIndexTests(unittest.TestCase):
 
             self.assertIn("`docs/coding-plugins/features/search`", rendered)
             self.assertIn("`docs/coding-plugins/features/search/requirements/search-PRD.md`", rendered)
-            self.assertIn("`docs/coding-plugins/features/search/test-cases/search-Test-Cases.md`", rendered)
+            self.assertIn("`docs/coding-plugins/features/search/test-cases/search-TCD.md`", rendered)
             self.assertIn("| search | 2026-06-29 |", rendered)
 
     def test_docs_index_uses_readme_frontmatter_tags_not_body_table(self) -> None:

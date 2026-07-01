@@ -29,7 +29,7 @@ related_specs: []
 | 状态 | 已批准 |
 | Feature | preflight |
 | 规格类型 | feature |
-| 技术设计 | `docs/coding-plugins/features/preflight/technicals/preflight-Technical-Design.md` |
+| 技术设计 | `docs/coding-plugins/features/preflight/technicals/preflight-TDD.md` |
 
 ## 目标
 

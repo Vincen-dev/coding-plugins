@@ -21,7 +21,7 @@ related_specs:
   - docs/coding-plugins/features/document-metadata/requirements/document-metadata-PRD.md
   - docs/coding-plugins/features/artifact-index/requirements/artifact-index-PRD.md
 related_technical:
-  - docs/coding-plugins/features/document-contract/technicals/document-contract-Technical-Design.md
+  - docs/coding-plugins/features/document-contract/technicals/document-contract-TDD.md
 ---
 
 # 文档契约和 metadata-first 读取规则规格

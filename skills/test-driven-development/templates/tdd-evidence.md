@@ -7,9 +7,9 @@ updated: YYYY-MM-DD
 related_specs:
   - docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md
 related_technical:
-  - docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-Technical-Design.md
+  - docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TDD.md
 related_plans:
-  - docs/coding-plugins/features/<feature-name>/plans/<feature-name>-Implementation-Plan.md
+  - docs/coding-plugins/features/<feature-name>/plans/<feature-name>-IPD.md
 ---
 
 # <能力> TDD 证据

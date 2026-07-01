@@ -33,8 +33,8 @@
 
 ## 0.6.24 - 2026-06-29
 
-- 将 feature-first 技术设计和实现计划从 feature root 裸文件迁移到 `technical/technical-design.md` 与 `plans/<feature-name>-Implementation-Plan.md`。
-- 增强 preflight，拒绝 feature root 下裸露的 `technical-design.md` 和 `implementation.md`，并更新总索引生成规则。
+- 将 feature-first 技术设计和实现计划从 feature root 裸文件迁移到 `technical/technical-design-document.md` 与 `plans/<feature-name>-IPD.md`。
+- 增强 preflight，拒绝 feature root 下裸露的 `technical-design-document.md` 和 `implementation.md`，并更新总索引生成规则。
 - 同步更新规格、技术设计、实现计划、TDD Evidence、技能模板和链路文档中的新路径契约。
 
 ## 0.6.23 - 2026-06-29
@@ -75,7 +75,7 @@
 
 ## 0.6.17 - 2026-06-26
 
-- 增加 `writing-technical-design` skill，将技术实现方案独立维护到 `docs/coding-plugins/technical/`。
+- 增加 `writing-technicals` skill，将技术实现方案独立维护到 `docs/coding-plugins/technical/`。
 - 总索引增加 `Technical` 列，并新增 `docs/coding-plugins/technical/INDEX.md` 专用索引。
 - 增强 preflight，校验 technical 文档路径、metadata、Spec/Plan 引用和 Spec ID 追踪。
 
