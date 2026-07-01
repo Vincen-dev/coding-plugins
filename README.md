@@ -6,7 +6,7 @@ Coding Plugins 是中文编码代理方法论插件，支持 Codex 和 Claude Co
 
 Codex 侧包含 SessionStart hook，新建、恢复或清空会话时会注入 `coding-plugins:using-coding-plugins` 入口提示，降低入口技能漏用概率。Claude Code 侧仍通过 `/coding-plugins:<skill-name>` 命名空间手动或按描述触发。
 
-规格、技术设计、计划和 TDD Evidence 的统一检索入口是 [docs/coding-plugins/INDEX.md](docs/coding-plugins/INDEX.md)。文档按 `docs/coding-plugins/features/<area>/<capability>/` 集中维护；新增或移动相关产物后运行 `python3 scripts/preflight.py --write-index` 重新生成总索引，`python3 scripts/preflight.py` 会校验索引和真实文件树完全一致。文档分层和 metadata-first 读取规则见 [docs/coding-plugins/document-contract.md](docs/coding-plugins/document-contract.md)。
+规格、技术设计、计划和 TDD Evidence 的统一检索入口是 [docs/coding-plugins/INDEX.md](docs/coding-plugins/INDEX.md)。文档按 `docs/coding-plugins/features/<feature-name>/` 集中维护；新增或移动相关产物后运行 `python3 scripts/preflight.py --write-index` 重新生成总索引，`python3 scripts/preflight.py` 会校验索引和真实文件树完全一致。文档分层和 metadata-first 读取规则见 [docs/coding-plugins/document-contract.md](docs/coding-plugins/document-contract.md)，实际读写文档关系时使用 `document-metadata` skill 和 `skills/document-metadata/templates/document-metadata.md` 模板。
 
 ## 工作方式
 
@@ -18,11 +18,11 @@ Codex 侧包含 SessionStart hook，新建、恢复或清空会话时会注入 `
 
 1. **using-coding-plugins** - 入口技能。先判断直接意图，再判断开发任务类型。
 2. **spec-driven-development** - 实现前激活。把需求、接口、schema、状态机和验收标准写成可测试规格。
-3. **writing-technical-design** - 基于已批准规格写独立技术设计，保存到 `docs/coding-plugins/features/<area>/<capability>/technical/technical-design.md`。
+3. **writing-technical-design** - 基于已批准规格写独立技术设计，保存到 `docs/coding-plugins/features/<feature-name>/technical/technical-design.md`。
 4. **writing-plans** - 基于已批准规格和技术设计写实现计划。任务拆到 2 到 5 分钟粒度，并建立 Spec ID -> Test -> Task 追踪。
 5. **using-git-worktrees** - 执行前使用。创建隔离 worktree 和新分支，避免污染当前工作区。
 6. **subagent-driven-development / executing-plans** - 根据计划执行。优先子代理驱动；没有子代理时内联执行。
-7. **test-driven-development** - 实现时强制 RED-GREEN-REFACTOR：先从规格写失败测试，再最小实现，再重构，并把 TDD Evidence 写入 `docs/coding-plugins/features/<area>/<capability>/evidence/tdd-evidence.md`。
+7. **test-driven-development** - 实现时强制 RED-GREEN-REFACTOR：先从规格写失败测试，再最小实现，再重构，并把 TDD Evidence 写入 `docs/coding-plugins/features/<feature-name>/evidence/tdd-evidence.md`。
 8. **requesting-code-review** - 任务之间或合并前评审，按严重级别报告问题。
 9. **receiving-code-review** - 收到评审后先验证反馈，再决定是否修改。
 10. **git-commit** - 用户要求提交或完成阶段需要提交时，生成中文 Conventional Commit，在 footer 添加本人 `Authored-by` 署名，并禁止 AI 作者或 AI 生成声明。
@@ -43,6 +43,7 @@ Codex 侧包含 SessionStart hook，新建、恢复或清空会话时会注入 `
 
 **协作**
 
+- `document-metadata`：读取、创建、迁移或审计文档 frontmatter，先用 metadata 串联 README、spec、technical、plan、evidence 和 INDEX。
 - `spec-driven-development`：规格驱动开发，把需求收敛为可测试契约，并提供支持 JSON 输出和多文件校验的规格质量脚本。
 - `writing-technical-design`：把批准规格转成独立 technical design，维护技术方案索引。
 - `writing-plans`：详细实现计划。
@@ -124,6 +125,19 @@ python3 scripts/preflight.py
 ```
 
 该命令会运行 SDD/TDD 校验器单测、真实规格样例校验、manifest 版本一致性检查和旧入口残留扫描。GitHub Actions 会在 push 和 pull request 时运行同一命令。
+
+旧项目文档升级到当前 metadata 契约时，先用 dry-run 查看机械迁移范围，再执行迁移：
+
+```bash
+python3 scripts/migrate_document_contract.py --dry-run
+python3 scripts/migrate_document_contract.py
+```
+
+跨仓库或本机绝对路径引用统一写入 `external_references`。默认 preflight 不检查这些路径；需要本机审计时运行：
+
+```bash
+python3 scripts/preflight.py --check-external-references
+```
 
 提交并确认工作区干净后，准备公开 release metadata：
 

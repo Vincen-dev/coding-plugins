@@ -1,0 +1,108 @@
+---
+name: document-metadata
+description: Use when reading, creating, updating, migrating, or auditing Coding Plugins feature documents, frontmatter metadata, related_* links, README/INDEX document relations, or document-metadata.md templates.
+---
+
+# 文档 Metadata
+
+## 总览
+
+文档 metadata 是 Coding Plugins 文档系统的机器可读入口。读取或维护 `docs/coding-plugins/features/<feature-name>/` 下的 README、spec、technical、plan、evidence 时，先读 frontmatter，再读正文。
+
+**核心原则：**文档之间的关系以 metadata 为准，正文负责需求、设计、计划和证据，不负责维护索引型链路。
+
+开始时声明：“我正在使用 document-metadata 技能来读取和维护文档 metadata 关系。”
+
+## 何时使用
+
+使用本技能：
+
+- 读取 feature 文档并需要理解上下游关系。
+- 创建或更新 README、spec、technical design、implementation plan 或 TDD evidence。
+- 维护 `related_specs`、`related_technical`、`related_plans`、`related_evidence`、`external_references`。
+- 迁移、审计或修复 frontmatter metadata。
+- 需要使用 `templates/document-metadata.md` 作为文档 metadata 模板。
+- 发现正文摘要、README、INDEX 或 frontmatter 之间存在冲突。
+
+不单独使用本技能：
+
+- 只解释普通代码，不读取 Coding Plugins 文档。
+- 只运行测试或提交代码，且不涉及文档关系。
+- 编写具体 spec、technical、plan 或 TDD evidence 时，本技能只负责 metadata；正文仍由对应技能负责。
+
+## 读取顺序
+
+1. 先读目标 feature 的 `README.md` frontmatter，确认 `title`、`status`、`feature`、`updated`、`tags`。
+2. 再读目标文档 frontmatter，确认 `feature` 是否与路径 `docs/coding-plugins/features/<feature-name>/` 一致。
+3. 按 `related_specs`、`related_technical`、`related_plans`、`related_evidence` 读取相关文档。
+4. 如果存在跨仓库或本机绝对路径，只从 `external_references` 读取，不写入 `related_*`。
+5. 最后阅读正文中的正式需求、技术方案、计划步骤或验证证据。
+
+如果 frontmatter 和正文 `## 文档信息` 冲突，以 frontmatter 为准，并修正文档信息摘要。
+
+## Metadata 关系源
+
+| 字段 | 用途 | 约束 |
+| --- | --- | --- |
+| `title` | 文档标题 | 面向索引和人工检索，保持稳定清晰 |
+| `status` | 文档状态 | 常用值：`draft`、`approved`、`superseded`、`archived` |
+| `feature` | feature 归属 | 必须匹配 `docs/coding-plugins/features/<feature-name>/` |
+| `created` / `updated` | 生命周期日期 | 使用 `YYYY-MM-DD`，不要写进文件名 |
+| `tags` | README 检索标签 | README 必填，`INDEX.md` 从 README frontmatter 读取 |
+| `lifecycle_status` | technical 生命周期 | technical design 使用：`draft`、`approved`、`implemented`、`stale`、`superseded` |
+| `implemented_commits` | 已落地提交 | technical design 使用；未落地时保留空列表 |
+| `validated_by` | 验证记录 | technical design 使用，写命令或人工验证记录 |
+| `related_specs` | 当前仓库 spec 路径 | 只写 `docs/coding-plugins/...` 相对路径 |
+| `related_technical` | 当前仓库 technical 路径 | 只写 `docs/coding-plugins/...` 相对路径 |
+| `related_plans` | 当前仓库 plan 路径 | 只写 `docs/coding-plugins/...` 相对路径 |
+| `related_evidence` | 当前仓库 evidence 路径 | 只写 `docs/coding-plugins/...` 相对路径 |
+| `related_code` | 相关代码路径 | 写仓库内相对路径 |
+| `external_references` | 跨仓库或绝对路径引用 | 默认 preflight 不检查；本机审计用 `--check-external-references` |
+
+## 文档类型要求
+
+| 文档 | 必备 metadata | 关系要求 |
+| --- | --- | --- |
+| README | `title`、`status`、`feature`、`updated`、`tags` | 作为人工总览和检索入口，不维护手写 `产物链路` 或 `文档链路` |
+| Spec | `spec_id`、`title`、`type`、`status`、`feature`、`created`、`updated`、`tags` | 可链接 `related_specs`、`related_technical`、`related_code` |
+| Technical | `title`、`status`、`lifecycle_status`、`feature`、`created`、`updated`、`implemented_commits`、`validated_by` | 必须补齐存在的 `related_specs`、`related_plans`、`related_evidence` |
+| Plan | `title`、`status`、`feature`、`created`、`updated` | 必须链接规格、技术设计和 evidence |
+| Active evidence | `title`、`status`、`feature`、`created`、`updated` | 必须链接存在的规格、技术设计和计划 |
+| Archived evidence | active evidence 字段外加 `validation_mode`、`archive_of`、`archived_at` | `status: archived` 且 `validation_mode: historical` |
+
+## 创建或更新流程
+
+1. 用 `templates/document-metadata.md` 选择适合的 frontmatter 字段。
+2. 保持机器 key 为英文；中文展示写入正文 `## 文档信息`。
+3. 所有 `related_*` 值使用当前仓库内 `docs/coding-plugins/...` 路径。
+4. README 只写人工摘要、标签和轻量例外追踪；不要维护索引型链路表。
+5. 新增、移动、批准、废弃或拆分文档后运行：
+
+```bash
+python3 scripts/preflight.py --write-index
+python3 scripts/preflight.py
+```
+
+6. 需要检查跨仓库路径时额外运行：
+
+```bash
+python3 scripts/preflight.py --check-external-references
+```
+
+## 常见错误
+
+| 错误 | 修正 |
+| --- | --- |
+| 先读正文再猜关系 | 先读 README 和目标文档 frontmatter，再按 `related_*` 追链 |
+| 把绝对路径写进 `related_specs` | 移到 `external_references` |
+| README 维护手写文档链路表 | 删除手写链路，运行 `--write-index` 生成全局索引 |
+| `feature` 与路径不一致 | 以路径 `features/<feature-name>` 为准修正 metadata |
+| 中文 `文档信息` 和 frontmatter 不一致 | 以 frontmatter 为准更新中文摘要 |
+| 新增文档后忘记 INDEX | 运行 `python3 scripts/preflight.py --write-index` |
+
+## 相关契约
+
+- 仓库级职责边界：`docs/coding-plugins/document-contract.md`
+- 总索引：`docs/coding-plugins/INDEX.md`
+- 通用模板：`skills/document-metadata/templates/document-metadata.md`
+- 发布门禁：`scripts/preflight.py`

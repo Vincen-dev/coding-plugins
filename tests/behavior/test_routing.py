@@ -70,6 +70,7 @@ class RoutingBehaviorTests(unittest.TestCase):
         entry = self.read_text("skills/using-coding-plugins/SKILL.md")
 
         for skill_name in (
+            "document-metadata",
             "requesting-code-review",
             "receiving-code-review",
             "verification-before-completion",
