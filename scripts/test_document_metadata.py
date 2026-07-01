@@ -14,6 +14,60 @@ import document_metadata
 
 
 class DocumentMetadataTests(unittest.TestCase):
+    def test_frontmatter_block_round_trips_scalars_and_lists(self) -> None:
+        text = (
+            "---\n"
+            "title: Demo PRD\n"
+            "status: active\n"
+            "related_specs:\n"
+            "  - docs/coding-plugins/features/demo/requirements/demo-PRD.md\n"
+            "related_technical: []\n"
+            "---\n"
+            "# Body\n"
+        )
+
+        lines, body = document_metadata.split_frontmatter(text)
+        frontmatter = document_metadata.parse_frontmatter_block(lines)
+        rendered = document_metadata.render_frontmatter_block(frontmatter)
+
+        self.assertEqual("# Body\n", body)
+        self.assertEqual("Demo PRD", frontmatter.scalars["title"])
+        self.assertEqual("active", frontmatter.scalars["status"])
+        self.assertEqual(
+            ["docs/coding-plugins/features/demo/requirements/demo-PRD.md"],
+            frontmatter.lists["related_specs"],
+        )
+        self.assertEqual([], frontmatter.lists["related_technical"])
+        self.assertEqual(["title", "status", "related_specs", "related_technical"], frontmatter.order)
+        self.assertEqual(
+            "---\n"
+            "title: Demo PRD\n"
+            "status: active\n"
+            "related_specs:\n"
+            "  - docs/coding-plugins/features/demo/requirements/demo-PRD.md\n"
+            "related_technical: []\n"
+            "---\n",
+            rendered,
+        )
+
+    def test_frontmatter_compat_helpers_use_central_parser(self) -> None:
+        text = (
+            "---\n"
+            "title: Demo PRD\n"
+            "related_specs:\n"
+            "  - docs/coding-plugins/features/demo/requirements/demo-PRD.md\n"
+            "related_technical: []\n"
+            "---\n"
+            "# Body\n"
+        )
+
+        self.assertEqual({"title": "Demo PRD"}, document_metadata.parse_frontmatter(text))
+        self.assertEqual(
+            ["docs/coding-plugins/features/demo/requirements/demo-PRD.md"],
+            document_metadata.frontmatter_list_values(text, "related_specs"),
+        )
+        self.assertEqual([], document_metadata.frontmatter_list_values(text, "related_technical"))
+
     def test_registry_defines_active_document_artifacts(self) -> None:
         self.assertEqual(("PRD", "TDD", "TID", "TCD", "IPD", "TED"), document_metadata.ARTIFACT_SUFFIXES)
         for suffix in document_metadata.ARTIFACT_SUFFIXES:

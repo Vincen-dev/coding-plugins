@@ -109,3 +109,18 @@ related_plans:
 - **GREEN 命令:** `python3 -m unittest scripts.test_document_metadata scripts.test_preflight skills.spec-driven-development.scripts.test_scaffold_feature_docs skills.writing-technicals.scripts.test_validate_technicals` PASS
 - **REFACTOR 命令:** `git diff --check` PASS
 - **最终验证:** `python3 scripts/preflight.py` PASS。
+
+## 任务 8：Frontmatter parser centralization
+
+### TDD 证据
+
+- **规格/缺陷/验收:** metadata 规则继续中心化：frontmatter 拆分、解析、渲染必须由 `document_metadata.py` 统一提供；迁移脚本不能保留第二套解析实现；空列表 `related_*: []` 必须按空列表处理，不能误判为 scalar 或字符串值。
+- **测试类型:** unit
+- **RED 测试:** `scripts.test_document_metadata.DocumentMetadataTests.test_frontmatter_block_round_trips_scalars_and_lists`、`test_frontmatter_compat_helpers_use_central_parser`
+- **RED 命令:** `python3 -m unittest scripts.test_document_metadata`
+- **RED 失败:** `document_metadata` 尚未提供 `split_frontmatter`、`parse_frontmatter_block`、`render_frontmatter_block`；兼容 helper 会把 `related_specs:` 和 `related_technical: []` 误解析成 scalar。
+- **GREEN 变更:** 新增 `Frontmatter` 数据结构和集中 frontmatter split/parse/render helper；`parse_frontmatter`、`frontmatter_list_values` 改为复用集中 parser，并正确处理空列表。
+- **GREEN 命令:** `python3 -m unittest scripts.test_document_metadata` PASS
+- **REFACTOR 变更:** `migrate_document_contract.py` 移除本地重复的 frontmatter split/parse/render，统一调用 `document_metadata`。
+- **REFACTOR 命令:** `python3 -m unittest scripts.test_document_metadata scripts.test_document_contract_migration` PASS
+- **最终验证:** `python3 scripts/preflight.py` PASS。

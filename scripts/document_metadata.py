@@ -20,6 +20,15 @@ class DocumentArtifact:
     sync_upstream: tuple[str, ...] = ()
 
 
+@dataclass(frozen=True)
+class Frontmatter:
+    """Parsed Markdown frontmatter with stable render order."""
+
+    scalars: dict[str, str]
+    lists: dict[str, list[str]]
+    order: list[str]
+
+
 FEATURE_README_METADATA_REQUIRED_FIELDS = ("title", "status", "feature", "updated")
 EVIDENCE_METADATA_REQUIRED_FIELDS = ("title", "status", "feature", "created", "updated")
 ARCHIVED_EVIDENCE_METADATA_REQUIRED_FIELDS = (
@@ -50,44 +59,81 @@ DOCUMENT_SYNC_DEPENDENCIES = {
 }
 
 
-def parse_frontmatter(text: str) -> dict[str, str]:
+def split_frontmatter(text: str) -> tuple[list[str], str]:
     if not text.startswith("---\n"):
-        return {}
+        return [], text
     end = text.find("\n---", 4)
     if end == -1:
-        return {}
+        return [], text
 
-    metadata: dict[str, str] = {}
-    for line in text[4:end].splitlines():
-        if ":" not in line:
-            continue
-        key, value = line.split(":", 1)
-        metadata[key.strip()] = value.strip().strip('"').strip("'")
-    return metadata
+    return text[4:end].splitlines(), text[end + len("\n---") :].lstrip("\n")
 
 
-def frontmatter_list_values(text: str, key: str) -> list[str]:
-    if not text.startswith("---\n"):
-        return []
-    end = text.find("\n---", 4)
-    if end == -1:
-        return []
+def parse_frontmatter_block(lines: list[str]) -> Frontmatter:
+    scalars: dict[str, str] = {}
+    lists: dict[str, list[str]] = {}
+    order: list[str] = []
+    current_key: str | None = None
 
-    values: list[str] = []
-    in_key = False
-    for line in text[4:end].splitlines():
+    for line in lines:
         stripped = line.strip()
         if not stripped:
             continue
-        if line.startswith(" ") and in_key and stripped.startswith("- "):
-            values.append(stripped[2:].strip().strip('"').strip("'"))
+        if line.startswith(" ") and current_key and stripped.startswith("- "):
+            lists.setdefault(current_key, []).append(stripped[2:].strip().strip('"').strip("'"))
             continue
-        if ":" in line and not line.startswith(" "):
-            current_key, value = line.split(":", 1)
-            in_key = current_key.strip() == key
-            if in_key and value.strip():
-                values.append(value.strip().strip('"').strip("'"))
-    return values
+        if ":" not in line or line.startswith(" "):
+            continue
+        key, value = line.split(":", 1)
+        current_key = key.strip()
+        if current_key not in order:
+            order.append(current_key)
+
+        raw_value = value.strip()
+        value = raw_value.strip('"').strip("'")
+        if raw_value == "[]":
+            lists.setdefault(current_key, [])
+        elif value:
+            scalars[current_key] = value
+        else:
+            lists.setdefault(current_key, [])
+
+    return Frontmatter(scalars=scalars, lists=lists, order=order)
+
+
+def render_frontmatter_block(frontmatter: Frontmatter) -> str:
+    keys = list(frontmatter.order)
+    for key in list(frontmatter.scalars) + list(frontmatter.lists):
+        if key not in keys:
+            keys.append(key)
+
+    lines = ["---"]
+    for key in keys:
+        if key in frontmatter.lists:
+            values = frontmatter.lists[key]
+            if values:
+                lines.append(f"{key}:")
+                lines.extend(f"  - {value}" for value in values)
+            else:
+                lines.append(f"{key}: []")
+        elif key in frontmatter.scalars:
+            lines.append(f"{key}: {frontmatter.scalars[key]}")
+    lines.append("---")
+    return "\n".join(lines) + "\n"
+
+
+def parse_frontmatter(text: str) -> dict[str, str]:
+    lines, _body = split_frontmatter(text)
+    if not lines:
+        return {}
+    return dict(parse_frontmatter_block(lines).scalars)
+
+
+def frontmatter_list_values(text: str, key: str) -> list[str]:
+    lines, _body = split_frontmatter(text)
+    if not lines:
+        return []
+    return list(parse_frontmatter_block(lines).lists.get(key, []))
 
 
 def feature_docs_root(root: Path) -> Path:

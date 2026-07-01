@@ -7,6 +7,8 @@ import argparse
 import re
 from pathlib import Path
 
+import document_metadata
+
 
 SPEC_ID_RE = re.compile(r"\b(?:REQ|API|SCHEMA|STATE|ERR|AC|NFR|MIG|OBS|NON)(?:-[A-Z0-9]+)*-\d{3,}\b")
 STATUS_ALIASES = {
@@ -16,62 +18,6 @@ STATUS_ALIASES = {
     "done": "covered",
 }
 DEFAULT_DATE = "2026-07-01"
-
-
-def split_frontmatter(text: str) -> tuple[list[str], str]:
-    if not text.startswith("---\n"):
-        return [], text
-    end = text.find("\n---", 4)
-    if end == -1:
-        return [], text
-    return text[4:end].splitlines(), text[end + len("\n---") :].lstrip("\n")
-
-
-def parse_frontmatter(lines: list[str]) -> tuple[dict[str, str], dict[str, list[str]], list[str]]:
-    scalars: dict[str, str] = {}
-    lists: dict[str, list[str]] = {}
-    order: list[str] = []
-    current_key: str | None = None
-    for line in lines:
-        stripped = line.strip()
-        if not stripped:
-            continue
-        if line.startswith(" ") and current_key and stripped.startswith("- "):
-            lists.setdefault(current_key, []).append(stripped[2:].strip().strip('"').strip("'"))
-            continue
-        if ":" not in line or line.startswith(" "):
-            continue
-        key, value = line.split(":", 1)
-        current_key = key.strip()
-        if current_key not in order:
-            order.append(current_key)
-        value = value.strip().strip('"').strip("'")
-        if value:
-            scalars[current_key] = value
-        else:
-            lists.setdefault(current_key, [])
-    return scalars, lists, order
-
-
-def render_frontmatter(scalars: dict[str, str], lists: dict[str, list[str]], order: list[str]) -> str:
-    keys = list(order)
-    for key in list(scalars) + list(lists):
-        if key not in keys:
-            keys.append(key)
-
-    lines = ["---"]
-    for key in keys:
-        if key in lists:
-            values = lists[key]
-            if values:
-                lines.append(f"{key}:")
-                lines.extend(f"  - {value}" for value in values)
-            else:
-                lines.append(f"{key}: []")
-        elif key in scalars:
-            lines.append(f"{key}: {scalars[key]}")
-    lines.append("---")
-    return "\n".join(lines) + "\n"
 
 
 def feature_context(path: Path) -> str | None:
@@ -94,8 +40,11 @@ def migrate_body_status_aliases(body: str) -> str:
 
 def migrate_file(path: Path, dry_run: bool = False) -> bool:
     original = path.read_text(encoding="utf-8")
-    lines, body = split_frontmatter(original)
-    scalars, lists, order = parse_frontmatter(lines)
+    lines, body = document_metadata.split_frontmatter(original)
+    frontmatter = document_metadata.parse_frontmatter_block(lines)
+    scalars = dict(frontmatter.scalars)
+    lists = {key: list(values) for key, values in frontmatter.lists.items()}
+    order = list(frontmatter.order)
     context = feature_context(path)
     changed = False
 
@@ -141,7 +90,8 @@ def migrate_file(path: Path, dry_run: bool = False) -> bool:
     if not changed:
         return False
 
-    migrated = render_frontmatter(scalars, lists, order) + "\n" + body
+    migrated_frontmatter = document_metadata.Frontmatter(scalars=scalars, lists=lists, order=order)
+    migrated = document_metadata.render_frontmatter_block(migrated_frontmatter) + "\n" + body
     if migrated != original and not dry_run:
         path.write_text(migrated, encoding="utf-8")
     return migrated != original

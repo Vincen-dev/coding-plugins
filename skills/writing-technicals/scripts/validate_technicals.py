@@ -183,14 +183,17 @@ def technical_design_coverage_ids(technical_text: str) -> set[str]:
 
 
 def validate_lifecycle_metadata(root: Path, technical_file: Path, text: str) -> list[str]:
-    metadata = parse_frontmatter(text)
+    lines, _body = document_metadata.split_frontmatter(text)
+    frontmatter = document_metadata.parse_frontmatter_block(lines)
+    metadata = frontmatter.scalars
     errors: list[str] = []
-    missing = [field for field in TECHNICAL_LIFECYCLE_REQUIRED_FIELDS if not metadata.get(field)]
+    present_fields = set(frontmatter.scalars) | set(frontmatter.lists)
+    missing = [field for field in TECHNICAL_LIFECYCLE_REQUIRED_FIELDS if field not in present_fields]
     if missing:
         errors.append(f"{relative_path(root, technical_file)} lifecycle metadata missing {', '.join(missing)}")
         return errors
 
-    status = metadata["lifecycle_status"]
+    status = metadata.get("lifecycle_status", "")
     if status not in TECHNICAL_LIFECYCLE_STATUSES:
         errors.append(
             f"{relative_path(root, technical_file)} lifecycle metadata has invalid lifecycle_status={status}"
