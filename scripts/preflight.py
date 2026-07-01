@@ -707,6 +707,7 @@ def check_evidence_metadata(root: Path) -> None:
         expected_by_key = {
             "related_specs": docs_index.feature_spec_files(feature_root),
             "related_technical": docs_index.feature_technical_design_files(feature_root),
+            "related_test_cases": docs_index.feature_test_case_files(feature_root),
             "related_plans": docs_index.feature_plan_files(feature_root),
         }
         for key, expected_paths in expected_by_key.items():
@@ -974,6 +975,7 @@ def check_technical_design_related_metadata(root: Path) -> None:
         text = technical_file.read_text(encoding="utf-8")
         expected_by_key = {
             "related_specs": docs_index.feature_spec_files(feature_root),
+            "related_test_cases": docs_index.feature_test_case_files(feature_root),
             "related_plans": docs_index.feature_plan_files(feature_root),
             "related_evidence": docs_index.feature_evidence_files(feature_root),
         }

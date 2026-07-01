@@ -217,6 +217,7 @@ def validate_related_metadata(root: Path, technical_file: Path, text: str) -> li
     _feature, feature_root = feature_context
     expected_by_key = {
         "related_specs": docs_index.feature_spec_files(feature_root),
+        "related_test_cases": docs_index.feature_test_case_files(feature_root),
         "related_plans": docs_index.feature_plan_files(feature_root),
         "related_evidence": docs_index.feature_evidence_files(feature_root),
     }

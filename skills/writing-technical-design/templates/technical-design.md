@@ -9,6 +9,8 @@ implemented_commits: []
 validated_by: "<验证命令或人工验证记录>"
 related_specs:
   - docs/coding-plugins/features/<feature-name>/specs/feature.md
+related_test_cases:
+  - docs/coding-plugins/features/<feature-name>/test-cases/test-cases.md
 related_plans:
   - docs/coding-plugins/features/<feature-name>/plans/implementation.md
 related_evidence:
@@ -25,6 +27,7 @@ related_evidence:
 | 生命周期 | draft |
 | Feature | <feature-name> |
 | 规格 | `docs/coding-plugins/features/<feature-name>/specs/feature.md` |
+| 测试用例 | `docs/coding-plugins/features/<feature-name>/test-cases/test-cases.md` |
 | 计划 | `docs/coding-plugins/features/<feature-name>/plans/implementation.md` |
 | TDD 证据| `docs/coding-plugins/features/<feature-name>/evidence/tdd-evidence.md` |
 | 已实现提交 | [] |

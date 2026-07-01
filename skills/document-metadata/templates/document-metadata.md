@@ -17,6 +17,8 @@ related_specs:
   - docs/coding-plugins/features/<feature-name>/specs/feature.md
 related_technical:
   - docs/coding-plugins/features/<feature-name>/technical/technical-design.md
+related_test_cases:
+  - docs/coding-plugins/features/<feature-name>/test-cases/test-cases.md
 related_plans:
   - docs/coding-plugins/features/<feature-name>/plans/implementation.md
 related_evidence:
@@ -66,6 +68,8 @@ related_specs:
   - docs/coding-plugins/features/<feature-name>/specs/feature.md
 related_plans:
   - docs/coding-plugins/features/<feature-name>/plans/implementation.md
+related_test_cases:
+  - docs/coding-plugins/features/<feature-name>/test-cases/test-cases.md
 related_evidence:
   - docs/coding-plugins/features/<feature-name>/evidence/tdd-evidence.md
 ---
@@ -84,6 +88,28 @@ related_specs:
   - docs/coding-plugins/features/<feature-name>/specs/feature.md
 related_technical:
   - docs/coding-plugins/features/<feature-name>/technical/technical-design.md
+related_test_cases:
+  - docs/coding-plugins/features/<feature-name>/test-cases/test-cases.md
+related_evidence:
+  - docs/coding-plugins/features/<feature-name>/evidence/tdd-evidence.md
+---
+```
+
+## Test cases frontmatter
+
+```yaml
+---
+title: <功能名称>测试用例
+status: draft
+feature: <feature-name>
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
+related_specs:
+  - docs/coding-plugins/features/<feature-name>/specs/feature.md
+related_technical:
+  - docs/coding-plugins/features/<feature-name>/technical/technical-design.md
+related_plans:
+  - docs/coding-plugins/features/<feature-name>/plans/implementation.md
 related_evidence:
   - docs/coding-plugins/features/<feature-name>/evidence/tdd-evidence.md
 ---
@@ -133,6 +159,7 @@ archived_at: YYYY-MM-DD
 | Feature | <feature-name> |
 | 规格 | `docs/coding-plugins/features/<feature-name>/specs/feature.md` |
 | 技术设计 | `docs/coding-plugins/features/<feature-name>/technical/technical-design.md` |
+| 测试用例 | `docs/coding-plugins/features/<feature-name>/test-cases/test-cases.md` |
 | 实现计划 | `docs/coding-plugins/features/<feature-name>/plans/implementation.md` |
 | TDD 证据 | `docs/coding-plugins/features/<feature-name>/evidence/tdd-evidence.md` |
 ```

@@ -50,6 +50,7 @@ docs/coding-plugins/INDEX.md
 | --- | --- | --- |
 | 规格 | 需求、契约、验收标准、错误边界、Spec ID | 具体实现方案 |
 | 技术设计 | 架构方案、关键决策、影响组件、数据流、接口落地、兼容策略、测试策略 | 逐步执行清单 |
+| 测试用例 | Spec ID 到测试用例、断言、测试数据和测试层级 | 技术选型和实现任务 |
 | 实现计划 | 任务拆分、文件修改步骤、RED/GREEN 命令、Spec ID 到测试和任务的追踪 | 重复完整技术方案 |
 | 证据 | 实际 RED/GREEN/REFACTOR 和最终验证证据 | 设计讨论 |
 | INDEX/metadata | 关联文档、标签、状态、生命周期和检索路径 | 需求、方案或任务正文 |
@@ -82,7 +83,7 @@ docs/coding-plugins/INDEX.md
 7. 更新 `docs/coding-plugins/INDEX.md`。
 8. 运行 `python3 skills/writing-technical-design/scripts/validate_technical_design.py <technical-path>` 做 technical 单文档校验；发布前和 preflight 使用 strict 质量门禁。
 9. 运行 `python3 scripts/preflight.py` 或至少运行相关 preflight 单测。
-10. 交接给 `writing-plans`，计划必须写 `技术设计来源`。
+10. 交接给 `writing-test-cases` 编写测试用例文档，再交接给 `writing-plans`；计划必须写 `技术设计来源` 和测试用例来源。
 
 ## 模板
 

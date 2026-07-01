@@ -4,12 +4,12 @@
 
 | 触发信号 | 规格类型 | 模板 |
 | --- | --- | --- |
-| 用户流程、业务规则、可见行为 | Feature spec | `templates/feature-spec.md` |
-| HTTP、RPC、CLI、SDK、公用函数契约 | API contract spec | `templates/api-contract-spec.md` |
-| 配置、数据库记录、事件 payload、消息体 | Schema spec | `templates/schema-spec.md` |
-| 审批、订单、任务、同步流程、生命周期 | State machine spec | `templates/state-machine-spec.md` |
-| 用户验收不清、端到端行为不清 | Acceptance criteria | `templates/acceptance-criteria.md` |
-| 无新增需求，但有重构、升级、迁移、回归风险 | Maintenance spec | `templates/maintenance-spec.md` |
+| 用户流程、业务规则、可见行为 | Feature spec | `skills/writing-requirements/templates/feature-spec.md` |
+| HTTP、RPC、CLI、SDK、公用函数契约 | API contract spec | `skills/writing-requirements/templates/api-contract-spec.md` |
+| 配置、数据库记录、事件 payload、消息体 | Schema spec | `skills/writing-requirements/templates/schema-spec.md` |
+| 审批、订单、任务、同步流程、生命周期 | State machine spec | `skills/writing-requirements/templates/state-machine-spec.md` |
+| 用户验收不清、端到端行为不清 | Acceptance criteria | `skills/writing-requirements/templates/acceptance-criteria.md` |
+| 无新增需求，但有重构、升级、迁移、回归风险 | Maintenance spec | `skills/writing-requirements/templates/maintenance-spec.md` |
 
 选择规则：
 

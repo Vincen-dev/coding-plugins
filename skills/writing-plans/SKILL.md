@@ -29,6 +29,7 @@ docs/coding-plugins/features/<feature-name>/technical/technical-design.md
 - 读取规格、技术设计、README 或 Evidence 时，先使用 `document-metadata`，读 frontmatter metadata，再读正文；关联关系以 `related_*`、README `tags` 和 `docs/coding-plugins/document-contract.md` 为准。
 - 如果任务没有规格但属于新功能、契约、schema、状态机或验收标准不清，先使用 `spec-driven-development`。
 - 如果任务有已批准规格但没有技术设计，先使用 `writing-technical-design`。
+- 如果任务有技术设计但没有测试用例文档，先使用 `writing-test-cases`。
 - 非平凡任务必须有 Spec ID。极小修改可以在计划开头写 1 到 3 条 inline spec，再继续计划。
 - 计划路径的 `<feature-name>` 应和规格路径保持一致，例如 `features/auth/login/specs/feature.md` 对应 `features/auth/login/plans/implementation.md`。
 - TDD 证据路径的 `<feature-name>` 也应保持一致，例如 `features/auth/login/plans/implementation.md` 对应 `features/auth/login/evidence/tdd-evidence.md`。
@@ -93,6 +94,8 @@ related_specs:
   - docs/coding-plugins/features/[feature]/specs/feature.md
 related_technical:
   - docs/coding-plugins/features/[feature]/technical/technical-design.md
+related_test_cases:
+  - docs/coding-plugins/features/[feature]/test-cases/test-cases.md
 related_evidence:
   - docs/coding-plugins/features/[feature]/evidence/tdd-evidence.md
 ---
@@ -107,6 +110,7 @@ related_evidence:
 | Feature | [feature] |
 | 规格 | `docs/coding-plugins/features/[feature]/specs/feature.md` |
 | 技术设计 | `docs/coding-plugins/features/[feature]/technical/technical-design.md` |
+| 测试用例 | `docs/coding-plugins/features/[feature]/test-cases/test-cases.md` |
 | TDD 证据| `docs/coding-plugins/features/[feature]/evidence/tdd-evidence.md` |
 
 > **给代理执行者：** REQUIRED SUB-SKILL: 使用 `coding-plugins:subagent-driven-development`（推荐）或 `coding-plugins:executing-plans` 逐任务实现本计划。步骤使用 checkbox (`- [ ]`) 语法追踪。

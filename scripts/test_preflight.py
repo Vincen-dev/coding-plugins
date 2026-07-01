@@ -507,9 +507,9 @@ class PreflightTests(unittest.TestCase):
             feature_dir.mkdir(parents=True)
             (feature_dir / "README.md").write_text("# Search", encoding="utf-8")
             (docs / "INDEX.md").write_text(
-                "| Feature | 功能根目录 | 规格 | 技术设计 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
-                "| --- | --- | --- | --- | --- | --- | --- | --- |\n"
-                "| search | - | - | - | - | search | 2026-06-26 |\n",
+                "| Feature | 功能根目录 | 规格 | 技术设计 | 测试用例 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
+                "| --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
+                "| search | - | - | - | - | - | - | search | 2026-06-26 |\n",
                 encoding="utf-8",
             )
 
@@ -526,9 +526,9 @@ class PreflightTests(unittest.TestCase):
             technical_dir.mkdir()
             (technical_dir / "technical-design.md").write_text("# Technical", encoding="utf-8")
             (docs / "INDEX.md").write_text(
-                "| Feature | 功能根目录 | 规格 | 技术设计 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
-                "| --- | --- | --- | --- | --- | --- | --- | --- |\n"
-                "| search | `docs/coding-plugins/features/search` | - | - | - | - | search | 2026-06-26 |\n",
+                "| Feature | 功能根目录 | 规格 | 技术设计 | 测试用例 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
+                "| --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
+                "| search | `docs/coding-plugins/features/search` | - | - | - | - | - | search | 2026-06-26 |\n",
                 encoding="utf-8",
             )
 
@@ -543,9 +543,28 @@ class PreflightTests(unittest.TestCase):
             spec_dir.mkdir(parents=True)
             (spec_dir / "feature.md").write_text("# Feature", encoding="utf-8")
             (docs / "INDEX.md").write_text(
-                "| Feature | 功能根目录 | 规格 | 技术设计 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
-                "| --- | --- | --- | --- | --- | --- | --- | --- |\n"
-                "| search | `docs/coding-plugins/features/search` | - | - | - | - | search | 2026-06-26 |\n",
+                "| Feature | 功能根目录 | 规格 | 技术设计 | 测试用例 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
+                "| --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
+                "| search | `docs/coding-plugins/features/search` | - | - | - | - | - | search | 2026-06-26 |\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Artifact index is missing document paths"):
+                preflight.check_artifact_index_covers_documents(root)
+
+    def test_artifact_index_requires_test_case_paths(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            docs = root / "docs" / "coding-plugins"
+            feature_dir = docs / "features" / "search"
+            feature_dir.mkdir(parents=True)
+            test_cases_dir = feature_dir / "test-cases"
+            test_cases_dir.mkdir()
+            (test_cases_dir / "test-cases.md").write_text("# Test cases", encoding="utf-8")
+            (docs / "INDEX.md").write_text(
+                "| Feature | 功能根目录 | 规格 | 技术设计 | 测试用例 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
+                "| --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
+                "| search | `docs/coding-plugins/features/search` | - | - | - | - | - | search | 2026-06-26 |\n",
                 encoding="utf-8",
             )
 
@@ -562,9 +581,9 @@ class PreflightTests(unittest.TestCase):
             plan_dir.mkdir()
             (plan_dir / "implementation.md").write_text("# Plan", encoding="utf-8")
             (docs / "INDEX.md").write_text(
-                "| Feature | 功能根目录 | 规格 | 技术设计 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
-                "| --- | --- | --- | --- | --- | --- | --- | --- |\n"
-                "| search | `docs/coding-plugins/features/search` | - | - | - | - | search | 2026-06-26 |\n",
+                "| Feature | 功能根目录 | 规格 | 技术设计 | 测试用例 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
+                "| --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
+                "| search | `docs/coding-plugins/features/search` | - | - | - | - | - | search | 2026-06-26 |\n",
                 encoding="utf-8",
             )
 
@@ -579,9 +598,9 @@ class PreflightTests(unittest.TestCase):
             evidence_dir.mkdir(parents=True)
             (evidence_dir / "tdd-evidence.md").write_text("# Evidence", encoding="utf-8")
             (docs / "INDEX.md").write_text(
-                "| Feature | 功能根目录 | 规格 | 技术设计 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
-                "| --- | --- | --- | --- | --- | --- | --- | --- |\n"
-                "| search | `docs/coding-plugins/features/search` | - | - | - | - | search | 2026-06-26 |\n",
+                "| Feature | 功能根目录 | 规格 | 技术设计 | 测试用例 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
+                "| --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
+                "| search | `docs/coding-plugins/features/search` | - | - | - | - | - | search | 2026-06-26 |\n",
                 encoding="utf-8",
             )
 
@@ -616,6 +635,11 @@ class PreflightTests(unittest.TestCase):
                 "---\nupdated: 2026-06-28\n---\n# Technical\n",
                 encoding="utf-8",
             )
+            (feature_dir / "test-cases").mkdir()
+            (feature_dir / "test-cases" / "test-cases.md").write_text(
+                "---\nupdated: 2026-06-29\n---\n# Test cases\n",
+                encoding="utf-8",
+            )
             (feature_dir / "plans").mkdir()
             (feature_dir / "plans" / "implementation.md").write_text(
                 "---\nupdated: 2026-06-27\n---\n# Plan\n",
@@ -629,6 +653,7 @@ class PreflightTests(unittest.TestCase):
             self.assertIn("`docs/coding-plugins/features/search`", rendered)
             self.assertIn("`docs/coding-plugins/features/search/specs/feature.md`", rendered)
             self.assertIn("`docs/coding-plugins/features/search/technical/technical-design.md`", rendered)
+            self.assertIn("`docs/coding-plugins/features/search/test-cases/test-cases.md`", rendered)
             self.assertIn("`docs/coding-plugins/features/search/plans/implementation.md`", rendered)
             self.assertIn("`docs/coding-plugins/features/search/evidence/tdd-evidence.md`", rendered)
             self.assertIn("| search, index | 2026-06-29 |", rendered)
@@ -687,7 +712,7 @@ class PreflightTests(unittest.TestCase):
 
             rendered = preflight.render_artifact_index(root)
 
-            self.assertIn("| search | `docs/coding-plugins/features/search` | - | - | - | - | - | - |", rendered)
+            self.assertIn("| search | `docs/coding-plugins/features/search` | - | - | - | - | - | - | - |", rendered)
 
     def test_render_artifact_index_handles_missing_updated_metadata(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -734,9 +759,9 @@ class PreflightTests(unittest.TestCase):
             (docs / "INDEX.md").write_text(
                 "# Coding Plugins Feature 索引\n\n"
                 "本索引用于按 `Feature` 检索 feature-first 文档链路。新增、移动、批准、废弃或拆分相关产物时同步更新本文件。\n\n"
-                "| Feature | 功能根目录 | 规格 | 技术设计 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
-                "| --- | --- | --- | --- | --- | --- | --- | --- |\n"
-                "| search | `docs/coding-plugins/features/search` | `docs/coding-plugins/features/search/specs/feature.md` | - | - | - | wrong-tag | 2026-06-29 |\n",
+                "| Feature | 功能根目录 | 规格 | 技术设计 | 测试用例 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
+                "| --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
+                "| search | `docs/coding-plugins/features/search` | `docs/coding-plugins/features/search/specs/feature.md` | - | - | - | - | wrong-tag | 2026-06-29 |\n",
                 encoding="utf-8",
             )
 
@@ -944,8 +969,8 @@ class PreflightTests(unittest.TestCase):
             technical_dir.mkdir(parents=True)
             (technical_dir / "technical-design.md").write_text("# Technical", encoding="utf-8")
             (docs / "INDEX.md").write_text(
-                "| Feature | 功能根目录 | 规格 | 技术设计 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
-                "| --- | --- | --- | --- | --- | --- | --- | --- |\n"
+                "| Feature | 功能根目录 | 规格 | 技术设计 | 测试用例 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
+                "| --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
                 "| plugin | routing | `docs/coding-plugins/features/routing` | - | - | - | - | routing | 2026-06-26 |\n",
                 encoding="utf-8",
             )

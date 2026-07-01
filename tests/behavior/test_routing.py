@@ -20,7 +20,9 @@ class RoutingBehaviorTests(unittest.TestCase):
         "新需求": (
             "spec-driven-development",
             "document-metadata",
+            "writing-requirements",
             "writing-technical-design",
+            "writing-test-cases",
             "writing-plans",
             "using-git-worktrees",
             "test-driven-development",
@@ -79,6 +81,8 @@ class RoutingBehaviorTests(unittest.TestCase):
             "finishing-a-development-branch",
             "git-commit",
             "writing-skills",
+            "writing-requirements",
+            "writing-test-cases",
             "using-git-worktrees",
             "dispatching-parallel-agents",
         ):
@@ -89,7 +93,9 @@ class RoutingBehaviorTests(unittest.TestCase):
 
         for skill_name in (
             "spec-driven-development",
+            "writing-requirements",
             "writing-technical-design",
+            "writing-test-cases",
             "writing-plans",
             "using-git-worktrees",
             "subagent-driven-development",

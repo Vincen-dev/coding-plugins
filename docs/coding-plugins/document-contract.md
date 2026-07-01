@@ -1,6 +1,6 @@
 # Coding Plugins 文档契约
 
-本文定义 `docs/coding-plugins/features/<feature-name>/` 下规格、技术设计、实现计划、README、Evidence 和生成索引的职责边界。
+本文定义 `docs/coding-plugins/features/<feature-name>/` 下需求文档、技术设计、测试用例、实现计划、README、Evidence 和生成索引的职责边界。
 
 操作型规则由 `skills/document-metadata/SKILL.md` 维护；通用 frontmatter 模板使用 `skills/document-metadata/templates/document-metadata.md`。
 
@@ -9,7 +9,7 @@
 | 层级 | 来源文件 | 负责内容 | 不负责内容 |
 | --- | --- | --- | --- |
 | Metadata | 每个文档开头的 frontmatter | 状态、Feature、标签、生命周期、关联文档、日期 | 正式需求、设计细节、执行步骤 |
-| 正式正文 | spec、technical、plan、evidence 的正文 | 需求契约、技术方案、任务拆分、验证证据 | 生成式索引和重复的产物链路表 |
+| 正式正文 | spec、technical、test-cases、plan、evidence 的正文 | 需求契约、技术方案、测试用例、任务拆分、验证证据 | 生成式索引和重复的产物链路表 |
 | README | feature root `README.md` | 人工摘要、轻量例外追踪、检索关键词 | 手写 `产物链路` 或 `文档链路` |
 | INDEX | `docs/coding-plugins/INDEX.md` | 生成式检索视图 | 手工维护的正式内容 |
 
@@ -31,7 +31,7 @@ docs/coding-plugins/features/<feature-name>/evidence/archive/<date>-<summary>.md
 
 ## 跨仓库引用
 
-`related_specs`、`related_technical`、`related_plans` 和 `related_evidence` 只保存当前仓库内 `docs/coding-plugins/...` 路径。跨仓库或绝对路径引用写入 `external_references`：
+`related_specs`、`related_technical`、`related_test_cases`、`related_plans` 和 `related_evidence` 只保存当前仓库内 `docs/coding-plugins/...` 路径。跨仓库或绝对路径引用写入 `external_references`：
 
 ```yaml
 external_references:
@@ -61,7 +61,7 @@ python3 scripts/migrate_document_contract.py
 
 1. 先使用 `document-metadata` 技能确认读取顺序。
 2. 先确认 `feature`、`status`、`updated`。
-3. 再读取 `related_specs`、`related_technical`、`related_plans`、`related_evidence`。
+3. 再读取 `related_specs`、`related_technical`、`related_test_cases`、`related_plans`、`related_evidence`。
 4. 最后进入正文中的需求、设计、计划或证据。
 
 当 frontmatter 和正文摘要冲突时，以 frontmatter 为准，并修正文档。

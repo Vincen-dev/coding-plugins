@@ -18,7 +18,7 @@ description: Use when reading, creating, updating, migrating, or auditing Coding
 使用本技能：
 
 - 读取 feature 文档并需要理解上下游关系。
-- 创建或更新 README、spec、technical design、implementation plan 或 TDD evidence。
+- 创建或更新 README、requirement spec、technical design、test cases、implementation plan 或 TDD evidence。
 - 维护 `related_specs`、`related_technical`、`related_plans`、`related_evidence`、`external_references`。
 - 迁移、审计或修复 frontmatter metadata。
 - 需要使用 `templates/document-metadata.md` 作为文档 metadata 模板。
@@ -34,7 +34,7 @@ description: Use when reading, creating, updating, migrating, or auditing Coding
 
 1. 先读目标 feature 的 `README.md` frontmatter，确认 `title`、`status`、`feature`、`updated`、`tags`。
 2. 再读目标文档 frontmatter，确认 `feature` 是否与路径 `docs/coding-plugins/features/<feature-name>/` 一致。
-3. 按 `related_specs`、`related_technical`、`related_plans`、`related_evidence` 读取相关文档。
+3. 按 `related_specs`、`related_technical`、`related_test_cases`、`related_plans`、`related_evidence` 读取相关文档。
 4. 如果存在跨仓库或本机绝对路径，只从 `external_references` 读取，不写入 `related_*`。
 5. 最后阅读正文中的正式需求、技术方案、计划步骤或验证证据。
 
@@ -54,6 +54,7 @@ description: Use when reading, creating, updating, migrating, or auditing Coding
 | `validated_by` | 验证记录 | technical design 使用，写命令或人工验证记录 |
 | `related_specs` | 当前仓库 spec 路径 | 只写 `docs/coding-plugins/...` 相对路径 |
 | `related_technical` | 当前仓库 technical 路径 | 只写 `docs/coding-plugins/...` 相对路径 |
+| `related_test_cases` | 当前仓库 test cases 路径 | 只写 `docs/coding-plugins/...` 相对路径 |
 | `related_plans` | 当前仓库 plan 路径 | 只写 `docs/coding-plugins/...` 相对路径 |
 | `related_evidence` | 当前仓库 evidence 路径 | 只写 `docs/coding-plugins/...` 相对路径 |
 | `related_code` | 相关代码路径 | 写仓库内相对路径 |
@@ -66,6 +67,7 @@ description: Use when reading, creating, updating, migrating, or auditing Coding
 | README | `title`、`status`、`feature`、`updated`、`tags` | 作为人工总览和检索入口，不维护手写 `产物链路` 或 `文档链路` |
 | Spec | `spec_id`、`title`、`type`、`status`、`feature`、`created`、`updated`、`tags` | 可链接 `related_specs`、`related_technical`、`related_code` |
 | Technical | `title`、`status`、`lifecycle_status`、`feature`、`created`、`updated`、`implemented_commits`、`validated_by` | 必须补齐存在的 `related_specs`、`related_plans`、`related_evidence` |
+| Test cases | `title`、`status`、`feature`、`created`、`updated` | 必须链接存在的规格、技术设计、计划和 evidence |
 | Plan | `title`、`status`、`feature`、`created`、`updated` | 必须链接规格、技术设计和 evidence |
 | Active evidence | `title`、`status`、`feature`、`created`、`updated` | 必须链接存在的规格、技术设计和计划 |
 | Archived evidence | active evidence 字段外加 `validation_mode`、`archive_of`、`archived_at` | `status: archived` 且 `validation_mode: historical` |
