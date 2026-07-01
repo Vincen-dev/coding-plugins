@@ -5,9 +5,9 @@ feature: <feature-name>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 related_specs:
-  - docs/coding-plugins/features/<feature-name>/specs/feature.md
+  - docs/coding-plugins/features/<feature-name>/requirements/feature.md
 related_technical:
-  - docs/coding-plugins/features/<feature-name>/technical/technical-design.md
+  - docs/coding-plugins/features/<feature-name>/technicals/technical-design.md
 related_plans:
   - docs/coding-plugins/features/<feature-name>/plans/implementation.md
 related_evidence:
@@ -22,8 +22,8 @@ related_evidence:
 | --- | --- |
 | 状态 | 草稿 |
 | Feature | <feature-name> |
-| 需求文档 | `docs/coding-plugins/features/<feature-name>/specs/feature.md` |
-| 技术方案 | `docs/coding-plugins/features/<feature-name>/technical/technical-design.md` |
+| 需求文档 | `docs/coding-plugins/features/<feature-name>/requirements/feature.md` |
+| 技术方案 | `docs/coding-plugins/features/<feature-name>/technicals/technical-design.md` |
 | 实现计划 | `docs/coding-plugins/features/<feature-name>/plans/implementation.md` |
 | TDD 证据 | `docs/coding-plugins/features/<feature-name>/evidence/tdd-evidence.md` |
 

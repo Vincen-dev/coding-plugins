@@ -2,7 +2,7 @@
 
 | Feature | 类型 | 状态 | 规格 | 标签 | 更新时间 |
 | --- | --- | --- | --- | --- | --- | --- |
-| <feature-name> | feature | draft | `docs/coding-plugins/features/<feature-name>/specs/feature.md` | <tags> | YYYY-MM-DD |
+| <feature-name> | feature | draft | `docs/coding-plugins/features/<feature-name>/requirements/feature.md` | <tags> | YYYY-MM-DD |
 
 规则：
 

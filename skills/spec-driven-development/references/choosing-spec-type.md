@@ -22,7 +22,7 @@
 
 ## 文件名选择
 
-规格路径使用 `docs/coding-plugins/features/<feature-name>/specs/<spec-kind>.md`。
+规格路径使用 `docs/coding-plugins/features/<feature-name>/requirements/<spec-kind>.md`。
 
 | 规格类型 | spec-kind |
 | --- | --- |

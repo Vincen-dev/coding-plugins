@@ -5,9 +5,9 @@ feature: technical-design-validator
 created: 2026-06-29
 updated: 2026-06-29
 related_specs:
-  - docs/coding-plugins/features/technical-design-validator/specs/feature.md
+  - docs/coding-plugins/features/technical-design-validator/requirements/feature.md
 related_technical:
-  - docs/coding-plugins/features/technical-design-validator/technical/technical-design.md
+  - docs/coding-plugins/features/technical-design-validator/technicals/technical-design.md
 related_evidence:
   - docs/coding-plugins/features/technical-design-validator/evidence/tdd-evidence.md
 ---
@@ -20,8 +20,8 @@ related_evidence:
 | --- | --- |
 | 状态 | 已批准 |
 | Feature | technical-design-validator |
-| 规格 | `docs/coding-plugins/features/technical-design-validator/specs/feature.md` |
-| 技术设计 | `docs/coding-plugins/features/technical-design-validator/technical/technical-design.md` |
+| 需求文档 | `docs/coding-plugins/features/technical-design-validator/requirements/feature.md` |
+| 技术设计 | `docs/coding-plugins/features/technical-design-validator/technicals/technical-design.md` |
 | TDD 证据 | `docs/coding-plugins/features/technical-design-validator/evidence/tdd-evidence.md` |
 
 > **给代理执行者：** REQUIRED SUB-SKILL: 使用 `coding-plugins:executing-plans` 或当前会话按检查点执行本计划。步骤使用 checkbox (`- [ ]`) 语法追踪。
@@ -32,9 +32,9 @@ related_evidence:
 
 **技术栈:** Python 标准库、Markdown 文档、unittest、现有 `scripts/docs_index.py`。
 
-**规格来源:** `docs/coding-plugins/features/technical-design-validator/specs/feature.md`
+**规格来源:** `docs/coding-plugins/features/technical-design-validator/requirements/feature.md`
 
-**技术设计来源:** `docs/coding-plugins/features/technical-design-validator/technical/technical-design.md`
+**技术设计来源:** `docs/coding-plugins/features/technical-design-validator/technicals/technical-design.md`
 
 ## 技术设计快照
 
@@ -155,7 +155,7 @@ Write RED/GREEN/REFACTOR evidence into `docs/coding-plugins/features/technical-d
 - 修改: `scripts/test_preflight.py`
 - 修改: `skills/writing-technical-design/templates/technical-design.md`
 - 修改: `skills/writing-technical-design/SKILL.md`
-- 修改: `docs/coding-plugins/features/*/technical/technical-design.md`
+- 修改: `docs/coding-plugins/features/*/technicals/technical-design.md`
 - 修改: `docs/coding-plugins/features/*/README.md`
 
 - [x] **步骤 1：Write failing tests from Spec IDs**

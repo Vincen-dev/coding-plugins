@@ -131,7 +131,7 @@ docs/coding-plugins/features/<feature-name>/evidence/tdd-evidence.md
 `<feature-name>` 应和规格、计划路径一致。例如：
 
 ```text
-docs/coding-plugins/features/auth/login/specs/feature.md
+docs/coding-plugins/features/auth/login/requirements/feature.md
 docs/coding-plugins/features/auth/login/plans/implementation.md
 docs/coding-plugins/features/auth/login/evidence/tdd-evidence.md
 ```

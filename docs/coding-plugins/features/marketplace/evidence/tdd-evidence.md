@@ -5,9 +5,9 @@ feature: marketplace
 created: 2026-06-29
 updated: 2026-06-29
 related_specs:
-  - docs/coding-plugins/features/marketplace/specs/feature.md
+  - docs/coding-plugins/features/marketplace/requirements/feature.md
 related_technical:
-  - docs/coding-plugins/features/marketplace/technical/technical-design.md
+  - docs/coding-plugins/features/marketplace/technicals/technical-design.md
 related_plans:
   - docs/coding-plugins/features/marketplace/plans/implementation.md
 ---

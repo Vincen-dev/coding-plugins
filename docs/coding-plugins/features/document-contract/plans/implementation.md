@@ -5,9 +5,9 @@ feature: document-contract
 created: 2026-06-29
 updated: 2026-06-29
 related_specs:
-  - docs/coding-plugins/features/document-contract/specs/feature.md
+  - docs/coding-plugins/features/document-contract/requirements/feature.md
 related_technical:
-  - docs/coding-plugins/features/document-contract/technical/technical-design.md
+  - docs/coding-plugins/features/document-contract/technicals/technical-design.md
 related_evidence:
   - docs/coding-plugins/features/document-contract/evidence/tdd-evidence.md
 ---
@@ -20,8 +20,8 @@ related_evidence:
 | --- | --- |
 | 状态 | 已批准 |
 | Feature | document-contract |
-| 规格 | `docs/coding-plugins/features/document-contract/specs/feature.md` |
-| 技术设计 | `docs/coding-plugins/features/document-contract/technical/technical-design.md` |
+| 需求文档 | `docs/coding-plugins/features/document-contract/requirements/feature.md` |
+| 技术设计 | `docs/coding-plugins/features/document-contract/technicals/technical-design.md` |
 | TDD 证据 | `docs/coding-plugins/features/document-contract/evidence/tdd-evidence.md` |
 
 **目标:** 将文档关系源从 README 正文表格迁移到 frontmatter，并让 preflight 强制校验。
@@ -30,9 +30,9 @@ related_evidence:
 
 **技术栈:** Python 标准库、Markdown frontmatter 简单解析、现有 unittest 和 preflight。
 
-**规格来源:** `docs/coding-plugins/features/document-contract/specs/feature.md`
+**规格来源:** `docs/coding-plugins/features/document-contract/requirements/feature.md`
 
-**技术设计来源:** `docs/coding-plugins/features/document-contract/technical/technical-design.md`
+**技术设计来源:** `docs/coding-plugins/features/document-contract/technicals/technical-design.md`
 
 ## 技术设计快照
 

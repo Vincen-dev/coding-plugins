@@ -5,9 +5,9 @@ feature: downstream-compatibility
 created: 2026-07-01
 updated: 2026-07-01
 related_specs:
-  - docs/coding-plugins/features/downstream-compatibility/specs/maintenance.md
+  - docs/coding-plugins/features/downstream-compatibility/requirements/maintenance.md
 related_technical:
-  - docs/coding-plugins/features/downstream-compatibility/technical/technical-design.md
+  - docs/coding-plugins/features/downstream-compatibility/technicals/technical-design.md
 related_evidence:
   - docs/coding-plugins/features/downstream-compatibility/evidence/tdd-evidence.md
 ---
@@ -20,8 +20,8 @@ related_evidence:
 | --- | --- |
 | 状态 | 已批准 |
 | Feature | downstream-compatibility |
-| 规格 | `docs/coding-plugins/features/downstream-compatibility/specs/maintenance.md` |
-| 技术设计 | `docs/coding-plugins/features/downstream-compatibility/technical/technical-design.md` |
+| 需求文档 | `docs/coding-plugins/features/downstream-compatibility/requirements/maintenance.md` |
+| 技术设计 | `docs/coding-plugins/features/downstream-compatibility/technicals/technical-design.md` |
 | TDD 证据 | `docs/coding-plugins/features/downstream-compatibility/evidence/tdd-evidence.md` |
 
 **目标:** 修复真实下游项目暴露出的非轻量模式问题：validator 兼容、迁移脚本、evidence 归档、状态收敛、测试质量字段和外部引用检查。
@@ -30,9 +30,9 @@ related_evidence:
 
 **技术栈:** Python 标准库、unittest、Markdown frontmatter 简单解析。
 
-**规格来源:** `docs/coding-plugins/features/downstream-compatibility/specs/maintenance.md`
+**规格来源:** `docs/coding-plugins/features/downstream-compatibility/requirements/maintenance.md`
 
-**技术设计来源:** `docs/coding-plugins/features/downstream-compatibility/technical/technical-design.md`
+**技术设计来源:** `docs/coding-plugins/features/downstream-compatibility/technicals/technical-design.md`
 
 ## 技术设计快照
 

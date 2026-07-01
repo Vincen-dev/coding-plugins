@@ -5,9 +5,9 @@ feature: feature-first-docs
 created: 2026-06-26
 updated: 2026-06-29
 related_specs:
-  - docs/coding-plugins/features/feature-first-docs/specs/maintenance.md
+  - docs/coding-plugins/features/feature-first-docs/requirements/maintenance.md
 related_technical:
-  - docs/coding-plugins/features/feature-first-docs/technical/technical-design.md
+  - docs/coding-plugins/features/feature-first-docs/technicals/technical-design.md
 related_evidence:
   - docs/coding-plugins/features/feature-first-docs/evidence/tdd-evidence.md
 ---
@@ -20,21 +20,21 @@ related_evidence:
 | --- | --- |
 | 状态 | 已批准 |
 | Feature | feature-first-docs |
-| 规格 | `docs/coding-plugins/features/feature-first-docs/specs/maintenance.md` |
-| 技术设计 | `docs/coding-plugins/features/feature-first-docs/technical/technical-design.md` |
+| 需求文档 | `docs/coding-plugins/features/feature-first-docs/requirements/maintenance.md` |
+| 技术设计 | `docs/coding-plugins/features/feature-first-docs/technicals/technical-design.md` |
 | TDD 证据 | `docs/coding-plugins/features/feature-first-docs/evidence/tdd-evidence.md` |
 
 > **给代理执行者：** REQUIRED SUB-SKILL: 使用 `coding-plugins:executing-plans` 或当前会话按检查点执行本计划。步骤使用 checkbox (`- [x]`) 语法追踪。
 
 **目标:** 将 `docs/coding-plugins` 迁移到 feature-first 文档结构，并去除 feature root 下裸露的技术设计和实现计划文件。
 
-**架构:** `features/<feature-name>` 成为唯一活跃文档根。规格、技术设计、计划和证据分别落到 `specs/`、`technical/`、`plans/` 和 `evidence/` 子目录。preflight 从 feature root 派生文档集合，并拒绝旧四类目录残留和 flat feature-root 技术/计划文件。
+**架构:** `features/<feature-name>` 成为唯一活跃文档根。规格、技术设计、计划和证据分别落到 `requirements/`、`technicals/`、`plans/` 和 `evidence/` 子目录。preflight 从 feature root 派生文档集合，并拒绝旧四类目录残留和 flat feature-root 技术/计划文件。
 
 **技术栈:** Python 标准库、Markdown、Codex/Claude plugin manifests 和 skills。
 
-**规格来源:** `docs/coding-plugins/features/feature-first-docs/specs/maintenance.md`
+**规格来源:** `docs/coding-plugins/features/feature-first-docs/requirements/maintenance.md`
 
-**技术设计来源:** `docs/coding-plugins/features/feature-first-docs/technical/technical-design.md`
+**技术设计来源:** `docs/coding-plugins/features/feature-first-docs/technicals/technical-design.md`
 
 ## 技术设计快照
 
@@ -45,7 +45,7 @@ related_evidence:
 | 规格 ID | 测试文件 / 命令 | 测试名称或断言 | TDD 证据文件 / 字段 | 实现任务 |
 | --- | --- | --- | --- | --- |
 | NFR-001 | `python3 -m unittest scripts/test_preflight.py` | `test_collect_spec_files_uses_feature_first_path` | `docs/coding-plugins/features/feature-first-docs/evidence/tdd-evidence.md` / 任务 1 | 任务 1 |
-| NFR-002 | `python3 -m unittest scripts/test_preflight.py` | spec collector returns `features/.../specs/feature.md` | `docs/coding-plugins/features/feature-first-docs/evidence/tdd-evidence.md` / 任务 1 | 任务 1 |
+| NFR-002 | `python3 -m unittest scripts/test_preflight.py` | spec collector returns `features/.../requirements/feature.md` | `docs/coding-plugins/features/feature-first-docs/evidence/tdd-evidence.md` / 任务 1 | 任务 1 |
 | NFR-003 | `python3 -m unittest scripts/test_preflight.py` | `test_collect_technical_design_files_uses_feature_first_technical_subdir` | `docs/coding-plugins/features/feature-first-docs/evidence/tdd-evidence.md` / 任务 1 | 任务 1 |
 | NFR-004 | `python3 -m unittest scripts/test_preflight.py` | `test_collect_plan_files_uses_feature_first_plans_subdir` | `docs/coding-plugins/features/feature-first-docs/evidence/tdd-evidence.md` / 任务 1 | 任务 1 |
 | NFR-005 | `python3 -m unittest scripts/test_preflight.py` | `test_collect_tdd_evidence_files_uses_feature_first_path` | `docs/coding-plugins/features/feature-first-docs/evidence/tdd-evidence.md` / 任务 1 | 任务 1 |
@@ -93,8 +93,8 @@ Refactor preflight to collect docs from `docs/coding-plugins/features/<feature-n
 **规格 ID:** MIG-001, MIG-002, ERR-001
 
 **文件:**
-- Move: legacy spec files into `docs/coding-plugins/features/*/specs/`
-- Move: legacy technical design files into `docs/coding-plugins/features/*/technical/technical-design.md`
+- Move: legacy spec files into `docs/coding-plugins/features/*/requirements/`
+- Move: legacy technical design files into `docs/coding-plugins/features/*/technicals/technical-design.md`
 - Move: legacy implementation plans into `docs/coding-plugins/features/*/plans/implementation.md`
 - Move: legacy TDD 证据 files into `docs/coding-plugins/features/*/evidence/`
 - Delete: `docs/coding-plugins/INDEX.md`
@@ -198,14 +198,14 @@ Create Chinese Conventional Commit with `Authored-by: Vincen <hx001007@gmail.com
 **文件:**
 - 修改: `scripts/test_preflight.py`
 - 修改: `scripts/preflight.py`
-- Move: legacy flat feature-root technical design files into `docs/coding-plugins/features/*/technical/technical-design.md`
+- Move: legacy flat feature-root technical design files into `docs/coding-plugins/features/*/technicals/technical-design.md`
 - Move: legacy flat feature-root implementation plan files into `docs/coding-plugins/features/*/plans/implementation.md`
 - 修改: `docs/coding-plugins/features/**`
 - 修改: `skills/**`
 
 - [x] **步骤 1：Write failing tests**
 
-Add tests that collectors only accept `technical/technical-design.md` and `plans/implementation.md`, and that flat feature-root `technical-design.md` or `implementation.md` fails preflight.
+Add tests that collectors only accept `technicals/technical-design.md` and `plans/implementation.md`, and that flat feature-root `technical-design.md` or `implementation.md` fails preflight.
 
 运行: `python3 -m unittest scripts/test_preflight.py`
 预期: FAIL because collectors still expect flat feature-root files and the flat-root rejection check does not exist.

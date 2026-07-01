@@ -19,8 +19,8 @@ Codex 侧包含 SessionStart hook，新建、恢复或清空会话时会注入 `
 1. **using-coding-plugins** - 入口技能。先判断直接意图，再判断开发任务类型。
 2. **spec-driven-development** - 实现前激活。编排本 feature 需要沉淀的需求、技术方案、测试用例、计划和证据文档。
 3. **document-metadata** - 读取或维护文档关系时先读 frontmatter，再按 `related_*` 串联 README、需求文档、技术设计、测试用例、计划和证据。
-4. **writing-requirements** - 编写 feature、API contract、schema、state machine、acceptance 或 maintenance 需求文档，保存到 `docs/coding-plugins/features/<feature-name>/specs/<spec-kind>.md`。
-5. **writing-technical-design** - 基于已批准需求文档写独立技术方案设计，保存到 `docs/coding-plugins/features/<feature-name>/technical/technical-design.md`。
+4. **writing-requirements** - 编写 feature、API contract、schema、state machine、acceptance 或 maintenance 需求文档，保存到 `docs/coding-plugins/features/<feature-name>/requirements/<spec-kind>.md`。
+5. **writing-technical-design** - 基于已批准需求文档写独立技术方案设计，保存到 `docs/coding-plugins/features/<feature-name>/technicals/technical-design.md`。
 6. **writing-test-cases** - 基于需求文档和技术方案编写测试用例文档，保存到 `docs/coding-plugins/features/<feature-name>/test-cases/test-cases.md`。
 7. **writing-plans** - 基于已批准需求、技术方案和测试用例写实现计划。任务拆到 2 到 5 分钟粒度，并建立 Spec ID -> Test -> Task 追踪。
 8. **using-git-worktrees** - 执行前使用。创建隔离 worktree 和新分支，避免污染当前工作区。

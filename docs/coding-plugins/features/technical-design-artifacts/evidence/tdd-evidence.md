@@ -5,9 +5,9 @@ feature: technical-design-artifacts
 created: 2026-06-29
 updated: 2026-06-29
 related_specs:
-  - docs/coding-plugins/features/technical-design-artifacts/specs/feature.md
+  - docs/coding-plugins/features/technical-design-artifacts/requirements/feature.md
 related_technical:
-  - docs/coding-plugins/features/technical-design-artifacts/technical/technical-design.md
+  - docs/coding-plugins/features/technical-design-artifacts/technicals/technical-design.md
 related_plans:
   - docs/coding-plugins/features/technical-design-artifacts/plans/implementation.md
 ---

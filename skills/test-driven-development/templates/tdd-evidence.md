@@ -5,9 +5,9 @@ feature: <feature-name>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 related_specs:
-  - docs/coding-plugins/features/<feature-name>/specs/feature.md
+  - docs/coding-plugins/features/<feature-name>/requirements/feature.md
 related_technical:
-  - docs/coding-plugins/features/<feature-name>/technical/technical-design.md
+  - docs/coding-plugins/features/<feature-name>/technicals/technical-design.md
 related_plans:
   - docs/coding-plugins/features/<feature-name>/plans/implementation.md
 ---

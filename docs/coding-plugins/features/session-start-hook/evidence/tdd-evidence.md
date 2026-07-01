@@ -5,7 +5,7 @@ feature: session-start-hook
 created: 2026-06-29
 updated: 2026-06-29
 related_specs:
-  - docs/coding-plugins/features/session-start-hook/specs/feature.md
+  - docs/coding-plugins/features/session-start-hook/requirements/feature.md
 ---
 # Codex 会话启动入口注入
 

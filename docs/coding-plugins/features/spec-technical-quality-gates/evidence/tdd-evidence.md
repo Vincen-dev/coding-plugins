@@ -5,9 +5,9 @@ feature: spec-technical-quality-gates
 created: 2026-06-29
 updated: 2026-06-29
 related_specs:
-  - docs/coding-plugins/features/spec-technical-quality-gates/specs/feature.md
+  - docs/coding-plugins/features/spec-technical-quality-gates/requirements/feature.md
 related_technical:
-  - docs/coding-plugins/features/spec-technical-quality-gates/technical/technical-design.md
+  - docs/coding-plugins/features/spec-technical-quality-gates/technicals/technical-design.md
 related_plans:
   - docs/coding-plugins/features/spec-technical-quality-gates/plans/implementation.md
 ---

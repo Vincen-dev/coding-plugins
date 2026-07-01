@@ -5,7 +5,7 @@ feature: tdd-evidence-path
 created: 2026-06-29
 updated: 2026-06-29
 related_specs:
-  - docs/coding-plugins/features/tdd-evidence-path/specs/feature.md
+  - docs/coding-plugins/features/tdd-evidence-path/requirements/feature.md
 ---
 # TDD 证据 固定落地路径
 

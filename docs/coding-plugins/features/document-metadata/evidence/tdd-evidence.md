@@ -5,9 +5,9 @@ feature: document-metadata
 created: 2026-06-29
 updated: 2026-07-01
 related_specs:
-  - docs/coding-plugins/features/document-metadata/specs/feature.md
+  - docs/coding-plugins/features/document-metadata/requirements/feature.md
 related_technical:
-  - docs/coding-plugins/features/document-metadata/technical/technical-design.md
+  - docs/coding-plugins/features/document-metadata/technicals/technical-design.md
 related_plans:
   - docs/coding-plugins/features/document-metadata/plans/implementation.md
 ---

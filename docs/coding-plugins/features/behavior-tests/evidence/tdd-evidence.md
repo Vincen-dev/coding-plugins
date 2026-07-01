@@ -5,7 +5,7 @@ feature: behavior-tests
 created: 2026-06-29
 updated: 2026-06-29
 related_specs:
-  - docs/coding-plugins/features/behavior-tests/specs/feature.md
+  - docs/coding-plugins/features/behavior-tests/requirements/feature.md
 ---
 # 插件行为级测试
 

@@ -5,9 +5,9 @@ feature: preflight
 created: 2026-06-29
 updated: 2026-06-29
 related_specs:
-  - docs/coding-plugins/features/preflight/specs/feature.md
+  - docs/coding-plugins/features/preflight/requirements/feature.md
 related_technical:
-  - docs/coding-plugins/features/preflight/technical/technical-design.md
+  - docs/coding-plugins/features/preflight/technicals/technical-design.md
 related_plans:
   - docs/coding-plugins/features/preflight/plans/implementation.md
 ---

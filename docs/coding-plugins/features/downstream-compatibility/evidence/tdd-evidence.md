@@ -5,9 +5,9 @@ feature: downstream-compatibility
 created: 2026-07-01
 updated: 2026-07-01
 related_specs:
-  - docs/coding-plugins/features/downstream-compatibility/specs/maintenance.md
+  - docs/coding-plugins/features/downstream-compatibility/requirements/maintenance.md
 related_technical:
-  - docs/coding-plugins/features/downstream-compatibility/technical/technical-design.md
+  - docs/coding-plugins/features/downstream-compatibility/technicals/technical-design.md
 related_plans:
   - docs/coding-plugins/features/downstream-compatibility/plans/implementation.md
 ---

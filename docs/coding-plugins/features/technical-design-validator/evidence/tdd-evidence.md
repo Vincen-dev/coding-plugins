@@ -5,9 +5,9 @@ feature: technical-design-validator
 created: 2026-06-29
 updated: 2026-06-29
 related_specs:
-  - docs/coding-plugins/features/technical-design-validator/specs/feature.md
+  - docs/coding-plugins/features/technical-design-validator/requirements/feature.md
 related_technical:
-  - docs/coding-plugins/features/technical-design-validator/technical/technical-design.md
+  - docs/coding-plugins/features/technical-design-validator/technicals/technical-design.md
 related_plans:
   - docs/coding-plugins/features/technical-design-validator/plans/implementation.md
 ---
@@ -24,7 +24,7 @@ related_plans:
 - **GREEN 变更:** 新增 `skills/writing-technical-design/scripts/validate_technical_design.py`，实现 technical 文件发现、frontmatter 列表解析、必需章节校验、MUST Spec ID 覆盖和 related metadata 路径校验。
 - **GREEN 命令:** `python3 -m unittest skills/writing-technical-design/scripts/test_validate_technical_design.py`，9 tests OK。
 - **REFACTOR 命令:** `python3 -m unittest skills/writing-technical-design/scripts/test_validate_technical_design.py`，9 tests OK。
-- **最终验证:** `python3 skills/writing-technical-design/scripts/validate_technical_design.py docs/coding-plugins/features/spec-technical-quality-gates/technical/technical-design.md`，Technical design validation passed: 1 file(s)。
+- **最终验证:** `python3 skills/writing-technical-design/scripts/validate_technical_design.py docs/coding-plugins/features/spec-technical-quality-gates/technicals/technical-design.md`，Technical design validation passed: 1 file(s)。
 
 ## 任务 2： Generic mapping and stale warnings
 
@@ -61,7 +61,7 @@ related_plans:
 - **RED 命令:** `python3 -m unittest scripts/test_preflight.py`
 - **RED 失败:** 文档更新前，writing-technical-design 技能没有提示独立 validator 和 strict 审计命令。
 - **GREEN 变更:** 更新 `skills/writing-technical-design/SKILL.md` 和 `docs/workflow-chain.md`，记录 validator 普通模式与 strict 模式用途。
-- **GREEN 命令:** `python3 skills/spec-driven-development/scripts/validate_spec.py --strict docs/coding-plugins/features/technical-design-validator/specs/feature.md`，Spec validation passed。
+- **GREEN 命令:** `python3 skills/spec-driven-development/scripts/validate_spec.py --strict docs/coding-plugins/features/technical-design-validator/requirements/feature.md`，Spec validation passed。
 - **REFACTOR 命令:** `python3 -m unittest skills/writing-technical-design/scripts/test_validate_technical_design.py` 和 `python3 -m unittest scripts/test_preflight.py`，validator 13 tests OK，preflight 58 tests OK。
 - **最终验证:** `python3 scripts/preflight.py`，Preflight passed。
 

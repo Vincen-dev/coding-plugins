@@ -31,8 +31,8 @@
 | 1 | 入口路由 | `using-coding-plugins` | 判断直接意图和开发任务类型 |
 | 2 | 直接意图处理 | `requesting-code-review`, `receiving-code-review`, `verification-before-completion`, `git-commit`, `finishing-a-development-branch`, `writing-skills`, `using-git-worktrees`, `dispatching-parallel-agents` | 直接完成查询、评审、验证、提交、收尾、隔离或维护任务 |
 | 3 | SDD 文档编排 | `spec-driven-development` | 确认 README、需求文档、技术方案、测试用例、计划、证据和 INDEX 的落地链路 |
-| 4 | 需求文档 | `writing-requirements` | `docs/coding-plugins/features/<feature-name>/specs/<spec-kind>.md`, Spec ID, Traceability Matrix |
-| 5 | 技术设计 | `writing-technical-design` | `docs/coding-plugins/features/<feature-name>/technical/technical-design.md`, 规格到设计映射, 技术方案和测试策略 |
+| 4 | 需求文档 | `writing-requirements` | `docs/coding-plugins/features/<feature-name>/requirements/<spec-kind>.md`, Spec ID, Traceability Matrix |
+| 5 | 技术设计 | `writing-technical-design` | `docs/coding-plugins/features/<feature-name>/technicals/technical-design.md`, 规格到设计映射, 技术方案和测试策略 |
 | 6 | 测试用例 | `writing-test-cases` | `docs/coding-plugins/features/<feature-name>/test-cases/test-cases.md`, Spec ID -> 测试用例 |
 | 7 | 实现计划 | `writing-plans` | `docs/coding-plugins/features/<feature-name>/plans/implementation.md`, 技术设计来源, 测试用例来源, Spec ID -> 测试 -> 任务 追踪 |
 | 8 | 文档契约 | `document-metadata`, `docs/coding-plugins/document-contract.md`, `scripts/preflight.py` | metadata-first 读取顺序、README 边界、related metadata、生成式索引 |
@@ -94,7 +94,7 @@ flowchart TD
   SPEC_OK -->|需要修改| REQ
   SPEC_OK -->|确认| TECH
 
-  TECH --> TECH_DOC["写 technical/technical-design.md、维护总索引"]
+  TECH --> TECH_DOC["写 technicals/technical-design.md、维护总索引"]
   TECH_DOC --> TEST_CASES
   TEST_CASES --> TEST_DOC["写 test-cases/test-cases.md"]
   TEST_DOC --> PLAN
@@ -189,12 +189,12 @@ flowchart TD
   B --> C["探索上下文并确认落地文档链路"]
   C --> META["document-metadata"]
   META --> D["writing-requirements"]
-  D --> E["按场景写 specs/<spec-kind>.md"]
+  D --> E["按场景写 requirements/<spec-kind>.md"]
   E --> F["运行 validate_spec.py"]
   F --> G{"用户确认需求文档？"}
   G -->|需要修改| D
   G -->|确认| TD["writing-technical-design"]
-  TD --> H["写 technical/technical-design.md"]
+  TD --> H["写 technicals/technical-design.md"]
   H --> TC["writing-test-cases"]
   TC --> I["写 test-cases/test-cases.md"]
   I --> PLAN["writing-plans"]
@@ -407,7 +407,7 @@ Claude Code 侧使用 `.claude-plugin/plugin.json` 识别插件。技能以 `/co
 默认需求文档路径：
 
 ```text
-docs/coding-plugins/features/<feature-name>/specs/<spec-kind>.md
+docs/coding-plugins/features/<feature-name>/requirements/<spec-kind>.md
 ```
 
 时间、状态、标签和相关代码写入需求文档 metadata；新增、移动或删除 feature 文档后运行 `python3 scripts/preflight.py --write-index` 重新生成 `docs/coding-plugins/INDEX.md`，文件名不使用日期前缀。
@@ -439,7 +439,7 @@ docs/coding-plugins/features/<feature-name>/specs/<spec-kind>.md
 默认技术设计路径：
 
 ```text
-docs/coding-plugins/features/<feature-name>/technical/technical-design.md
+docs/coding-plugins/features/<feature-name>/technicals/technical-design.md
 ```
 
 技术设计路径的 `<feature-name>` 应和规格路径一致。保存或移动技术设计后运行 `python3 scripts/preflight.py --write-index`，让 `docs/coding-plugins/INDEX.md` 同步反映最新文件树。technical 模板正文标题和表头默认使用中文，Spec ID、命令、路径和代码标识可保留英文。
@@ -451,7 +451,7 @@ technical frontmatter 还必须维护 `lifecycle_status`、`implemented_commits`
 technical 可单独运行 validator：
 
 ```text
-python3 skills/writing-technical-design/scripts/validate_technical_design.py docs/coding-plugins/features/<feature-name>/technical/technical-design.md
+python3 skills/writing-technical-design/scripts/validate_technical_design.py docs/coding-plugins/features/<feature-name>/technicals/technical-design.md
 ```
 
 普通模式只让结构错误失败；`--strict` 会把泛化映射、stale technical、缺 lifecycle metadata、缺 TD 决策 ID、隐藏需求和旧映射表头都升级为失败。preflight 默认调用 strict validator，因此发布前不能留下 warning。
@@ -480,7 +480,7 @@ docs/coding-plugins/features/<feature-name>/test-cases/test-cases.md
 docs/coding-plugins/features/<feature-name>/plans/implementation.md
 ```
 
-计划路径的 `<feature-name>` 应和需求、技术设计、测试用例路径一致，例如 `features/auth-login/specs/feature.md` 对应 `features/auth-login/technical/technical-design.md`、`features/auth-login/test-cases/test-cases.md` 和 `features/auth-login/plans/implementation.md`。
+计划路径的 `<feature-name>` 应和需求、技术设计、测试用例路径一致，例如 `features/auth-login/requirements/feature.md` 对应 `features/auth-login/technicals/technical-design.md`、`features/auth-login/test-cases/test-cases.md` 和 `features/auth-login/plans/implementation.md`。
 
 计划文档应说明推荐执行方式：
 

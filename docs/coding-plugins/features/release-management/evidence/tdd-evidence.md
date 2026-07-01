@@ -5,9 +5,9 @@ feature: release-management
 created: 2026-06-29
 updated: 2026-06-29
 related_specs:
-  - docs/coding-plugins/features/release-management/specs/feature.md
+  - docs/coding-plugins/features/release-management/requirements/feature.md
 related_technical:
-  - docs/coding-plugins/features/release-management/technical/technical-design.md
+  - docs/coding-plugins/features/release-management/technicals/technical-design.md
 related_plans:
   - docs/coding-plugins/features/release-management/plans/implementation.md
 ---

@@ -5,9 +5,9 @@ feature: artifact-index
 created: 2026-06-29
 updated: 2026-06-29
 related_specs:
-  - docs/coding-plugins/features/artifact-index/specs/feature.md
+  - docs/coding-plugins/features/artifact-index/requirements/feature.md
 related_technical:
-  - docs/coding-plugins/features/artifact-index/technical/technical-design.md
+  - docs/coding-plugins/features/artifact-index/technicals/technical-design.md
 related_evidence:
   - docs/coding-plugins/features/artifact-index/evidence/tdd-evidence.md
 ---
@@ -20,8 +20,8 @@ related_evidence:
 | --- | --- |
 | 状态 | 已批准 |
 | Feature | artifact-index |
-| 规格 | `docs/coding-plugins/features/artifact-index/specs/feature.md` |
-| 技术设计 | `docs/coding-plugins/features/artifact-index/technical/technical-design.md` |
+| 需求文档 | `docs/coding-plugins/features/artifact-index/requirements/feature.md` |
+| 技术设计 | `docs/coding-plugins/features/artifact-index/technicals/technical-design.md` |
 | TDD 证据 | `docs/coding-plugins/features/artifact-index/evidence/tdd-evidence.md` |
 
 > **给代理执行者：** REQUIRED SUB-SKILL: 使用 `coding-plugins:executing-plans` 或当前会话按检查点执行本计划。步骤使用 checkbox (`- [x]`) 语法追踪。
@@ -32,13 +32,13 @@ related_evidence:
 
 **技术栈:** Python 标准库、Markdown、unittest、Codex/Claude plugin docs。
 
-**规格来源:** `docs/coding-plugins/features/artifact-index/specs/feature.md`
+**规格来源:** `docs/coding-plugins/features/artifact-index/requirements/feature.md`
 
-**技术设计来源:** `docs/coding-plugins/features/artifact-index/technical/technical-design.md`
+**技术设计来源:** `docs/coding-plugins/features/artifact-index/technicals/technical-design.md`
 
 ## 技术设计快照
 
-本计划执行 `technical/technical-design.md` 中的确定性索引生成方案。关键路径是先用 RED 测试固定渲染输出和漂移校验，再在 `preflight.py` 中复用 feature root collector 实现生成器，最后用 `--write-index` 刷新真实索引并记录 TDD 证据。
+本计划执行 `technicals/technical-design.md` 中的确定性索引生成方案。关键路径是先用 RED 测试固定渲染输出和漂移校验，再在 `preflight.py` 中复用 feature root collector 实现生成器，最后用 `--write-index` 刷新真实索引并记录 TDD 证据。
 
 ## 规格追踪
 
@@ -100,8 +100,8 @@ Implement README metadata parsing, feature document collection helpers, Markdown
 **文件:**
 - 修改: `docs/coding-plugins/INDEX.md`
 - 修改: `docs/coding-plugins/features/artifact-index/README.md`
-- 修改: `docs/coding-plugins/features/artifact-index/specs/feature.md`
-- 创建: `docs/coding-plugins/features/artifact-index/technical/technical-design.md`
+- 修改: `docs/coding-plugins/features/artifact-index/requirements/feature.md`
+- 创建: `docs/coding-plugins/features/artifact-index/technicals/technical-design.md`
 - 创建: `docs/coding-plugins/features/artifact-index/plans/implementation.md`
 - 修改: `docs/coding-plugins/features/artifact-index/evidence/tdd-evidence.md`
 

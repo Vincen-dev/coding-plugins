@@ -5,9 +5,9 @@ feature: preflight
 created: 2026-06-29
 updated: 2026-06-29
 related_specs:
-  - docs/coding-plugins/features/preflight/specs/feature.md
+  - docs/coding-plugins/features/preflight/requirements/feature.md
 related_technical:
-  - docs/coding-plugins/features/preflight/technical/technical-design.md
+  - docs/coding-plugins/features/preflight/technicals/technical-design.md
 related_evidence:
   - docs/coding-plugins/features/preflight/evidence/tdd-evidence.md
 ---
@@ -20,8 +20,8 @@ related_evidence:
 | --- | --- |
 | 状态 | 已完成 |
 | Feature | preflight |
-| 规格 | `docs/coding-plugins/features/preflight/specs/feature.md` |
-| 技术设计 | `docs/coding-plugins/features/preflight/technical/technical-design.md` |
+| 需求文档 | `docs/coding-plugins/features/preflight/requirements/feature.md` |
+| 技术设计 | `docs/coding-plugins/features/preflight/technicals/technical-design.md` |
 | TDD 证据 | `docs/coding-plugins/features/preflight/evidence/tdd-evidence.md` |
 
 **目标:** 记录并固化 `python3 scripts/preflight.py` 作为插件发布前检查的完整执行链路。
@@ -30,9 +30,9 @@ related_evidence:
 
 **技术栈:** Python 标准库、unittest、bash hook 测试、GitHub Actions。
 
-**规格来源:** `docs/coding-plugins/features/preflight/specs/feature.md`
+**规格来源:** `docs/coding-plugins/features/preflight/requirements/feature.md`
 
-**技术设计来源:** `docs/coding-plugins/features/preflight/technical/technical-design.md`
+**技术设计来源:** `docs/coding-plugins/features/preflight/technicals/technical-design.md`
 
 ## 技术设计快照
 
@@ -81,7 +81,7 @@ related_evidence:
 | 规格 ID | 测试文件 / 命令 | 测试名称或断言 | TDD 证据文件 / 字段 | 实现任务 |
 | --- | --- | --- | --- | --- |
 | REQ-001 | `python3 -m unittest scripts/test_preflight.py` | validation command list includes core checks | `docs/coding-plugins/features/preflight/evidence/tdd-evidence.md` / 替代验证 | 任务 1 |
-| REQ-002 | `python3 skills/spec-driven-development/scripts/validate_spec.py --strict docs/coding-plugins/features/preflight/specs/feature.md` | strict spec validation passes | `docs/coding-plugins/features/preflight/evidence/tdd-evidence.md` / 替代验证 | 任务 1 |
+| REQ-002 | `python3 skills/spec-driven-development/scripts/validate_spec.py --strict docs/coding-plugins/features/preflight/requirements/feature.md` | strict spec validation passes | `docs/coding-plugins/features/preflight/evidence/tdd-evidence.md` / 替代验证 | 任务 1 |
 | REQ-003 | `python3 -m unittest scripts/test_preflight.py` | manifest version mismatch is rejected | `docs/coding-plugins/features/preflight/evidence/tdd-evidence.md` / 替代验证 | 任务 1 |
 | REQ-004 | `python3 -m unittest scripts/test_preflight.py` | removed active references are rejected | `docs/coding-plugins/features/preflight/evidence/tdd-evidence.md` / 替代验证 | 任务 1 |
 | REQ-005 | `.github/workflows/ci.yml` | workflow runs `python3 scripts/preflight.py` | `docs/coding-plugins/features/preflight/evidence/tdd-evidence.md` / 替代验证 | 任务 2 |
@@ -101,10 +101,10 @@ related_evidence:
 
 **文件:**
 
-- 创建: `docs/coding-plugins/features/preflight/technical/technical-design.md`
+- 创建: `docs/coding-plugins/features/preflight/technicals/technical-design.md`
 - 创建: `docs/coding-plugins/features/preflight/plans/implementation.md`
 - 创建: `docs/coding-plugins/features/preflight/evidence/tdd-evidence.md`
-- 修改: `docs/coding-plugins/features/preflight/specs/feature.md`
+- 修改: `docs/coding-plugins/features/preflight/requirements/feature.md`
 - 修改: `docs/coding-plugins/features/preflight/README.md`
 
 - [x] **步骤 1：Read approved spec and current preflight implementation**

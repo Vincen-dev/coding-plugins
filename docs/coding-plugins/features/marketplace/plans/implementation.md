@@ -5,9 +5,9 @@ feature: marketplace
 created: 2026-06-29
 updated: 2026-06-29
 related_specs:
-  - docs/coding-plugins/features/marketplace/specs/feature.md
+  - docs/coding-plugins/features/marketplace/requirements/feature.md
 related_technical:
-  - docs/coding-plugins/features/marketplace/technical/technical-design.md
+  - docs/coding-plugins/features/marketplace/technicals/technical-design.md
 related_evidence:
   - docs/coding-plugins/features/marketplace/evidence/tdd-evidence.md
 ---
@@ -20,8 +20,8 @@ related_evidence:
 | --- | --- |
 | 状态 | 已完成 |
 | Feature | marketplace |
-| 规格 | `docs/coding-plugins/features/marketplace/specs/feature.md` |
-| 技术设计 | `docs/coding-plugins/features/marketplace/technical/technical-design.md` |
+| 需求文档 | `docs/coding-plugins/features/marketplace/requirements/feature.md` |
+| 技术设计 | `docs/coding-plugins/features/marketplace/technicals/technical-design.md` |
 | TDD 证据 | `docs/coding-plugins/features/marketplace/evidence/tdd-evidence.md` |
 
 **目标:** 记录并固化 `coding-plugins` 的 Codex marketplace、personal marketplace 和 Claude Code 安装入口。
@@ -30,9 +30,9 @@ related_evidence:
 
 **技术栈:** JSON manifest、Markdown 文档、Codex CLI、Claude Code CLI。
 
-**规格来源:** `docs/coding-plugins/features/marketplace/specs/feature.md`
+**规格来源:** `docs/coding-plugins/features/marketplace/requirements/feature.md`
 
-**技术设计来源:** `docs/coding-plugins/features/marketplace/technical/technical-design.md`
+**技术设计来源:** `docs/coding-plugins/features/marketplace/technicals/technical-design.md`
 
 ## 技术设计快照
 
@@ -98,10 +98,10 @@ related_evidence:
 
 **文件:**
 
-- 创建: `docs/coding-plugins/features/marketplace/technical/technical-design.md`
+- 创建: `docs/coding-plugins/features/marketplace/technicals/technical-design.md`
 - 创建: `docs/coding-plugins/features/marketplace/plans/implementation.md`
 - 创建: `docs/coding-plugins/features/marketplace/evidence/tdd-evidence.md`
-- 修改: `docs/coding-plugins/features/marketplace/specs/feature.md`
+- 修改: `docs/coding-plugins/features/marketplace/requirements/feature.md`
 - 修改: `docs/coding-plugins/features/marketplace/README.md`
 
 - [x] **步骤 1：Read approved spec and current implementation files**

@@ -5,7 +5,7 @@ feature: preflight-hardening
 created: 2026-06-29
 updated: 2026-06-29
 related_specs:
-  - docs/coding-plugins/features/preflight-hardening/specs/feature.md
+  - docs/coding-plugins/features/preflight-hardening/requirements/feature.md
 ---
 # Preflight 覆盖面增强
 

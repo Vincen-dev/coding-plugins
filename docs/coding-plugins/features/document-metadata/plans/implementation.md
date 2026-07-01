@@ -5,9 +5,9 @@ feature: document-metadata
 created: 2026-06-26
 updated: 2026-07-01
 related_specs:
-  - docs/coding-plugins/features/document-metadata/specs/feature.md
+  - docs/coding-plugins/features/document-metadata/requirements/feature.md
 related_technical:
-  - docs/coding-plugins/features/document-metadata/technical/technical-design.md
+  - docs/coding-plugins/features/document-metadata/technicals/technical-design.md
 related_evidence:
   - docs/coding-plugins/features/document-metadata/evidence/tdd-evidence.md
 ---
@@ -20,8 +20,8 @@ related_evidence:
 | --- | --- |
 | 状态 | 已批准 |
 | Feature | document-metadata |
-| 规格 | `docs/coding-plugins/features/document-metadata/specs/feature.md` |
-| 技术设计 | `docs/coding-plugins/features/document-metadata/technical/technical-design.md` |
+| 需求文档 | `docs/coding-plugins/features/document-metadata/requirements/feature.md` |
+| 技术设计 | `docs/coding-plugins/features/document-metadata/technicals/technical-design.md` |
 | TDD 证据 | `docs/coding-plugins/features/document-metadata/evidence/tdd-evidence.md` |
 
 > **给代理执行者：** REQUIRED SUB-SKILL: 使用 `coding-plugins:executing-plans` 或当前会话按检查点执行本计划。步骤使用 checkbox (`- [ ]`) 语法追踪。
@@ -32,9 +32,9 @@ related_evidence:
 
 **技术栈:** Python 标准库、Markdown 文档、Codex/Claude skills。
 
-**规格来源:** `docs/coding-plugins/features/document-metadata/specs/feature.md`
+**规格来源:** `docs/coding-plugins/features/document-metadata/requirements/feature.md`
 
-**技术设计来源:** `docs/coding-plugins/features/document-metadata/technical/technical-design.md`
+**技术设计来源:** `docs/coding-plugins/features/document-metadata/technicals/technical-design.md`
 
 ## 技术设计快照
 

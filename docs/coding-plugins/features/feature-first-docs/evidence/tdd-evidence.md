@@ -5,9 +5,9 @@ feature: feature-first-docs
 created: 2026-06-29
 updated: 2026-07-01
 related_specs:
-  - docs/coding-plugins/features/feature-first-docs/specs/maintenance.md
+  - docs/coding-plugins/features/feature-first-docs/requirements/maintenance.md
 related_technical:
-  - docs/coding-plugins/features/feature-first-docs/technical/technical-design.md
+  - docs/coding-plugins/features/feature-first-docs/technicals/technical-design.md
 related_plans:
   - docs/coding-plugins/features/feature-first-docs/plans/implementation.md
 ---
@@ -46,8 +46,8 @@ related_plans:
 - **规格/缺陷/验收:** NFR-003 / NFR-004 / NFR-009 / ERR-006 / MIG-004
 - **RED 测试:** `scripts/test_preflight.py::PreflightTests.test_collect_plan_files_uses_feature_first_plans_subdir`、`test_collect_technical_design_files_uses_feature_first_technical_subdir`、`test_flat_feature_root_technical_and_plan_files_are_rejected`、`test_render_artifact_index_includes_feature_metadata_and_documents`
 - **RED 命令:** `python3 -m unittest scripts/test_preflight.py`
-- **RED 失败:** 新测试失败于 `preflight.check_feature_first_document_layout` 不存在，计划和技术设计 collector 仍返回旧 flat feature-root 路径，生成式索引未包含 `technical/technical-design.md` 和 `plans/implementation.md`。
-- **GREEN 变更:** 将 preflight collectors、索引生成、技术设计引用解析和计划校验切换到 `technical/` 与 `plans/` 子目录；新增 flat feature-root 技术/计划文件拒绝；迁移现有文档并更新 README、workflow、skill、spec、technical、plan 和 evidence 引用。
+- **RED 失败:** 新测试失败于 `preflight.check_feature_first_document_layout` 不存在，计划和技术设计 collector 仍返回旧 flat feature-root 路径，生成式索引未包含 `technicals/technical-design.md` 和 `plans/implementation.md`。
+- **GREEN 变更:** 将 preflight collectors、索引生成、技术设计引用解析和计划校验切换到 `technicals/` 与 `plans/` 子目录；新增 flat feature-root 技术/计划文件拒绝；迁移现有文档并更新 README、workflow、skill、spec、technical、plan 和 evidence 引用。
 - **GREEN 命令:** `python3 -m unittest scripts/test_preflight.py` PASS
 - **REFACTOR 命令:** `python3 scripts/preflight.py --write-index` PASS
 - **最终验证:** `python3 scripts/preflight.py --write-index` PASS；`python3 scripts/preflight.py` PASS；`python3 scripts/prepare_release.py --skip-git-checks --notes-out /tmp/coding-plugins-release-notes.md` 输出 `Release ready: v0.6.24`；`claude plugin validate /Users/vincen/workspace/plugins/coding-plugins --strict` PASS；`git diff --check` PASS；`find docs/coding-plugins/features -maxdepth 3 -type f \( -name technical-design.md -o -name implementation.md \) -print` 无输出。

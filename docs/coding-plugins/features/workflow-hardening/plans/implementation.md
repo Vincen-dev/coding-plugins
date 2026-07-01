@@ -5,9 +5,9 @@ feature: workflow-hardening
 created: 2026-06-29
 updated: 2026-06-29
 related_specs:
-  - docs/coding-plugins/features/workflow-hardening/specs/maintenance.md
+  - docs/coding-plugins/features/workflow-hardening/requirements/maintenance.md
 related_technical:
-  - docs/coding-plugins/features/workflow-hardening/technical/technical-design.md
+  - docs/coding-plugins/features/workflow-hardening/technicals/technical-design.md
 related_evidence:
   - docs/coding-plugins/features/workflow-hardening/evidence/tdd-evidence.md
 ---
@@ -20,8 +20,8 @@ related_evidence:
 | --- | --- |
 | 状态 | 已完成 |
 | Feature | workflow-hardening |
-| 规格 | `docs/coding-plugins/features/workflow-hardening/specs/maintenance.md` |
-| 技术设计 | `docs/coding-plugins/features/workflow-hardening/technical/technical-design.md` |
+| 需求文档 | `docs/coding-plugins/features/workflow-hardening/requirements/maintenance.md` |
+| 技术设计 | `docs/coding-plugins/features/workflow-hardening/technicals/technical-design.md` |
 | TDD 证据 | `docs/coding-plugins/features/workflow-hardening/evidence/tdd-evidence.md` |
 
 **目标:** 按优先级补强插件主链路的行为测试、文档契约、远程发布审计、Claude 入口和 validator 样例。
@@ -30,9 +30,9 @@ related_evidence:
 
 **技术栈:** Python 标准库、unittest、Markdown 文档、GitHub CLI 手动审计。
 
-**规格来源:** `docs/coding-plugins/features/workflow-hardening/specs/maintenance.md`
+**规格来源:** `docs/coding-plugins/features/workflow-hardening/requirements/maintenance.md`
 
-**技术设计来源:** `docs/coding-plugins/features/workflow-hardening/technical/technical-design.md`
+**技术设计来源:** `docs/coding-plugins/features/workflow-hardening/technicals/technical-design.md`
 
 ## 技术设计快照
 

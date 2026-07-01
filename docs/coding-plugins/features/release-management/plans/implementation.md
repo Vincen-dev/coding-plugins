@@ -5,9 +5,9 @@ feature: release-management
 created: 2026-06-29
 updated: 2026-06-29
 related_specs:
-  - docs/coding-plugins/features/release-management/specs/feature.md
+  - docs/coding-plugins/features/release-management/requirements/feature.md
 related_technical:
-  - docs/coding-plugins/features/release-management/technical/technical-design.md
+  - docs/coding-plugins/features/release-management/technicals/technical-design.md
 related_evidence:
   - docs/coding-plugins/features/release-management/evidence/tdd-evidence.md
 ---
@@ -20,8 +20,8 @@ related_evidence:
 | --- | --- |
 | 状态 | 已完成 |
 | Feature | release-management |
-| 规格 | `docs/coding-plugins/features/release-management/specs/feature.md` |
-| 技术设计 | `docs/coding-plugins/features/release-management/technical/technical-design.md` |
+| 需求文档 | `docs/coding-plugins/features/release-management/requirements/feature.md` |
+| 技术设计 | `docs/coding-plugins/features/release-management/technicals/technical-design.md` |
 | TDD 证据 | `docs/coding-plugins/features/release-management/evidence/tdd-evidence.md` |
 
 **目标:** 补齐 release tag、GitHub Release 和远程 push 权限的可重复发布链路。
@@ -30,9 +30,9 @@ related_evidence:
 
 **技术栈:** Python 标准库、Git CLI、GitHub Actions、GitHub CLI。
 
-**规格来源:** `docs/coding-plugins/features/release-management/specs/feature.md`
+**规格来源:** `docs/coding-plugins/features/release-management/requirements/feature.md`
 
-**技术设计来源:** `docs/coding-plugins/features/release-management/technical/technical-design.md`
+**技术设计来源:** `docs/coding-plugins/features/release-management/technicals/technical-design.md`
 
 ## 技术设计快照
 
@@ -148,8 +148,8 @@ related_evidence:
 
 **文件:**
 
-- 修改: `docs/coding-plugins/features/release-management/specs/feature.md`
-- 修改: `docs/coding-plugins/features/release-management/technical/technical-design.md`
+- 修改: `docs/coding-plugins/features/release-management/requirements/feature.md`
+- 修改: `docs/coding-plugins/features/release-management/technicals/technical-design.md`
 - 修改: `docs/coding-plugins/features/release-management/plans/implementation.md`
 - 修改: `docs/coding-plugins/features/release-management/evidence/tdd-evidence.md`
 

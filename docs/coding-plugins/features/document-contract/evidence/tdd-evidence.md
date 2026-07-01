@@ -5,9 +5,9 @@ feature: document-contract
 created: 2026-06-29
 updated: 2026-06-29
 related_specs:
-  - docs/coding-plugins/features/document-contract/specs/feature.md
+  - docs/coding-plugins/features/document-contract/requirements/feature.md
 related_technical:
-  - docs/coding-plugins/features/document-contract/technical/technical-design.md
+  - docs/coding-plugins/features/document-contract/technicals/technical-design.md
 related_plans:
   - docs/coding-plugins/features/document-contract/plans/implementation.md
 ---

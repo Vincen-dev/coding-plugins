@@ -183,7 +183,7 @@ TDD_EVIDENCE_TEMPLATE_ENGLISH_STRUCTURE = (
 )
 SPEC_ID_RE = re.compile(r"\b(?:REQ|API|SCHEMA|STATE|ERR|AC|NFR|MIG|OBS|NON)(?:-[A-Z0-9]+)*-\d{3,}\b")
 TECHNICAL_DESIGN_PATH_RE = re.compile(
-    r"docs/coding-plugins/features/[A-Za-z0-9_.\-/]+/technical/technical-design\.md"
+    r"docs/coding-plugins/features/[A-Za-z0-9_.\-/]+/technicals/technical-design\.md"
 )
 EVIDENCE_PATH_RE = re.compile(r"docs/coding-plugins/features/[A-Za-z0-9_.\-/]+/evidence/[A-Za-z0-9_.\-/]+\.md")
 FEATURE_README_METADATA_REQUIRED_FIELDS = ("title", "status", "feature", "updated")
@@ -439,7 +439,7 @@ def check_manifest_asset_paths(root: Path) -> None:
 def check_legacy_docs_roots(root: Path) -> None:
     offenders: list[str] = []
     docs_root = root / "docs" / "coding-plugins"
-    for legacy_name in ("specs", "technical", "plans", "evidence"):
+    for legacy_name in ("specs", "technical", "requirements", "technicals", "plans", "evidence"):
         legacy_root = docs_root / legacy_name
         if legacy_root.exists():
             offenders.extend(str(path.relative_to(root)) for path in sorted(legacy_root.rglob("*.md")))
@@ -1012,7 +1012,7 @@ def specs_for_feature_document(root: Path, document_file: Path) -> list[Path]:
     if feature_context is None:
         return []
     _feature, feature_root = feature_context
-    spec_dir = feature_root / "specs"
+    spec_dir = feature_root / "requirements"
     if not spec_dir.exists():
         return []
     return sorted(path for path in spec_dir.rglob("*.md") if path.name != "INDEX.md")
@@ -1123,7 +1123,7 @@ def check_documentation_path_references(root: Path) -> None:
 def collect_spec_files(root: Path) -> list[Path]:
     files: list[Path] = []
     for feature_root in collect_feature_roots(root):
-        specs_root = feature_root / "specs"
+        specs_root = feature_root / "requirements"
         if specs_root.exists():
             files.extend(path for path in specs_root.rglob("*.md") if path.name != "INDEX.md")
     return sorted(files)
@@ -1155,7 +1155,7 @@ def collect_technical_design_files(root: Path) -> list[Path]:
     return sorted(
         design_path
         for design_path in (
-            feature_root / "technical" / "technical-design.md" for feature_root in collect_feature_roots(root)
+            feature_root / "technicals" / "technical-design.md" for feature_root in collect_feature_roots(root)
         )
         if design_path.exists()
     )

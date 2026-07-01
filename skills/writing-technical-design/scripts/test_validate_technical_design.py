@@ -42,12 +42,12 @@ class TechnicalDesignValidatorTests(unittest.TestCase):
         extra_body: str = "",
     ) -> Path:
         feature_root = root / "docs" / "coding-plugins" / "features" / "routing"
-        spec_dir = feature_root / "specs"
-        technical_dir = feature_root / "technical"
+        spec_dir = feature_root / "requirements"
+        technicals_dir = feature_root / "technicals"
         plan_dir = feature_root / "plans"
         evidence_dir = feature_root / "evidence"
         spec_dir.mkdir(parents=True)
-        technical_dir.mkdir()
+        technicals_dir.mkdir()
         plan_dir.mkdir()
         evidence_dir.mkdir()
 
@@ -81,7 +81,7 @@ class TechnicalDesignValidatorTests(unittest.TestCase):
             if include_mapping_section
             else ""
         )
-        technical = technical_dir / "technical-design.md"
+        technical = technicals_dir / "technical-design.md"
         technical.write_text(
             "---\n"
             "title: 技术设计\n"
@@ -93,7 +93,7 @@ class TechnicalDesignValidatorTests(unittest.TestCase):
             f"implemented_commits: {implemented_commits}\n"
             f"validated_by: {validated_by}\n"
             "related_specs:\n"
-            "  - docs/coding-plugins/features/routing/specs/feature.md\n"
+            "  - docs/coding-plugins/features/routing/requirements/feature.md\n"
             "related_plans:\n"
             "  - docs/coding-plugins/features/routing/plans/implementation.md\n"
             f"{evidence_metadata}"

@@ -13,7 +13,7 @@ class DocsIndexError(RuntimeError):
 ARTIFACT_INDEX_REQUIRED_COLUMNS = (
     "Feature",
     "功能根目录",
-    "规格",
+    "需求文档",
     "技术设计",
     "测试用例",
     "实现计划",
@@ -124,7 +124,7 @@ def format_index_path_cell(root: Path, paths: list[Path]) -> str:
 
 
 def feature_spec_files(feature_root: Path) -> list[Path]:
-    specs_root = feature_root / "specs"
+    specs_root = feature_root / "requirements"
     if not specs_root.exists():
         return []
     return sorted(path for path in specs_root.rglob("*.md") if path.name != "INDEX.md")
@@ -146,7 +146,7 @@ def feature_archived_evidence_files(feature_root: Path) -> list[Path]:
 
 
 def feature_technical_design_files(feature_root: Path) -> list[Path]:
-    path = feature_root / "technical" / "technical-design.md"
+    path = feature_root / "technicals" / "technical-design.md"
     return [path] if path.exists() else []
 
 
@@ -188,7 +188,7 @@ def render_artifact_index(root: Path) -> str:
         "",
         "本索引用于按 `Feature` 检索 feature-first 文档链路。运行 `python3 scripts/preflight.py --write-index` 可根据 feature root 重新生成本文件。",
         "",
-        "| Feature | 功能根目录 | 规格 | 技术设计 | 测试用例 | 实现计划 | 证据 | 标签 | 更新日期 |",
+        "| Feature | 功能根目录 | 需求文档 | 技术设计 | 测试用例 | 实现计划 | 证据 | 标签 | 更新日期 |",
         "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
 
@@ -222,12 +222,12 @@ def render_artifact_index(root: Path) -> str:
             "",
             "- `Feature` 必须和 `功能根目录` 路径一致。",
             "- `功能根目录` 指向 `docs/coding-plugins/features/<feature-name>`。",
-            "- `规格` 指向该 feature 的规格文件；有多个规格时在同一个单元格用 `<br>` 分隔。",
-            "- `技术设计` 指向默认技术设计 `docs/coding-plugins/features/<feature-name>/technical/technical-design.md`；没有技术设计时使用 `-`。",
+            "- `需求文档` 指向该 feature 的需求文档；有多个需求文档时在同一个单元格用 `<br>` 分隔。",
+            "- `技术设计` 指向默认技术设计 `docs/coding-plugins/features/<feature-name>/technicals/technical-design.md`；没有技术设计时使用 `-`。",
             "- `测试用例` 指向默认测试用例文档 `docs/coding-plugins/features/<feature-name>/test-cases/test-cases.md`；没有测试用例时使用 `-`。",
             "- `实现计划` 指向默认实现计划 `docs/coding-plugins/features/<feature-name>/plans/implementation.md`；没有计划时使用 `-`。",
             "- `证据` 指向该 feature 的 evidence 文件；有多个 evidence 时在同一个单元格用 `<br>` 分隔；没有 evidence 时使用 `-`。",
-            "- `标签` 来自 feature README frontmatter 的 `tags` 列表；日期来自规格、技术设计、测试用例或计划 frontmatter 的最大 `updated` 值。",
+            "- `标签` 来自 feature README frontmatter 的 `tags` 列表；日期来自需求文档、技术设计、测试用例或计划 frontmatter 的最大 `updated` 值。",
         ]
     )
     return "\n".join(lines) + "\n"

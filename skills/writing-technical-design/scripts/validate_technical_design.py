@@ -135,7 +135,7 @@ def collect_technical_design_files(root: Path, technical_files: list[Path] | Non
 
     files: list[Path] = []
     for feature_root in docs_index.collect_feature_roots(root):
-        technical_file = feature_root / "technical" / "technical-design.md"
+        technical_file = feature_root / "technicals" / "technical-design.md"
         if technical_file.exists():
             files.append(technical_file)
     return sorted(files)

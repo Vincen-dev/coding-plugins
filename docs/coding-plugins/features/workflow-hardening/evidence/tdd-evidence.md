@@ -5,9 +5,9 @@ feature: workflow-hardening
 created: 2026-06-29
 updated: 2026-06-29
 related_specs:
-  - docs/coding-plugins/features/workflow-hardening/specs/maintenance.md
+  - docs/coding-plugins/features/workflow-hardening/requirements/maintenance.md
 related_technical:
-  - docs/coding-plugins/features/workflow-hardening/technical/technical-design.md
+  - docs/coding-plugins/features/workflow-hardening/technicals/technical-design.md
 related_plans:
   - docs/coding-plugins/features/workflow-hardening/plans/implementation.md
 ---

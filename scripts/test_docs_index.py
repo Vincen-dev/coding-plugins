@@ -19,7 +19,7 @@ class DocsIndexTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             feature_dir = root / "docs" / "coding-plugins" / "features" / "search"
-            (feature_dir / "specs").mkdir(parents=True)
+            (feature_dir / "requirements").mkdir(parents=True)
             (feature_dir / "README.md").write_text(
                 "---\n"
                 "title: 搜索\n"
@@ -32,7 +32,7 @@ class DocsIndexTests(unittest.TestCase):
                 "# Search\n",
                 encoding="utf-8",
             )
-            (feature_dir / "specs" / "feature.md").write_text(
+            (feature_dir / "requirements" / "feature.md").write_text(
                 "---\nupdated: 2026-06-29\n---\n# Feature\n",
                 encoding="utf-8",
             )
@@ -45,7 +45,7 @@ class DocsIndexTests(unittest.TestCase):
             rendered = docs_index.render_artifact_index(root)
 
             self.assertIn("`docs/coding-plugins/features/search`", rendered)
-            self.assertIn("`docs/coding-plugins/features/search/specs/feature.md`", rendered)
+            self.assertIn("`docs/coding-plugins/features/search/requirements/feature.md`", rendered)
             self.assertIn("`docs/coding-plugins/features/search/test-cases/test-cases.md`", rendered)
             self.assertIn("| search | 2026-06-29 |", rendered)
 
@@ -83,7 +83,7 @@ class DocsIndexTests(unittest.TestCase):
             root = Path(tmp)
             docs_root = root / "docs" / "coding-plugins"
             feature_dir = docs_root / "features" / "search"
-            (feature_dir / "specs").mkdir(parents=True)
+            (feature_dir / "requirements").mkdir(parents=True)
             (feature_dir / "README.md").write_text(
                 "---\n"
                 "title: 搜索\n"
@@ -96,7 +96,7 @@ class DocsIndexTests(unittest.TestCase):
                 "# Search\n",
                 encoding="utf-8",
             )
-            (feature_dir / "specs" / "feature.md").write_text(
+            (feature_dir / "requirements" / "feature.md").write_text(
                 "---\nupdated: 2026-06-29\n---\n# Feature\n",
                 encoding="utf-8",
             )

@@ -33,7 +33,7 @@ description: 已有批准规格，需要在实现计划前创建或更新独立 
 技术设计默认保存到：
 
 ```text
-docs/coding-plugins/features/<feature-name>/technical/technical-design.md
+docs/coding-plugins/features/<feature-name>/technicals/technical-design.md
 ```
 
 `<feature-name>` 必须和规格、计划、TDD 证据路径一致。
@@ -78,7 +78,7 @@ docs/coding-plugins/INDEX.md
 2. 做规格缺口审查：逐项确认未覆盖需求、验收标准不清、外部行为新增、错误边界和兼容要求。
 3. 如果发现缺口，不要在 technical 中顺手补需求；回到 `spec-driven-development` 更新 spec、重新运行规格校验并等待用户确认。
 4. 确认 feature，并检查是否已有技术设计。
-5. 创建或更新 `technical/technical-design.md`，正文标题默认使用中文，并补齐 `related_specs`、`related_plans`、`related_evidence`；关联关系以 frontmatter 为机器源。
+5. 创建或更新 `technicals/technical-design.md`，正文标题默认使用中文，并补齐 `related_specs`、`related_plans`、`related_evidence`；关联关系以 frontmatter 为机器源。
 6. 在规格 metadata 或正文中引用 technical design 路径；metadata key 保持英文，正文使用 `## 文档信息` 展示中文摘要。不要在 README 正文增加手写 `产物链路` 或 `文档链路`，完整链路由 `docs/coding-plugins/INDEX.md` 生成。
 7. 更新 `docs/coding-plugins/INDEX.md`。
 8. 运行 `python3 skills/writing-technical-design/scripts/validate_technical_design.py <technical-path>` 做 technical 单文档校验；发布前和 preflight 使用 strict 质量门禁。
@@ -121,6 +121,6 @@ skills/writing-technical-design/templates/technical-design.md
 完成后说明：
 
 ```text
-技术设计已保存到 docs/coding-plugins/features/<feature-name>/technical/technical-design.md。
+技术设计已保存到 docs/coding-plugins/features/<feature-name>/technicals/technical-design.md。
 下一步使用 writing-plans 创建 implementation.md，并在计划中引用技术设计来源。
 ```

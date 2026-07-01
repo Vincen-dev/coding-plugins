@@ -5,9 +5,9 @@ feature: chinese-document-templates
 created: 2026-06-29
 updated: 2026-06-29
 related_specs:
-  - docs/coding-plugins/features/chinese-document-templates/specs/feature.md
+  - docs/coding-plugins/features/chinese-document-templates/requirements/feature.md
 related_technical:
-  - docs/coding-plugins/features/chinese-document-templates/technical/technical-design.md
+  - docs/coding-plugins/features/chinese-document-templates/technicals/technical-design.md
 related_plans:
   - docs/coding-plugins/features/chinese-document-templates/plans/implementation.md
 ---
