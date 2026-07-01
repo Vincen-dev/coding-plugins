@@ -32,13 +32,13 @@
 | 2 | 直接意图处理 | `requesting-code-review`, `receiving-code-review`, `verification-before-completion`, `git-commit`, `finishing-a-development-branch`, `writing-skills`, `using-git-worktrees`, `dispatching-parallel-agents` | 直接完成查询、评审、验证、提交、收尾、隔离或维护任务 |
 | 3 | SDD 文档编排 | `spec-driven-development` | 确认 README、需求文档、技术方案、测试用例、计划、证据和 INDEX 的落地链路 |
 | 4 | 需求文档 | `writing-requirements` | `docs/coding-plugins/features/<feature-name>/requirements/<spec-kind>.md`, Spec ID, Traceability Matrix |
-| 5 | 技术设计 | `writing-technical-design` | `docs/coding-plugins/features/<feature-name>/technicals/technical-design.md`, 规格到设计映射, 技术方案和测试策略 |
-| 6 | 测试用例 | `writing-test-cases` | `docs/coding-plugins/features/<feature-name>/test-cases/test-cases.md`, Spec ID -> 测试用例 |
-| 7 | 实现计划 | `writing-plans` | `docs/coding-plugins/features/<feature-name>/plans/implementation.md`, 技术设计来源, 测试用例来源, Spec ID -> 测试 -> 任务 追踪 |
+| 5 | 技术设计 | `writing-technical-design` | `docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-Technical-Design.md`, 规格到设计映射, 技术方案和测试策略 |
+| 6 | 测试用例 | `writing-test-cases` | `docs/coding-plugins/features/<feature-name>/test-cases/<feature-name>-Test-Cases.md`, Spec ID -> 测试用例 |
+| 7 | 实现计划 | `writing-plans` | `docs/coding-plugins/features/<feature-name>/plans/<feature-name>-Implementation-Plan.md`, 技术设计来源, 测试用例来源, Spec ID -> 测试 -> 任务 追踪 |
 | 8 | 文档契约 | `document-metadata`, `docs/coding-plugins/document-contract.md`, `scripts/preflight.py` | metadata-first 读取顺序、README 边界、related metadata、生成式索引 |
 | 9 | 隔离工作区 | `using-git-worktrees` | 独立 worktree 或确认在当前工作区执行 |
 | 10 | 执行调度 | `subagent-driven-development`, `executing-plans`, `dispatching-parallel-agents` | 子任务执行、批次执行或并行任务结果 |
-| 11 | TDD 实现 | `test-driven-development` | RED -> GREEN -> REFACTOR，`docs/coding-plugins/features/<feature-name>/evidence/tdd-evidence.md` |
+| 11 | TDD 实现 | `test-driven-development` | RED -> GREEN -> REFACTOR，`docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TDD-Evidence.md` |
 | 12 | 系统化调试 | `systematic-debugging` | 复现路径、根因、可测试修复入口 |
 | 13 | 评审门禁 | `spec-reviewer`, `code-quality-reviewer`, `requesting-code-review`, `receiving-code-review` | 规格符合性评审、代码质量评审、反馈处理 |
 | 14 | 完成前验证 | `verification-before-completion` | 测试、构建、规格覆盖或人工验收证据 |
@@ -94,11 +94,11 @@ flowchart TD
   SPEC_OK -->|需要修改| REQ
   SPEC_OK -->|确认| TECH
 
-  TECH --> TECH_DOC["写 technicals/technical-design.md、维护总索引"]
+  TECH --> TECH_DOC["写 technicals/<feature-name>-Technical-Design.md、维护总索引"]
   TECH_DOC --> TEST_CASES
-  TEST_CASES --> TEST_DOC["写 test-cases/test-cases.md"]
+  TEST_CASES --> TEST_DOC["写 test-cases/<feature-name>-Test-Cases.md"]
   TEST_DOC --> PLAN
-  PLAN --> PLAN_DOC["写 plans/implementation.md、引用技术设计和追踪矩阵"]
+  PLAN --> PLAN_DOC["写 plans/<feature-name>-Implementation-Plan.md、引用技术设计和追踪矩阵"]
   PLAN_DOC --> WORKTREE
 
   WORKTREE --> WT_DEC{"仅创建 worktree？"}
@@ -194,11 +194,11 @@ flowchart TD
   F --> G{"用户确认需求文档？"}
   G -->|需要修改| D
   G -->|确认| TD["writing-technical-design"]
-  TD --> H["写 technicals/technical-design.md"]
+  TD --> H["写 technicals/<feature-name>-Technical-Design.md"]
   H --> TC["writing-test-cases"]
-  TC --> I["写 test-cases/test-cases.md"]
+  TC --> I["写 test-cases/<feature-name>-Test-Cases.md"]
   I --> PLAN["writing-plans"]
-  PLAN --> J["写 plans/implementation.md"]
+  PLAN --> J["写 plans/<feature-name>-Implementation-Plan.md"]
   J --> K["引用 技术设计来源 和 测试用例来源"]
   K --> L["计划自审或计划评审"]
   L --> M["进入执行场景"]
@@ -439,7 +439,7 @@ docs/coding-plugins/features/<feature-name>/requirements/<spec-kind>.md
 默认技术设计路径：
 
 ```text
-docs/coding-plugins/features/<feature-name>/technicals/technical-design.md
+docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-Technical-Design.md
 ```
 
 技术设计路径的 `<feature-name>` 应和规格路径一致。保存或移动技术设计后运行 `python3 scripts/preflight.py --write-index`，让 `docs/coding-plugins/INDEX.md` 同步反映最新文件树。technical 模板正文标题和表头默认使用中文，Spec ID、命令、路径和代码标识可保留英文。
@@ -451,7 +451,7 @@ technical frontmatter 还必须维护 `lifecycle_status`、`implemented_commits`
 technical 可单独运行 validator：
 
 ```text
-python3 skills/writing-technical-design/scripts/validate_technical_design.py docs/coding-plugins/features/<feature-name>/technicals/technical-design.md
+python3 skills/writing-technical-design/scripts/validate_technical_design.py docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-Technical-Design.md
 ```
 
 普通模式只让结构错误失败；`--strict` 会把泛化映射、stale technical、缺 lifecycle metadata、缺 TD 决策 ID、隐藏需求和旧映射表头都升级为失败。preflight 默认调用 strict validator，因此发布前不能留下 warning。
@@ -465,10 +465,10 @@ python3 skills/writing-technical-design/scripts/validate_technical_design.py doc
 默认测试用例路径：
 
 ```text
-docs/coding-plugins/features/<feature-name>/test-cases/test-cases.md
+docs/coding-plugins/features/<feature-name>/test-cases/<feature-name>-Test-Cases.md
 ```
 
-测试用例文档不记录实际 RED/GREEN/REFACTOR 输出；实际执行证据仍由 `test-driven-development` 写入 `evidence/tdd-evidence.md`。
+测试用例文档不记录实际 RED/GREEN/REFACTOR 输出；实际执行证据仍由 `test-driven-development` 写入 `evidences/<feature-name>-TDD-Evidence.md`。
 
 ### 计划层
 
@@ -477,10 +477,10 @@ docs/coding-plugins/features/<feature-name>/test-cases/test-cases.md
 默认计划路径：
 
 ```text
-docs/coding-plugins/features/<feature-name>/plans/implementation.md
+docs/coding-plugins/features/<feature-name>/plans/<feature-name>-Implementation-Plan.md
 ```
 
-计划路径的 `<feature-name>` 应和需求、技术设计、测试用例路径一致，例如 `features/auth-login/requirements/feature.md` 对应 `features/auth-login/technicals/technical-design.md`、`features/auth-login/test-cases/test-cases.md` 和 `features/auth-login/plans/implementation.md`。
+计划路径的 `<feature-name>` 应和需求、技术设计、测试用例路径一致，例如 `features/auth-login/requirements/auth-login-PRD.md` 对应 `features/auth-login/technicals/auth-login-Technical-Design.md`、`features/auth-login/test-cases/auth-login-Test-Cases.md` 和 `features/auth-login/plans/auth-login-Implementation-Plan.md`。
 
 计划文档应说明推荐执行方式：
 
@@ -521,7 +521,7 @@ spec-driven-development -> writing-requirements -> writing-technical-design -> w
 TDD 阶段的交付证据不是“我遵守了 TDD”，而是写入固定路径的标准化 `TDD 证据`：
 
 ```text
-docs/coding-plugins/features/<feature-name>/evidence/tdd-evidence.md
+docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TDD-Evidence.md
 ```
 
 `<feature-name>` 应和需求、测试用例、计划路径保持一致。
@@ -531,7 +531,7 @@ docs/coding-plugins/features/<feature-name>/evidence/tdd-evidence.md
 - `GREEN 变更` / `GREEN 命令`：最小实现和通过证据。
 - `REFACTOR 命令` / `最终验证`：重构后和最终验证证据。
 
-纯重构没有新增行为时，使用现有测试基线或 characterization test 作为行为保护证据。无法自动测试时，必须在同一 active evidence 文件中记录用户同意的 `TDD 例外记录` 和替代验证。证据报告可用 `skills/test-driven-development/scripts/validate_tdd_evidence.py` 检查，`scripts/preflight.py` 会自动严格校验 `docs/coding-plugins/features/**/evidence/tdd-evidence.md`。历史证据归档到 `evidence/archive/*.md`，只校验 historical metadata，不进入主索引。
+纯重构没有新增行为时，使用现有测试基线或 characterization test 作为行为保护证据。无法自动测试时，必须在同一 active evidence 文件中记录用户同意的 `TDD 例外记录` 和替代验证。证据报告可用 `skills/test-driven-development/scripts/validate_tdd_evidence.py` 检查，`scripts/preflight.py` 会自动严格校验 `docs/coding-plugins/features/**/evidences/**-TDD-Evidence.md`。历史证据归档到 `evidences/archive/*.md`，只校验 historical metadata，不进入主索引。
 
 TDD 证据可以声明 `测试类型`：`behavior`、`contract`、`architecture`、`source-scan` 或 `config`。源码扫描只能作为架构、配置或静态边界证据；如果它试图证明用户行为，strict validator 会失败。
 

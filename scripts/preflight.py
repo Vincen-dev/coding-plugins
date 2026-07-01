@@ -48,6 +48,7 @@ REMOVED_ENTRY_PATTERNS = (
     "docs/coding-plugins/technical/",
     "docs/coding-plugins/plans/",
     "docs/coding-plugins/evidence/",
+    "docs/coding-plugins/evidences/",
     "~/.config/" + "superpowers",
     "super" + "powers",
     "brain" + "storming",
@@ -183,9 +184,11 @@ TDD_EVIDENCE_TEMPLATE_ENGLISH_STRUCTURE = (
 )
 SPEC_ID_RE = re.compile(r"\b(?:REQ|API|SCHEMA|STATE|ERR|AC|NFR|MIG|OBS|NON)(?:-[A-Z0-9]+)*-\d{3,}\b")
 TECHNICAL_DESIGN_PATH_RE = re.compile(
-    r"docs/coding-plugins/features/[A-Za-z0-9_.\-/]+/technicals/technical-design\.md"
+    r"docs/coding-plugins/features/[A-Za-z0-9_.\-/]+/technicals/[A-Za-z0-9_.\-]+-Technical-Design\.md"
 )
-EVIDENCE_PATH_RE = re.compile(r"docs/coding-plugins/features/[A-Za-z0-9_.\-/]+/evidence/[A-Za-z0-9_.\-/]+\.md")
+EVIDENCE_PATH_RE = re.compile(
+    r"docs/coding-plugins/features/[A-Za-z0-9_.\-/]+/evidences/[A-Za-z0-9_.\-/]+\.md"
+)
 FEATURE_README_METADATA_REQUIRED_FIELDS = ("title", "status", "feature", "updated")
 FEATURE_README_HANDWRITTEN_LINK_SECTIONS = ("产物链路", "文档链路")
 EVIDENCE_METADATA_REQUIRED_FIELDS = ("title", "status", "feature", "created", "updated")
@@ -504,14 +507,30 @@ def check_feature_readme_metadata_contract(root: Path) -> None:
 def check_feature_first_document_layout(root: Path) -> None:
     offenders: list[str] = []
     for feature_root in collect_feature_roots(root):
-        for flat_name in ("technical-design.md", "implementation.md"):
-            flat_path = feature_root / flat_name
-            if flat_path.exists():
+        for flat_path in feature_root.glob("*.md"):
+            if flat_path.name != "README.md":
                 offenders.append(str(flat_path.relative_to(root)))
+        if (feature_root / "evidence").exists():
+            offenders.append(str((feature_root / "evidence").relative_to(root)))
+        expected_files = {
+            "requirements": {f"{feature_root.name}-PRD.md"},
+            "technicals": {f"{feature_root.name}-Technical-Design.md"},
+            "test-cases": {f"{feature_root.name}-Test-Cases.md"},
+            "plans": {f"{feature_root.name}-Implementation-Plan.md"},
+            "evidences": {f"{feature_root.name}-TDD-Evidence.md"},
+        }
+        for directory, allowed_names in expected_files.items():
+            artifact_dir = feature_root / directory
+            if not artifact_dir.exists():
+                continue
+            for document in artifact_dir.glob("*.md"):
+                if document.name not in allowed_names:
+                    offenders.append(str(document.relative_to(root)))
 
     if offenders:
         raise PreflightError(
-            "Flat feature root document is no longer active; use technical/ or plans/: "
+            "Feature documents must use <feature-name>-XXX.md files under requirements/, technicals/, "
+            "test-cases/, plans/ and evidences/: "
             + ", ".join(offenders)
             + "."
         )
@@ -1012,10 +1031,7 @@ def specs_for_feature_document(root: Path, document_file: Path) -> list[Path]:
     if feature_context is None:
         return []
     _feature, feature_root = feature_context
-    spec_dir = feature_root / "requirements"
-    if not spec_dir.exists():
-        return []
-    return sorted(path for path in spec_dir.rglob("*.md") if path.name != "INDEX.md")
+    return docs_index.feature_spec_files(feature_root)
 
 
 def specs_for_evidence(root: Path, evidence_file: Path) -> list[Path]:
@@ -1123,9 +1139,7 @@ def check_documentation_path_references(root: Path) -> None:
 def collect_spec_files(root: Path) -> list[Path]:
     files: list[Path] = []
     for feature_root in collect_feature_roots(root):
-        specs_root = feature_root / "requirements"
-        if specs_root.exists():
-            files.extend(path for path in specs_root.rglob("*.md") if path.name != "INDEX.md")
+        files.extend(docs_index.feature_spec_files(feature_root))
     return sorted(files)
 
 
@@ -1144,21 +1158,17 @@ def collect_archived_evidence_files(root: Path) -> list[Path]:
 
 
 def collect_plan_files(root: Path) -> list[Path]:
-    return sorted(
-        plan_path
-        for plan_path in (feature_root / "plans" / "implementation.md" for feature_root in collect_feature_roots(root))
-        if plan_path.exists()
-    )
+    files: list[Path] = []
+    for feature_root in collect_feature_roots(root):
+        files.extend(docs_index.feature_plan_files(feature_root))
+    return sorted(files)
 
 
 def collect_technical_design_files(root: Path) -> list[Path]:
-    return sorted(
-        design_path
-        for design_path in (
-            feature_root / "technicals" / "technical-design.md" for feature_root in collect_feature_roots(root)
-        )
-        if design_path.exists()
-    )
+    files: list[Path] = []
+    for feature_root in collect_feature_roots(root):
+        files.extend(docs_index.feature_technical_design_files(feature_root))
+    return sorted(files)
 
 
 def check_artifact_index_covers_documents(root: Path) -> None:

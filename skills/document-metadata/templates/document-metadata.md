@@ -14,15 +14,15 @@ updated: YYYY-MM-DD
 tags:
   - <检索标签>
 related_specs:
-  - docs/coding-plugins/features/<feature-name>/requirements/feature.md
+  - docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md
 related_technical:
-  - docs/coding-plugins/features/<feature-name>/technicals/technical-design.md
+  - docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-Technical-Design.md
 related_test_cases:
-  - docs/coding-plugins/features/<feature-name>/test-cases/test-cases.md
+  - docs/coding-plugins/features/<feature-name>/test-cases/<feature-name>-Test-Cases.md
 related_plans:
-  - docs/coding-plugins/features/<feature-name>/plans/implementation.md
+  - docs/coding-plugins/features/<feature-name>/plans/<feature-name>-Implementation-Plan.md
 related_evidence:
-  - docs/coding-plugins/features/<feature-name>/evidence/tdd-evidence.md
+  - docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TDD-Evidence.md
 related_code:
   - <代码路径>
 external_references:
@@ -48,7 +48,7 @@ related_code:
 related_specs:
   - docs/coding-plugins/features/<feature-name>/requirements/<spec-kind>.md
 related_technical:
-  - docs/coding-plugins/features/<feature-name>/technicals/technical-design.md
+  - docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-Technical-Design.md
 ---
 ```
 
@@ -65,13 +65,13 @@ updated: YYYY-MM-DD
 implemented_commits: []
 validated_by: <验证命令或人工验证记录>
 related_specs:
-  - docs/coding-plugins/features/<feature-name>/requirements/feature.md
+  - docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md
 related_plans:
-  - docs/coding-plugins/features/<feature-name>/plans/implementation.md
+  - docs/coding-plugins/features/<feature-name>/plans/<feature-name>-Implementation-Plan.md
 related_test_cases:
-  - docs/coding-plugins/features/<feature-name>/test-cases/test-cases.md
+  - docs/coding-plugins/features/<feature-name>/test-cases/<feature-name>-Test-Cases.md
 related_evidence:
-  - docs/coding-plugins/features/<feature-name>/evidence/tdd-evidence.md
+  - docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TDD-Evidence.md
 ---
 ```
 
@@ -85,13 +85,13 @@ feature: <feature-name>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 related_specs:
-  - docs/coding-plugins/features/<feature-name>/requirements/feature.md
+  - docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md
 related_technical:
-  - docs/coding-plugins/features/<feature-name>/technicals/technical-design.md
+  - docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-Technical-Design.md
 related_test_cases:
-  - docs/coding-plugins/features/<feature-name>/test-cases/test-cases.md
+  - docs/coding-plugins/features/<feature-name>/test-cases/<feature-name>-Test-Cases.md
 related_evidence:
-  - docs/coding-plugins/features/<feature-name>/evidence/tdd-evidence.md
+  - docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TDD-Evidence.md
 ---
 ```
 
@@ -105,13 +105,13 @@ feature: <feature-name>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 related_specs:
-  - docs/coding-plugins/features/<feature-name>/requirements/feature.md
+  - docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md
 related_technical:
-  - docs/coding-plugins/features/<feature-name>/technicals/technical-design.md
+  - docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-Technical-Design.md
 related_plans:
-  - docs/coding-plugins/features/<feature-name>/plans/implementation.md
+  - docs/coding-plugins/features/<feature-name>/plans/<feature-name>-Implementation-Plan.md
 related_evidence:
-  - docs/coding-plugins/features/<feature-name>/evidence/tdd-evidence.md
+  - docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TDD-Evidence.md
 ---
 ```
 
@@ -125,11 +125,11 @@ feature: <feature-name>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 related_specs:
-  - docs/coding-plugins/features/<feature-name>/requirements/feature.md
+  - docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md
 related_technical:
-  - docs/coding-plugins/features/<feature-name>/technicals/technical-design.md
+  - docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-Technical-Design.md
 related_plans:
-  - docs/coding-plugins/features/<feature-name>/plans/implementation.md
+  - docs/coding-plugins/features/<feature-name>/plans/<feature-name>-Implementation-Plan.md
 ---
 ```
 
@@ -143,7 +143,7 @@ feature: <feature-name>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 validation_mode: historical
-archive_of: docs/coding-plugins/features/<feature-name>/evidence/tdd-evidence.md
+archive_of: docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TDD-Evidence.md
 archived_at: YYYY-MM-DD
 ---
 ```
@@ -157,11 +157,11 @@ archived_at: YYYY-MM-DD
 | --- | --- |
 | 状态 | 草稿 |
 | Feature | <feature-name> |
-| 需求文档 | `docs/coding-plugins/features/<feature-name>/requirements/feature.md` |
-| 技术设计 | `docs/coding-plugins/features/<feature-name>/technicals/technical-design.md` |
-| 测试用例 | `docs/coding-plugins/features/<feature-name>/test-cases/test-cases.md` |
-| 实现计划 | `docs/coding-plugins/features/<feature-name>/plans/implementation.md` |
-| TDD 证据 | `docs/coding-plugins/features/<feature-name>/evidence/tdd-evidence.md` |
+| 需求文档 | `docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md` |
+| 技术设计 | `docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-Technical-Design.md` |
+| 测试用例 | `docs/coding-plugins/features/<feature-name>/test-cases/<feature-name>-Test-Cases.md` |
+| 实现计划 | `docs/coding-plugins/features/<feature-name>/plans/<feature-name>-Implementation-Plan.md` |
+| TDD 证据 | `docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TDD-Evidence.md` |
 ```
 
 中文 `文档信息` 只服务人工阅读。路径关系和状态判断以 frontmatter 为准。

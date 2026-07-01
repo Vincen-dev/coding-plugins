@@ -8,13 +8,13 @@ updated: YYYY-MM-DD
 implemented_commits: []
 validated_by: "<验证命令或人工验证记录>"
 related_specs:
-  - docs/coding-plugins/features/<feature-name>/requirements/feature.md
+  - docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md
 related_test_cases:
-  - docs/coding-plugins/features/<feature-name>/test-cases/test-cases.md
+  - docs/coding-plugins/features/<feature-name>/test-cases/<feature-name>-Test-Cases.md
 related_plans:
-  - docs/coding-plugins/features/<feature-name>/plans/implementation.md
+  - docs/coding-plugins/features/<feature-name>/plans/<feature-name>-Implementation-Plan.md
 related_evidence:
-  - docs/coding-plugins/features/<feature-name>/evidence/tdd-evidence.md
+  - docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TDD-Evidence.md
 ---
 
 # <功能名称>技术设计
@@ -26,10 +26,10 @@ related_evidence:
 | 状态 | 草稿 |
 | 生命周期 | draft |
 | Feature | <feature-name> |
-| 需求文档 | `docs/coding-plugins/features/<feature-name>/requirements/feature.md` |
-| 测试用例 | `docs/coding-plugins/features/<feature-name>/test-cases/test-cases.md` |
-| 计划 | `docs/coding-plugins/features/<feature-name>/plans/implementation.md` |
-| TDD 证据| `docs/coding-plugins/features/<feature-name>/evidence/tdd-evidence.md` |
+| 需求文档 | `docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md` |
+| 测试用例 | `docs/coding-plugins/features/<feature-name>/test-cases/<feature-name>-Test-Cases.md` |
+| 计划 | `docs/coding-plugins/features/<feature-name>/plans/<feature-name>-Implementation-Plan.md` |
+| TDD 证据| `docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TDD-Evidence.md` |
 | 已实现提交 | [] |
 | 验证方式 | <验证命令或人工验证记录> |
 
@@ -52,7 +52,7 @@ related_evidence:
 
 | 规格 ID | 规格摘要 | 技术落点 | 关键决策 ID | 影响文件/符号 | 验证命令 | 证据 |
 | --- | --- | --- | --- | --- | --- | --- |
-| REQ-001 | <规格摘要> | `<path>::<symbol>` 或 <具体模块落点> | TD-001 | `<path>` | <测试命令或测试名称> | `docs/coding-plugins/features/<feature-name>/evidence/tdd-evidence.md` |
+| REQ-001 | <规格摘要> | `<path>::<symbol>` 或 <具体模块落点> | TD-001 | `<path>` | <测试命令或测试名称> | `docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TDD-Evidence.md` |
 
 ## 无需技术设计的规格
 

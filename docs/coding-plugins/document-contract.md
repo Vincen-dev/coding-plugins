@@ -18,13 +18,13 @@
 active evidence 固定使用：
 
 ```text
-docs/coding-plugins/features/<feature-name>/evidence/tdd-evidence.md
+docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TDD-Evidence.md
 ```
 
 历史证据归档到：
 
 ```text
-docs/coding-plugins/features/<feature-name>/evidence/archive/<date>-<summary>.md
+docs/coding-plugins/features/<feature-name>/evidences/archive/<date>-<summary>.md
 ```
 
 归档 evidence 必须在 frontmatter 中声明 `status: archived`、`validation_mode: historical`、`archive_of` 和 `archived_at`。`INDEX.md` 只展示 active evidence，preflight 对 active evidence 做严格 TDD 校验，对 archive 只校验历史 metadata。

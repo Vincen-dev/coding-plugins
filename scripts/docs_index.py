@@ -123,40 +123,39 @@ def format_index_path_cell(root: Path, paths: list[Path]) -> str:
     return "<br>".join(f"`{relative_markdown_path(root, path)}`" for path in paths)
 
 
+def feature_artifact_file(feature_root: Path, directory: str, suffix: str) -> Path:
+    return feature_root / directory / f"{feature_root.name}-{suffix}.md"
+
+
 def feature_spec_files(feature_root: Path) -> list[Path]:
-    specs_root = feature_root / "requirements"
-    if not specs_root.exists():
-        return []
-    return sorted(path for path in specs_root.rglob("*.md") if path.name != "INDEX.md")
+    path = feature_artifact_file(feature_root, "requirements", "PRD")
+    return [path] if path.exists() else []
 
 
 def feature_evidence_files(feature_root: Path) -> list[Path]:
-    evidence_root = feature_root / "evidence"
-    if not evidence_root.exists():
-        return []
-    primary = evidence_root / "tdd-evidence.md"
-    return [primary] if primary.exists() else []
+    path = feature_artifact_file(feature_root, "evidences", "TDD-Evidence")
+    return [path] if path.exists() else []
 
 
 def feature_archived_evidence_files(feature_root: Path) -> list[Path]:
-    archive_root = feature_root / "evidence" / "archive"
+    archive_root = feature_root / "evidences" / "archive"
     if not archive_root.exists():
         return []
     return sorted(archive_root.rglob("*.md"))
 
 
 def feature_technical_design_files(feature_root: Path) -> list[Path]:
-    path = feature_root / "technicals" / "technical-design.md"
+    path = feature_artifact_file(feature_root, "technicals", "Technical-Design")
     return [path] if path.exists() else []
 
 
 def feature_plan_files(feature_root: Path) -> list[Path]:
-    path = feature_root / "plans" / "implementation.md"
+    path = feature_artifact_file(feature_root, "plans", "Implementation-Plan")
     return [path] if path.exists() else []
 
 
 def feature_test_case_files(feature_root: Path) -> list[Path]:
-    path = feature_root / "test-cases" / "test-cases.md"
+    path = feature_artifact_file(feature_root, "test-cases", "Test-Cases")
     return [path] if path.exists() else []
 
 
@@ -222,11 +221,11 @@ def render_artifact_index(root: Path) -> str:
             "",
             "- `Feature` 必须和 `功能根目录` 路径一致。",
             "- `功能根目录` 指向 `docs/coding-plugins/features/<feature-name>`。",
-            "- `需求文档` 指向该 feature 的需求文档；有多个需求文档时在同一个单元格用 `<br>` 分隔。",
-            "- `技术设计` 指向默认技术设计 `docs/coding-plugins/features/<feature-name>/technicals/technical-design.md`；没有技术设计时使用 `-`。",
-            "- `测试用例` 指向默认测试用例文档 `docs/coding-plugins/features/<feature-name>/test-cases/test-cases.md`；没有测试用例时使用 `-`。",
-            "- `实现计划` 指向默认实现计划 `docs/coding-plugins/features/<feature-name>/plans/implementation.md`；没有计划时使用 `-`。",
-            "- `证据` 指向该 feature 的 evidence 文件；有多个 evidence 时在同一个单元格用 `<br>` 分隔；没有 evidence 时使用 `-`。",
+            "- `需求文档` 指向 `docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md`；没有需求文档时使用 `-`。",
+            "- `技术设计` 指向 `docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-Technical-Design.md`；没有技术设计时使用 `-`。",
+            "- `测试用例` 指向 `docs/coding-plugins/features/<feature-name>/test-cases/<feature-name>-Test-Cases.md`；没有测试用例时使用 `-`。",
+            "- `实现计划` 指向 `docs/coding-plugins/features/<feature-name>/plans/<feature-name>-Implementation-Plan.md`；没有计划时使用 `-`。",
+            "- `证据` 指向 `docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TDD-Evidence.md`；没有证据时使用 `-`。",
             "- `标签` 来自 feature README frontmatter 的 `tags` 列表；日期来自需求文档、技术设计、测试用例或计划 frontmatter 的最大 `updated` 值。",
         ]
     )

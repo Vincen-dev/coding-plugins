@@ -34,12 +34,12 @@ description: Use when writing or updating Coding Plugins requirement documents, 
 
 | 场景 | 文档 | 模板 |
 | --- | --- | --- |
-| 普通功能、用户流程、可见行为 | `docs/coding-plugins/features/<feature-name>/requirements/feature.md` | `templates/feature-spec.md` |
+| 普通功能、用户流程、可见行为 | `docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md` | `templates/feature-spec.md` |
 | HTTP/RPC/API/SDK/CLI 契约 | `docs/coding-plugins/features/<feature-name>/requirements/api-contract.md` | `templates/api-contract-spec.md` |
 | 数据结构、配置、事件 payload | `docs/coding-plugins/features/<feature-name>/requirements/schema.md` | `templates/schema-spec.md` |
 | 状态、工作流、生命周期 | `docs/coding-plugins/features/<feature-name>/requirements/state-machine.md` | `templates/state-machine-spec.md` |
 | 验收标准不清 | `docs/coding-plugins/features/<feature-name>/requirements/acceptance.md` | `templates/acceptance-criteria.md` |
-| 维护、重构、升级、迁移、回归风险 | `docs/coding-plugins/features/<feature-name>/requirements/maintenance.md` | `templates/maintenance-spec.md` |
+| 维护、重构、升级、迁移、回归风险 | `docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md` | `templates/maintenance-spec.md` |
 
 同一 feature 可以有多个需求文档。横跨多个独立能力时，拆成多个 feature，并用 `related_specs` 互链。
 

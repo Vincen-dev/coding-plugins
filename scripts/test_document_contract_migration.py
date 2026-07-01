@@ -26,7 +26,7 @@ class DocumentContractMigrationTests(unittest.TestCase):
                 "status: 已实现\n"
                 "related_specs:\n"
                 "  - REQ-DEMO-009\n"
-                "  - docs/coding-plugins/features/demo-app/requirements/feature.md\n"
+                "  - docs/coding-plugins/features/demo-app/requirements/demo-app-PRD.md\n"
                 "---\n"
                 "# Evidence\n",
                 encoding="utf-8",
@@ -38,7 +38,7 @@ class DocumentContractMigrationTests(unittest.TestCase):
         self.assertTrue(changed)
         self.assertIn("status: covered", migrated)
         self.assertIn("related_specs:", migrated)
-        self.assertIn("docs/coding-plugins/features/demo-app/requirements/feature.md", migrated)
+        self.assertIn("docs/coding-plugins/features/demo-app/requirements/demo-app-PRD.md", migrated)
         self.assertIn("related_spec_ids:", migrated)
         self.assertIn("REQ-DEMO-009", migrated)
         self.assertIn("title: demo-app TDD Evidence", migrated)

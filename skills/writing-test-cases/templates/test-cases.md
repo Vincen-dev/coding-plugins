@@ -5,13 +5,13 @@ feature: <feature-name>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 related_specs:
-  - docs/coding-plugins/features/<feature-name>/requirements/feature.md
+  - docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md
 related_technical:
-  - docs/coding-plugins/features/<feature-name>/technicals/technical-design.md
+  - docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-Technical-Design.md
 related_plans:
-  - docs/coding-plugins/features/<feature-name>/plans/implementation.md
+  - docs/coding-plugins/features/<feature-name>/plans/<feature-name>-Implementation-Plan.md
 related_evidence:
-  - docs/coding-plugins/features/<feature-name>/evidence/tdd-evidence.md
+  - docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TDD-Evidence.md
 ---
 
 # <功能名称>测试用例
@@ -22,10 +22,10 @@ related_evidence:
 | --- | --- |
 | 状态 | 草稿 |
 | Feature | <feature-name> |
-| 需求文档 | `docs/coding-plugins/features/<feature-name>/requirements/feature.md` |
-| 技术方案 | `docs/coding-plugins/features/<feature-name>/technicals/technical-design.md` |
-| 实现计划 | `docs/coding-plugins/features/<feature-name>/plans/implementation.md` |
-| TDD 证据 | `docs/coding-plugins/features/<feature-name>/evidence/tdd-evidence.md` |
+| 需求文档 | `docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md` |
+| 技术方案 | `docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-Technical-Design.md` |
+| 实现计划 | `docs/coding-plugins/features/<feature-name>/plans/<feature-name>-Implementation-Plan.md` |
+| TDD 证据 | `docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TDD-Evidence.md` |
 
 ## 测试策略摘要
 
@@ -35,7 +35,7 @@ related_evidence:
 
 | Spec ID | 测试类型 | 测试用例 ID | 测试名称 | 前置条件 | 步骤 | 断言 | 测试数据 | 证据目标 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| REQ-001 | behavior | TC-001 | <测试名称> | <前置条件> | <步骤> | <断言> | <数据> | `docs/coding-plugins/features/<feature-name>/evidence/tdd-evidence.md` |
+| REQ-001 | behavior | TC-001 | <测试名称> | <前置条件> | <步骤> | <断言> | <数据> | `docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TDD-Evidence.md` |
 
 ## 边界和错误用例
 

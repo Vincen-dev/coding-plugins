@@ -5,11 +5,11 @@ feature: <feature-name>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 related_specs:
-  - docs/coding-plugins/features/<feature-name>/requirements/feature.md
+  - docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md
 related_technical:
-  - docs/coding-plugins/features/<feature-name>/technicals/technical-design.md
+  - docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-Technical-Design.md
 related_plans:
-  - docs/coding-plugins/features/<feature-name>/plans/implementation.md
+  - docs/coding-plugins/features/<feature-name>/plans/<feature-name>-Implementation-Plan.md
 ---
 
 # <能力> TDD 证据

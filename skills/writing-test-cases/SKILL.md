@@ -1,6 +1,6 @@
 ---
 name: writing-test-cases
-description: Use after approved requirement documents and technical design exist, before writing implementation plans, to create or update test case documents under docs/coding-plugins/features/<feature-name>/test-cases/test-cases.md.
+description: Use after approved requirement documents and technical design exist, before writing implementation plans, to create or update test case documents under docs/coding-plugins/features/<feature-name>/test-cases/<feature-name>-Test-Cases.md.
 ---
 
 # 编写测试用例文档
@@ -30,7 +30,7 @@ description: Use after approved requirement documents and technical design exist
 ## 落地路径
 
 ```text
-docs/coding-plugins/features/<feature-name>/test-cases/test-cases.md
+docs/coding-plugins/features/<feature-name>/test-cases/<feature-name>-Test-Cases.md
 ```
 
 ## 编写流程
@@ -38,7 +38,7 @@ docs/coding-plugins/features/<feature-name>/test-cases/test-cases.md
 1. 使用 `document-metadata` 读取 README、requirements、technical、plan 和 evidence 关系。
 2. 读取 approved requirement docs，列出所有 MUST Spec ID。
 3. 读取 technical design，确认技术落点、关键决策和测试策略。
-4. 创建或更新 `test-cases/test-cases.md`。
+4. 创建或更新 `test-cases/<feature-name>-Test-Cases.md`。
 5. 为每个 MUST Spec ID 写测试用例，包含测试层级、测试名称、前置条件、步骤、断言、数据和证据目标。
 6. 对不需要测试用例的 Spec ID 写明豁免原因。
 7. 更新 `docs/coding-plugins/INDEX.md`。
