@@ -52,7 +52,7 @@ docs/coding-plugins/document-contract.md
 文档按 feature-first 结构集中维护：
 
 ```text
-docs/coding-plugins/features/<area>/<capability>/
+docs/coding-plugins/features/<feature-name>/
 ```
 
 新增、移动或删除 feature 文档后，运行以下命令重新生成总索引并执行完整检查：
@@ -131,6 +131,19 @@ python3 scripts/preflight.py --write-index
 python3 scripts/preflight.py
 codex plugin add coding-plugins@personal
 claude plugin validate /Users/vincen/workspace/plugins/coding-plugins --strict
+```
+
+旧项目文档升级到当前 metadata 契约时运行：
+
+```bash
+python3 scripts/migrate_document_contract.py --dry-run
+python3 scripts/migrate_document_contract.py
+```
+
+本机需要校验跨仓库 `external_references` 时运行：
+
+```bash
+python3 scripts/preflight.py --check-external-references
 ```
 
 提交并确认工作区干净后，准备 GitHub Release：

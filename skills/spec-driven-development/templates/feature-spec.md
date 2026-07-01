@@ -1,10 +1,9 @@
 ---
-spec_id: <area-capability-feature>
+spec_id: <feature-name-feature>
 title: <功能名称>
 type: feature
 status: draft
-area: <area>
-capability: <capability>
+feature: <feature-name>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 tags:
@@ -24,8 +23,7 @@ related_evidence: []
 | 字段 | 内容 |
 | --- | --- |
 | 状态 | 草稿 |
-| 领域 | <area> |
-| 能力 | <capability> |
+| Feature | <feature-name> |
 | 规格类型 | feature |
 
 ## 目标

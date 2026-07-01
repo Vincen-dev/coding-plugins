@@ -1,10 +1,9 @@
 ---
-spec_id: <area-capability-state-machine>
+spec_id: <feature-name-state-machine>
 title: <状态机名称>
 type: state-machine
 status: draft
-area: <area>
-capability: <capability>
+feature: <feature-name>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 tags:
@@ -21,8 +20,7 @@ related_specs: []
 | 字段 | 内容 |
 | --- | --- |
 | 状态 | 草稿 |
-| 领域 | <area> |
-| 能力 | <capability> |
+| Feature | <feature-name> |
 | 规格类型 | state-machine |
 
 ## 目标

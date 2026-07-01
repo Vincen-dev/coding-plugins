@@ -2,18 +2,17 @@
 title: "<功能名称>技术设计"
 status: draft
 lifecycle_status: draft
-area: "<area>"
-capability: "<capability>"
+feature: "<feature-name>"
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 implemented_commits: []
 validated_by: "<验证命令或人工验证记录>"
 related_specs:
-  - docs/coding-plugins/features/<area>/<capability>/specs/feature.md
+  - docs/coding-plugins/features/<feature-name>/specs/feature.md
 related_plans:
-  - docs/coding-plugins/features/<area>/<capability>/plans/implementation.md
+  - docs/coding-plugins/features/<feature-name>/plans/implementation.md
 related_evidence:
-  - docs/coding-plugins/features/<area>/<capability>/evidence/tdd-evidence.md
+  - docs/coding-plugins/features/<feature-name>/evidence/tdd-evidence.md
 ---
 
 # <功能名称>技术设计
@@ -24,11 +23,10 @@ related_evidence:
 | --- | --- |
 | 状态 | 草稿 |
 | 生命周期 | draft |
-| 领域 | <area> |
-| 能力 | <capability> |
-| 规格 | `docs/coding-plugins/features/<area>/<capability>/specs/feature.md` |
-| 计划 | `docs/coding-plugins/features/<area>/<capability>/plans/implementation.md` |
-| TDD 证据| `docs/coding-plugins/features/<area>/<capability>/evidence/tdd-evidence.md` |
+| Feature | <feature-name> |
+| 规格 | `docs/coding-plugins/features/<feature-name>/specs/feature.md` |
+| 计划 | `docs/coding-plugins/features/<feature-name>/plans/implementation.md` |
+| TDD 证据| `docs/coding-plugins/features/<feature-name>/evidence/tdd-evidence.md` |
 | 已实现提交 | [] |
 | 验证方式 | <验证命令或人工验证记录> |
 
@@ -51,7 +49,7 @@ related_evidence:
 
 | 规格 ID | 规格摘要 | 技术落点 | 关键决策 ID | 影响文件/符号 | 验证命令 | 证据 |
 | --- | --- | --- | --- | --- | --- | --- |
-| REQ-001 | <规格摘要> | `<path>::<symbol>` 或 <具体模块落点> | TD-001 | `<path>` | <测试命令或测试名称> | `docs/coding-plugins/features/<area>/<capability>/evidence/tdd-evidence.md` |
+| REQ-001 | <规格摘要> | `<path>::<symbol>` 或 <具体模块落点> | TD-001 | `<path>` | <测试命令或测试名称> | `docs/coding-plugins/features/<feature-name>/evidence/tdd-evidence.md` |
 
 ## 无需技术设计的规格
 

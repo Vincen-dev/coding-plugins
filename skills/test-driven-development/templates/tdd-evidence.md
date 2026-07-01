@@ -1,16 +1,15 @@
 ---
 title: <能力> TDD 证据
 status: draft
-area: <area>
-capability: <capability>
+feature: <feature-name>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 related_specs:
-  - docs/coding-plugins/features/<area>/<capability>/specs/feature.md
+  - docs/coding-plugins/features/<feature-name>/specs/feature.md
 related_technical:
-  - docs/coding-plugins/features/<area>/<capability>/technical/technical-design.md
+  - docs/coding-plugins/features/<feature-name>/technical/technical-design.md
 related_plans:
-  - docs/coding-plugins/features/<area>/<capability>/plans/implementation.md
+  - docs/coding-plugins/features/<feature-name>/plans/implementation.md
 ---
 
 # <能力> TDD 证据
@@ -20,14 +19,14 @@ related_plans:
 | 字段 | 内容 |
 | --- | --- |
 | 状态 | 草稿 |
-| 领域 | <area> |
-| 能力 | <capability> |
+| Feature | <feature-name> |
 
 ## 任务 <N>：<任务名称>
 
 ### TDD 证据
 
 - **规格/缺陷/验收:** <REQ-001、bug 复现链接或验收标准>
+- **测试类型:** behavior
 - **RED 测试:** `<tests/path/test_file.py::test_specific_behavior>`
 - **RED 命令:** `<pytest tests/path/test_file.py::test_specific_behavior -v>`
 - **RED 失败:** <失败信息摘要，说明它因缺失行为失败，而不是导入、拼写或环境问题>

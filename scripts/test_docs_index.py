@@ -18,14 +18,13 @@ class DocsIndexTests(unittest.TestCase):
     def test_docs_index_module_exposes_index_contract(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            feature_dir = root / "docs" / "coding-plugins" / "features" / "plugin" / "search"
+            feature_dir = root / "docs" / "coding-plugins" / "features" / "search"
             (feature_dir / "specs").mkdir(parents=True)
             (feature_dir / "README.md").write_text(
                 "---\n"
                 "title: 搜索\n"
                 "status: approved\n"
-                "area: plugin\n"
-                "capability: search\n"
+                "feature: search\n"
                 "updated: 2026-06-29\n"
                 "tags:\n"
                 "  - search\n"
@@ -40,21 +39,20 @@ class DocsIndexTests(unittest.TestCase):
 
             rendered = docs_index.render_artifact_index(root)
 
-            self.assertIn("`docs/coding-plugins/features/plugin/search`", rendered)
-            self.assertIn("`docs/coding-plugins/features/plugin/search/specs/feature.md`", rendered)
+            self.assertIn("`docs/coding-plugins/features/search`", rendered)
+            self.assertIn("`docs/coding-plugins/features/search/specs/feature.md`", rendered)
             self.assertIn("| search | 2026-06-29 |", rendered)
 
     def test_docs_index_uses_readme_frontmatter_tags_not_body_table(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            feature_dir = root / "docs" / "coding-plugins" / "features" / "plugin" / "search"
+            feature_dir = root / "docs" / "coding-plugins" / "features" / "search"
             feature_dir.mkdir(parents=True)
             (feature_dir / "README.md").write_text(
                 "---\n"
                 "title: 搜索\n"
                 "status: approved\n"
-                "area: plugin\n"
-                "capability: search\n"
+                "feature: search\n"
                 "updated: 2026-06-29\n"
                 "tags:\n"
                 "  - frontmatter-tag\n"
@@ -78,14 +76,13 @@ class DocsIndexTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             docs_root = root / "docs" / "coding-plugins"
-            feature_dir = docs_root / "features" / "plugin" / "search"
+            feature_dir = docs_root / "features" / "search"
             (feature_dir / "specs").mkdir(parents=True)
             (feature_dir / "README.md").write_text(
                 "---\n"
                 "title: 搜索\n"
                 "status: approved\n"
-                "area: plugin\n"
-                "capability: search\n"
+                "feature: search\n"
                 "updated: 2026-06-29\n"
                 "tags:\n"
                 "  - search\n"

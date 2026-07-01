@@ -33,10 +33,10 @@ description: 已有批准规格，需要在实现计划前创建或更新独立 
 技术设计默认保存到：
 
 ```text
-docs/coding-plugins/features/<area>/<capability>/technical/technical-design.md
+docs/coding-plugins/features/<feature-name>/technical/technical-design.md
 ```
 
-`<area>/<capability>` 必须和规格、计划、TDD 证据路径一致。
+`<feature-name>` 必须和规格、计划、TDD 证据路径一致。
 
 同时维护：
 
@@ -58,7 +58,7 @@ docs/coding-plugins/INDEX.md
 
 - **设计摘要**：2 到 5 句话说明整体方案。
 - **规格缺口审查**：确认是否存在未覆盖需求、验收标准不清或新增外部行为；有缺口必须先回到 spec。
-- **生命周期 metadata**：frontmatter 必须包含 `lifecycle_status`、`implemented_commits` 和 `validated_by`；生命周期值只允许 `draft`、`approved`、`implemented`、`stale`、`superseded`。
+- **生命周期 metadata**：先使用 `document-metadata` 确认文档关系；frontmatter 必须包含 `lifecycle_status`、`implemented_commits` 和 `validated_by`；生命周期值只允许 `draft`、`approved`、`implemented`、`stale`、`superseded`。
 - **规格到设计映射**：每个 MUST Spec ID 对应 `规格摘要`、具体技术落点、`TD-xxx` 关键决策 ID、影响文件或符号、验证命令和证据路径。
 - **无需技术设计的规格**：只有当某个 MUST Spec ID 确实不需要技术方案时才填写豁免原因。
 - **关键决策**：每条关键决策必须有 `TD-xxx` ID、原因和代价；映射表中的关键决策 ID 必须能在这里找到。
@@ -73,10 +73,10 @@ docs/coding-plugins/INDEX.md
 
 ## 流程
 
-1. 读取批准规格和相关现有代码；先读目标 feature README 和相关文档 frontmatter，再读正文。
+1. 读取批准规格和相关现有代码；先使用 `document-metadata` 读取目标 feature README 和相关文档 frontmatter，再读正文。
 2. 做规格缺口审查：逐项确认未覆盖需求、验收标准不清、外部行为新增、错误边界和兼容要求。
 3. 如果发现缺口，不要在 technical 中顺手补需求；回到 `spec-driven-development` 更新 spec、重新运行规格校验并等待用户确认。
-4. 确认 area/capability，并检查是否已有技术设计。
+4. 确认 feature，并检查是否已有技术设计。
 5. 创建或更新 `technical/technical-design.md`，正文标题默认使用中文，并补齐 `related_specs`、`related_plans`、`related_evidence`；关联关系以 frontmatter 为机器源。
 6. 在规格 metadata 或正文中引用 technical design 路径；metadata key 保持英文，正文使用 `## 文档信息` 展示中文摘要。不要在 README 正文增加手写 `产物链路` 或 `文档链路`，完整链路由 `docs/coding-plugins/INDEX.md` 生成。
 7. 更新 `docs/coding-plugins/INDEX.md`。
@@ -120,6 +120,6 @@ skills/writing-technical-design/templates/technical-design.md
 完成后说明：
 
 ```text
-技术设计已保存到 docs/coding-plugins/features/<area>/<capability>/technical/technical-design.md。
+技术设计已保存到 docs/coding-plugins/features/<feature-name>/technical/technical-design.md。
 下一步使用 writing-plans 创建 implementation.md，并在计划中引用技术设计来源。
 ```

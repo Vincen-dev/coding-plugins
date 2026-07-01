@@ -198,7 +198,7 @@ def validate_must_spec_coverage(root: Path, technical_file: Path, text: str) -> 
     feature_context = feature_root_for_document(root, technical_file)
     if feature_context is None:
         return []
-    _area, _capability, feature_root = feature_context
+    _feature, feature_root = feature_context
     required_ids = required_spec_ids_from_specs(approved_spec_files_for_feature(feature_root))
     if not required_ids:
         return []
@@ -214,7 +214,7 @@ def validate_related_metadata(root: Path, technical_file: Path, text: str) -> li
     feature_context = feature_root_for_document(root, technical_file)
     if feature_context is None:
         return []
-    _area, _capability, feature_root = feature_context
+    _feature, feature_root = feature_context
     expected_by_key = {
         "related_specs": docs_index.feature_spec_files(feature_root),
         "related_plans": docs_index.feature_plan_files(feature_root),
@@ -354,7 +354,7 @@ def stale_warnings(root: Path, technical_file: Path, text: str) -> list[str]:
     feature_context = feature_root_for_document(root, technical_file)
     if feature_context is None:
         return []
-    _area, _capability, feature_root = feature_context
+    _feature, feature_root = feature_context
 
     warnings: list[str] = []
     for spec_file in approved_spec_files_for_feature(feature_root):

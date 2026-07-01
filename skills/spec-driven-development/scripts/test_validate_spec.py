@@ -97,6 +97,22 @@ BAD_STATUS_SPEC = """# Bad Status Specification
 """
 
 
+SCOPED_ID_AND_DART_GENERICS_SPEC = """# Dart API Specification
+
+## Functional Requirements
+
+| ID | Priority | Requirement | Verification |
+| --- | --- | --- | --- |
+| REQ-DEMO-009 | MUST | The public API returns `EvobeingApiResponse<T>` and `List<EvobeingHealthRecordEntity<dynamic>>` without treating Dart generics as placeholders. | Unit test for Dart API documentation validation. |
+
+## Traceability
+
+| Spec ID | Verification type | Test file / command | Plan task | Status |
+| --- | --- | --- | --- | --- |
+| REQ-DEMO-009 | unit test | `python3 -m unittest skills/spec-driven-development/scripts/test_validate_spec.py` | Task 1 | 已实现 |
+"""
+
+
 class ValidateSpecTests(unittest.TestCase):
     def run_validator(self, *args: str) -> subprocess.CompletedProcess[str]:
         return subprocess.run(
@@ -146,6 +162,13 @@ class ValidateSpecTests(unittest.TestCase):
 
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("invalid traceability status", result.stdout)
+
+    def test_accepts_scoped_spec_ids_dart_generics_and_implemented_status_alias(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            spec = self.write_spec(Path(tmp), "dart-generics.md", SCOPED_ID_AND_DART_GENERICS_SPEC)
+            result = self.run_validator("--strict", str(spec))
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
     def test_should_missing_traceability_is_warning(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

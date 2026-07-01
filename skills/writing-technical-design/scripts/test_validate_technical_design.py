@@ -28,7 +28,7 @@ class TechnicalDesignValidatorTests(unittest.TestCase):
         mapping_rows: str = (
             "| REQ-001 | 技术设计校验规格 | `scripts/preflight.py::check_technical_design_validator` | "
             "TD-001 | `scripts/preflight.py` | `python3 -m unittest scripts/test_preflight.py` | "
-            "`docs/coding-plugins/features/plugin/routing/evidence/tdd-evidence.md` |\n"
+            "`docs/coding-plugins/features/routing/evidence/tdd-evidence.md` |\n"
         ),
         decision_rows: str = (
             "| TD-001 | 使用独立 validator 作为 technical 规则来源 | 避免 preflight 和 validator 规则漂移 | 需要维护 validator 单测 |\n"
@@ -41,7 +41,7 @@ class TechnicalDesignValidatorTests(unittest.TestCase):
         include_technical_updated: bool = True,
         extra_body: str = "",
     ) -> Path:
-        feature_root = root / "docs" / "coding-plugins" / "features" / "plugin" / "routing"
+        feature_root = root / "docs" / "coding-plugins" / "features" / "routing"
         spec_dir = feature_root / "specs"
         technical_dir = feature_root / "technical"
         plan_dir = feature_root / "plans"
@@ -54,8 +54,7 @@ class TechnicalDesignValidatorTests(unittest.TestCase):
         (spec_dir / "feature.md").write_text(
             "---\n"
             "status: approved\n"
-            "area: plugin\n"
-            "capability: routing\n"
+            "feature: routing\n"
             f"updated: {spec_updated}\n"
             "---\n"
             "# Feature\n\n"
@@ -70,7 +69,7 @@ class TechnicalDesignValidatorTests(unittest.TestCase):
         updated_line = f"updated: {technical_updated}\n" if include_technical_updated else ""
         evidence_metadata = (
             "related_evidence:\n"
-            "  - docs/coding-plugins/features/plugin/routing/evidence/tdd-evidence.md\n"
+            "  - docs/coding-plugins/features/routing/evidence/tdd-evidence.md\n"
             if related_evidence
             else ""
         )
@@ -88,16 +87,15 @@ class TechnicalDesignValidatorTests(unittest.TestCase):
             "title: 技术设计\n"
             "status: approved\n"
             f"lifecycle_status: {lifecycle_status}\n"
-            "area: plugin\n"
-            "capability: routing\n"
+            "feature: routing\n"
             "created: 2026-06-29\n"
             f"{updated_line}"
             f"implemented_commits: {implemented_commits}\n"
             f"validated_by: {validated_by}\n"
             "related_specs:\n"
-            "  - docs/coding-plugins/features/plugin/routing/specs/feature.md\n"
+            "  - docs/coding-plugins/features/routing/specs/feature.md\n"
             "related_plans:\n"
-            "  - docs/coding-plugins/features/plugin/routing/plans/implementation.md\n"
+            "  - docs/coding-plugins/features/routing/plans/implementation.md\n"
             f"{evidence_metadata}"
             "---\n\n"
             "# 技术设计\n\n"
@@ -105,8 +103,7 @@ class TechnicalDesignValidatorTests(unittest.TestCase):
             "| 字段 | 内容 |\n"
             "| --- | --- |\n"
             "| 状态 | 已批准 |\n"
-            "| 领域 | plugin |\n"
-            "| 能力 | routing |\n\n"
+            "| Feature | routing |\n\n"
             "## 设计摘要\n\n"
             "设计摘要。\n\n"
             "## 规格缺口审查\n\n"
@@ -148,7 +145,7 @@ class TechnicalDesignValidatorTests(unittest.TestCase):
                 mapping_rows=(
                     "| REQ-999 | 错误规格 | `scripts/preflight.py` | TD-001 | `scripts/preflight.py` | "
                     "`python3 -m unittest scripts/test_preflight.py` | "
-                    "`docs/coding-plugins/features/plugin/routing/evidence/tdd-evidence.md` |\n"
+                    "`docs/coding-plugins/features/routing/evidence/tdd-evidence.md` |\n"
                 ),
             )
 
@@ -177,7 +174,7 @@ class TechnicalDesignValidatorTests(unittest.TestCase):
                 mapping_rows=(
                     "| REQ-001 | 规格摘要 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 "
                     "| TD-001 | `scripts/preflight.py` | 见 `## 测试策略` 和对应计划追踪 | "
-                    "`docs/coding-plugins/features/plugin/routing/evidence/tdd-evidence.md` |\n"
+                    "`docs/coding-plugins/features/routing/evidence/tdd-evidence.md` |\n"
                 ),
             )
 
@@ -194,7 +191,7 @@ class TechnicalDesignValidatorTests(unittest.TestCase):
                 mapping_rows=(
                     "| REQ-001 | 规格摘要 | 见本设计的 `影响组件`、`接口和契约` 与 `测试策略` 章节 "
                     "| TD-001 | `scripts/preflight.py` | 见 `## 测试策略` 和对应计划追踪 | "
-                    "`docs/coding-plugins/features/plugin/routing/evidence/tdd-evidence.md` |\n"
+                    "`docs/coding-plugins/features/routing/evidence/tdd-evidence.md` |\n"
                 ),
             )
 
@@ -261,7 +258,7 @@ class TechnicalDesignValidatorTests(unittest.TestCase):
                 mapping_rows=(
                     "| REQ-001 | 技术设计校验规格 | `scripts/preflight.py::check_technical_design_validator` | "
                     "TD-999 | `scripts/preflight.py` | `python3 -m unittest scripts/test_preflight.py` | "
-                    "`docs/coding-plugins/features/plugin/routing/evidence/tdd-evidence.md` |\n"
+                    "`docs/coding-plugins/features/routing/evidence/tdd-evidence.md` |\n"
                 ),
             )
 

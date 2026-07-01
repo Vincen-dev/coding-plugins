@@ -1,10 +1,9 @@
 ---
-spec_id: <area-capability-acceptance>
+spec_id: <feature-name-acceptance>
 title: <验收标准>
 type: acceptance
 status: draft
-area: <area>
-capability: <capability>
+feature: <feature-name>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 tags:
@@ -21,8 +20,7 @@ related_specs: []
 | 字段 | 内容 |
 | --- | --- |
 | 状态 | 草稿 |
-| 领域 | <area> |
-| 能力 | <capability> |
+| Feature | <feature-name> |
 | 规格类型 | acceptance |
 
 | 编号 | 场景 | 前置条件 | 操作 | 期望结果 | 验证方式 |

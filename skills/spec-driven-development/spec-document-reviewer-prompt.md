@@ -4,7 +4,7 @@
 
 **目的：**确认规格完整、一致、可测试，并可进入实现计划阶段。
 
-**派发时机：**规格文档写入 `docs/coding-plugins/features/<area>/<capability>/specs/` 后。
+**派发时机：**规格文档写入 `docs/coding-plugins/features/<feature-name>/specs/` 后。
 
 ```text
 Task tool (general-purpose):
@@ -19,8 +19,8 @@ Task tool (general-purpose):
     | 类别 | 要找什么 |
     | --- | --- |
     | 完整性 | TODO、占位符、TBD、未完成段落 |
-    | Metadata | spec_id、type、status、area、capability、created、updated、tags、related_code 是否完整 |
-    | 检索性 | 路径是否符合 `<area>/<capability>/<spec-kind>.md`，INDEX 是否更新 |
+    | Metadata | spec_id、type、status、feature、created、updated、tags、related_code 是否完整 |
+    | 检索性 | 路径是否符合 `<feature-name>/<spec-kind>.md`，INDEX 是否更新 |
     | 规格 ID | 每个 MUST/SHOULD 需求是否有稳定 ID |
     | 可测试性 | MUST 需求是否能映射到测试、契约校验或验收证据 |
     | 契约明确性 | API、schema、状态、错误是否有示例和边界 |

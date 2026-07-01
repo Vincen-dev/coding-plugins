@@ -63,7 +63,7 @@
 
 ## 0.6.19 - 2026-06-26
 
-- 将 `docs/coding-plugins` 迁移为 feature-first 结构，按 `features/<area>/<capability>` 集中维护规格、技术设计、计划和 TDD Evidence。
+- 将 `docs/coding-plugins` 迁移为 feature-first 结构，按 `features/<feature-name>` 集中维护规格、技术设计、计划和 TDD Evidence。
 - 重建总索引，删除旧分类索引，并为每个 feature root 增加 README 入口。
 - 增强 preflight，校验 feature root、README、metadata、旧路径残留和 feature-first Evidence。
 
@@ -97,5 +97,5 @@
 
 ## 0.6.13 - 2026-06-26
 
-- 固定 TDD Evidence 默认落地路径为 `docs/coding-plugins/evidence/<area>/<capability>/tdd-evidence.md`。
+- 固定 TDD Evidence 默认落地路径为 `docs/coding-plugins/evidence/<feature-name>/tdd-evidence.md`。
 - preflight 自动严格校验 TDD Evidence 文件。

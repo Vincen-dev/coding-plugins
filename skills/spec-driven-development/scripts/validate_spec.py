@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 
-SPEC_ID_RE = re.compile(r"\b(?:REQ|API|SCHEMA|STATE|ERR|AC|NFR|MIG|OBS|NON)-\d{3,}\b")
+SPEC_ID_RE = re.compile(r"\b(?:REQ|API|SCHEMA|STATE|ERR|AC|NFR|MIG|OBS|NON)(?:-[A-Z0-9]+)*-\d{3,}\b")
 PLACEHOLDER_RE = re.compile(r"<[^>\n]{2,}>|\bTODO\b|\bTBD\b|待补充|待定|占位")
 MAYBE_AMBIGUOUS = ("适当", "友好", "常见情况", "尽快", "合理", "必要时")
 ALLOWED_TRACE_STATUSES = {
@@ -23,8 +23,12 @@ ALLOWED_TRACE_STATUSES = {
     "deferred",
     "not-applicable",
     "n/a",
+    "implemented",
+    "done",
     "计划中",
     "已覆盖",
+    "已实现",
+    "完成",
     "人工",
     "阻塞",
     "延期",
@@ -114,8 +118,19 @@ def has_header(headers: list[str], names: tuple[str, ...]) -> bool:
     return any(get_cell(headers, headers, (name,)) for name in names)
 
 
+def placeholder_matches(text: str) -> list[re.Match[str]]:
+    matches: list[re.Match[str]] = []
+    for match in PLACEHOLDER_RE.finditer(text):
+        if match.group(0).startswith("<"):
+            previous = text[match.start() - 1] if match.start() > 0 else ""
+            if previous.isalnum() or previous in "_>":
+                continue
+        matches.append(match)
+    return matches
+
+
 def contains_placeholder(text: str) -> bool:
-    return bool(PLACEHOLDER_RE.search(text))
+    return bool(placeholder_matches(text))
 
 
 def normalize_cell(text: str) -> str:
@@ -164,7 +179,7 @@ def validate_spec(path: Path, strict: bool) -> tuple[list[str], list[str]]:
     if not text.strip():
         return ["Spec file is empty."], warnings
 
-    for match in PLACEHOLDER_RE.finditer(text):
+    for match in placeholder_matches(text):
         line_no = text.count("\n", 0, match.start()) + 1
         errors.append(f"Line {line_no}: unresolved placeholder or TODO: {match.group(0)!r}.")
 

@@ -1,10 +1,9 @@
 ---
-spec_id: <area-capability-api-contract>
+spec_id: <feature-name-api-contract>
 title: <API 或 SDK 名称>契约
 type: api-contract
 status: draft
-area: <area>
-capability: <capability>
+feature: <feature-name>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 tags:
@@ -21,8 +20,7 @@ related_specs: []
 | 字段 | 内容 |
 | --- | --- |
 | 状态 | 草稿 |
-| 领域 | <area> |
-| 能力 | <capability> |
+| Feature | <feature-name> |
 | 规格类型 | api-contract |
 
 ## 目标

@@ -11,8 +11,7 @@ class DocsIndexError(RuntimeError):
 
 
 ARTIFACT_INDEX_REQUIRED_COLUMNS = (
-    "领域",
-    "能力",
+    "Feature",
     "功能根目录",
     "规格",
     "技术设计",
@@ -72,22 +71,18 @@ def collect_feature_roots(root: Path) -> list[Path]:
     if not features_root.exists():
         return []
 
-    feature_roots: list[Path] = []
-    for area_dir in sorted(path for path in features_root.iterdir() if path.is_dir()):
-        for capability_dir in sorted(path for path in area_dir.iterdir() if path.is_dir()):
-            feature_roots.append(capability_dir)
-    return feature_roots
+    return sorted(path for path in features_root.iterdir() if path.is_dir())
 
 
-def feature_root_for_document(root: Path, path: Path) -> tuple[str, str, Path] | None:
+def feature_root_for_document(root: Path, path: Path) -> tuple[str, Path] | None:
     try:
         relative_parts = path.relative_to(feature_docs_root(root)).parts
     except ValueError:
         return None
-    if len(relative_parts) < 2:
+    if len(relative_parts) < 1:
         return None
-    area, capability = relative_parts[0], relative_parts[1]
-    return area, capability, feature_docs_root(root) / area / capability
+    feature = relative_parts[0]
+    return feature, feature_docs_root(root) / feature
 
 
 def parse_markdown_table_headers(text: str) -> list[str]:
@@ -138,7 +133,15 @@ def feature_evidence_files(feature_root: Path) -> list[Path]:
     evidence_root = feature_root / "evidence"
     if not evidence_root.exists():
         return []
-    return sorted(evidence_root.rglob("*.md"))
+    primary = evidence_root / "tdd-evidence.md"
+    return [primary] if primary.exists() else []
+
+
+def feature_archived_evidence_files(feature_root: Path) -> list[Path]:
+    archive_root = feature_root / "evidence" / "archive"
+    if not archive_root.exists():
+        return []
+    return sorted(archive_root.rglob("*.md"))
 
 
 def feature_technical_design_files(feature_root: Path) -> list[Path]:
@@ -176,23 +179,22 @@ def render_artifact_index(root: Path) -> str:
     lines = [
         "# Coding Plugins Feature 索引",
         "",
-        "本索引用于按 `领域` 和 `能力` 检索 feature-first 文档链路。运行 `python3 scripts/preflight.py --write-index` 可根据 feature root 重新生成本文件。",
+        "本索引用于按 `Feature` 检索 feature-first 文档链路。运行 `python3 scripts/preflight.py --write-index` 可根据 feature root 重新生成本文件。",
         "",
-        "| 领域 | 能力 | 功能根目录 | 规格 | 技术设计 | 实现计划 | 证据 | 标签 | 更新日期 |",
-        "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+        "| Feature | 功能根目录 | 规格 | 技术设计 | 实现计划 | 证据 | 标签 | 更新日期 |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
 
     for feature_root in collect_feature_roots(root):
         feature_context = feature_root_for_document(root, feature_root / "README.md")
         if feature_context is None:
             continue
-        area, capability, _feature_root = feature_context
+        feature, _feature_root = feature_context
         lines.append(
             "| "
             + " | ".join(
                 (
-                    area,
-                    capability,
+                    feature,
                     f"`{relative_markdown_path(root, feature_root)}`",
                     format_index_path_cell(root, feature_spec_files(feature_root)),
                     format_index_path_cell(root, feature_technical_design_files(feature_root)),
@@ -210,12 +212,12 @@ def render_artifact_index(root: Path) -> str:
             "",
             "规则:",
             "",
-            "- `领域` 和 `能力` 必须和 `功能根目录` 路径一致。",
-            "- `功能根目录` 指向 `docs/coding-plugins/features/<area>/<capability>`。",
-            "- `规格` 指向该 capability 的规格文件；有多个规格时在同一个单元格用 `<br>` 分隔。",
-            "- `技术设计` 指向默认技术设计 `docs/coding-plugins/features/<area>/<capability>/technical/technical-design.md`；没有技术设计时使用 `-`。",
-            "- `实现计划` 指向默认实现计划 `docs/coding-plugins/features/<area>/<capability>/plans/implementation.md`；没有计划时使用 `-`。",
-            "- `证据` 指向该 capability 的 evidence 文件；有多个 evidence 时在同一个单元格用 `<br>` 分隔；没有 evidence 时使用 `-`。",
+            "- `Feature` 必须和 `功能根目录` 路径一致。",
+            "- `功能根目录` 指向 `docs/coding-plugins/features/<feature-name>`。",
+            "- `规格` 指向该 feature 的规格文件；有多个规格时在同一个单元格用 `<br>` 分隔。",
+            "- `技术设计` 指向默认技术设计 `docs/coding-plugins/features/<feature-name>/technical/technical-design.md`；没有技术设计时使用 `-`。",
+            "- `实现计划` 指向默认实现计划 `docs/coding-plugins/features/<feature-name>/plans/implementation.md`；没有计划时使用 `-`。",
+            "- `证据` 指向该 feature 的 evidence 文件；有多个 evidence 时在同一个单元格用 `<br>` 分隔；没有 evidence 时使用 `-`。",
             "- `标签` 来自 feature README frontmatter 的 `tags` 列表；日期来自规格、技术设计或计划 frontmatter 的最大 `updated` 值。",
         ]
     )

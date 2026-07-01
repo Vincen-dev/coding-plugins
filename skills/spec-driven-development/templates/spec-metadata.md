@@ -1,10 +1,9 @@
 ---
-spec_id: <area-capability-kind>
+spec_id: <feature-name-kind>
 title: <规格标题>
 type: feature | api-contract | schema | state-machine | acceptance | maintenance
 status: draft | approved | superseded
-area: <领域或模块 slug>
-capability: <能力或流程 slug>
+feature: <feature slug>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 tags:

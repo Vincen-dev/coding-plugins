@@ -22,7 +22,7 @@
 
 ## 文件名选择
 
-规格路径使用 `docs/coding-plugins/features/<area>/<capability>/specs/<spec-kind>.md`。
+规格路径使用 `docs/coding-plugins/features/<feature-name>/specs/<spec-kind>.md`。
 
 | 规格类型 | spec-kind |
 | --- | --- |
@@ -33,7 +33,7 @@
 | Acceptance criteria | `acceptance` |
 | Maintenance spec | `maintenance` |
 
-同一 capability 可以有多个 spec-kind 文件。日期、状态、标签和相关代码只写 metadata 和 `INDEX.md`，不写入文件名。
+同一 feature 可以有多个 spec-kind 文件。日期、状态、标签和相关代码只写 metadata 和 `INDEX.md`，不写入文件名。
 
 ## 无新需求时的规格选择
 

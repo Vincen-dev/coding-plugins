@@ -10,7 +10,7 @@
 2. 新需求先进入 SDD，写成可追踪、可测试、可评审的规格。
 3. 已批准规格再写独立技术设计，定义工程方案、关键决策和测试策略。
 4. 基于技术设计写计划，并建立 Spec ID -> 测试 -> 任务 追踪。
-5. 读取文档时先读 frontmatter metadata，再读正文；关系源、索引边界和 README 规则见 `docs/coding-plugins/document-contract.md`。
+5. 读取文档时先用 `document-metadata` 读取 frontmatter metadata，再读正文；关系源、索引边界和 README 规则见 `docs/coding-plugins/document-contract.md`。
 6. 按计划隔离执行。
 7. 实现阶段遵守 TDD，测试必须来自规格、bug 复现或明确验收标准，并留下 TDD 证据。
 8. 每个任务通过规格符合性和代码质量评审。
@@ -28,13 +28,13 @@
 | 0 | 平台加载 | `.agents/plugins/marketplace.json`, `.codex-plugin/plugin.json`, `.claude-plugin/plugin.json`, `hooks/hooks-codex.json` | Codex marketplace、Codex SessionStart hook、Codex / Claude Code 识别插件和 skills |
 | 1 | 入口路由 | `using-coding-plugins` | 判断直接意图和开发任务类型 |
 | 2 | 直接意图处理 | `requesting-code-review`, `receiving-code-review`, `verification-before-completion`, `git-commit`, `finishing-a-development-branch`, `writing-skills`, `using-git-worktrees`, `dispatching-parallel-agents` | 直接完成查询、评审、验证、提交、收尾、隔离或维护任务 |
-| 3 | 需求规格 | `spec-driven-development` | `docs/coding-plugins/features/<area>/<capability>/specs/<spec-kind>.md`, 生成式总索引, Spec ID, Traceability Matrix |
-| 4 | 技术设计 | `writing-technical-design` | `docs/coding-plugins/features/<area>/<capability>/technical/technical-design.md`, 规格到设计映射, 生成式总索引, 技术方案和测试策略 |
-| 5 | 实现计划 | `writing-plans` | `docs/coding-plugins/features/<area>/<capability>/plans/implementation.md`, 技术设计来源, Spec ID -> 测试 -> 任务 追踪 |
-| 6 | 文档契约 | `docs/coding-plugins/document-contract.md`, `scripts/preflight.py` | metadata-first 读取顺序、README 边界、Evidence related metadata、生成式索引 |
+| 3 | 需求规格 | `spec-driven-development` | `docs/coding-plugins/features/<feature-name>/specs/<spec-kind>.md`, 生成式总索引, Spec ID, Traceability Matrix |
+| 4 | 技术设计 | `writing-technical-design` | `docs/coding-plugins/features/<feature-name>/technical/technical-design.md`, 规格到设计映射, 生成式总索引, 技术方案和测试策略 |
+| 5 | 实现计划 | `writing-plans` | `docs/coding-plugins/features/<feature-name>/plans/implementation.md`, 技术设计来源, Spec ID -> 测试 -> 任务 追踪 |
+| 6 | 文档契约 | `document-metadata`, `docs/coding-plugins/document-contract.md`, `scripts/preflight.py` | metadata-first 读取顺序、README 边界、Evidence related metadata、生成式索引 |
 | 7 | 隔离工作区 | `using-git-worktrees` | 独立 worktree 或确认在当前工作区执行 |
 | 8 | 执行调度 | `subagent-driven-development`, `executing-plans`, `dispatching-parallel-agents` | 子任务执行、批次执行或并行任务结果 |
-| 9 | TDD 实现 | `test-driven-development` | RED -> GREEN -> REFACTOR，`docs/coding-plugins/features/<area>/<capability>/evidence/tdd-evidence.md` |
+| 9 | TDD 实现 | `test-driven-development` | RED -> GREEN -> REFACTOR，`docs/coding-plugins/features/<feature-name>/evidence/tdd-evidence.md` |
 | 10 | 系统化调试 | `systematic-debugging` | 复现路径、根因、可测试修复入口 |
 | 11 | 评审门禁 | `spec-reviewer`, `code-quality-reviewer`, `requesting-code-review`, `receiving-code-review` | 规格符合性评审、代码质量评审、反馈处理 |
 | 12 | 完成前验证 | `verification-before-completion` | 测试、构建、规格覆盖或人工验收证据 |
@@ -84,7 +84,7 @@ flowchart TD
   DEV_KIND -->|bug/CI/测试/构建失败或异常行为| DEBUG["systematic-debugging"]
 
   SDD --> SPEC["写规格、生成/校验 INDEX、运行 validate_spec.py"]
-  SPEC --> CONTRACT["读取/维护 metadata-first 文档契约"]
+  SPEC --> CONTRACT["document-metadata: 读取/维护 metadata-first 文档契约"]
   CONTRACT --> SPEC_OK{"用户确认规格？"}
   SPEC_OK -->|需要修改| SPEC
   SPEC_OK -->|确认| TECH
@@ -183,16 +183,16 @@ flowchart TD
   B --> C["探索上下文"]
   C --> D["选择规格类型和模板"]
   D --> E["检索既有规格和 INDEX"]
-  E --> F["写 features/<area>/<capability>/specs/<spec-kind>.md"]
+  E --> F["写 features/<feature-name>/specs/<spec-kind>.md"]
   F --> G["运行 preflight.py --write-index"]
   G --> H["运行 validate_spec.py"]
   H --> I["规格自审和必要修改"]
   I --> J{"用户确认规格？"}
   J -->|需要修改| F
   J -->|确认| TD["writing-technical-design"]
-  TD --> K["写 features/<area>/<capability>/technical/technical-design.md"]
+  TD --> K["写 features/<feature-name>/technical/technical-design.md"]
   K --> L["writing-plans"]
-  L --> M["写 features/<area>/<capability>/plans/implementation.md"]
+  L --> M["写 features/<feature-name>/plans/implementation.md"]
   M --> N["引用 技术设计来源 并建立追踪矩阵"]
   N --> O["计划自审或计划评审"]
   O --> P["进入执行场景"]
@@ -385,7 +385,7 @@ Claude Code 侧使用 `.claude-plugin/plugin.json` 识别插件。技能以 `/co
 默认规格路径：
 
 ```text
-docs/coding-plugins/features/<area>/<capability>/specs/<spec-kind>.md
+docs/coding-plugins/features/<feature-name>/specs/<spec-kind>.md
 ```
 
 时间、状态、标签和相关代码写入规格 metadata；新增、移动或删除 feature 文档后运行 `python3 scripts/preflight.py --write-index` 重新生成 `docs/coding-plugins/INDEX.md`，文件名不使用日期前缀。
@@ -396,7 +396,7 @@ docs/coding-plugins/features/<area>/<capability>/specs/<spec-kind>.md
 - 用户目标、非目标和成功标准。
 - 规格类型选择：feature、API contract、schema、state machine、acceptance criteria。
 - 无新增需求时，只有维护、基线、回归、迁移或可观测性风险需要维护规格。
-- 路径和索引：`<area>/<capability>/<spec-kind>.md`，并通过 `python3 scripts/preflight.py --write-index` 更新 `INDEX.md`。
+- 路径和索引：`<feature-name>/<spec-kind>.md`，并通过 `python3 scripts/preflight.py --write-index` 更新 `INDEX.md`。
 - 稳定 Spec ID：`REQ/API/SCHEMA/STATE/ERR/AC/NFR/MIG/OBS/NON`。
 - 外部契约示例：请求/响应、schema 样例、状态迁移或错误样例。
 - Traceability Matrix 初稿。
@@ -410,17 +410,17 @@ docs/coding-plugins/features/<area>/<capability>/specs/<spec-kind>.md
 
 技术设计阶段必须先完成 `## 规格缺口审查`。如果发现未覆盖需求、验收标准不清、新增外部行为、错误边界或兼容要求不清，停止 technical，回到 `spec-driven-development` 更新 spec、重新校验并取得确认，再继续 technical。preflight 会校验 technical 文档包含规格缺口审查，并拦截未处理、待处理、需澄清、不清楚或待确认的缺口。
 
-技术设计还必须完成 `## 规格到设计映射` 和 `## 无需技术设计的规格`。同一 capability 下 approved spec 中的每个 MUST Spec ID，都要出现在映射表里；映射表使用 7 列：`Spec ID`、`规格摘要`、`技术落点`、`关键决策 ID`、`影响文件/符号`、`验证命令`、`证据`。确实无需技术设计的，必须在豁免表中写明原因。preflight 会从 approved spec 反向提取 MUST ID，拦截 technical 未覆盖或未豁免的规格。
+技术设计还必须完成 `## 规格到设计映射` 和 `## 无需技术设计的规格`。同一 feature 下 approved spec 中的每个 MUST Spec ID，都要出现在映射表里；映射表使用 7 列：`Spec ID`、`规格摘要`、`技术落点`、`关键决策 ID`、`影响文件/符号`、`验证命令`、`证据`。确实无需技术设计的，必须在豁免表中写明原因。preflight 会从 approved spec 反向提取 MUST ID，拦截 technical 未覆盖或未豁免的规格。
 
 技术设计的关键决策必须使用 `TD-001`、`TD-002` 这类稳定 ID。映射表中的 `关键决策 ID` 必须能在 `## 关键决策` 表中找到，避免规格到技术落点之间只留下泛化描述。
 
 默认技术设计路径：
 
 ```text
-docs/coding-plugins/features/<area>/<capability>/technical/technical-design.md
+docs/coding-plugins/features/<feature-name>/technical/technical-design.md
 ```
 
-技术设计路径的 `<area>/<capability>` 应和规格路径一致。保存或移动技术设计后运行 `python3 scripts/preflight.py --write-index`，让 `docs/coding-plugins/INDEX.md` 同步反映最新文件树。technical 模板正文标题和表头默认使用中文，Spec ID、命令、路径和代码标识可保留英文。
+技术设计路径的 `<feature-name>` 应和规格路径一致。保存或移动技术设计后运行 `python3 scripts/preflight.py --write-index`，让 `docs/coding-plugins/INDEX.md` 同步反映最新文件树。technical 模板正文标题和表头默认使用中文，Spec ID、命令、路径和代码标识可保留英文。
 
 当同一 feature 已存在 spec、plan 或 TDD 证据 时，technical frontmatter 必须分别维护 `related_specs`、`related_plans` 和 `related_evidence`。这些路径用于把规格契约、技术方案、实现计划和验证证据连成可检索链路，preflight 会校验引用路径真实存在。
 
@@ -429,12 +429,12 @@ technical frontmatter 还必须维护 `lifecycle_status`、`implemented_commits`
 technical 可单独运行 validator：
 
 ```text
-python3 skills/writing-technical-design/scripts/validate_technical_design.py docs/coding-plugins/features/<area>/<capability>/technical/technical-design.md
+python3 skills/writing-technical-design/scripts/validate_technical_design.py docs/coding-plugins/features/<feature-name>/technical/technical-design.md
 ```
 
 普通模式只让结构错误失败；`--strict` 会把泛化映射、stale technical、缺 lifecycle metadata、缺 TD 决策 ID、隐藏需求和旧映射表头都升级为失败。preflight 默认调用 strict validator，因此发布前不能留下 warning。
 
-没有 technical/plan 的轻量 capability 必须在 README 的 `## 轻量例外` 中写明 `原因`、`验证方式`，并补充 `规格 ID -> 证据` 表。该表必须覆盖 approved spec 的所有 MUST Spec ID，并指向真实存在的 evidence 文件。
+没有 technical/plan 的轻量 feature 必须在 README 的 `## 轻量例外` 中写明 `原因`、`验证方式`，并补充 `规格 ID -> 证据` 表。该表必须覆盖 approved spec 的所有 MUST Spec ID，并指向真实存在的 evidence 文件。
 
 ### 计划层
 
@@ -443,10 +443,10 @@ python3 skills/writing-technical-design/scripts/validate_technical_design.py doc
 默认计划路径：
 
 ```text
-docs/coding-plugins/features/<area>/<capability>/plans/implementation.md
+docs/coding-plugins/features/<feature-name>/plans/implementation.md
 ```
 
-计划路径的 `<area>/<capability>` 应和规格及技术设计路径一致，例如 `features/auth/login/specs/feature.md` 对应 `features/auth/login/technical/technical-design.md` 和 `features/auth/login/plans/implementation.md`。
+计划路径的 `<feature-name>` 应和规格及技术设计路径一致，例如 `features/auth/login/specs/feature.md` 对应 `features/auth/login/technical/technical-design.md` 和 `features/auth/login/plans/implementation.md`。
 
 计划文档应说明推荐执行方式：
 
@@ -487,17 +487,19 @@ spec-driven-development -> writing-technical-design -> writing-plans -> using-gi
 TDD 阶段的交付证据不是“我遵守了 TDD”，而是写入固定路径的标准化 `TDD 证据`：
 
 ```text
-docs/coding-plugins/features/<area>/<capability>/evidence/tdd-evidence.md
+docs/coding-plugins/features/<feature-name>/evidence/tdd-evidence.md
 ```
 
-`<area>/<capability>` 应和规格、计划路径保持一致。
+`<feature-name>` 应和规格、计划路径保持一致。
 
 - `规格/缺陷/验收`：测试来源。
 - `RED 测试` / `RED 命令` / `RED 失败`：先失败证据。
 - `GREEN 变更` / `GREEN 命令`：最小实现和通过证据。
 - `REFACTOR 命令` / `最终验证`：重构后和最终验证证据。
 
-纯重构没有新增行为时，使用现有测试基线或 characterization test 作为行为保护证据。无法自动测试时，必须在同一 evidence 文件中记录用户同意的 `TDD 例外记录` 和替代验证。证据报告可用 `skills/test-driven-development/scripts/validate_tdd_evidence.py` 检查，`scripts/preflight.py` 会自动严格校验 `docs/coding-plugins/features/**/evidence/**/*.md`。
+纯重构没有新增行为时，使用现有测试基线或 characterization test 作为行为保护证据。无法自动测试时，必须在同一 active evidence 文件中记录用户同意的 `TDD 例外记录` 和替代验证。证据报告可用 `skills/test-driven-development/scripts/validate_tdd_evidence.py` 检查，`scripts/preflight.py` 会自动严格校验 `docs/coding-plugins/features/**/evidence/tdd-evidence.md`。历史证据归档到 `evidence/archive/*.md`，只校验 historical metadata，不进入主索引。
+
+TDD 证据可以声明 `测试类型`：`behavior`、`contract`、`architecture`、`source-scan` 或 `config`。源码扫描只能作为架构、配置或静态边界证据；如果它试图证明用户行为，strict validator 会失败。
 
 `systematic-debugging` 适用于 bug、测试失败、构建失败、性能问题和异常行为。铁律是：
 
@@ -560,7 +562,7 @@ feat(commit): 增加中文提交工作流
 docs/coding-plugins/INDEX.md
 ```
 
-查找某个功能时，先按 `Area`、`Capability` 或 `标签` 查总索引，再进入对应规格、计划或 TDD 证据 文件。新增、移动或删除相关产物时必须运行 `python3 scripts/preflight.py --write-index` 重新生成总索引；`scripts/preflight.py` 会校验索引文本和真实 feature-first 文件树完全一致。
+查找某个功能时，先按 `Feature` 或 `标签` 查总索引，再进入对应规格、计划或 TDD 证据 文件。新增、移动或删除相关产物时必须运行 `python3 scripts/preflight.py --write-index` 重新生成总索引；`scripts/preflight.py` 会校验索引文本和真实 feature-first 文件树完全一致。
 
 默认路径：
 

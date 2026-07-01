@@ -17,7 +17,7 @@ EXCEPTION_HEADING_RE = re.compile(
     r"^\s{0,3}#{1,6}\s+TDD 例外记录\s*$", re.IGNORECASE | re.MULTILINE
 )
 SPEC_SOURCE_RE = re.compile(
-    r"\b(?:REQ|API|SCHEMA|STATE|ERR|AC|NFR|MIG|OBS|NON)-\d{3,}\b|bug|复现|验收|acceptance",
+    r"\b(?:REQ|API|SCHEMA|STATE|ERR|AC|NFR|MIG|OBS|NON)(?:-[A-Z0-9]+)*-\d{3,}\b|bug|复现|验收|acceptance",
     re.IGNORECASE,
 )
 PLACEHOLDER_RE = re.compile(r"<[^>\n]{2,}>|\[[^\]\n]{2,}\]|\bTODO\b|\bTBD\b|待补充|待定|占位|\.\.\.")
@@ -36,6 +36,9 @@ EVIDENCE_FIELDS = (
     "REFACTOR 命令",
     "最终验证",
 )
+OPTIONAL_TEST_TYPE_FIELD = "测试类型"
+ALLOWED_TEST_TYPES = {"behavior", "contract", "architecture", "source-scan", "config"}
+BEHAVIOR_SOURCE_RE = re.compile(r"用户|点击|按钮|页面|界面|交互|流程|UI|widget|behavior", re.IGNORECASE)
 EXCEPTION_FIELDS = (
     "原因",
     "用户批准",
@@ -121,6 +124,7 @@ def validate_text(text: str, strict: bool) -> tuple[list[str], list[str]]:
     if has_evidence:
         errors.extend(require_fields(text, EVIDENCE_FIELDS, "TDD 证据"))
         source = get_field(text, "规格/缺陷/验收")
+        test_type = get_field(text, OPTIONAL_TEST_TYPE_FIELD)
         red_failure = get_field(text, "RED 失败")
         final_verification = get_field(text, "最终验证")
 
@@ -128,6 +132,19 @@ def validate_text(text: str, strict: bool) -> tuple[list[str], list[str]]:
             warnings.append(
                 "规格/缺陷/验收 does not look traceable to a Spec ID, bug reproduction, or acceptance criterion."
             )
+
+        if test_type:
+            normalized_test_type = test_type.strip().strip("`").lower()
+            if normalized_test_type not in ALLOWED_TEST_TYPES:
+                errors.append(
+                    "invalid 测试类型: "
+                    + test_type
+                    + ". Allowed: "
+                    + ", ".join(sorted(ALLOWED_TEST_TYPES))
+                    + "."
+                )
+            elif normalized_test_type == "source-scan" and source and BEHAVIOR_SOURCE_RE.search(source):
+                warnings.append("source-scan should not be used as the primary proof for user-facing behavior.")
 
         if red_failure and re.search(r"\bpass(?:ed)?\b|通过", red_failure, re.IGNORECASE):
             warnings.append("RED 失败提到了类似通过的结果；请确认测试确实先失败。")

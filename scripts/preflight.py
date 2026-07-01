@@ -163,8 +163,8 @@ PLAN_TEMPLATE_ENGLISH_STRUCTURE = (
     "**Final verification:**",
 )
 TDD_EVIDENCE_TEMPLATE_ENGLISH_STRUCTURE = (
-    "# <Capability> TDD Evidence",
-    "# <Capability>",
+    "# <Feature> TDD Evidence",
+    "# <Feature>",
     "## Task <N>",
     "### TDD Evidence",
     "### TDD Exception Record",
@@ -181,16 +181,26 @@ TDD_EVIDENCE_TEMPLATE_ENGLISH_STRUCTURE = (
     "**Alternative verification:**",
     "**Risk:**",
 )
-SPEC_ID_RE = re.compile(r"\b(?:REQ|API|SCHEMA|STATE|ERR|AC|NFR|MIG|OBS|NON)-\d{3,}\b")
+SPEC_ID_RE = re.compile(r"\b(?:REQ|API|SCHEMA|STATE|ERR|AC|NFR|MIG|OBS|NON)(?:-[A-Z0-9]+)*-\d{3,}\b")
 TECHNICAL_DESIGN_PATH_RE = re.compile(
     r"docs/coding-plugins/features/[A-Za-z0-9_.\-/]+/technical/technical-design\.md"
 )
 EVIDENCE_PATH_RE = re.compile(r"docs/coding-plugins/features/[A-Za-z0-9_.\-/]+/evidence/[A-Za-z0-9_.\-/]+\.md")
-FEATURE_README_METADATA_REQUIRED_FIELDS = ("title", "status", "area", "capability", "updated")
+FEATURE_README_METADATA_REQUIRED_FIELDS = ("title", "status", "feature", "updated")
 FEATURE_README_HANDWRITTEN_LINK_SECTIONS = ("产物链路", "文档链路")
-EVIDENCE_METADATA_REQUIRED_FIELDS = ("title", "status", "area", "capability", "created", "updated")
-PLAN_METADATA_REQUIRED_FIELDS = ("title", "status", "area", "capability", "created", "updated")
-CHINESE_DOCUMENT_INFO_REQUIRED_TERMS = ("## 文档信息", "状态", "领域", "能力")
+EVIDENCE_METADATA_REQUIRED_FIELDS = ("title", "status", "feature", "created", "updated")
+ARCHIVED_EVIDENCE_METADATA_REQUIRED_FIELDS = (
+    "title",
+    "status",
+    "feature",
+    "created",
+    "updated",
+    "validation_mode",
+    "archive_of",
+    "archived_at",
+)
+PLAN_METADATA_REQUIRED_FIELDS = ("title", "status", "feature", "created", "updated")
+CHINESE_DOCUMENT_INFO_REQUIRED_TERMS = ("## 文档信息", "状态", "Feature")
 TECHNICAL_GAP_REVIEW_REQUIRED_TERMS = ("未覆盖需求", "验收标准", "外部行为", "处理状态")
 TECHNICAL_GAP_REVIEW_UNRESOLVED_TERMS = ("未处理", "待处理", "需澄清", "不清楚", "待确认")
 TECHNICAL_DESIGN_REQUIRED_SECTIONS = ("规格到设计映射", "无需技术设计的规格")
@@ -469,15 +479,11 @@ def check_feature_readme_metadata_contract(root: Path) -> None:
 
         feature_context = feature_root_for_document(root, readme)
         if feature_context is None:
-            mismatches.append(f"{readme.relative_to(root)} is not under features/<area>/<capability>/")
+            mismatches.append(f"{readme.relative_to(root)} is not under features/<feature-name>/")
         else:
-            path_area, path_capability, _feature_root = feature_context
-            if metadata.get("area") != path_area:
-                mismatches.append(f"{readme.relative_to(root)} area={metadata.get('area')} path={path_area}")
-            if metadata.get("capability") != path_capability:
-                mismatches.append(
-                    f"{readme.relative_to(root)} capability={metadata.get('capability')} path={path_capability}"
-                )
+            path_feature, _feature_root = feature_context
+            if metadata.get("feature") != path_feature:
+                mismatches.append(f"{readme.relative_to(root)} feature={metadata.get('feature')} path={path_feature}")
 
         for section in FEATURE_README_HANDWRITTEN_LINK_SECTIONS:
             if markdown_section(text, section) is not None:
@@ -634,16 +640,12 @@ def check_document_path_metadata(root: Path) -> None:
         for path in files:
             feature_context = feature_root_for_document(root, path)
             if feature_context is None:
-                mismatches.append(f"{path.relative_to(root)} is not under features/<area>/<capability>/")
+                mismatches.append(f"{path.relative_to(root)} is not under features/<feature-name>/")
                 continue
-            path_area, path_capability, _feature_root = feature_context
+            path_feature, _feature_root = feature_context
             metadata = parse_frontmatter(path.read_text(encoding="utf-8"))
-            if metadata.get("area") and metadata.get("area") != path_area:
-                mismatches.append(f"{path.relative_to(root)} area={metadata.get('area')} path={path_area}")
-            if metadata.get("capability") and metadata.get("capability") != path_capability:
-                mismatches.append(
-                    f"{path.relative_to(root)} capability={metadata.get('capability')} path={path_capability}"
-                )
+            if metadata.get("feature") and metadata.get("feature") != path_feature:
+                mismatches.append(f"{path.relative_to(root)} feature={metadata.get('feature')} path={path_feature}")
 
     for label, files in (
         ("plan", collect_plan_files(root)),
@@ -651,7 +653,7 @@ def check_document_path_metadata(root: Path) -> None:
     ):
         for path in files:
             if feature_root_for_document(root, path) is None:
-                mismatches.append(f"{path.relative_to(root)} is not under features/<area>/<capability>/")
+                mismatches.append(f"{path.relative_to(root)} is not under features/<feature-name>/")
 
     if mismatches:
         raise PreflightError("Spec metadata does not match path: " + "; ".join(mismatches) + ".")
@@ -669,13 +671,11 @@ def check_plan_metadata(root: Path) -> None:
 
         feature_context = feature_root_for_document(root, path)
         if feature_context is None:
-            mismatches.append(f"{path.relative_to(root)} is not under features/<area>/<capability>/")
+            mismatches.append(f"{path.relative_to(root)} is not under features/<feature-name>/")
             continue
-        path_area, path_capability, _feature_root = feature_context
-        if metadata.get("area") != path_area:
-            mismatches.append(f"{path.relative_to(root)} area={metadata.get('area')} path={path_area}")
-        if metadata.get("capability") != path_capability:
-            mismatches.append(f"{path.relative_to(root)} capability={metadata.get('capability')} path={path_capability}")
+        path_feature, _feature_root = feature_context
+        if metadata.get("feature") != path_feature:
+            mismatches.append(f"{path.relative_to(root)} feature={metadata.get('feature')} path={path_feature}")
 
     if incomplete:
         raise PreflightError("Plan metadata is incomplete: " + "; ".join(incomplete) + ".")
@@ -698,13 +698,11 @@ def check_evidence_metadata(root: Path) -> None:
 
         feature_context = feature_root_for_document(root, path)
         if feature_context is None:
-            mismatches.append(f"{path.relative_to(root)} is not under features/<area>/<capability>/")
+            mismatches.append(f"{path.relative_to(root)} is not under features/<feature-name>/")
             continue
-        path_area, path_capability, feature_root = feature_context
-        if metadata.get("area") != path_area:
-            mismatches.append(f"{path.relative_to(root)} area={metadata.get('area')} path={path_area}")
-        if metadata.get("capability") != path_capability:
-            mismatches.append(f"{path.relative_to(root)} capability={metadata.get('capability')} path={path_capability}")
+        path_feature, feature_root = feature_context
+        if metadata.get("feature") != path_feature:
+            mismatches.append(f"{path.relative_to(root)} feature={metadata.get('feature')} path={path_feature}")
 
         expected_by_key = {
             "related_specs": docs_index.feature_spec_files(feature_root),
@@ -731,6 +729,100 @@ def check_evidence_metadata(root: Path) -> None:
         raise PreflightError("Evidence metadata does not match path: " + "; ".join(mismatches) + ".")
     if relation_errors:
         raise PreflightError("Evidence related metadata is invalid: " + "; ".join(relation_errors) + ".")
+
+
+def check_archived_evidence_metadata(root: Path) -> None:
+    incomplete: list[str] = []
+    mismatches: list[str] = []
+    for path in collect_archived_evidence_files(root):
+        text = path.read_text(encoding="utf-8")
+        metadata = parse_frontmatter(text)
+        missing_fields = [field for field in ARCHIVED_EVIDENCE_METADATA_REQUIRED_FIELDS if not metadata.get(field)]
+        if missing_fields:
+            incomplete.append(f"{path.relative_to(root)} missing {', '.join(missing_fields)}")
+            continue
+        feature_context = feature_root_for_document(root, path)
+        if feature_context is None:
+            mismatches.append(f"{path.relative_to(root)} is not under features/<feature-name>/")
+            continue
+        path_feature, _feature_root = feature_context
+        if metadata.get("feature") != path_feature:
+            mismatches.append(f"{path.relative_to(root)} feature={metadata.get('feature')} path={path_feature}")
+        if metadata.get("status") != "archived":
+            mismatches.append(f"{path.relative_to(root)} status must be archived")
+        if metadata.get("validation_mode") != "historical":
+            mismatches.append(f"{path.relative_to(root)} validation_mode must be historical")
+
+    if incomplete:
+        raise PreflightError("Archived evidence metadata is incomplete: " + "; ".join(incomplete) + ".")
+    if mismatches:
+        raise PreflightError("Archived evidence metadata does not match contract: " + "; ".join(mismatches) + ".")
+
+
+def check_external_references(root: Path) -> None:
+    missing: list[str] = []
+    for path in collect_spec_files(root) + collect_technical_design_files(root) + collect_plan_files(root) + collect_tdd_evidence_files(root):
+        text = path.read_text(encoding="utf-8")
+        for reference in frontmatter_list_values(text, "external_references"):
+            reference_path = Path(reference).expanduser()
+            if not reference_path.is_absolute():
+                reference_path = root / reference_path
+            if not reference_path.exists():
+                missing.append(f"{path.relative_to(root)} -> {reference}")
+
+    if missing:
+        raise PreflightError("External references are missing: " + "; ".join(missing) + ".")
+
+
+def traceability_statuses_by_spec(text: str) -> dict[str, set[str]]:
+    statuses: dict[str, set[str]] = {}
+    for table in re.finditer(r"(?ms)(^\|[^\n]+\|\n^\|[ :\-\|]+\|\n(?:^\|[^\n]+\|\n?)+)", text):
+        table_text = table.group(1)
+        headers, rows = parse_markdown_table(table_text)
+        if not headers:
+            continue
+        header_text = " | ".join(headers).lower()
+        if not ("spec id" in header_text or "规格 id" in header_text or "规格ID" in header_text):
+            continue
+        status_index = next((index for index, header in enumerate(headers) if "status" in header.lower() or "状态" in header), None)
+        if status_index is None:
+            continue
+        for row in rows:
+            ids = SPEC_ID_RE.findall(" | ".join(row))
+            if not ids or status_index >= len(row):
+                continue
+            for spec_id in ids:
+                statuses.setdefault(spec_id, set()).add(row[status_index].strip())
+    return statuses
+
+
+def completed_evidence_spec_ids(text: str) -> set[str]:
+    completed: set[str] = set()
+    for match in re.finditer(r"(?ms)(?:^## .+?\n)(.*?)(?=^## |\Z)", text):
+        section = match.group(1)
+        if "最终验证" not in section:
+            continue
+        if not re.search(r"PASS|passed|通过|No issues found", section, re.IGNORECASE):
+            continue
+        completed.update(SPEC_ID_RE.findall(section))
+    return completed
+
+
+def check_lifecycle_state_consistency(root: Path) -> None:
+    offenders: list[str] = []
+    planned_statuses = {"planned", "计划中"}
+    for evidence_file in collect_tdd_evidence_files(root):
+        completed_ids = completed_evidence_spec_ids(evidence_file.read_text(encoding="utf-8"))
+        if not completed_ids:
+            continue
+        for spec_file in specs_for_evidence(root, evidence_file):
+            statuses = traceability_statuses_by_spec(spec_file.read_text(encoding="utf-8"))
+            for spec_id in sorted(completed_ids):
+                if statuses.get(spec_id, set()) & planned_statuses:
+                    offenders.append(f"{spec_file.relative_to(root)} keeps {spec_id} planned after completed evidence")
+
+    if offenders:
+        raise PreflightError("Lifecycle state is inconsistent: " + "; ".join(offenders) + ".")
 
 
 def check_chinese_document_info_sections(root: Path) -> None:
@@ -834,7 +926,7 @@ def check_technical_design_must_spec_coverage(root: Path) -> None:
         feature_context = feature_root_for_document(root, technical_file)
         if feature_context is None:
             continue
-        _area, _capability, feature_root = feature_context
+        _feature, feature_root = feature_context
         required_ids = required_spec_ids_from_specs(approved_spec_files_for_feature(feature_root))
         if not required_ids:
             continue
@@ -878,7 +970,7 @@ def check_technical_design_related_metadata(root: Path) -> None:
         feature_context = feature_root_for_document(root, technical_file)
         if feature_context is None:
             continue
-        _area, _capability, feature_root = feature_context
+        _feature, feature_root = feature_context
         text = technical_file.read_text(encoding="utf-8")
         expected_by_key = {
             "related_specs": docs_index.feature_spec_files(feature_root),
@@ -913,11 +1005,11 @@ def check_technical_design_validator(root: Path) -> None:
         raise PreflightError("Technical design validation failed: " + "; ".join(result.errors) + ".")
 
 
-def specs_for_area_capability(root: Path, document_root_name: str, document_file: Path) -> list[Path]:
+def specs_for_feature_document(root: Path, document_file: Path) -> list[Path]:
     feature_context = feature_root_for_document(root, document_file)
     if feature_context is None:
         return []
-    _area, _capability, feature_root = feature_context
+    _feature, feature_root = feature_context
     spec_dir = feature_root / "specs"
     if not spec_dir.exists():
         return []
@@ -925,11 +1017,11 @@ def specs_for_area_capability(root: Path, document_root_name: str, document_file
 
 
 def specs_for_evidence(root: Path, evidence_file: Path) -> list[Path]:
-    return specs_for_area_capability(root, "evidence", evidence_file)
+    return specs_for_feature_document(root, evidence_file)
 
 
 def specs_for_technical_design(root: Path, technical_file: Path) -> list[Path]:
-    return specs_for_area_capability(root, "technical", technical_file)
+    return specs_for_feature_document(root, technical_file)
 
 
 def check_document_spec_ids(
@@ -1038,9 +1130,14 @@ def collect_spec_files(root: Path) -> list[Path]:
 def collect_tdd_evidence_files(root: Path) -> list[Path]:
     files: list[Path] = []
     for feature_root in collect_feature_roots(root):
-        evidence_root = feature_root / "evidence"
-        if evidence_root.exists():
-            files.extend(evidence_root.rglob("*.md"))
+        files.extend(docs_index.feature_evidence_files(feature_root))
+    return sorted(files)
+
+
+def collect_archived_evidence_files(root: Path) -> list[Path]:
+    files: list[Path] = []
+    for feature_root in collect_feature_roots(root):
+        files.extend(docs_index.feature_archived_evidence_files(feature_root))
     return sorted(files)
 
 
@@ -1078,6 +1175,7 @@ def build_validation_commands(
     commands = [
         [python, "-m", "unittest", "scripts/test_preflight.py"],
         [python, "-m", "unittest", "scripts/test_docs_index.py"],
+        [python, "-m", "unittest", "scripts/test_document_contract_migration.py"],
         [python, "-m", "unittest", "scripts/test_manifest_checks.py"],
         [python, "-m", "unittest", "scripts/test_remote_audit.py"],
         [python, "-m", "unittest", "scripts/test_bump_version.py"],
@@ -1133,6 +1231,7 @@ def run_static_checks(root: Path) -> None:
     check_document_path_metadata(root)
     check_plan_metadata(root)
     check_evidence_metadata(root)
+    check_archived_evidence_metadata(root)
     check_chinese_document_info_sections(root)
     check_technical_design_gap_review(root)
     check_technical_design_required_sections(root)
@@ -1144,6 +1243,7 @@ def run_static_checks(root: Path) -> None:
     check_plan_technical_design_references(root)
     check_technical_design_spec_ids(root)
     check_tdd_evidence_spec_ids(root)
+    check_lifecycle_state_consistency(root)
     check_documentation_path_references(root)
     check_removed_entry_references(root)
     check_sdd_templates_are_chinese(root)
@@ -1155,9 +1255,10 @@ def run_static_checks(root: Path) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     args = list(sys.argv[1:] if argv is None else argv)
-    unknown_args = [arg for arg in args if arg != "--write-index"]
+    allowed_args = {"--write-index", "--check-external-references"}
+    unknown_args = [arg for arg in args if arg not in allowed_args]
     if unknown_args:
-        print("Usage: python3 scripts/preflight.py [--write-index]", file=sys.stderr)
+        print("Usage: python3 scripts/preflight.py [--write-index] [--check-external-references]", file=sys.stderr)
         return 2
 
     root = repo_root()
@@ -1166,6 +1267,8 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         run_static_checks(root)
+        if "--check-external-references" in args:
+            check_external_references(root)
         run_commands(
             root,
             build_validation_commands(root, collect_spec_files(root), collect_tdd_evidence_files(root)),

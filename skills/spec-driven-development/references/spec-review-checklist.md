@@ -3,8 +3,8 @@
 自审时逐项检查：
 
 - 没有 TBD、TODO、占位符、未完成段落。
-- metadata 已填写，包含 spec_id、type、status、area、capability、created、updated、tags、related_code。
-- 文件路径符合 `docs/coding-plugins/features/<area>/<capability>/specs/<spec-kind>.md`，并与 metadata 的 area、capability、type 一致。
+- metadata 已填写，包含 spec_id、type、status、feature、created、updated、tags、related_code。
+- 文件路径符合 `docs/coding-plugins/features/<feature-name>/specs/<spec-kind>.md`，并与 metadata 的 feature、type 一致。
 - `docs/coding-plugins/INDEX.md` 已包含或更新该规格。
 - 每个 MUST/SHOULD 需求都有 Spec ID。
 - 每个 MUST 都有验证方式。
