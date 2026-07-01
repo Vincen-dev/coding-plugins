@@ -18,6 +18,7 @@ if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
 
 import docs_index  # noqa: E402
+import document_metadata  # noqa: E402
 from docs_index import feature_root_for_document, parse_frontmatter  # noqa: E402
 
 
@@ -106,27 +107,7 @@ def relative_path(root: Path, path: Path) -> str:
 
 
 def frontmatter_list_values(text: str, key: str) -> list[str]:
-    if not text.startswith("---\n"):
-        return []
-    end = text.find("\n---", 4)
-    if end == -1:
-        return []
-
-    values: list[str] = []
-    in_key = False
-    for line in text[4:end].splitlines():
-        stripped = line.strip()
-        if not stripped:
-            continue
-        if line.startswith(" ") and in_key and stripped.startswith("- "):
-            values.append(stripped[2:].strip().strip('"').strip("'"))
-            continue
-        if ":" in line and not line.startswith(" "):
-            current_key, value = line.split(":", 1)
-            in_key = current_key.strip() == key
-            if in_key and value.strip():
-                values.append(value.strip().strip('"').strip("'"))
-    return values
+    return document_metadata.frontmatter_list_values(text, key)
 
 
 def collect_technical_design_files(root: Path, technical_files: list[Path] | None = None) -> list[Path]:
@@ -242,12 +223,8 @@ def validate_related_metadata(root: Path, technical_file: Path, text: str) -> li
         return []
     _feature, feature_root = feature_context
     doc_id = docs_index.document_doc_id(technical_file)
-    expected_by_key = {
-        "related_specs": docs_index.feature_spec_files_for_doc_id(feature_root, doc_id),
-        "related_test_cases": docs_index.feature_test_case_files_for_doc_id(feature_root, doc_id),
-        "related_plans": docs_index.feature_plan_files_for_doc_id(feature_root, doc_id),
-        "related_evidence": docs_index.feature_evidence_files_for_doc_id(feature_root, doc_id),
-    }
+    expected_by_key = document_metadata.expected_related_paths_for_doc_id(feature_root, doc_id, technical_file)
+    expected_by_key.pop("related_technical")
 
     errors: list[str] = []
     for key, expected_paths in expected_by_key.items():

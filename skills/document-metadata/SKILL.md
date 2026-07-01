@@ -11,6 +11,8 @@ description: Use when reading, creating, updating, migrating, or auditing Coding
 
 **核心原则：**文档之间的关系以 metadata 为准，正文负责需求、设计、计划和证据，不负责维护索引型链路。
 
+**规则中心：**每个文档的 frontmatter 是该文档的 metadata 实例；字段、命名、路径、`related_*` 推导和同步依赖的可执行规则集中在 `scripts/document_metadata.py`。`scripts/docs_index.py`、`scripts/preflight.py` 和 validator 必须复用该模块，不要在各自脚本中重新维护一套文档类型或关系规则。
+
 开始时声明：“我正在使用 document-metadata 技能来读取和维护文档 metadata 关系。”
 
 ## 何时使用
@@ -76,7 +78,7 @@ description: Use when reading, creating, updating, migrating, or auditing Coding
 
 ## 创建或更新流程
 
-1. 用 `templates/document-metadata.md` 选择适合的 frontmatter 字段。
+1. 用 `templates/document-metadata.md` 选择适合的 frontmatter 字段；如需调整字段、命名或关系规则，先更新 `scripts/document_metadata.py`，再同步模板和说明。
 2. 保持机器 key 为英文；中文展示写入正文 `## 文档信息`。
 3. 所有 `related_*` 值使用当前仓库内 `docs/coding-plugins/...` 路径，默认只链接同一 `doc_id` 链路；跨链路依赖用 `related_specs` 明确列出。
 4. README 只写人工摘要、标签和轻量例外追踪；不要维护索引型链路表。
@@ -96,7 +98,7 @@ python3 scripts/preflight.py --check-external-references
 
 ## 同步更新机制
 
-`document-metadata` 负责提供同步关系图，`scripts/preflight.py` 负责执行门禁。同步方向不是双向平均更新，而是从上游约束传递到下游产物：
+`scripts/document_metadata.py` 负责提供同步关系图，`scripts/preflight.py` 负责执行门禁。同步方向不是双向平均更新，而是从上游约束传递到下游产物：
 
 ```text
 PRD -> TDD -> TID -> TCD -> IPD -> TED
@@ -138,4 +140,5 @@ PRD -> TDD -> TID -> TCD -> IPD -> TED
 - 仓库级职责边界：`docs/coding-plugins/document-contract.md`
 - 总索引：`docs/coding-plugins/INDEX.md`
 - 通用模板：`skills/document-metadata/templates/document-metadata.md`
+- 可执行 metadata 规则：`scripts/document_metadata.py`
 - 发布门禁：`scripts/preflight.py`

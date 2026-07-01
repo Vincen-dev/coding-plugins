@@ -5,6 +5,21 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import document_metadata
+from document_metadata import (
+    ARTIFACT_SUFFIXES,
+    collect_feature_roots,
+    document_doc_id,
+    feature_artifact_file,
+    feature_artifact_files,
+    feature_artifact_files_for_doc_id,
+    feature_doc_ids,
+    feature_docs_root,
+    feature_root_for_document,
+    frontmatter_list_values,
+    parse_frontmatter,
+)
+
 
 class DocsIndexError(RuntimeError):
     """Raised when the generated artifact index contract is violated."""
@@ -23,69 +38,6 @@ ARTIFACT_INDEX_REQUIRED_COLUMNS = (
     "标签",
     "更新日期",
 )
-
-
-def parse_frontmatter(text: str) -> dict[str, str]:
-    if not text.startswith("---\n"):
-        return {}
-    end = text.find("\n---", 4)
-    if end == -1:
-        return {}
-
-    metadata: dict[str, str] = {}
-    for line in text[4:end].splitlines():
-        if ":" not in line:
-            continue
-        key, value = line.split(":", 1)
-        metadata[key.strip()] = value.strip().strip('"').strip("'")
-    return metadata
-
-
-def frontmatter_list_values(text: str, key: str) -> list[str]:
-    if not text.startswith("---\n"):
-        return []
-    end = text.find("\n---", 4)
-    if end == -1:
-        return []
-
-    values: list[str] = []
-    in_key = False
-    for line in text[4:end].splitlines():
-        stripped = line.strip()
-        if not stripped:
-            continue
-        if line.startswith(" ") and in_key and stripped.startswith("- "):
-            values.append(stripped[2:].strip().strip('"').strip("'"))
-            continue
-        if ":" in line and not line.startswith(" "):
-            current_key, value = line.split(":", 1)
-            in_key = current_key.strip() == key
-            if in_key and value.strip():
-                values.append(value.strip().strip('"').strip("'"))
-    return values
-
-
-def feature_docs_root(root: Path) -> Path:
-    return root / "docs" / "coding-plugins" / "features"
-
-
-def collect_feature_roots(root: Path) -> list[Path]:
-    features_root = feature_docs_root(root)
-    if not features_root.exists():
-        return []
-
-    return sorted(path for path in features_root.iterdir() if path.is_dir())
-
-
-def feature_root_for_document(root: Path, path: Path) -> tuple[str, Path] | None:
-    try:
-        relative_parts = path.relative_to(feature_docs_root(root)).parts
-    except ValueError:
-        return None
-    if len(relative_parts) < 1:
-        return None
-    feature = relative_parts[0]
-    return feature, feature_docs_root(root) / feature
 
 
 def parse_markdown_table_headers(text: str) -> list[str]:
@@ -125,47 +77,20 @@ def format_index_path_cell(root: Path, paths: list[Path]) -> str:
     return "<br>".join(f"`{relative_markdown_path(root, path)}`" for path in paths)
 
 
-ARTIFACT_SUFFIXES = ("PRD", "TDD", "TID", "TCD", "IPD", "TED")
-
-
-def document_doc_id(path: Path) -> str:
-    for suffix in ARTIFACT_SUFFIXES:
-        marker = f"-{suffix}"
-        if path.stem.endswith(marker):
-            return path.stem[: -len(marker)]
-    return path.stem
-
-
-def feature_artifact_file(feature_root: Path, directory: str, suffix: str, doc_id: str | None = None) -> Path:
-    return feature_root / directory / f"{doc_id or feature_root.name}-{suffix}.md"
-
-
-def feature_artifact_files(feature_root: Path, directory: str, suffix: str) -> list[Path]:
-    artifact_dir = feature_root / directory
-    if not artifact_dir.exists():
-        return []
-    return sorted(path for path in artifact_dir.glob(f"*-{suffix}.md") if path.is_file())
-
-
-def feature_artifact_files_for_doc_id(feature_root: Path, directory: str, suffix: str, doc_id: str) -> list[Path]:
-    path = feature_artifact_file(feature_root, directory, suffix, doc_id)
-    return [path] if path.exists() else []
-
-
 def feature_spec_files(feature_root: Path) -> list[Path]:
-    return feature_artifact_files(feature_root, "requirements", "PRD")
+    return document_metadata.artifact_files(feature_root, "PRD")
 
 
 def feature_spec_files_for_doc_id(feature_root: Path, doc_id: str) -> list[Path]:
-    return feature_artifact_files_for_doc_id(feature_root, "requirements", "PRD", doc_id)
+    return document_metadata.artifact_files_for_doc_id(feature_root, "PRD", doc_id)
 
 
 def feature_evidence_files(feature_root: Path) -> list[Path]:
-    return feature_artifact_files(feature_root, "evidences", "TED")
+    return document_metadata.artifact_files(feature_root, "TED")
 
 
 def feature_evidence_files_for_doc_id(feature_root: Path, doc_id: str) -> list[Path]:
-    return feature_artifact_files_for_doc_id(feature_root, "evidences", "TED", doc_id)
+    return document_metadata.artifact_files_for_doc_id(feature_root, "TED", doc_id)
 
 
 def feature_archived_evidence_files(feature_root: Path) -> list[Path]:
@@ -176,50 +101,35 @@ def feature_archived_evidence_files(feature_root: Path) -> list[Path]:
 
 
 def feature_technical_design_files(feature_root: Path) -> list[Path]:
-    return feature_artifact_files(feature_root, "technicals", "TDD")
+    return document_metadata.artifact_files(feature_root, "TDD")
 
 
 def feature_technical_design_files_for_doc_id(feature_root: Path, doc_id: str) -> list[Path]:
-    return feature_artifact_files_for_doc_id(feature_root, "technicals", "TDD", doc_id)
+    return document_metadata.artifact_files_for_doc_id(feature_root, "TDD", doc_id)
 
 
 def feature_technical_implementation_files(feature_root: Path) -> list[Path]:
-    return feature_artifact_files(feature_root, "technicals", "TID")
+    return document_metadata.artifact_files(feature_root, "TID")
 
 
 def feature_technical_implementation_files_for_doc_id(feature_root: Path, doc_id: str) -> list[Path]:
-    return feature_artifact_files_for_doc_id(feature_root, "technicals", "TID", doc_id)
+    return document_metadata.artifact_files_for_doc_id(feature_root, "TID", doc_id)
 
 
 def feature_plan_files(feature_root: Path) -> list[Path]:
-    return feature_artifact_files(feature_root, "plans", "IPD")
+    return document_metadata.artifact_files(feature_root, "IPD")
 
 
 def feature_plan_files_for_doc_id(feature_root: Path, doc_id: str) -> list[Path]:
-    return feature_artifact_files_for_doc_id(feature_root, "plans", "IPD", doc_id)
+    return document_metadata.artifact_files_for_doc_id(feature_root, "IPD", doc_id)
 
 
 def feature_test_case_files(feature_root: Path) -> list[Path]:
-    return feature_artifact_files(feature_root, "test-cases", "TCD")
+    return document_metadata.artifact_files(feature_root, "TCD")
 
 
 def feature_test_case_files_for_doc_id(feature_root: Path, doc_id: str) -> list[Path]:
-    return feature_artifact_files_for_doc_id(feature_root, "test-cases", "TCD", doc_id)
-
-
-def feature_doc_ids(feature_root: Path) -> list[str]:
-    doc_ids = {
-        document_doc_id(path)
-        for path in (
-            feature_spec_files(feature_root)
-            + feature_technical_design_files(feature_root)
-            + feature_technical_implementation_files(feature_root)
-            + feature_test_case_files(feature_root)
-            + feature_plan_files(feature_root)
-            + feature_evidence_files(feature_root)
-        )
-    }
-    return sorted(doc_ids)
+    return document_metadata.artifact_files_for_doc_id(feature_root, "TCD", doc_id)
 
 
 def feature_tags(feature_root: Path) -> str:

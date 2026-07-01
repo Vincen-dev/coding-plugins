@@ -2,6 +2,8 @@
 
 复制本模板时，只保留目标文档类型需要的字段。机器可读 key 保持英文；中文展示写在正文 `## 文档信息`。`feature` 表示 `docs/coding-plugins/features/<feature-name>/` 模块目录，`doc_id` 表示该 feature 下的一条具体文档链路。`updated` 表示本文档内容或 metadata 已完成更新，也表示已按上游文档变更完成同步评审。
 
+可执行规则集中在 `scripts/document_metadata.py`。新增或调整文档类型、后缀、目录、必填字段、`related_*` 关系或同步链时，先更新该脚本，再同步本模板。
+
 ## 通用 frontmatter
 
 ```yaml

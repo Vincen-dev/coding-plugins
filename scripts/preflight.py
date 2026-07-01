@@ -11,6 +11,7 @@ from datetime import date
 from pathlib import Path
 from typing import Callable
 
+import document_metadata
 import docs_index
 import manifest_checks
 from docs_index import (
@@ -193,20 +194,11 @@ TECHNICAL_IMPLEMENTATION_PATH_RE = re.compile(
 EVIDENCE_PATH_RE = re.compile(
     r"docs/coding-plugins/features/[A-Za-z0-9_.\-/]+/evidences/[A-Za-z0-9_.\-/]+\.md"
 )
-FEATURE_README_METADATA_REQUIRED_FIELDS = ("title", "status", "feature", "updated")
+FEATURE_README_METADATA_REQUIRED_FIELDS = document_metadata.FEATURE_README_METADATA_REQUIRED_FIELDS
 FEATURE_README_HANDWRITTEN_LINK_SECTIONS = ("产物链路", "文档链路")
-EVIDENCE_METADATA_REQUIRED_FIELDS = ("title", "status", "feature", "created", "updated")
-ARCHIVED_EVIDENCE_METADATA_REQUIRED_FIELDS = (
-    "title",
-    "status",
-    "feature",
-    "created",
-    "updated",
-    "validation_mode",
-    "archive_of",
-    "archived_at",
-)
-PLAN_METADATA_REQUIRED_FIELDS = ("title", "status", "feature", "created", "updated")
+EVIDENCE_METADATA_REQUIRED_FIELDS = document_metadata.EVIDENCE_METADATA_REQUIRED_FIELDS
+ARCHIVED_EVIDENCE_METADATA_REQUIRED_FIELDS = document_metadata.ARCHIVED_EVIDENCE_METADATA_REQUIRED_FIELDS
+PLAN_METADATA_REQUIRED_FIELDS = document_metadata.PLAN_METADATA_REQUIRED_FIELDS
 CHINESE_DOCUMENT_INFO_REQUIRED_TERMS = ("## 文档信息", "状态", "Feature")
 TECHNICAL_GAP_REVIEW_REQUIRED_TERMS = ("未覆盖需求", "验收标准", "外部行为", "处理状态")
 TECHNICAL_GAP_REVIEW_UNRESOLVED_TERMS = ("未处理", "待处理", "需澄清", "不清楚", "待确认")
@@ -691,20 +683,21 @@ def check_document_doc_id_metadata(root: Path) -> None:
     incomplete: list[str] = []
     mismatches: list[str] = []
     document_groups = (
-        ("PRD", collect_spec_files(root), True),
-        ("TDD", collect_technical_design_files(root), False),
-        ("TID", collect_technical_implementation_files(root), False),
-        ("TCD", collect_test_case_files(root), False),
-        ("IPD", collect_plan_files(root), False),
-        ("TED", collect_tdd_evidence_files(root), False),
+        ("PRD", collect_spec_files(root)),
+        ("TDD", collect_technical_design_files(root)),
+        ("TID", collect_technical_implementation_files(root)),
+        ("TCD", collect_test_case_files(root)),
+        ("IPD", collect_plan_files(root)),
+        ("TED", collect_tdd_evidence_files(root)),
     )
 
-    for _label, files, required in document_groups:
+    for label, files in document_groups:
+        artifact = document_metadata.artifact_for_suffix(label)
         for path in files:
             metadata = parse_frontmatter(path.read_text(encoding="utf-8"))
             expected_doc_id = docs_index.document_doc_id(path)
             actual_doc_id = metadata.get("doc_id")
-            if required and not actual_doc_id:
+            if artifact.doc_id_required and not actual_doc_id:
                 incomplete.append(f"{path.relative_to(root)} missing doc_id")
                 continue
             if actual_doc_id and actual_doc_id != expected_doc_id:
@@ -762,7 +755,7 @@ def check_evidence_metadata(root: Path) -> None:
             mismatches.append(f"{path.relative_to(root)} feature={metadata.get('feature')} path={path_feature}")
 
         doc_id = docs_index.document_doc_id(path)
-        expected_by_key = expected_related_paths_for_doc_id(feature_root, doc_id)
+        expected_by_key = expected_related_paths_for_doc_id(feature_root, doc_id, path)
         expected_by_key.pop("related_evidence")
         for key, expected_paths in expected_by_key.items():
             if not expected_paths:
@@ -795,7 +788,7 @@ def check_prd_related_metadata(root: Path) -> None:
         _feature, feature_root = feature_context
         doc_id = docs_index.document_doc_id(spec_file)
         text = spec_file.read_text(encoding="utf-8")
-        expected_by_key = expected_related_paths_for_doc_id(feature_root, doc_id)
+        expected_by_key = expected_related_paths_for_doc_id(feature_root, doc_id, spec_file)
         expected_by_key.pop("related_specs")
 
         for key in ("related_specs", *expected_by_key.keys()):
@@ -833,24 +826,9 @@ def document_updated_date(root: Path, path: Path) -> date | None:
 def check_document_sync_freshness(root: Path) -> None:
     offenders: list[str] = []
     for feature_root in collect_feature_roots(root):
-        dependency_labels = {
-            "TDD": ("PRD",),
-            "TID": ("PRD", "TDD"),
-            "TCD": ("PRD", "TDD", "TID"),
-            "IPD": ("PRD", "TDD", "TID", "TCD"),
-            "TED": ("PRD", "TDD", "TID", "TCD", "IPD"),
-        }
-
         for doc_id in docs_index.feature_doc_ids(feature_root):
-            documents_by_label = {
-                "PRD": docs_index.feature_spec_files_for_doc_id(feature_root, doc_id),
-                "TDD": docs_index.feature_technical_design_files_for_doc_id(feature_root, doc_id),
-                "TID": docs_index.feature_technical_implementation_files_for_doc_id(feature_root, doc_id),
-                "TCD": docs_index.feature_test_case_files_for_doc_id(feature_root, doc_id),
-                "IPD": docs_index.feature_plan_files_for_doc_id(feature_root, doc_id),
-                "TED": docs_index.feature_evidence_files_for_doc_id(feature_root, doc_id),
-            }
-            for downstream_label, upstream_labels in dependency_labels.items():
+            documents_by_label = document_metadata.documents_by_suffix_for_doc_id(feature_root, doc_id)
+            for downstream_label, upstream_labels in document_metadata.DOCUMENT_SYNC_DEPENDENCIES.items():
                 for downstream in documents_by_label[downstream_label]:
                     downstream_updated = document_updated_date(root, downstream)
                     if downstream_updated is None:
@@ -1097,38 +1075,15 @@ def check_technical_design_must_spec_coverage(root: Path) -> None:
 
 
 def frontmatter_list_values(text: str, key: str) -> list[str]:
-    if not text.startswith("---\n"):
-        return []
-    end = text.find("\n---", 4)
-    if end == -1:
-        return []
-
-    values: list[str] = []
-    in_key = False
-    for line in text[4:end].splitlines():
-        stripped = line.strip()
-        if not stripped:
-            continue
-        if line.startswith(" ") and in_key and stripped.startswith("- "):
-            values.append(stripped[2:].strip().strip('"').strip("'"))
-            continue
-        if ":" in line and not line.startswith(" "):
-            current_key, value = line.split(":", 1)
-            in_key = current_key.strip() == key
-            if in_key and value.strip():
-                values.append(value.strip().strip('"').strip("'"))
-    return values
+    return document_metadata.frontmatter_list_values(text, key)
 
 
-def expected_related_paths_for_doc_id(feature_root: Path, doc_id: str) -> dict[str, list[Path]]:
-    return {
-        "related_specs": docs_index.feature_spec_files_for_doc_id(feature_root, doc_id),
-        "related_technical": docs_index.feature_technical_design_files_for_doc_id(feature_root, doc_id)
-        + docs_index.feature_technical_implementation_files_for_doc_id(feature_root, doc_id),
-        "related_test_cases": docs_index.feature_test_case_files_for_doc_id(feature_root, doc_id),
-        "related_plans": docs_index.feature_plan_files_for_doc_id(feature_root, doc_id),
-        "related_evidence": docs_index.feature_evidence_files_for_doc_id(feature_root, doc_id),
-    }
+def expected_related_paths_for_doc_id(
+    feature_root: Path,
+    doc_id: str,
+    source_path: Path | None = None,
+) -> dict[str, list[Path]]:
+    return document_metadata.expected_related_paths_for_doc_id(feature_root, doc_id, source_path)
 
 
 def related_paths_from_metadata(root: Path, text: str, key: str) -> list[Path]:
@@ -1151,13 +1106,7 @@ def check_technical_design_related_metadata(root: Path) -> None:
         _feature, feature_root = feature_context
         doc_id = docs_index.document_doc_id(technical_file)
         text = technical_file.read_text(encoding="utf-8")
-        expected_by_key = {
-            "related_specs": docs_index.feature_spec_files_for_doc_id(feature_root, doc_id),
-            "related_technical": docs_index.feature_technical_implementation_files_for_doc_id(feature_root, doc_id),
-            "related_test_cases": docs_index.feature_test_case_files_for_doc_id(feature_root, doc_id),
-            "related_plans": docs_index.feature_plan_files_for_doc_id(feature_root, doc_id),
-            "related_evidence": docs_index.feature_evidence_files_for_doc_id(feature_root, doc_id),
-        }
+        expected_by_key = expected_related_paths_for_doc_id(feature_root, doc_id, technical_file)
 
         for key, expected_paths in expected_by_key.items():
             if not expected_paths:
