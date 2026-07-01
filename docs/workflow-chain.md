@@ -31,14 +31,14 @@
 | 1 | 入口路由 | `using-coding-plugins` | 判断直接意图和开发任务类型 |
 | 2 | 直接意图处理 | `requesting-code-review`, `receiving-code-review`, `verification-before-completion`, `git-commit`, `finishing-a-development-branch`, `writing-skills`, `using-git-worktrees`, `dispatching-parallel-agents` | 直接完成查询、评审、验证、提交、收尾、隔离或维护任务 |
 | 3 | SDD 文档编排 | `spec-driven-development` | 确认 README、需求文档、技术设计、技术实现、测试用例、计划、证据和 INDEX 的落地链路；新 feature 可创建文档骨架 |
-| 4 | 需求文档 | `writing-requirements` | `docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md`, Spec ID, Traceability Matrix |
-| 5 | 技术文档 | `writing-technicals` | `docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TDD.md`, `docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TID.md`, 规格到设计映射, 模块级实现和测试策略 |
-| 6 | 测试用例 | `writing-test-cases` | `docs/coding-plugins/features/<feature-name>/test-cases/<feature-name>-TCD.md`, Spec ID -> 测试用例 |
-| 7 | 实现计划 | `writing-plans` | `docs/coding-plugins/features/<feature-name>/plans/<feature-name>-IPD.md`, 技术设计来源, 技术实现来源, 测试用例来源, Spec ID -> 测试 -> 任务 追踪 |
+| 4 | 需求文档 | `writing-requirements` | `docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md`, Spec ID, Traceability Matrix |
+| 5 | 技术文档 | `writing-technicals` | `docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md`, `docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md`, 规格到设计映射, 模块级实现和测试策略 |
+| 6 | 测试用例 | `writing-test-cases` | `docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md`, Spec ID -> 测试用例 |
+| 7 | 实现计划 | `writing-plans` | `docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md`, 技术设计来源, 技术实现来源, 测试用例来源, Spec ID -> 测试 -> 任务 追踪 |
 | 8 | 文档契约 | `document-metadata`, `docs/coding-plugins/document-contract.md`, `scripts/preflight.py` | metadata-first 读取顺序、README 边界、related metadata、生成式索引 |
 | 9 | 隔离工作区 | `using-git-worktrees` | 独立 worktree 或确认在当前工作区执行 |
 | 10 | 执行调度 | `subagent-driven-development`, `executing-plans`, `dispatching-parallel-agents` | 子任务执行、批次执行或并行任务结果 |
-| 11 | TDD 实现 | `test-driven-development` | RED -> GREEN -> REFACTOR，`docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md` |
+| 11 | TDD 实现 | `test-driven-development` | RED -> GREEN -> REFACTOR，`docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md` |
 | 12 | 系统化调试 | `systematic-debugging` | 复现路径、根因、可测试修复入口 |
 | 13 | 评审门禁 | `spec-reviewer`, `code-quality-reviewer`, `requesting-code-review`, `receiving-code-review` | 规格符合性评审、代码质量评审、反馈处理 |
 | 14 | 完成前验证 | `verification-before-completion` | 测试、构建、规格覆盖或人工验收证据 |
@@ -94,11 +94,11 @@ flowchart TD
   SPEC_OK -->|需要修改| REQ
   SPEC_OK -->|确认| TECH
 
-  TECH --> TECH_DOC["写 technicals/<feature-name>-TDD.md / <feature-name>-TID.md、维护总索引"]
+  TECH --> TECH_DOC["写 technicals/<doc-id>-TDD.md / <doc-id>-TID.md、维护总索引"]
   TECH_DOC --> TEST_CASES
-  TEST_CASES --> TEST_DOC["写 test-cases/<feature-name>-TCD.md"]
+  TEST_CASES --> TEST_DOC["写 test-cases/<doc-id>-TCD.md"]
   TEST_DOC --> PLAN
-  PLAN --> PLAN_DOC["写 plans/<feature-name>-IPD.md、引用技术设计/技术实现和追踪矩阵"]
+  PLAN --> PLAN_DOC["写 plans/<doc-id>-IPD.md、引用技术设计/技术实现和追踪矩阵"]
   PLAN_DOC --> WORKTREE
 
   WORKTREE --> WT_DEC{"仅创建 worktree？"}
@@ -190,16 +190,16 @@ flowchart TD
   C --> SCAFFOLD["创建 README、PRD 和标准子目录文档骨架"]
   SCAFFOLD --> META["document-metadata"]
   META --> D["writing-requirements"]
-  D --> E["按场景写 requirements/<feature-name>-PRD.md"]
+  D --> E["按场景写 requirements/<doc-id>-PRD.md"]
   E --> F["运行 validate_spec.py"]
   F --> G{"用户确认需求文档？"}
   G -->|需要修改| D
   G -->|确认| TD["writing-technicals"]
-  TD --> H["写 technicals/<feature-name>-TDD.md / <feature-name>-TID.md"]
+  TD --> H["写 technicals/<doc-id>-TDD.md / <doc-id>-TID.md"]
   H --> TC["writing-test-cases"]
-  TC --> I["写 test-cases/<feature-name>-TCD.md"]
+  TC --> I["写 test-cases/<doc-id>-TCD.md"]
   I --> PLAN["writing-plans"]
-  PLAN --> J["写 plans/<feature-name>-IPD.md"]
+  PLAN --> J["写 plans/<doc-id>-IPD.md"]
   J --> K["引用 技术设计来源、技术实现来源 和 测试用例来源"]
   K --> L["计划自审或计划评审"]
   L --> M["进入执行场景"]
@@ -408,10 +408,10 @@ Claude Code 侧使用 `.claude-plugin/plugin.json` 识别插件。技能以 `/co
 默认需求文档路径：
 
 ```text
-docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md
+docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md
 ```
 
-时间、状态、标签和相关代码写入需求文档 metadata；新增、移动或删除 feature 文档后运行 `python3 scripts/preflight.py --write-index` 重新生成 `docs/coding-plugins/INDEX.md`，文件名不使用日期前缀。
+默认 `doc_id = <feature-name>`；同一 feature 模块下存在多个独立需求、流程、契约或维护主题时，使用更具体的 `doc_id`，例如 `routing-login-PRD.md` 和 `routing-register-PRD.md`。时间、状态、标签和相关代码写入需求文档 metadata；新增、移动或删除 feature 文档后运行 `python3 scripts/preflight.py --write-index` 重新生成 `docs/coding-plugins/INDEX.md`，文件名不使用日期前缀。
 
 该阶段输出应包括：
 
@@ -419,7 +419,7 @@ docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md
 - 用户目标、非目标和成功标准。
 - PRD 章节类型选择：feature、API contract、schema、state machine、acceptance criteria、maintenance。
 - 无新增需求时，只有维护、基线、回归、迁移或可观测性风险需要维护需求文档。
-- 路径和索引：`requirements/<feature-name>-PRD.md`，并通过 `python3 scripts/preflight.py --write-index` 更新 `INDEX.md`。
+- 路径和索引：`requirements/<doc-id>-PRD.md`，并通过 `python3 scripts/preflight.py --write-index` 更新 `INDEX.md`。
 - 稳定 Spec ID：`REQ/API/SCHEMA/STATE/ERR/AC/NFR/MIG/OBS/NON`。
 - 外部契约示例：请求/响应、schema 样例、状态迁移或错误样例。
 - Traceability Matrix 初稿。
@@ -433,25 +433,25 @@ docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md
 
 技术文档阶段必须先在 TDD 中完成 `## 规格缺口审查`。如果发现未覆盖需求、验收标准不清、新增外部行为、错误边界或兼容要求不清，停止 technical，回到 `spec-driven-development` 更新 spec、重新校验并取得确认，再继续 technical。preflight 会校验 TDD 文档包含规格缺口审查，并拦截未处理、待处理、需澄清、不清楚或待确认的缺口。
 
-技术设计还必须完成 `## 规格到设计映射` 和 `## 无需技术设计的规格`。同一 feature 下 approved spec 中的每个 MUST Spec ID，都要出现在映射表里；映射表使用 7 列：`规格 ID`、`规格摘要`、`技术落点`、`关键决策 ID`、`影响文件/符号`、`验证命令`、`证据`。确实无需技术设计的，必须在豁免表中写明原因。preflight 会从 approved spec 反向提取 MUST ID，拦截 technical 未覆盖或未豁免的规格。
+技术设计还必须完成 `## 规格到设计映射` 和 `## 无需技术设计的规格`。同一 `doc_id` 链路下 approved spec 中的每个 MUST Spec ID，都要出现在映射表里；映射表使用 7 列：`规格 ID`、`规格摘要`、`技术落点`、`关键决策 ID`、`影响文件/符号`、`验证命令`、`证据`。确实无需技术设计的，必须在豁免表中写明原因。preflight 会从同一 `doc_id` 的 approved spec 反向提取 MUST ID，拦截 technical 未覆盖或未豁免的规格。
 
 技术设计的关键决策必须使用 `TD-001`、`TD-002` 这类稳定 ID。映射表中的 `关键决策 ID` 必须能在 `## 关键决策` 表中找到，避免规格到技术落点之间只留下泛化描述。
 
 默认技术设计路径：
 
 ```text
-docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TDD.md
+docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md
 ```
 
 默认技术实现路径：
 
 ```text
-docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TID.md
+docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md
 ```
 
-技术文档路径的 `<feature-name>` 应和规格路径一致。保存或移动技术文档后运行 `python3 scripts/preflight.py --write-index`，让 `docs/coding-plugins/INDEX.md` 同步反映最新文件树。technical 模板正文标题和表头默认使用中文，Spec ID、命令、路径和代码标识可保留英文。
+技术文档路径的 `<doc-id>` 应和同一文档链路的 PRD 路径一致。保存或移动技术文档后运行 `python3 scripts/preflight.py --write-index`，让 `docs/coding-plugins/INDEX.md` 同步反映最新文件树。technical 模板正文标题和表头默认使用中文，Spec ID、命令、路径和代码标识可保留英文。
 
-当同一 feature 已存在 PRD、TID、TCD、IPD 或 TED 时，TDD frontmatter 应维护 `related_specs`、`related_technical`、`related_test_cases`、`related_plans` 和 `related_evidence`。TID frontmatter 应反向链接 TDD，并链接 PRD、TCD、IPD 和 TED。这些路径用于把需求契约、技术设计、技术实现、测试用例、实现计划和验证证据连成可检索链路。
+当同一 `doc_id` 已存在 PRD、TID、TCD、IPD 或 TED 时，TDD frontmatter 应维护 `related_specs`、`related_technical`、`related_test_cases`、`related_plans` 和 `related_evidence`。TID frontmatter 应反向链接 TDD，并链接同一 `doc_id` 的 PRD、TCD、IPD 和 TED。这些路径用于把需求契约、技术设计、技术实现、测试用例、实现计划和验证证据连成可检索链路。
 
 文档变更必须沿 metadata 关系向下游同步：`PRD -> TDD -> TID -> TCD -> IPD -> TED`。如果上游文档的 `updated` 晚于下游，说明下游还没有完成同步评审；preflight 会失败。下游正文确实无需变更时，也要更新下游 `updated`，表示已确认不受影响。
 
@@ -460,7 +460,7 @@ technical frontmatter 还必须维护 `lifecycle_status`、`implemented_commits`
 technical 可单独运行 validator：
 
 ```text
-python3 skills/writing-technicals/scripts/validate_technicals.py docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TDD.md
+python3 skills/writing-technicals/scripts/validate_technicals.py docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md
 ```
 
 普通模式只让结构错误失败；`--strict` 会把泛化映射、stale technical、缺 lifecycle metadata、缺 TD 决策 ID、隐藏需求和旧映射表头都升级为失败。preflight 默认调用 strict validator，因此发布前不能留下 warning。
@@ -474,10 +474,10 @@ python3 skills/writing-technicals/scripts/validate_technicals.py docs/coding-plu
 默认测试用例路径：
 
 ```text
-docs/coding-plugins/features/<feature-name>/test-cases/<feature-name>-TCD.md
+docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md
 ```
 
-测试用例文档不记录实际 RED/GREEN/REFACTOR 输出；实际执行证据仍由 `test-driven-development` 写入 `evidences/<feature-name>-TED.md`。
+测试用例文档不记录实际 RED/GREEN/REFACTOR 输出；实际执行证据仍由 `test-driven-development` 写入 `evidences/<doc-id>-TED.md`。
 
 ### 计划层
 
@@ -486,10 +486,10 @@ docs/coding-plugins/features/<feature-name>/test-cases/<feature-name>-TCD.md
 默认计划路径：
 
 ```text
-docs/coding-plugins/features/<feature-name>/plans/<feature-name>-IPD.md
+docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md
 ```
 
-计划路径的 `<feature-name>` 应和需求、技术设计、技术实现、测试用例路径一致，例如 `features/auth-login/requirements/auth-login-PRD.md` 对应 `features/auth-login/technicals/auth-login-TDD.md`、`features/auth-login/technicals/auth-login-TID.md`、`features/auth-login/test-cases/auth-login-TCD.md` 和 `features/auth-login/plans/auth-login-IPD.md`。
+计划路径的 `<doc-id>` 应和需求、技术设计、技术实现、测试用例路径一致，例如 `features/routing/requirements/routing-login-PRD.md` 对应 `features/routing/technicals/routing-login-TDD.md`、`features/routing/technicals/routing-login-TID.md`、`features/routing/test-cases/routing-login-TCD.md` 和 `features/routing/plans/routing-login-IPD.md`。
 
 计划文档应说明推荐执行方式：
 
@@ -530,10 +530,10 @@ spec-driven-development -> writing-requirements -> writing-technicals -> writing
 TDD 阶段的交付证据不是“我遵守了 TDD”，而是写入固定路径的标准化 `TDD 证据`：
 
 ```text
-docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md
+docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md
 ```
 
-`<feature-name>` 应和需求、测试用例、计划路径保持一致。
+`<doc-id>` 应和需求、技术、测试用例、计划路径保持一致。
 
 - `规格/缺陷/验收`：测试来源，优先引用需求文档和测试用例文档。
 - `RED 测试` / `RED 命令` / `RED 失败`：先失败证据。

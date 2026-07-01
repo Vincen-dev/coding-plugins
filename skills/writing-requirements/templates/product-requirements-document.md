@@ -1,9 +1,10 @@
 ---
-spec_id: <feature-name>-prd
+spec_id: <doc-id>-prd
 title: <功能名称>需求文档
 type: feature
 status: draft
 feature: <feature-name>
+doc_id: <doc-id>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 tags:
@@ -12,14 +13,14 @@ related_code:
   - <代码路径>
 related_specs: []
 related_technical:
-  - docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TDD.md
-  - docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TID.md
+  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md
+  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md
 related_test_cases:
-  - docs/coding-plugins/features/<feature-name>/test-cases/<feature-name>-TCD.md
+  - docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md
 related_plans:
-  - docs/coding-plugins/features/<feature-name>/plans/<feature-name>-IPD.md
+  - docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md
 related_evidence:
-  - docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md
+  - docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md
 ---
 
 # <功能名称>需求文档
@@ -30,12 +31,13 @@ related_evidence:
 | --- | --- |
 | 状态 | 草稿 |
 | Feature | <feature-name> |
+| Doc ID | <doc-id> |
 | 文档类型 | PRD |
-| 技术设计 | `docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TDD.md` |
-| 技术实现 | `docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TID.md` |
-| 测试用例 | `docs/coding-plugins/features/<feature-name>/test-cases/<feature-name>-TCD.md` |
-| 实现计划 | `docs/coding-plugins/features/<feature-name>/plans/<feature-name>-IPD.md` |
-| TDD 证据 | `docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md` |
+| 技术设计 | `docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md` |
+| 技术实现 | `docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md` |
+| 测试用例 | `docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md` |
+| 实现计划 | `docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md` |
+| TDD 证据 | `docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md` |
 
 关联关系以 frontmatter 的 `related_*` 字段为准；本表只提供人工阅读摘要。当前 feature 尚未沉淀的下游文档，应从 frontmatter 和本表中删除对应路径，或写明 `不适用：<原因>`。
 

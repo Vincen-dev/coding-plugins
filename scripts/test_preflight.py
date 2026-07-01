@@ -109,6 +109,18 @@ class PreflightTests(unittest.TestCase):
                 [requirements / f"{requirements.parent.name}-PRD.md"],
             )
 
+    def test_collect_spec_files_allows_multiple_doc_ids_in_one_feature(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            requirements = root / "docs" / "coding-plugins" / "features" / "routing" / "requirements"
+            requirements.mkdir(parents=True)
+            login = requirements / "routing-login-PRD.md"
+            register = requirements / "routing-register-PRD.md"
+            login.write_text("# Login\n", encoding="utf-8")
+            register.write_text("# Register\n", encoding="utf-8")
+
+            self.assertEqual(preflight.collect_spec_files(root), [login, register])
+
     def test_collect_tdd_evidence_files_uses_feature_first_path(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -191,6 +203,24 @@ class PreflightTests(unittest.TestCase):
 
             with self.assertRaisesRegex(preflight.PreflightError, "Feature documents must use"):
                 preflight.check_feature_first_document_layout(root)
+
+    def test_feature_first_layout_allows_multiple_doc_id_files(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature_dir = root / "docs" / "coding-plugins" / "features" / "routing"
+            (feature_dir / "requirements").mkdir(parents=True)
+            (feature_dir / "technicals").mkdir()
+            (feature_dir / "test-cases").mkdir()
+            (feature_dir / "plans").mkdir()
+            (feature_dir / "evidences").mkdir()
+            (feature_dir / "requirements" / "routing-login-PRD.md").write_text("# Login\n", encoding="utf-8")
+            (feature_dir / "requirements" / "routing-register-PRD.md").write_text("# Register\n", encoding="utf-8")
+            (feature_dir / "technicals" / "routing-login-TDD.md").write_text("# TDD\n", encoding="utf-8")
+            (feature_dir / "test-cases" / "routing-login-TCD.md").write_text("# TCD\n", encoding="utf-8")
+            (feature_dir / "plans" / "routing-login-IPD.md").write_text("# IPD\n", encoding="utf-8")
+            (feature_dir / "evidences" / "routing-login-TED.md").write_text("# TED\n", encoding="utf-8")
+
+            preflight.check_feature_first_document_layout(root)
 
     def test_feature_roots_require_readme(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -316,6 +346,27 @@ class PreflightTests(unittest.TestCase):
 
             preflight.check_feature_document_chain_closure(root)
 
+    def test_feature_document_chain_closure_is_scoped_by_doc_id(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature_dir = root / "docs" / "coding-plugins" / "features" / "routing"
+            (feature_dir / "requirements").mkdir(parents=True)
+            (feature_dir / "technicals").mkdir()
+            (feature_dir / "plans").mkdir()
+            (feature_dir / "requirements" / "routing-login-PRD.md").write_text(
+                "---\nstatus: approved\nfeature: routing\n---\n# Login\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "requirements" / "routing-register-PRD.md").write_text(
+                "---\nstatus: approved\nfeature: routing\n---\n# Register\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "technicals" / "routing-login-TDD.md").write_text("# Login TDD\n", encoding="utf-8")
+            (feature_dir / "plans" / "routing-login-IPD.md").write_text("# Login IPD\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(preflight.PreflightError, "routing-register-PRD.md"):
+                preflight.check_feature_document_chain_closure(root)
+
     def test_legacy_docs_roots_are_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -417,6 +468,39 @@ class PreflightTests(unittest.TestCase):
 
             preflight.check_prd_related_metadata(root)
 
+    def test_prd_related_metadata_is_scoped_by_doc_id(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature_dir = root / "docs" / "coding-plugins" / "features" / "routing"
+            (feature_dir / "requirements").mkdir(parents=True)
+            (feature_dir / "technicals").mkdir()
+            (feature_dir / "plans").mkdir()
+            (feature_dir / "requirements" / "routing-login-PRD.md").write_text(
+                "---\n"
+                "feature: routing\n"
+                "related_technical:\n"
+                "  - docs/coding-plugins/features/routing/technicals/routing-login-TDD.md\n"
+                "related_plans:\n"
+                "  - docs/coding-plugins/features/routing/plans/routing-login-IPD.md\n"
+                "---\n"
+                "# Login\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "requirements" / "routing-register-PRD.md").write_text(
+                "---\n"
+                "feature: routing\n"
+                "related_technical:\n"
+                "  - docs/coding-plugins/features/routing/technicals/routing-register-TDD.md\n"
+                "---\n"
+                "# Register\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "technicals" / "routing-login-TDD.md").write_text("# Login TDD\n", encoding="utf-8")
+            (feature_dir / "technicals" / "routing-register-TDD.md").write_text("# Register TDD\n", encoding="utf-8")
+            (feature_dir / "plans" / "routing-login-IPD.md").write_text("# Login IPD\n", encoding="utf-8")
+
+            preflight.check_prd_related_metadata(root)
+
     def test_document_sync_freshness_rejects_stale_downstream_doc(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -480,6 +564,27 @@ class PreflightTests(unittest.TestCase):
             )
             (feature_dir / "evidences" / "routing-TED.md").write_text(
                 "---\nupdated: 2026-07-02\n---\n# TED\n",
+                encoding="utf-8",
+            )
+
+            preflight.check_document_sync_freshness(root)
+
+    def test_document_sync_freshness_is_scoped_by_doc_id(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature_dir = root / "docs" / "coding-plugins" / "features" / "routing"
+            (feature_dir / "requirements").mkdir(parents=True)
+            (feature_dir / "technicals").mkdir()
+            (feature_dir / "requirements" / "routing-login-PRD.md").write_text(
+                "---\nupdated: 2026-07-01\n---\n# Login PRD\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "technicals" / "routing-login-TDD.md").write_text(
+                "---\nupdated: 2026-07-01\n---\n# Login TDD\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "requirements" / "routing-register-PRD.md").write_text(
+                "---\nupdated: 2026-07-03\n---\n# Register PRD\n",
                 encoding="utf-8",
             )
 
@@ -658,9 +763,9 @@ class PreflightTests(unittest.TestCase):
             feature_dir.mkdir(parents=True)
             (feature_dir / "README.md").write_text("# Search", encoding="utf-8")
             (docs / "INDEX.md").write_text(
-                "| Feature | 功能根目录 | 需求文档 | 技术设计 | 技术实现 | 测试用例 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
-                "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
-                "| search | - | - | - | - | - | - | - | search | 2026-06-26 |\n",
+                "| Feature | Doc ID | 功能根目录 | 需求文档 | 技术设计 | 技术实现 | 测试用例 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
+                "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
+                "| search | search | - | - | - | - | - | - | - | search | 2026-06-26 |\n",
                 encoding="utf-8",
             )
 
@@ -677,9 +782,9 @@ class PreflightTests(unittest.TestCase):
             technicals_dir.mkdir()
             (technicals_dir / f"{technicals_dir.parent.name}-TDD.md").write_text("# Technical", encoding="utf-8")
             (docs / "INDEX.md").write_text(
-                "| Feature | 功能根目录 | 需求文档 | 技术设计 | 技术实现 | 测试用例 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
-                "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
-                "| search | `docs/coding-plugins/features/search` | - | - | - | - | - | - | search | 2026-06-26 |\n",
+                "| Feature | Doc ID | 功能根目录 | 需求文档 | 技术设计 | 技术实现 | 测试用例 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
+                "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
+                "| search | search | `docs/coding-plugins/features/search` | - | - | - | - | - | - | search | 2026-06-26 |\n",
                 encoding="utf-8",
             )
 
@@ -694,9 +799,9 @@ class PreflightTests(unittest.TestCase):
             spec_dir.mkdir(parents=True)
             (spec_dir / f"{spec_dir.parent.name}-PRD.md").write_text("# Feature", encoding="utf-8")
             (docs / "INDEX.md").write_text(
-                "| Feature | 功能根目录 | 需求文档 | 技术设计 | 技术实现 | 测试用例 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
-                "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
-                "| search | `docs/coding-plugins/features/search` | - | - | - | - | - | - | search | 2026-06-26 |\n",
+                "| Feature | Doc ID | 功能根目录 | 需求文档 | 技术设计 | 技术实现 | 测试用例 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
+                "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
+                "| search | search | `docs/coding-plugins/features/search` | - | - | - | - | - | - | search | 2026-06-26 |\n",
                 encoding="utf-8",
             )
 
@@ -713,9 +818,9 @@ class PreflightTests(unittest.TestCase):
             test_cases_dir.mkdir()
             (test_cases_dir / f"{test_cases_dir.parent.name}-TCD.md").write_text("# Test cases", encoding="utf-8")
             (docs / "INDEX.md").write_text(
-                "| Feature | 功能根目录 | 需求文档 | 技术设计 | 技术实现 | 测试用例 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
-                "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
-                "| search | `docs/coding-plugins/features/search` | - | - | - | - | - | - | search | 2026-06-26 |\n",
+                "| Feature | Doc ID | 功能根目录 | 需求文档 | 技术设计 | 技术实现 | 测试用例 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
+                "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
+                "| search | search | `docs/coding-plugins/features/search` | - | - | - | - | - | - | search | 2026-06-26 |\n",
                 encoding="utf-8",
             )
 
@@ -732,9 +837,9 @@ class PreflightTests(unittest.TestCase):
             plan_dir.mkdir()
             (plan_dir / f"{plan_dir.parent.name}-IPD.md").write_text("# Plan", encoding="utf-8")
             (docs / "INDEX.md").write_text(
-                "| Feature | 功能根目录 | 需求文档 | 技术设计 | 技术实现 | 测试用例 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
-                "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
-                "| search | `docs/coding-plugins/features/search` | - | - | - | - | - | - | search | 2026-06-26 |\n",
+                "| Feature | Doc ID | 功能根目录 | 需求文档 | 技术设计 | 技术实现 | 测试用例 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
+                "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
+                "| search | search | `docs/coding-plugins/features/search` | - | - | - | - | - | - | search | 2026-06-26 |\n",
                 encoding="utf-8",
             )
 
@@ -749,9 +854,9 @@ class PreflightTests(unittest.TestCase):
             evidence_dir.mkdir(parents=True)
             (evidence_dir / f"{evidence_dir.parent.name}-TED.md").write_text("# Evidence", encoding="utf-8")
             (docs / "INDEX.md").write_text(
-                "| Feature | 功能根目录 | 需求文档 | 技术设计 | 技术实现 | 测试用例 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
-                "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
-                "| search | `docs/coding-plugins/features/search` | - | - | - | - | - | - | search | 2026-06-26 |\n",
+                "| Feature | Doc ID | 功能根目录 | 需求文档 | 技术设计 | 技术实现 | 测试用例 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
+                "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
+                "| search | search | `docs/coding-plugins/features/search` | - | - | - | - | - | - | search | 2026-06-26 |\n",
                 encoding="utf-8",
             )
 
@@ -858,7 +963,7 @@ class PreflightTests(unittest.TestCase):
 
             rendered = preflight.render_artifact_index(root)
 
-            self.assertIn("| search | `docs/coding-plugins/features/search` | - | - | - | - | - | - | - |", rendered)
+            self.assertIn("| search | search | `docs/coding-plugins/features/search` | - | - | - | - | - | - | - |", rendered)
 
     def test_render_artifact_index_handles_missing_updated_metadata(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -905,9 +1010,9 @@ class PreflightTests(unittest.TestCase):
             (docs / "INDEX.md").write_text(
                 "# Coding Plugins Feature 索引\n\n"
                 "本索引用于按 `Feature` 检索 feature-first 文档链路。新增、移动、批准、废弃或拆分相关产物时同步更新本文件。\n\n"
-                "| Feature | 功能根目录 | 需求文档 | 技术设计 | 技术实现 | 测试用例 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
-                "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
-                "| search | `docs/coding-plugins/features/search` | `docs/coding-plugins/features/search/requirements/search-PRD.md` | - | - | - | - | - | wrong-tag | 2026-06-29 |\n",
+                "| Feature | Doc ID | 功能根目录 | 需求文档 | 技术设计 | 技术实现 | 测试用例 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
+                "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
+                "| search | search | `docs/coding-plugins/features/search` | `docs/coding-plugins/features/search/requirements/search-PRD.md` | - | - | - | - | - | wrong-tag | 2026-06-29 |\n",
                 encoding="utf-8",
             )
 
@@ -1115,9 +1220,9 @@ class PreflightTests(unittest.TestCase):
             technicals_dir.mkdir(parents=True)
             (technicals_dir / f"{technicals_dir.parent.name}-TDD.md").write_text("# Technical", encoding="utf-8")
             (docs / "INDEX.md").write_text(
-                "| Feature | 功能根目录 | 需求文档 | 技术设计 | 技术实现 | 测试用例 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
-                "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
-                "| plugin | routing | `docs/coding-plugins/features/routing` | - | - | - | - | - | routing | 2026-06-26 |\n",
+                "| Feature | Doc ID | 功能根目录 | 需求文档 | 技术设计 | 技术实现 | 测试用例 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
+                "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
+                "| plugin | routing | routing | `docs/coding-plugins/features/routing` | - | - | - | - | - | routing | 2026-06-26 |\n",
                 encoding="utf-8",
             )
 
@@ -1324,6 +1429,44 @@ class PreflightTests(unittest.TestCase):
 
             with self.assertRaisesRegex(preflight.PreflightError, "Technical design does not cover required Spec IDs"):
                 preflight.check_technical_design_must_spec_coverage(root)
+
+    def test_technical_design_must_coverage_is_scoped_by_doc_id(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature_dir = root / "docs" / "coding-plugins" / "features" / "routing"
+            spec_dir = feature_dir / "requirements"
+            technicals_dir = feature_dir / "technicals"
+            spec_dir.mkdir(parents=True)
+            technicals_dir.mkdir()
+            (spec_dir / "routing-login-PRD.md").write_text(
+                "---\nstatus: approved\nfeature: routing\n---\n"
+                "| 编号 | 优先级 | 需求 | 验证方式 |\n"
+                "| --- | --- | --- | --- |\n"
+                "| REQ-LOGIN-001 | 必须 | 登录需求 | 单测 |\n",
+                encoding="utf-8",
+            )
+            (spec_dir / "routing-register-PRD.md").write_text(
+                "---\nstatus: approved\nfeature: routing\n---\n"
+                "| 编号 | 优先级 | 需求 | 验证方式 |\n"
+                "| --- | --- | --- | --- |\n"
+                "| REQ-REGISTER-001 | 必须 | 注册需求 | 单测 |\n",
+                encoding="utf-8",
+            )
+            (technicals_dir / "routing-login-TDD.md").write_text(
+                "---\nfeature: routing\n---\n"
+                "# 技术设计\n\n"
+                "## 规格到设计映射\n\n"
+                "| 规格 ID | 技术落点 | 设计决策 | 测试策略 |\n"
+                "| --- | --- | --- | --- |\n"
+                "| REQ-LOGIN-001 | `skills/auth.py` | 已覆盖 | 单测 |\n\n"
+                "## 无需技术设计的规格\n\n"
+                "| 规格 ID | 原因 |\n"
+                "| --- | --- |\n"
+                "| 无 | 无。 |\n",
+                encoding="utf-8",
+            )
+
+            preflight.check_technical_design_must_spec_coverage(root)
 
     def test_technical_design_must_coverage_allows_explicit_exemptions(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

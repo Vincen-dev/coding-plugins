@@ -1,13 +1,13 @@
 ---
 name: writing-requirements
-description: Use when writing or updating Coding Plugins PRD requirement documents, including feature, API contract, schema, state-machine, acceptance, or maintenance requirements under docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md.
+description: Use when writing or updating Coding Plugins PRD requirement documents, including feature, API contract, schema, state-machine, acceptance, or maintenance requirements under docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md.
 ---
 
 # 编写需求文档
 
 ## 总览
 
-本技能负责把需求、契约、schema、状态机、验收标准或维护约束写成可追踪、可验证的 PRD 需求文档。`spec-driven-development` 负责判断完整文档链路；本技能负责真正编写 `requirements/<feature-name>-PRD.md`。
+本技能负责把需求、契约、schema、状态机、验收标准或维护约束写成可追踪、可验证的 PRD 需求文档。`spec-driven-development` 负责判断完整文档链路；本技能负责真正编写 `requirements/<doc-id>-PRD.md`。
 
 **核心原则：**需求文档只定义“要什么”和“如何验收”，不写技术方案、测试用例步骤或实现计划。
 
@@ -34,7 +34,7 @@ description: Use when writing or updating Coding Plugins PRD requirement documen
 
 | 场景 | 文档 | 模板 |
 | --- | --- | --- |
-| 所有新 PRD | `docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md` | `templates/product-requirements-document.md` |
+| 所有新 PRD | `docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md` | `templates/product-requirements-document.md` |
 | 普通功能、用户流程、可见行为 | 同一个 PRD | 参考 `templates/feature-spec.md` 补齐 Feature 需求章节 |
 | HTTP/RPC/API/SDK/CLI 契约 | 同一个 PRD | 参考 `templates/api-contract-spec.md` 补齐 API / SDK / CLI 契约章节 |
 | 数据结构、配置、事件 payload | 同一个 PRD | 参考 `templates/schema-spec.md` 补齐 Schema / 数据契约章节 |
@@ -42,25 +42,26 @@ description: Use when writing or updating Coding Plugins PRD requirement documen
 | 验收标准不清 | 同一个 PRD | 参考 `templates/acceptance-criteria.md` 补齐验收标准章节 |
 | 维护、重构、升级、迁移、回归风险 | 同一个 PRD | 参考 `templates/maintenance-spec.md` 补齐维护 / 迁移 / 回归约束章节 |
 
-同一 feature 只维护一个 PRD。`product-requirements-document.md` 是默认骨架；不同场景模板只作为章节参考，不决定最终文件名。横跨多个独立 feature 时，拆成多个 feature root，并用 `related_specs` 互链。
+`product-requirements-document.md` 是默认骨架；不同场景模板只作为章节参考，不决定最终文件名。`feature` 表示模块目录，`doc_id` 表示该 feature 下的一条需求链路。默认 `doc_id = <feature-name>`；当一个 feature 模块下存在多个独立需求、流程、契约或维护主题时，为每条链路创建独立 `<doc-id>-PRD.md`，例如 `routing-login-PRD.md` 和 `routing-register-PRD.md`。横跨多个独立 feature 时，拆成多个 feature root，并用 `related_specs` 互链。
 
 ## 编写流程
 
 1. 使用 `document-metadata` 读取 feature README 和相关文档 frontmatter。
 2. 检索现有需求文档：`docs/coding-plugins/INDEX.md`、feature、tag、Spec ID、相关代码路径。
 3. 选择一个或多个需求章节类型；不要为了形式创建不需要的章节。
-4. 用 `templates/product-requirements-document.md` 写入 `docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md`；场景模板只用于补齐对应章节。
-5. 补齐 frontmatter：`spec_id`、`title`、`type`、`status`、`feature`、`created`、`updated`、`tags`、`related_code`、`related_specs`、`related_technical`、`related_test_cases`、`related_plans`、`related_evidence`。
-6. 写正文 `## 文档信息`，保持中文展示；机器 key 不翻译。
-7. 为 MUST 需求分配稳定 ID：`REQ/API/SCHEMA/STATE/ERR/AC/NFR/MIG/OBS/NON`。
-8. 在 `## 追踪矩阵` 中写验证方式种子，但不写具体测试步骤；测试步骤属于 `writing-test-cases`。
-9. 运行规格校验：
+4. 确定 `doc_id`：默认等于 `<feature-name>`；如果同一 feature 下已有其他 PRD，选择能表达本需求链路的稳定短名。
+5. 用 `templates/product-requirements-document.md` 写入 `docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md`；场景模板只用于补齐对应章节。
+6. 补齐 frontmatter：`spec_id`、`title`、`type`、`status`、`feature`、`doc_id`、`created`、`updated`、`tags`、`related_code`、`related_specs`、`related_technical`、`related_test_cases`、`related_plans`、`related_evidence`。
+7. 写正文 `## 文档信息`，保持中文展示；机器 key 不翻译。
+8. 为 MUST 需求分配稳定 ID：`REQ/API/SCHEMA/STATE/ERR/AC/NFR/MIG/OBS/NON`。
+9. 在 `## 追踪矩阵` 中写验证方式种子，但不写具体测试步骤；测试步骤属于 `writing-test-cases`。
+10. 运行规格校验：
 
 ```bash
 python3 skills/spec-driven-development/scripts/validate_spec.py <SPEC_FILE_PATH>
 ```
 
-10. 新增、移动、批准或废弃需求文档后运行：
+11. 新增、移动、批准或废弃需求文档后运行：
 
 ```bash
 python3 scripts/preflight.py --write-index

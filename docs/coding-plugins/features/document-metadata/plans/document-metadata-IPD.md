@@ -2,6 +2,7 @@
 title: 文档元数据规则和技能化实现计划
 status: approved
 feature: document-metadata
+doc_id: document-metadata
 created: 2026-06-26
 updated: 2026-07-01
 related_specs:
@@ -20,6 +21,7 @@ related_evidence:
 | --- | --- |
 | 状态 | 已批准 |
 | Feature | document-metadata |
+| Doc ID | document-metadata |
 | 需求文档 | `docs/coding-plugins/features/document-metadata/requirements/document-metadata-PRD.md` |
 | 技术设计 | `docs/coding-plugins/features/document-metadata/technicals/document-metadata-TDD.md` |
 | TDD 证据 | `docs/coding-plugins/features/document-metadata/evidences/document-metadata-TED.md` |
@@ -54,6 +56,7 @@ related_evidence:
 | REQ-008 | `python3 scripts/preflight.py` | skill template and agent metadata pass plugin checks | `docs/coding-plugins/features/document-metadata/evidences/document-metadata-TED.md` / 任务 3 | 任务 4 |
 | REQ-009 | `rg "document-metadata" skills docs README.md` | primary document skills reference metadata skill | `docs/coding-plugins/features/document-metadata/evidences/document-metadata-TED.md` / 任务 3 | 任务 4 |
 | REQ-010 | `python3 -m unittest scripts/test_preflight.py` | `test_document_sync_freshness_rejects_stale_downstream_doc` | `docs/coding-plugins/features/document-metadata/evidences/document-metadata-TED.md` / 任务 5 | 任务 5 |
+| REQ-011 | `python3 -m unittest scripts/test_docs_index.py scripts/test_preflight.py skills/writing-technicals/scripts/test_validate_technicals.py skills/spec-driven-development/scripts/test_scaffold_feature_docs.py` | doc_id index, chain closure, metadata relation, freshness and validator scoping tests | `docs/coding-plugins/features/document-metadata/evidences/document-metadata-TED.md` / 任务 6 | 任务 6 |
 
 ## 任务 1： Plan metadata and Chinese summary checks
 
@@ -171,3 +174,37 @@ Add document-metadata rows and record TDD 证据.
 - [x] **步骤 3：Document the workflow**
 
 在 `document-metadata` skill、模板和 workflow-chain 中说明同步更新规则。
+
+## 任务 6：Doc ID scoped document chains
+
+**规格 ID:** REQ-011, ERR-007, AC-005
+
+**文件:**
+- 修改: `scripts/docs_index.py`
+- 修改: `scripts/preflight.py`
+- 修改: `scripts/test_docs_index.py`
+- 修改: `scripts/test_preflight.py`
+- 修改: `skills/spec-driven-development/scripts/scaffold_feature_docs.py`
+- 修改: `skills/spec-driven-development/scripts/test_scaffold_feature_docs.py`
+- 修改: `skills/writing-technicals/scripts/validate_technicals.py`
+- 修改: `skills/writing-technicals/scripts/test_validate_technicals.py`
+- 修改: `skills/document-metadata/SKILL.md`
+- 修改: `skills/document-metadata/templates/document-metadata.md`
+- 修改: `skills/writing-requirements/SKILL.md`
+- 修改: `skills/writing-requirements/templates/product-requirements-document.md`
+- 修改: `skills/spec-driven-development/SKILL.md`
+- 修改: `README.md`
+- 修改: `docs/workflow-chain.md`
+- 修改: `docs/coding-plugins/document-contract.md`
+
+- [x] **步骤 1：Write scoped chain tests**
+
+增加索引、preflight、technical validator 和 scaffold 回归测试，覆盖同一 feature 下多条 doc_id 文档链路。
+
+- [x] **步骤 2：Implement doc_id scoping**
+
+索引按 Doc ID 分行；preflight 按同一 doc_id 做链路闭包、related metadata、technical coverage 和 freshness；technical validator 优先使用 related specs，缺省时按 doc_id 推导。
+
+- [x] **步骤 3：Update metadata and SDD guidance**
+
+在 metadata 模板、writing-requirements、SDD、README、workflow-chain 和 document-contract 中说明 `feature` 与 `doc_id` 的区别。

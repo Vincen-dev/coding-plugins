@@ -21,7 +21,7 @@ import docs_index  # noqa: E402
 from docs_index import feature_root_for_document, parse_frontmatter  # noqa: E402
 
 
-SPEC_ID_RE = re.compile(r"\b(?:REQ|API|SCHEMA|STATE|ERR|AC|NFR|MIG|OBS|NON)-\d{3,}\b")
+SPEC_ID_RE = re.compile(r"\b(?:REQ|API|SCHEMA|STATE|ERR|AC|NFR|MIG|OBS|NON)(?:-[A-Z0-9]+)*-\d{3,}\b")
 TD_ID_RE = re.compile(r"\bTD-\d{3,}\b")
 TECHNICAL_DESIGN_REQUIRED_SECTIONS = ("规格到设计映射", "无需技术设计的规格")
 TECHNICAL_MAPPING_HEADERS = ("规格 ID", "规格摘要", "技术落点", "关键决策 ID", "影响文件/符号", "验证命令", "证据")
@@ -148,6 +148,38 @@ def approved_spec_files_for_feature(feature_root: Path) -> list[Path]:
     return approved
 
 
+def related_paths_from_metadata(root: Path, text: str, key: str) -> list[Path]:
+    paths: list[Path] = []
+    for value in frontmatter_list_values(text, key):
+        if not value.startswith("docs/coding-plugins/"):
+            continue
+        path = root / value
+        if path.exists():
+            paths.append(path)
+    return sorted(paths)
+
+
+def approved_spec_files_for_technical(root: Path, technical_file: Path, text: str) -> list[Path]:
+    related_specs = related_paths_from_metadata(root, text, "related_specs")
+    if related_specs:
+        return [
+            spec_file
+            for spec_file in related_specs
+            if parse_frontmatter(spec_file.read_text(encoding="utf-8")).get("status") == "approved"
+        ]
+
+    feature_context = feature_root_for_document(root, technical_file)
+    if feature_context is None:
+        return []
+    _feature, feature_root = feature_context
+    doc_id = docs_index.document_doc_id(technical_file)
+    return [
+        spec_file
+        for spec_file in approved_spec_files_for_feature(feature_root)
+        if docs_index.document_doc_id(spec_file) == doc_id
+    ]
+
+
 def required_spec_ids_from_specs(spec_files: list[Path]) -> set[str]:
     ids: set[str] = set()
     for spec_file in spec_files:
@@ -193,11 +225,7 @@ def validate_required_sections(root: Path, technical_file: Path, text: str) -> l
 
 
 def validate_must_spec_coverage(root: Path, technical_file: Path, text: str) -> list[str]:
-    feature_context = feature_root_for_document(root, technical_file)
-    if feature_context is None:
-        return []
-    _feature, feature_root = feature_context
-    required_ids = required_spec_ids_from_specs(approved_spec_files_for_feature(feature_root))
+    required_ids = required_spec_ids_from_specs(approved_spec_files_for_technical(root, technical_file, text))
     if not required_ids:
         return []
 
@@ -213,11 +241,12 @@ def validate_related_metadata(root: Path, technical_file: Path, text: str) -> li
     if feature_context is None:
         return []
     _feature, feature_root = feature_context
+    doc_id = docs_index.document_doc_id(technical_file)
     expected_by_key = {
-        "related_specs": docs_index.feature_spec_files(feature_root),
-        "related_test_cases": docs_index.feature_test_case_files(feature_root),
-        "related_plans": docs_index.feature_plan_files(feature_root),
-        "related_evidence": docs_index.feature_evidence_files(feature_root),
+        "related_specs": docs_index.feature_spec_files_for_doc_id(feature_root, doc_id),
+        "related_test_cases": docs_index.feature_test_case_files_for_doc_id(feature_root, doc_id),
+        "related_plans": docs_index.feature_plan_files_for_doc_id(feature_root, doc_id),
+        "related_evidence": docs_index.feature_evidence_files_for_doc_id(feature_root, doc_id),
     }
 
     errors: list[str] = []
@@ -350,13 +379,8 @@ def stale_warnings(root: Path, technical_file: Path, text: str) -> list[str]:
     if not technical_updated:
         return []
 
-    feature_context = feature_root_for_document(root, technical_file)
-    if feature_context is None:
-        return []
-    _feature, feature_root = feature_context
-
     warnings: list[str] = []
-    for spec_file in approved_spec_files_for_feature(feature_root):
+    for spec_file in approved_spec_files_for_technical(root, technical_file, text):
         spec_metadata = parse_frontmatter(spec_file.read_text(encoding="utf-8"))
         spec_updated = spec_metadata.get("updated", "")
         if spec_updated and spec_updated > technical_updated:

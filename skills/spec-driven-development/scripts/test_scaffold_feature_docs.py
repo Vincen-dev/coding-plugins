@@ -44,6 +44,27 @@ class ScaffoldFeatureDocsTests(unittest.TestCase):
             self.assertIn("related_test_cases: []", prd)
             self.assertIn("## 追踪矩阵", prd)
 
+    def test_creates_custom_doc_id_prd_inside_feature(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+
+            result = scaffold_feature_docs.scaffold_feature(
+                root,
+                "routing",
+                "登录路由",
+                doc_id="routing-login",
+                current_date="2026-07-01",
+            )
+
+            feature_root = root / "docs" / "coding-plugins" / "features" / "routing"
+            prd = feature_root / "requirements" / "routing-login-PRD.md"
+            self.assertIn(prd, result.created)
+            text = prd.read_text(encoding="utf-8")
+            self.assertIn("spec_id: routing-login-prd", text)
+            self.assertIn("feature: routing", text)
+            self.assertIn("doc_id: routing-login", text)
+            self.assertIn("| Doc ID | routing-login |", text)
+
     def test_does_not_overwrite_existing_files_by_default(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -80,6 +101,11 @@ class ScaffoldFeatureDocsTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             with self.assertRaisesRegex(ValueError, "路径分隔符"):
                 scaffold_feature_docs.scaffold_feature(Path(tmp), "area/routing", "路由")
+
+    def test_rejects_nested_doc_id(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            with self.assertRaisesRegex(ValueError, "路径分隔符"):
+                scaffold_feature_docs.scaffold_feature(Path(tmp), "routing", "路由", doc_id="auth/login")
 
 
 if __name__ == "__main__":

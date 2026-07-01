@@ -4,6 +4,7 @@ title: 文档元数据规则和技能化
 type: feature
 status: approved
 feature: document-metadata
+doc_id: document-metadata
 created: 2026-06-26
 updated: 2026-07-01
 tags:
@@ -42,6 +43,7 @@ related_evidence:
 | --- | --- |
 | 状态 | 已批准 |
 | Feature | document-metadata |
+| Doc ID | document-metadata |
 | 规格类型 | feature |
 | 技术设计 | `docs/coding-plugins/features/document-metadata/technicals/document-metadata-TDD.md` |
 
@@ -73,6 +75,7 @@ related_evidence:
 | REQ-008 | 必须 | 插件必须提供 `document-metadata.md` 模板，覆盖 README、Spec、Technical、Plan、Evidence 和 Archived evidence 的 metadata 关系。 | 文档评审和 preflight。 |
 | REQ-009 | 必须 | 入口技能和 SDD/TDD/Technical/Plan 技能必须把文档关系读取导向 `document-metadata`。 | `python3 -m unittest tests.behavior.test_routing` 和 `rg` 检查。 |
 | REQ-010 | 必须 | preflight 必须按 metadata 关系校验文档同步新鲜度：PRD、TDD、TID、TCD、IPD 的下游文档 `updated` 不得早于上游文档。 | 单元测试 `test_document_sync_freshness_rejects_stale_downstream_doc`。 |
+| REQ-011 | 必须 | 文档 metadata 必须区分 `feature` 与 `doc_id`：`feature` 表示模块目录，`doc_id` 表示同一 feature 下的具体文档链路，索引、preflight 和模板按 `doc_id` 关联 PRD、TDD、TID、TCD、IPD、TED。 | 单元测试 `test_docs_index_renders_one_row_per_doc_id`、`test_feature_document_chain_closure_is_scoped_by_doc_id`、`test_document_sync_freshness_is_scoped_by_doc_id`。 |
 
 ## 错误和边界情况
 
@@ -84,6 +87,7 @@ related_evidence:
 | ERR-004 | 文档存在机器 frontmatter 但中文摘要缺少状态或 Feature。 | preflight 失败并指出中文文档信息不完整。 | 单元测试。 |
 | ERR-005 | 新增 skill 缺少 Codex 展示 metadata。 | preflight 失败并指出缺少 `agents/openai.yaml`。 | `python3 scripts/preflight.py`。 |
 | ERR-006 | PRD、TDD、TID、TCD 或 IPD 的 `updated` 晚于相关下游文档。 | preflight 失败并指出下游文档早于上游文档，需要同步更新或同步评审。 | 单元测试。 |
+| ERR-007 | 同一 feature 下存在多条 PRD 链路，但 metadata、索引或校验按 feature 全局混合。 | preflight 和 validator 只比较同一 `doc_id` 的上下游文档；跨链路依赖必须显式写入 `related_specs`。 | 单元测试。 |
 
 ## 验收标准
 
@@ -93,6 +97,7 @@ related_evidence:
 | AC-002 | 发布前检查 | 仓库存在 plan 文档 | 运行 `python3 scripts/preflight.py` | 缺少 Plan metadata 或中文摘要时失败。 |
 | AC-003 | 读取 feature 文档 | 仓库存在 README/spec/technical/plan/evidence | 使用 `document-metadata` | 先根据 frontmatter 和 `related_*` 建立关系，再阅读正文。 |
 | AC-004 | 上游文档变更后发布前检查 | PRD、TDD、TID、TCD 或 IPD 更新晚于下游文档 | 运行 `python3 scripts/preflight.py` | preflight 阻止发布并提示需要同步下游文档。 |
+| AC-005 | 同一 feature 下多需求链路 | `features/routing` 同时存在 `routing-login-PRD.md` 和 `routing-register-PRD.md` | 运行 `python3 scripts/preflight.py --write-index` 和 `python3 scripts/preflight.py` | INDEX 按 Doc ID 分行，链路闭包、metadata relation、同步新鲜度和 technical coverage 只检查对应 `doc_id`。 |
 
 ## 追踪矩阵
 
@@ -108,13 +113,16 @@ related_evidence:
 | REQ-008 | 文档评审 | `skills/document-metadata/templates/document-metadata.md` | Task 4 | 已覆盖 |
 | REQ-009 | 行为测试 / source scan | `python3 -m unittest tests.behavior.test_routing` / `rg "document-metadata" skills docs README.md` | Task 4 | 已覆盖 |
 | REQ-010 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 5 | 已覆盖 |
+| REQ-011 | 单元测试 | `python3 -m unittest scripts/test_docs_index.py scripts/test_preflight.py skills/writing-technicals/scripts/test_validate_technicals.py skills/spec-driven-development/scripts/test_scaffold_feature_docs.py` | Task 6 | 已覆盖 |
 | ERR-001 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
 | ERR-002 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
 | ERR-003 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
 | ERR-004 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
 | ERR-005 | 命令验证 | `python3 scripts/preflight.py` | Task 4 | 已覆盖 |
 | ERR-006 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 5 | 已覆盖 |
+| ERR-007 | 单元测试 | `python3 -m unittest scripts/test_docs_index.py scripts/test_preflight.py skills/writing-technicals/scripts/test_validate_technicals.py` | Task 6 | 已覆盖 |
 | AC-001 | 文档评审 | `skills/writing-plans/SKILL.md` | Task 2 | 已覆盖 |
 | AC-002 | 命令验证 | `python3 scripts/preflight.py` | Task 3 | 已覆盖 |
 | AC-003 | 文档评审 | `skills/document-metadata/SKILL.md` | Task 4 | 已覆盖 |
 | AC-004 | 命令验证 | `python3 scripts/preflight.py` | Task 5 | 已覆盖 |
+| AC-005 | 命令验证 | `python3 scripts/preflight.py --write-index && python3 scripts/preflight.py` | Task 6 | 已覆盖 |

@@ -2,6 +2,7 @@
 title: 文档元数据规则和技能化
 status: approved
 feature: document-metadata
+doc_id: document-metadata
 created: 2026-06-29
 updated: 2026-07-01
 related_specs:
@@ -66,3 +67,17 @@ related_plans:
 - **GREEN 命令:** `python3 -m unittest scripts/test_preflight.py` PASS
 - **REFACTOR 命令:** `python3 -m py_compile scripts/preflight.py` PASS；`git diff --check` PASS
 - **最终验证:** `python3 scripts/preflight.py --write-index` PASS。
+
+## 任务 5：Doc ID scoped document chains
+
+### TDD 证据
+
+- **规格/缺陷/验收:** REQ-011 / ERR-007 / AC-005
+- **测试类型:** unit
+- **RED 测试:** `scripts/test_docs_index.py::DocsIndexTests.test_docs_index_renders_one_row_per_doc_id`、`scripts/test_preflight.py::PreflightTests.test_feature_document_chain_closure_is_scoped_by_doc_id`、`test_document_sync_freshness_is_scoped_by_doc_id`、`skills/writing-technicals/scripts/test_validate_technicals.py::TechnicalDesignValidatorTests.test_validator_scopes_must_coverage_to_related_doc_chain`
+- **RED 命令:** `python3 -m unittest scripts/test_docs_index.py scripts/test_preflight.py skills/writing-technicals/scripts/test_validate_technicals.py skills/spec-driven-development/scripts/test_scaffold_feature_docs.py`
+- **RED 失败:** 旧规则按 feature 全局聚合需求链路，无法表达一个 feature 模块下多个 PRD 独立沉淀的情况。
+- **GREEN 变更:** `docs_index.py` 增加 Doc ID 分行索引；`preflight.py` 按 doc_id 限定链路闭包、related metadata、technical coverage 和 freshness；technical validator 与 scaffold 支持同一规则。
+- **GREEN 命令:** `python3 -m unittest scripts/test_docs_index.py scripts/test_preflight.py skills/writing-technicals/scripts/test_validate_technicals.py skills/spec-driven-development/scripts/test_scaffold_feature_docs.py` PASS
+- **REFACTOR 命令:** `python3 -m py_compile scripts/preflight.py scripts/docs_index.py skills/writing-technicals/scripts/validate_technicals.py skills/spec-driven-development/scripts/scaffold_feature_docs.py` PASS
+- **最终验证:** `python3 scripts/preflight.py --write-index`、`python3 scripts/preflight.py`。

@@ -6,7 +6,7 @@ Coding Plugins 是中文编码代理方法论插件，支持 Codex 和 Claude Co
 
 Codex 侧包含 SessionStart hook，新建、恢复或清空会话时会注入 `coding-plugins:using-coding-plugins` 入口提示，降低入口技能漏用概率。Claude Code 侧仍通过 `/coding-plugins:<skill-name>` 命名空间手动或按描述触发。
 
-需求文档、技术设计、技术实现、测试用例、计划和 TDD Evidence 的统一检索入口是 [docs/coding-plugins/INDEX.md](docs/coding-plugins/INDEX.md)。文档按 `docs/coding-plugins/features/<feature-name>/` 集中维护；新增或移动相关产物后运行 `python3 scripts/preflight.py --write-index` 重新生成总索引，`python3 scripts/preflight.py` 会校验索引和真实文件树完全一致。文档分层和 metadata-first 读取规则见 [docs/coding-plugins/document-contract.md](docs/coding-plugins/document-contract.md)，实际读写文档关系时使用 `document-metadata` skill 和 `skills/document-metadata/templates/document-metadata.md` 模板。
+需求文档、技术设计、技术实现、测试用例、计划和 TDD Evidence 的统一检索入口是 [docs/coding-plugins/INDEX.md](docs/coding-plugins/INDEX.md)。文档按 `docs/coding-plugins/features/<feature-name>/` 集中维护，并用 `<doc-id>-PRD/TDD/TID/TCD/IPD/TED.md` 区分同一 feature 下的多条文档链路；新增或移动相关产物后运行 `python3 scripts/preflight.py --write-index` 重新生成总索引，`python3 scripts/preflight.py` 会校验索引和真实文件树完全一致。文档分层和 metadata-first 读取规则见 [docs/coding-plugins/document-contract.md](docs/coding-plugins/document-contract.md)，实际读写文档关系时使用 `document-metadata` skill 和 `skills/document-metadata/templates/document-metadata.md` 模板。
 
 ## 工作方式
 
@@ -19,13 +19,13 @@ Codex 侧包含 SessionStart hook，新建、恢复或清空会话时会注入 `
 1. **using-coding-plugins** - 入口技能。先判断直接意图，再判断开发任务类型。
 2. **spec-driven-development** - 实现前激活。编排本 feature 需要沉淀的 README、需求、技术设计、技术实现、测试用例、计划和证据文档；新 feature 可先生成文档骨架。
 3. **document-metadata** - 读取或维护文档关系时先读 frontmatter，再按 `related_*` 串联 README、需求文档、技术设计、测试用例、计划和证据。
-4. **writing-requirements** - 编写 feature、API contract、schema、state machine、acceptance 或 maintenance 需求内容，统一保存到 `docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md`。
+4. **writing-requirements** - 编写 feature、API contract、schema、state machine、acceptance 或 maintenance 需求内容，保存到 `docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md`。
 5. **writing-technicals** - 基于已批准需求文档写 TDD 技术设计和必要的 TID 技术实现，保存到 `docs/coding-plugins/features/<feature-name>/technicals/`。
-6. **writing-test-cases** - 基于需求文档、TDD/TID 编写测试用例文档，保存到 `docs/coding-plugins/features/<feature-name>/test-cases/<feature-name>-TCD.md`。
+6. **writing-test-cases** - 基于需求文档、TDD/TID 编写测试用例文档，保存到 `docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md`。
 7. **writing-plans** - 基于已批准需求、TDD/TID 和测试用例写实现计划。任务拆到 2 到 5 分钟粒度，并建立 Spec ID -> Test -> Task 追踪。
 8. **using-git-worktrees** - 执行前使用。创建隔离 worktree 和新分支，避免污染当前工作区。
 9. **subagent-driven-development / executing-plans** - 根据计划执行。优先子代理驱动；没有子代理时内联执行。
-10. **test-driven-development** - 实现时强制 RED-GREEN-REFACTOR：先从规格写失败测试，再最小实现，再重构，并把 TDD Evidence 写入 `docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md`。
+10. **test-driven-development** - 实现时强制 RED-GREEN-REFACTOR：先从规格写失败测试，再最小实现，再重构，并把 TDD Evidence 写入 `docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md`。
 11. **requesting-code-review** - 任务之间或合并前评审，按严重级别报告问题。
 12. **receiving-code-review** - 收到评审后先验证反馈，再决定是否修改。
 13. **verification-before-completion** - 声明完成前运行测试、构建、规格覆盖或人工验收验证。

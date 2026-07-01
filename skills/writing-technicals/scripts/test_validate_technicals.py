@@ -155,6 +155,24 @@ class TechnicalDesignValidatorTests(unittest.TestCase):
             self.assertIn("does not cover required Spec IDs", "\n".join(result.errors))
             self.assertIn("REQ-001", "\n".join(result.errors))
 
+    def test_validator_scopes_must_coverage_to_related_doc_chain(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self.write_feature(root)
+            register_prd = root / "docs" / "coding-plugins" / "features" / "routing" / "requirements" / "routing-register-PRD.md"
+            register_prd.write_text(
+                "---\nstatus: approved\nfeature: routing\nupdated: 2026-06-29\n---\n"
+                "# Register\n\n"
+                "| 编号 | 优先级 | 需求 | 验证方式 |\n"
+                "| --- | --- | --- | --- |\n"
+                "| REQ-REGISTER-001 | 必须 | 注册需求 | 单测 |\n",
+                encoding="utf-8",
+            )
+
+            result = validator.validate_repository(root, strict=True)
+
+            self.assertTrue(result.ok, "\n".join(result.errors))
+
     def test_validator_rejects_missing_related_metadata_path(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

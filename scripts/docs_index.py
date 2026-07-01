@@ -12,6 +12,7 @@ class DocsIndexError(RuntimeError):
 
 ARTIFACT_INDEX_REQUIRED_COLUMNS = (
     "Feature",
+    "Doc ID",
     "功能根目录",
     "需求文档",
     "技术设计",
@@ -124,18 +125,47 @@ def format_index_path_cell(root: Path, paths: list[Path]) -> str:
     return "<br>".join(f"`{relative_markdown_path(root, path)}`" for path in paths)
 
 
-def feature_artifact_file(feature_root: Path, directory: str, suffix: str) -> Path:
-    return feature_root / directory / f"{feature_root.name}-{suffix}.md"
+ARTIFACT_SUFFIXES = ("PRD", "TDD", "TID", "TCD", "IPD", "TED")
+
+
+def document_doc_id(path: Path) -> str:
+    for suffix in ARTIFACT_SUFFIXES:
+        marker = f"-{suffix}"
+        if path.stem.endswith(marker):
+            return path.stem[: -len(marker)]
+    return path.stem
+
+
+def feature_artifact_file(feature_root: Path, directory: str, suffix: str, doc_id: str | None = None) -> Path:
+    return feature_root / directory / f"{doc_id or feature_root.name}-{suffix}.md"
+
+
+def feature_artifact_files(feature_root: Path, directory: str, suffix: str) -> list[Path]:
+    artifact_dir = feature_root / directory
+    if not artifact_dir.exists():
+        return []
+    return sorted(path for path in artifact_dir.glob(f"*-{suffix}.md") if path.is_file())
+
+
+def feature_artifact_files_for_doc_id(feature_root: Path, directory: str, suffix: str, doc_id: str) -> list[Path]:
+    path = feature_artifact_file(feature_root, directory, suffix, doc_id)
+    return [path] if path.exists() else []
 
 
 def feature_spec_files(feature_root: Path) -> list[Path]:
-    path = feature_artifact_file(feature_root, "requirements", "PRD")
-    return [path] if path.exists() else []
+    return feature_artifact_files(feature_root, "requirements", "PRD")
+
+
+def feature_spec_files_for_doc_id(feature_root: Path, doc_id: str) -> list[Path]:
+    return feature_artifact_files_for_doc_id(feature_root, "requirements", "PRD", doc_id)
 
 
 def feature_evidence_files(feature_root: Path) -> list[Path]:
-    path = feature_artifact_file(feature_root, "evidences", "TED")
-    return [path] if path.exists() else []
+    return feature_artifact_files(feature_root, "evidences", "TED")
+
+
+def feature_evidence_files_for_doc_id(feature_root: Path, doc_id: str) -> list[Path]:
+    return feature_artifact_files_for_doc_id(feature_root, "evidences", "TED", doc_id)
 
 
 def feature_archived_evidence_files(feature_root: Path) -> list[Path]:
@@ -146,23 +176,50 @@ def feature_archived_evidence_files(feature_root: Path) -> list[Path]:
 
 
 def feature_technical_design_files(feature_root: Path) -> list[Path]:
-    path = feature_artifact_file(feature_root, "technicals", "TDD")
-    return [path] if path.exists() else []
+    return feature_artifact_files(feature_root, "technicals", "TDD")
+
+
+def feature_technical_design_files_for_doc_id(feature_root: Path, doc_id: str) -> list[Path]:
+    return feature_artifact_files_for_doc_id(feature_root, "technicals", "TDD", doc_id)
 
 
 def feature_technical_implementation_files(feature_root: Path) -> list[Path]:
-    path = feature_artifact_file(feature_root, "technicals", "TID")
-    return [path] if path.exists() else []
+    return feature_artifact_files(feature_root, "technicals", "TID")
+
+
+def feature_technical_implementation_files_for_doc_id(feature_root: Path, doc_id: str) -> list[Path]:
+    return feature_artifact_files_for_doc_id(feature_root, "technicals", "TID", doc_id)
 
 
 def feature_plan_files(feature_root: Path) -> list[Path]:
-    path = feature_artifact_file(feature_root, "plans", "IPD")
-    return [path] if path.exists() else []
+    return feature_artifact_files(feature_root, "plans", "IPD")
+
+
+def feature_plan_files_for_doc_id(feature_root: Path, doc_id: str) -> list[Path]:
+    return feature_artifact_files_for_doc_id(feature_root, "plans", "IPD", doc_id)
 
 
 def feature_test_case_files(feature_root: Path) -> list[Path]:
-    path = feature_artifact_file(feature_root, "test-cases", "TCD")
-    return [path] if path.exists() else []
+    return feature_artifact_files(feature_root, "test-cases", "TCD")
+
+
+def feature_test_case_files_for_doc_id(feature_root: Path, doc_id: str) -> list[Path]:
+    return feature_artifact_files_for_doc_id(feature_root, "test-cases", "TCD", doc_id)
+
+
+def feature_doc_ids(feature_root: Path) -> list[str]:
+    doc_ids = {
+        document_doc_id(path)
+        for path in (
+            feature_spec_files(feature_root)
+            + feature_technical_design_files(feature_root)
+            + feature_technical_implementation_files(feature_root)
+            + feature_test_case_files(feature_root)
+            + feature_plan_files(feature_root)
+            + feature_evidence_files(feature_root)
+        )
+    }
+    return sorted(doc_ids)
 
 
 def feature_tags(feature_root: Path) -> str:
@@ -173,15 +230,18 @@ def feature_tags(feature_root: Path) -> str:
     return ", ".join(tags) if tags else "-"
 
 
-def feature_updated(feature_root: Path) -> str:
+def feature_updated(feature_root: Path, doc_id: str | None = None) -> str:
     updated_values: list[str] = []
-    for path in (
+    paths = (
         feature_spec_files(feature_root)
         + feature_technical_design_files(feature_root)
         + feature_technical_implementation_files(feature_root)
         + feature_test_case_files(feature_root)
         + feature_plan_files(feature_root)
-    ):
+    )
+    if doc_id is not None:
+        paths = [path for path in paths if document_doc_id(path) == doc_id]
+    for path in paths:
         updated = parse_frontmatter(path.read_text(encoding="utf-8")).get("updated")
         if updated:
             updated_values.append(updated)
@@ -194,8 +254,8 @@ def render_artifact_index(root: Path) -> str:
         "",
         "本索引用于按 `Feature` 检索 feature-first 文档链路。运行 `python3 scripts/preflight.py --write-index` 可根据 feature root 重新生成本文件。",
         "",
-        "| Feature | 功能根目录 | 需求文档 | 技术设计 | 技术实现 | 测试用例 | 实现计划 | 证据 | 标签 | 更新日期 |",
-        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+        "| Feature | Doc ID | 功能根目录 | 需求文档 | 技术设计 | 技术实现 | 测试用例 | 实现计划 | 证据 | 标签 | 更新日期 |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
 
     for feature_root in collect_feature_roots(root):
@@ -203,24 +263,29 @@ def render_artifact_index(root: Path) -> str:
         if feature_context is None:
             continue
         feature, _feature_root = feature_context
-        lines.append(
-            "| "
-            + " | ".join(
-                (
-                    feature,
-                    f"`{relative_markdown_path(root, feature_root)}`",
-                    format_index_path_cell(root, feature_spec_files(feature_root)),
-                    format_index_path_cell(root, feature_technical_design_files(feature_root)),
-                    format_index_path_cell(root, feature_technical_implementation_files(feature_root)),
-                    format_index_path_cell(root, feature_test_case_files(feature_root)),
-                    format_index_path_cell(root, feature_plan_files(feature_root)),
-                    format_index_path_cell(root, feature_evidence_files(feature_root)),
-                    feature_tags(feature_root),
-                    feature_updated(feature_root),
+        doc_ids = feature_doc_ids(feature_root) or [feature]
+        for doc_id in doc_ids:
+            lines.append(
+                "| "
+                + " | ".join(
+                    (
+                        feature,
+                        doc_id,
+                        f"`{relative_markdown_path(root, feature_root)}`",
+                        format_index_path_cell(root, feature_spec_files_for_doc_id(feature_root, doc_id)),
+                        format_index_path_cell(root, feature_technical_design_files_for_doc_id(feature_root, doc_id)),
+                        format_index_path_cell(
+                            root, feature_technical_implementation_files_for_doc_id(feature_root, doc_id)
+                        ),
+                        format_index_path_cell(root, feature_test_case_files_for_doc_id(feature_root, doc_id)),
+                        format_index_path_cell(root, feature_plan_files_for_doc_id(feature_root, doc_id)),
+                        format_index_path_cell(root, feature_evidence_files_for_doc_id(feature_root, doc_id)),
+                        feature_tags(feature_root),
+                        feature_updated(feature_root, doc_id),
+                    )
                 )
+                + " |"
             )
-            + " |"
-        )
 
     lines.extend(
         [
@@ -228,13 +293,14 @@ def render_artifact_index(root: Path) -> str:
             "规则:",
             "",
             "- `Feature` 必须和 `功能根目录` 路径一致。",
+            "- `Doc ID` 来自文件名去掉 `-PRD`、`-TDD`、`-TID`、`-TCD`、`-IPD` 或 `-TED` 后的前缀，用于区分同一 feature 下多条文档链路。",
             "- `功能根目录` 指向 `docs/coding-plugins/features/<feature-name>`。",
-            "- `需求文档` 指向 `docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md`；没有需求文档时使用 `-`。",
-            "- `技术设计` 指向 `docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TDD.md`；没有技术设计时使用 `-`。",
-            "- `技术实现` 指向 `docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TID.md`；没有技术实现文档时使用 `-`。",
-            "- `测试用例` 指向 `docs/coding-plugins/features/<feature-name>/test-cases/<feature-name>-TCD.md`；没有测试用例时使用 `-`。",
-            "- `实现计划` 指向 `docs/coding-plugins/features/<feature-name>/plans/<feature-name>-IPD.md`；没有计划时使用 `-`。",
-            "- `证据` 指向 `docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md`；没有证据时使用 `-`。",
+            "- `需求文档` 指向 `docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md`；没有需求文档时使用 `-`。",
+            "- `技术设计` 指向 `docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md`；没有技术设计时使用 `-`。",
+            "- `技术实现` 指向 `docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md`；没有技术实现文档时使用 `-`。",
+            "- `测试用例` 指向 `docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md`；没有测试用例时使用 `-`。",
+            "- `实现计划` 指向 `docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md`；没有计划时使用 `-`。",
+            "- `证据` 指向 `docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md`；没有证据时使用 `-`。",
             "- `标签` 来自 feature README frontmatter 的 `tags` 列表；日期来自需求文档、技术设计、测试用例或计划 frontmatter 的最大 `updated` 值。",
         ]
     )

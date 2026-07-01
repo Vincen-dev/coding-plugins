@@ -54,15 +54,16 @@ def render_readme(feature: str, title: str, status: str, updated: str, tags: lis
     )
 
 
-def render_prd(feature: str, title: str, status: str, current_date: str, tags: list[str]) -> str:
+def render_prd(feature: str, doc_id: str, title: str, status: str, current_date: str, tags: list[str]) -> str:
     tags_text = yaml_list(tags, fallback=feature)
     return (
         "---\n"
-        f"spec_id: {feature}-prd\n"
+        f"spec_id: {doc_id}-prd\n"
         f"title: {title}需求文档\n"
         "type: feature\n"
         f"status: {status}\n"
         f"feature: {feature}\n"
+        f"doc_id: {doc_id}\n"
         f"created: {current_date}\n"
         f"updated: {current_date}\n"
         "tags:\n"
@@ -80,6 +81,7 @@ def render_prd(feature: str, title: str, status: str, current_date: str, tags: l
         "| --- | --- |\n"
         f"| 状态 | {status} |\n"
         f"| Feature | {feature} |\n"
+        f"| Doc ID | {doc_id} |\n"
         "| 文档类型 | PRD |\n\n"
         "关联关系以 frontmatter 的 `related_*` 字段为准；新增 TDD、TID、TCD、IPD 或 TED 后必须回填对应路径。\n\n"
         "## 目标\n\n"
@@ -132,12 +134,15 @@ def scaffold_feature(
     feature: str,
     title: str,
     *,
+    doc_id: str | None = None,
     status: str = "draft",
     current_date: str | None = None,
     tags: list[str] | None = None,
     force: bool = False,
 ) -> ScaffoldResult:
     validate_feature_name(feature)
+    doc_id = doc_id or feature
+    validate_feature_name(doc_id)
     current_date = current_date or date.today().isoformat()
     tags = tags or [feature]
 
@@ -147,7 +152,9 @@ def scaffold_feature(
 
     targets = {
         feature_root / "README.md": render_readme(feature, title, status, current_date, tags),
-        feature_root / "requirements" / f"{feature}-PRD.md": render_prd(feature, title, status, current_date, tags),
+        feature_root / "requirements" / f"{doc_id}-PRD.md": render_prd(
+            feature, doc_id, title, status, current_date, tags
+        ),
     }
 
     created: list[Path] = []
@@ -164,6 +171,7 @@ def scaffold_feature(
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Create feature-first SDD document scaffold.")
     parser.add_argument("feature_name", help="Feature name, used in docs/coding-plugins/features/<feature-name>.")
+    parser.add_argument("--doc-id", default=None, help="Document chain id. Default: feature name.")
     parser.add_argument("--title", required=True, help="Chinese feature title.")
     parser.add_argument("--status", default="draft", help="Initial metadata status. Default: draft.")
     parser.add_argument("--date", default=None, help="Metadata date in YYYY-MM-DD. Default: today.")
@@ -181,6 +189,7 @@ def main(argv: list[str] | None = None) -> int:
             Path(args.root),
             args.feature_name,
             args.title,
+            doc_id=args.doc_id,
             status=args.status,
             current_date=args.date,
             tags=args.tag or [args.feature_name],

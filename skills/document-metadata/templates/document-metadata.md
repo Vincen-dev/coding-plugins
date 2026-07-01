@@ -1,6 +1,6 @@
 # document-metadata.md
 
-复制本模板时，只保留目标文档类型需要的字段。机器可读 key 保持英文；中文展示写在正文 `## 文档信息`。`updated` 表示本文档内容或 metadata 已完成更新，也表示已按上游文档变更完成同步评审。
+复制本模板时，只保留目标文档类型需要的字段。机器可读 key 保持英文；中文展示写在正文 `## 文档信息`。`feature` 表示 `docs/coding-plugins/features/<feature-name>/` 模块目录，`doc_id` 表示该 feature 下的一条具体文档链路。`updated` 表示本文档内容或 metadata 已完成更新，也表示已按上游文档变更完成同步评审。
 
 ## 通用 frontmatter
 
@@ -9,20 +9,21 @@
 title: <文档标题>
 status: draft
 feature: <feature-name>
+doc_id: <doc-id>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 tags:
   - <检索标签>
 related_specs: []
 related_technical:
-  - docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TDD.md
-  - docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TID.md
+  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md
+  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md
 related_test_cases:
-  - docs/coding-plugins/features/<feature-name>/test-cases/<feature-name>-TCD.md
+  - docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md
 related_plans:
-  - docs/coding-plugins/features/<feature-name>/plans/<feature-name>-IPD.md
+  - docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md
 related_evidence:
-  - docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md
+  - docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md
 related_code:
   - <代码路径>
 external_references:
@@ -34,11 +35,12 @@ external_references:
 
 ```yaml
 ---
-spec_id: <feature-name-kind>
+spec_id: <doc-id>-prd
 title: <规格标题>
 type: feature | api-contract | schema | state-machine | acceptance | maintenance
 status: draft
 feature: <feature-name>
+doc_id: <doc-id>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 tags:
@@ -47,14 +49,14 @@ related_code:
   - <代码路径>
 related_specs: []
 related_technical:
-  - docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TDD.md
-  - docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TID.md
+  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md
+  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md
 related_test_cases:
-  - docs/coding-plugins/features/<feature-name>/test-cases/<feature-name>-TCD.md
+  - docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md
 related_plans:
-  - docs/coding-plugins/features/<feature-name>/plans/<feature-name>-IPD.md
+  - docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md
 related_evidence:
-  - docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md
+  - docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md
 ---
 ```
 
@@ -66,20 +68,21 @@ title: <功能名称>技术设计
 status: draft
 lifecycle_status: draft
 feature: <feature-name>
+doc_id: <doc-id>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 implemented_commits: []
 validated_by: <验证命令或人工验证记录>
 related_specs:
-  - docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md
+  - docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md
 related_technical:
-  - docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TID.md
+  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md
 related_plans:
-  - docs/coding-plugins/features/<feature-name>/plans/<feature-name>-IPD.md
+  - docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md
 related_test_cases:
-  - docs/coding-plugins/features/<feature-name>/test-cases/<feature-name>-TCD.md
+  - docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md
 related_evidence:
-  - docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md
+  - docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md
 ---
 ```
 
@@ -91,20 +94,21 @@ title: <功能名称>技术实现
 status: draft
 lifecycle_status: draft
 feature: <feature-name>
+doc_id: <doc-id>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 implemented_commits: []
 validated_by: <验证命令或人工验证记录>
 related_specs:
-  - docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md
+  - docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md
 related_technical:
-  - docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TDD.md
+  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md
 related_plans:
-  - docs/coding-plugins/features/<feature-name>/plans/<feature-name>-IPD.md
+  - docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md
 related_test_cases:
-  - docs/coding-plugins/features/<feature-name>/test-cases/<feature-name>-TCD.md
+  - docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md
 related_evidence:
-  - docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md
+  - docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md
 ---
 ```
 
@@ -115,17 +119,18 @@ related_evidence:
 title: <功能名称>实现计划
 status: draft
 feature: <feature-name>
+doc_id: <doc-id>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 related_specs:
-  - docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md
+  - docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md
 related_technical:
-  - docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TDD.md
-  - docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TID.md
+  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md
+  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md
 related_test_cases:
-  - docs/coding-plugins/features/<feature-name>/test-cases/<feature-name>-TCD.md
+  - docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md
 related_evidence:
-  - docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md
+  - docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md
 ---
 ```
 
@@ -136,17 +141,18 @@ related_evidence:
 title: <功能名称>测试用例
 status: draft
 feature: <feature-name>
+doc_id: <doc-id>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 related_specs:
-  - docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md
+  - docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md
 related_technical:
-  - docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TDD.md
-  - docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TID.md
+  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md
+  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md
 related_plans:
-  - docs/coding-plugins/features/<feature-name>/plans/<feature-name>-IPD.md
+  - docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md
 related_evidence:
-  - docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md
+  - docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md
 ---
 ```
 
@@ -157,15 +163,16 @@ related_evidence:
 title: <功能名称> TDD 证据
 status: draft
 feature: <feature-name>
+doc_id: <doc-id>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 related_specs:
-  - docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md
+  - docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md
 related_technical:
-  - docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TDD.md
-  - docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TID.md
+  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md
+  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md
 related_plans:
-  - docs/coding-plugins/features/<feature-name>/plans/<feature-name>-IPD.md
+  - docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md
 ---
 ```
 
@@ -176,10 +183,11 @@ related_plans:
 title: <历史证据标题>
 status: archived
 feature: <feature-name>
+doc_id: <doc-id>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 validation_mode: historical
-archive_of: docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md
+archive_of: docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md
 archived_at: YYYY-MM-DD
 ---
 ```
@@ -193,12 +201,13 @@ archived_at: YYYY-MM-DD
 | --- | --- |
 | 状态 | 草稿 |
 | Feature | <feature-name> |
-| 需求文档 | `docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md` |
-| 技术设计 | `docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TDD.md` |
-| 技术实现 | `docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TID.md` |
-| 测试用例 | `docs/coding-plugins/features/<feature-name>/test-cases/<feature-name>-TCD.md` |
-| 实现计划 | `docs/coding-plugins/features/<feature-name>/plans/<feature-name>-IPD.md` |
-| TDD 证据 | `docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md` |
+| Doc ID | <doc-id> |
+| 需求文档 | `docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md` |
+| 技术设计 | `docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md` |
+| 技术实现 | `docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md` |
+| 测试用例 | `docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md` |
+| 实现计划 | `docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md` |
+| TDD 证据 | `docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md` |
 ```
 
 中文 `文档信息` 只服务人工阅读。路径关系和状态判断以 frontmatter 为准。

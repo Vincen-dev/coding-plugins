@@ -47,7 +47,54 @@ class DocsIndexTests(unittest.TestCase):
             self.assertIn("`docs/coding-plugins/features/search`", rendered)
             self.assertIn("`docs/coding-plugins/features/search/requirements/search-PRD.md`", rendered)
             self.assertIn("`docs/coding-plugins/features/search/test-cases/search-TCD.md`", rendered)
+            self.assertIn("| Feature | Doc ID | 功能根目录 |", rendered)
+            self.assertIn("| search | search | `docs/coding-plugins/features/search` |", rendered)
             self.assertIn("| search | 2026-06-29 |", rendered)
+
+    def test_docs_index_renders_one_row_per_doc_id(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature_dir = root / "docs" / "coding-plugins" / "features" / "search"
+            (feature_dir / "requirements").mkdir(parents=True)
+            (feature_dir / "technicals").mkdir()
+            (feature_dir / "README.md").write_text(
+                "---\n"
+                "title: 搜索\n"
+                "status: approved\n"
+                "feature: search\n"
+                "updated: 2026-07-01\n"
+                "tags:\n"
+                "  - search\n"
+                "---\n"
+                "# Search\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "requirements" / "search-basic-PRD.md").write_text(
+                "---\nupdated: 2026-07-01\n---\n# Basic\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "requirements" / "search-advanced-PRD.md").write_text(
+                "---\nupdated: 2026-07-02\n---\n# Advanced\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "technicals" / "search-basic-TDD.md").write_text(
+                "---\nupdated: 2026-07-03\n---\n# Basic TDD\n",
+                encoding="utf-8",
+            )
+
+            rendered = docs_index.render_artifact_index(root)
+
+            self.assertIn(
+                "| search | search-basic | `docs/coding-plugins/features/search` | "
+                "`docs/coding-plugins/features/search/requirements/search-basic-PRD.md` | "
+                "`docs/coding-plugins/features/search/technicals/search-basic-TDD.md` |",
+                rendered,
+            )
+            self.assertIn(
+                "| search | search-advanced | `docs/coding-plugins/features/search` | "
+                "`docs/coding-plugins/features/search/requirements/search-advanced-PRD.md` | - |",
+                rendered,
+            )
 
     def test_docs_index_uses_readme_frontmatter_tags_not_body_table(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
