@@ -377,16 +377,19 @@ def check_technical_templates_are_chinese(root: Path) -> None:
 
 
 def check_plan_templates_are_chinese(root: Path) -> None:
-    skill_path = root / "skills" / "writing-plans" / "SKILL.md"
-    if not skill_path.exists():
-        return
-
-    text = skill_path.read_text(encoding="utf-8")
-    offenders = [
-        f"{skill_path.relative_to(root)} contains {pattern!r}"
-        for pattern in PLAN_TEMPLATE_ENGLISH_STRUCTURE
-        if pattern in text
+    candidates = [
+        root / "skills" / "writing-plans" / "SKILL.md",
+        root / "skills" / "writing-plans" / "templates" / "implementation-plan.md",
     ]
+    offenders: list[str] = []
+    for path in candidates:
+        if not path.exists():
+            continue
+        text = path.read_text(encoding="utf-8")
+        for pattern in PLAN_TEMPLATE_ENGLISH_STRUCTURE:
+            if pattern in text:
+                offenders.append(f"{path.relative_to(root)} contains {pattern!r}")
+                break
     if offenders:
         raise PreflightError("Plan template still contains English structure: " + "; ".join(offenders) + ".")
 
@@ -422,6 +425,64 @@ def check_technical_template_required_sections(root: Path) -> None:
             "Technical template is missing required section: "
             + f"{template_path.relative_to(root)} missing {', '.join(missing)}."
         )
+
+
+def check_document_templates_match_metadata_contract(root: Path) -> None:
+    template_paths = {
+        "PRD": root / "skills" / "writing-requirements" / "templates" / "product-requirements-document.md",
+        "TDD": root / "skills" / "writing-technicals" / "templates" / "technical-design-document.md",
+        "TID": root / "skills" / "writing-technicals" / "templates" / "technical-implementation-document.md",
+        "TCD": root / "skills" / "writing-test-cases" / "templates" / "test-cases.md",
+        "IPD": root / "skills" / "writing-plans" / "templates" / "implementation-plan.md",
+        "TED": root / "skills" / "test-driven-development" / "templates" / "tdd-evidence.md",
+    }
+    offenders: list[str] = []
+
+    for label, path in template_paths.items():
+        if not path.exists():
+            offenders.append(f"{label} template missing {path.relative_to(root)}")
+            continue
+
+        text = path.read_text(encoding="utf-8")
+        metadata = parse_frontmatter(text)
+        relative = path.relative_to(root)
+        if not metadata.get("doc_id"):
+            offenders.append(f"{relative} missing doc_id")
+        if "## 阅读摘要" not in text:
+            offenders.append(f"{relative} missing ## 阅读摘要")
+        if "## 文档信息" not in text:
+            offenders.append(f"{relative} missing ## 文档信息")
+
+    prd_path = template_paths["PRD"]
+    if prd_path.exists():
+        prd_text = prd_path.read_text(encoding="utf-8")
+        for key in ("related_technical", "related_test_cases", "related_plans", "related_evidence"):
+            if frontmatter_list_values(prd_text, key):
+                offenders.append(f"{prd_path.relative_to(root)} should leave initial {key} empty")
+
+    ted_path = template_paths["TED"]
+    if ted_path.exists():
+        ted_text = ted_path.read_text(encoding="utf-8")
+        expected_relations = {
+            "related_technical": {
+                "docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md",
+                "docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md",
+            },
+            "related_test_cases": {
+                "docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md",
+            },
+            "related_plans": {
+                "docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md",
+            },
+        }
+        for key, expected_values in expected_relations.items():
+            actual_values = set(frontmatter_list_values(ted_text, key))
+            missing_values = sorted(expected_values - actual_values)
+            if missing_values:
+                offenders.append(f"{ted_path.relative_to(root)} {key} missing {', '.join(missing_values)}")
+
+    if offenders:
+        raise PreflightError("Document template metadata contract is invalid: " + "; ".join(offenders) + ".")
 
 
 def check_skill_agent_metadata(root: Path) -> None:
@@ -1486,6 +1547,7 @@ def run_static_checks(root: Path) -> None:
     check_plan_templates_are_chinese(root)
     check_tdd_evidence_templates_are_chinese(root)
     check_technical_template_required_sections(root)
+    check_document_templates_match_metadata_contract(root)
 
 
 def main(argv: list[str] | None = None) -> int:

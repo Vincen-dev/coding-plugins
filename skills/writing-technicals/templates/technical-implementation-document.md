@@ -3,6 +3,7 @@ title: "<功能名称>技术实现"
 status: draft
 lifecycle_status: draft
 feature: "<feature-name>"
+doc_id: "<doc-id>"
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 implemented_commits: []
@@ -21,6 +22,13 @@ related_evidence:
 
 # <功能名称>技术实现
 
+## 阅读摘要
+
+- **本文结论:** <说明最终实现边界、主要代码落点和不会实现的内容。>
+- **当前状态:** 草稿，等待实现方案确认。
+- **先读重点:** 先看实现摘要、模块实现、接口和数据结构、验证映射。
+- **下游同步:** TID 更新后必须同步同一 `doc_id` 的 TCD、IPD 和 TED，至少更新 `updated` 表示已评审。
+
 ## 文档信息
 
 | 字段 | 内容 |
@@ -28,6 +36,7 @@ related_evidence:
 | 状态 | 草稿 |
 | 生命周期 | draft |
 | Feature | <feature-name> |
+| Doc ID | <doc-id> |
 | 需求文档 | `docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md` |
 | 技术设计 | `docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md` |
 | 测试用例 | `docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md` |

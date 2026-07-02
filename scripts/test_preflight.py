@@ -810,6 +810,60 @@ class PreflightTests(unittest.TestCase):
             with self.assertRaisesRegex(preflight.PreflightError, "Technical template is missing required section"):
                 preflight.check_technical_template_required_sections(root)
 
+    def test_repository_document_templates_match_metadata_contract(self) -> None:
+        preflight.check_document_templates_match_metadata_contract(Path(__file__).resolve().parents[1])
+
+    def test_document_template_contract_rejects_missing_doc_id_and_related_links(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            technical_templates = root / "skills" / "writing-technicals" / "templates"
+            evidence_templates = root / "skills" / "test-driven-development" / "templates"
+            plan_templates = root / "skills" / "writing-plans" / "templates"
+            technical_templates.mkdir(parents=True)
+            evidence_templates.mkdir(parents=True)
+            plan_templates.mkdir(parents=True)
+            (technical_templates / "technical-design-document.md").write_text(
+                "---\n"
+                "title: 技术设计\n"
+                "feature: <feature-name>\n"
+                "---\n"
+                "## 文档信息\n",
+                encoding="utf-8",
+            )
+            (technical_templates / "technical-implementation-document.md").write_text(
+                "---\n"
+                "title: 技术实现\n"
+                "feature: <feature-name>\n"
+                "---\n"
+                "## 文档信息\n",
+                encoding="utf-8",
+            )
+            (evidence_templates / "tdd-evidence.md").write_text(
+                "---\n"
+                "title: TDD 证据\n"
+                "feature: <feature-name>\n"
+                "doc_id: <doc-id>\n"
+                "related_specs:\n"
+                "  - docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md\n"
+                "related_technical:\n"
+                "  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md\n"
+                "related_plans:\n"
+                "  - docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md\n"
+                "---\n",
+                encoding="utf-8",
+            )
+            (plan_templates / "implementation-plan.md").write_text(
+                "---\n"
+                "title: 实现计划\n"
+                "feature: <feature-name>\n"
+                "doc_id: <doc-id>\n"
+                "---\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Document template metadata contract is invalid"):
+                preflight.check_document_templates_match_metadata_contract(root)
+
     def test_codex_manifest_declares_hook_config(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

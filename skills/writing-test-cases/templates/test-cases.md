@@ -2,6 +2,7 @@
 title: <功能名称>测试用例
 status: draft
 feature: <feature-name>
+doc_id: <doc-id>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 related_specs:
@@ -17,12 +18,20 @@ related_evidence:
 
 # <功能名称>测试用例
 
+## 阅读摘要
+
+- **本文结论:** <说明测试设计覆盖哪些 MUST 规格、自动化边界和人工验收边界。>
+- **当前状态:** 草稿，等待测试设计确认。
+- **先读重点:** 先看测试策略摘要、Spec ID 到测试用例映射、不需要测试用例的规格。
+- **下游同步:** TCD 更新后必须同步同一 `doc_id` 的 IPD 和 TED，至少更新 `updated` 表示已评审。
+
 ## 文档信息
 
 | 字段 | 内容 |
 | --- | --- |
 | 状态 | 草稿 |
 | Feature | <feature-name> |
+| Doc ID | <doc-id> |
 | 需求文档 | `docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md` |
 | 技术设计 | `docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md` |
 | 技术实现 | `docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md` |

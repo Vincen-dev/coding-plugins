@@ -1,5 +1,11 @@
 # Release Notes
 
+## 1.0.2 - 2026-07-02
+
+- 收口 PRD、TDD、TID、TCD、IPD 和 TED 模板的首屏阅读摘要，提升沉淀文档的人工可读性。
+- 修正模板 metadata 漂移，补齐 TDD/TID/TCD 的 `doc_id`，并让 TED 关联 TID 和 TCD。
+- 新增 IPD 独立模板和模板契约 preflight，防止模板再次偏离 metadata 链路规则。
+
 ## 1.0.1 - 2026-07-02
 
 - 增强 preflight，正式链路闭包要求 approved PRD 同时具备 TDD、TID、TCD 和 IPD。

@@ -172,8 +172,11 @@ related_specs:
 related_technical:
   - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md
   - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md
+related_test_cases:
+  - docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md
 related_plans:
   - docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md
+related_evidence: []
 ---
 ```
 

@@ -73,7 +73,7 @@ description: Use when reading, creating, updating, migrating, or auditing Coding
 | TID 技术实现 | `title`、`status`、`lifecycle_status`、`feature`、`doc_id`、`created`、`updated`、`implemented_commits`、`validated_by` | approved PRD 正式链路必备；必须链接同一 `doc_id` 的 TDD、PRD、TCD、IPD 和 TED |
 | TCD 测试用例 | `title`、`status`、`feature`、`doc_id`、`created`、`updated` | 必须链接同一 `doc_id` 下存在的 PRD、TDD/TID、计划和 evidence |
 | IPD 实现计划 | `title`、`status`、`feature`、`doc_id`、`created`、`updated` | 必须链接同一 `doc_id` 的 PRD、TDD/TID、TCD 和 evidence |
-| TED 证据 | `title`、`status`、`feature`、`doc_id`、`created`、`updated` | 必须链接同一 `doc_id` 的 PRD、TDD/TID 和计划 |
+| TED 证据 | `title`、`status`、`feature`、`doc_id`、`created`、`updated` | 必须链接同一 `doc_id` 的 PRD、TDD/TID、TCD 和计划 |
 | Archived evidence | active evidence 字段外加 `validation_mode`、`archive_of`、`archived_at` | `status: archived` 且 `validation_mode: historical` |
 
 ## 创建或更新流程

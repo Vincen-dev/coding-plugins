@@ -44,6 +44,28 @@ class ScaffoldFeatureDocsTests(unittest.TestCase):
             self.assertIn("related_test_cases: []", prd)
             self.assertIn("## 追踪矩阵", prd)
 
+    def test_scaffold_uses_readable_prompts_instead_of_placeholder_residue(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+
+            scaffold_feature_docs.scaffold_feature(
+                root,
+                "metadata-chain",
+                "文档关系链路",
+                current_date="2026-07-01",
+            )
+
+            feature_root = root / "docs" / "coding-plugins" / "features" / "metadata-chain"
+            combined = "\n".join(
+                [
+                    (feature_root / "README.md").read_text(encoding="utf-8"),
+                    (feature_root / "requirements" / "metadata-chain-PRD.md").read_text(encoding="utf-8"),
+                ]
+            )
+
+            for residue in ("待补充", "占位", "TODO", "TBD"):
+                self.assertNotIn(residue, combined)
+
     def test_creates_artifact_directories_from_metadata_registry(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

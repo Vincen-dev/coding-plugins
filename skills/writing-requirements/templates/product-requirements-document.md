@@ -11,18 +11,20 @@ tags:
 related_code:
   - <代码路径>
 related_specs: []
-related_technical:
-  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md
-  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md
-related_test_cases:
-  - docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md
-related_plans:
-  - docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md
-related_evidence:
-  - docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md
+related_technical: []
+related_test_cases: []
+related_plans: []
+related_evidence: []
 ---
 
 # <功能名称>需求文档
+
+## 阅读摘要
+
+- **本文结论:** <一句话说明本需求要交付的能力和成功状态。>
+- **当前状态:** 草稿，等待需求确认。
+- **先读重点:** 先看目标、非目标、Feature 需求和验收标准；涉及接口、schema、状态机或迁移时再看对应章节。
+- **下游同步:** PRD 批准后创建同一 `doc_id` 的 TDD、TID、TCD 和 IPD，并回填 frontmatter 的 `related_*`。
 
 ## 文档信息
 
@@ -32,13 +34,13 @@ related_evidence:
 | Feature | <feature-name> |
 | Doc ID | <doc-id> |
 | 文档类型 | PRD |
-| 技术设计 | `docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md` |
-| 技术实现 | `docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md` |
-| 测试用例 | `docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md` |
-| 实现计划 | `docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md` |
-| TDD 证据 | `docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md` |
+| 技术设计 | 未创建 |
+| 技术实现 | 未创建 |
+| 测试用例 | 未创建 |
+| 实现计划 | 未创建 |
+| TDD 证据 | 未创建 |
 
-关联关系以 frontmatter 的 `related_*` 字段为准；本表只提供人工阅读摘要。当前 feature 尚未沉淀的下游文档，应从 frontmatter 和本表中删除对应路径，或写明 `不适用：<原因>`。
+关联关系以 frontmatter 的 `related_*` 字段为准；本表只提供人工阅读摘要。当前 feature 尚未沉淀的下游文档保持 `未创建`，创建后再同步为实际路径。
 
 ## 目标
 
