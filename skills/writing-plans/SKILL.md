@@ -1,300 +1,170 @@
 ---
 name: writing-plans
-description: 已有规格或需求、准备开始多步骤任务但尚未写代码时使用。
+description: 已有批准 PRD、TDD/TID 和 TCD，需要创建或更新 IPD 任务执行文档时使用。
 ---
 
-# 编写实现计划
+# 编写 IPD
 
 ## 总览
 
-写一份全面的实现计划，假设执行者对代码库几乎没有上下文、测试设计判断力一般。计划必须引用独立技术设计，说明每个任务要改哪些文件、写哪些代码、看哪些文档、如何测试，并把 Spec ID 映射到测试和任务。把计划拆成小块任务。坚持 SDD 追踪、DRY、YAGNI、TDD，并要求执行者回报 TDD 证据。需要提交时必须使用 `git-commit`，生成中文 Conventional Commit，且禁止 AI 作者。
+IPD 是 `Implementation Plan Document`，中文定位是任务执行文档。它不复述完整技术方案，只把已确认的 PRD、TDD/TID 和 TCD 拆成可执行、可验证、可记录 TED 证据的任务。
 
-开始时声明：“我正在使用 writing-plans 技能来创建实现计划。”
+**核心原则：**IPD 回答“执行者下一步怎么做”。技术方案以 TDD/TID 为准，测试设计以 TCD 为准，文档关系以 frontmatter metadata 为准。
 
-如果执行阶段要在隔离 worktree 中进行，应在执行时通过 `using-git-worktrees` 创建。
+开始时声明：“我正在使用 writing-plans 技能来创建 IPD 任务执行文档。”
 
-默认保存到：`docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md`。用户偏好的路径优先。
-
-默认模板：`skills/writing-plans/templates/implementation-plan.md`。
-
-对应 TDD 证据默认保存到：`docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md`。
-
-对应技术设计默认读取：
+默认保存到：
 
 ```text
-docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md
+docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md
 ```
 
-对应技术实现默认读取：
+默认模板：
 
 ```text
-docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md
+skills/writing-plans/templates/implementation-plan.md
+```
+
+对应 TED 证据默认保存到：
+
+```text
+docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md
 ```
 
 ## 前置条件
 
-- 如果任务有已批准规格，先读取规格文件。
-- 读取规格、技术设计、README 或 Evidence 时，先使用 `document-metadata`，读 frontmatter metadata，再读正文；关联关系以 `related_*`、README `tags` 和 `docs/coding-plugins/document-contract.md` 为准。
-- 如果任务没有规格但属于新功能、契约、schema、状态机或验收标准不清，先使用 `spec-driven-development`。
-- 如果任务有已批准规格但没有技术设计，先使用 `writing-technicals`。
-- 如果任务有技术设计但没有测试用例文档，先使用 `writing-test-cases`；如果存在 TID，测试用例和计划都必须读取它。
-- 非平凡任务必须有 Spec ID。极小修改可以在计划开头写 1 到 3 条 inline spec，再继续计划。
-- 计划路径的 `<feature-name>` 应和规格路径中的 feature 目录保持一致，`<doc-id>` 应和需求文档文件名前缀保持一致，例如 `features/auth/requirements/auth-login-PRD.md` 对应 `features/auth/plans/auth-login-IPD.md`。
-- TDD 证据路径的 `<doc-id>` 也应保持一致，例如 `features/auth/plans/auth-login-IPD.md` 对应 `features/auth/evidences/auth-login-TED.md`。
+- 已有 approved PRD；否则回到 `spec-driven-development` 和 `writing-requirements`。
+- 已有 TDD 和 TID；否则先用 `writing-technicals`。
+- 已有 TCD；否则先用 `writing-test-cases`。
+- 涉及 Coding Plugins 文档关系时，先使用 `document-metadata` 读取 frontmatter，再读正文。
+- `feature` 和 `doc_id` 必须和 PRD、TDD/TID、TCD、TED 保持一致。
 
-## 范围检查
+## 职责边界
 
-如果规格覆盖多个独立子系统，本应在 SDD 阶段拆成子项目规格。若尚未拆分，建议拆成多个计划：每个计划都应能独立产出可运行、可测试的软件。
+| IPD 应写 | IPD 不写 |
+| --- | --- |
+| 执行目标、执行入口和任务顺序 | 完整技术方案复述 |
+| 每个任务的修改范围、步骤、命令和预期结果 | PRD 需求重定义 |
+| Spec ID 到任务、测试和 TED 字段的执行映射 | TDD/TID 的设计取舍细节 |
+| RED/GREEN/REFACTOR 执行要求 | 实际 RED/GREEN/REFACTOR 输出 |
+| 无法自动测试时的 TED 例外记录要求 | 实际人工验收结果 |
 
-## 文件结构
+如果执行者需要理解完整方案，只引用 TDD/TID；IPD 正文只摘录会影响任务执行顺序、文件范围或验证命令的约束。
 
-定义任务前，先列出要创建或修改的文件，并说明每个文件负责什么。这里锁定分解决策。
+## 编写流程
 
-- 单元要有清晰边界和明确接口。
-- 优先小而聚焦的文件，而不是过大的混合文件。
-- 会一起变化的文件应放在一起。按职责拆分，而不是机械按技术层拆分。
-- 在现有代码库中遵循既有模式。不要单方面重构整个项目；但如果要修改的文件已经臃肿，把局部拆分纳入计划是合理的。
+1. 使用 `document-metadata` 读取同一 `doc_id` 的 PRD、TDD、TID、TCD 和 TED frontmatter。
+2. 从 PRD 提取必须覆盖的 MUST Spec ID。
+3. 从 TDD/TID 提取会影响执行的关键约束，不搬运完整技术方案。
+4. 从 TCD 提取每个 Spec ID 对应的测试用例、测试类型、断言和数据。
+5. 写 `## 任务总览`，每行一个 `TASK-001` 任务，并标注覆盖规格、验证方式和 TED 目标。
+6. 为每个任务创建独立章节，标题格式固定为 `## 任务标题（TASK-001 / REQ-001）`。
+7. 每个任务必须包含：任务目标、执行前提、修改范围、执行步骤、验证方式、TED 记录要求。
+8. 行为变更任务必须要求 RED/GREEN/REFACTOR；无法自动测试时必须要求 TED 例外记录。
+9. 新增或更新 IPD 后运行 `python3 scripts/preflight.py --write-index`，再运行 `python3 scripts/preflight.py`。
 
-## 技术文档
+## 文档结构
 
-完整技术设计写在 `docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md`，模块级技术实现写在 `docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md`。计划必须引用 TDD；同一 doc_id 下存在 TID 时，也必须引用 TID。IPD 中的技术内容只保留执行所需快照，重点是把设计和实现约束拆成可测试任务。
-
-必须覆盖：
-
-- **技术设计来源**：真实存在的 `technicals/<doc-id>-TDD.md` 路径。
-- **技术实现来源**：真实存在的 `technicals/<doc-id>-TID.md` 路径；如果不存在 TID，写明“不适用：<原因>”。
-- **设计快照**：2 到 5 句话说明本计划要执行的方案摘要。
-- **关键决策**：只列和任务拆分直接相关的关键技术决策、原因、代价。
-- **影响组件**：模块、文件、服务或数据结构怎么变。
-- **数据流 / 控制流**：核心数据流或控制流。
-- **接口和契约**：内部接口、外部 API、schema、状态机如何落地。
-- **迁移 / 兼容性**：迁移、兼容、回滚、灰度。
-- **测试策略**：Spec ID 对应的测试层级、RED/GREEN 命令和 TDD 证据记录方式。
-- **风险和缓解**：实现风险和缓解方案。
-
-如果某项不适用，写 `不适用` 并说明原因。不要留空。
-
-## 任务粒度
-
-每一步只做一个动作，通常 2 到 5 分钟：
-
-- 把一个或多个 Spec ID 映射到失败测试。
-- 运行测试确认失败。
-- 写最小实现让测试通过。
-- 运行测试确认通过。
-- 重构并重跑相关测试。
-- 记录 TDD 证据。
-- 如果用户允许或计划要求，使用 `git-commit` 创建中文提交。
-
-## 计划文档头
-
-每个计划必须以类似结构开头：
-
-机器可读 frontmatter 的 key 保持英文稳定；中文展示写在 `## 文档信息` 表中。不要把 frontmatter key 改成中文。需要通用 metadata 模板时使用 `skills/document-metadata/templates/document-metadata.md`。`related_*` 是计划文档的关系源；正文中的 `技术设计来源` 和 `技术实现来源` 是执行入口，不要额外维护手写产物链路表。
+机器可读 frontmatter 的 key 保持英文稳定；中文展示写入 `## 文档信息`。`related_*` 是文档关系源，正文不要维护手写产物链路表。
 
 ```markdown
 ---
-title: [功能名称]实现计划
+title: <功能名称> Implementation Plan Document
 status: draft
-feature: [feature]
-doc_id: [doc-id]
+feature: <feature-name>
+doc_id: <doc-id>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 related_specs:
-  - docs/coding-plugins/features/[feature]/requirements/[doc-id]-PRD.md
+  - docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md
 related_technical:
-  - docs/coding-plugins/features/[feature]/technicals/[doc-id]-TDD.md
-  - docs/coding-plugins/features/[feature]/technicals/[doc-id]-TID.md
+  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md
+  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md
 related_test_cases:
-  - docs/coding-plugins/features/[feature]/test-cases/[doc-id]-TCD.md
+  - docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md
 related_evidence:
-  - docs/coding-plugins/features/[feature]/evidences/[doc-id]-TED.md
+  - docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md
 ---
 
-# [功能名称]实现计划
+# <功能名称>任务执行文档（IPD）
 
 ## 文档信息
 
 | 字段 | 内容 |
 | --- | --- |
 | 状态 | 草稿 |
-| Feature | [feature] |
-| Doc ID | [doc-id] |
-| 需求文档 | `docs/coding-plugins/features/[feature]/requirements/[doc-id]-PRD.md` |
-| 技术设计 | `docs/coding-plugins/features/[feature]/technicals/[doc-id]-TDD.md` |
-| 技术实现 | `docs/coding-plugins/features/[feature]/technicals/[doc-id]-TID.md` |
-| 测试用例 | `docs/coding-plugins/features/[feature]/test-cases/[doc-id]-TCD.md` |
-| TDD 证据| `docs/coding-plugins/features/[feature]/evidences/[doc-id]-TED.md` |
-
-> **给代理执行者：** REQUIRED SUB-SKILL: 使用 `coding-plugins:subagent-driven-development`（推荐）或 `coding-plugins:executing-plans` 逐任务实现本计划。步骤使用 checkbox (`- [ ]`) 语法追踪。
-
-**目标:** [一句话说明要构建什么]
-
-**架构:** [2-3 句话说明方案]
-
-**技术栈:** [关键技术/库]
-
-**规格来源:** [规格文件路径，或 inline spec]
-
-**技术设计来源:** [技术设计文件路径]
-
-**技术实现来源:** [技术实现文件路径；不存在 TID 时写 不适用：<原因>]
-
-## 技术设计快照
-
-**设计摘要:** [2-5 句话说明本计划执行的技术设计摘要]
-
-**关键决策:**
-
-| 决策 | 原因 | 取舍 |
-| --- | --- | --- |
-| [技术决策] | [为什么这么做] | [代价或风险] |
-
-**影响组件:**
-
-| 组件 | 变更 | 相关规格 ID |
-| --- | --- | --- |
-| `path/to/component` | [改动说明] | REQ-001 |
-
-**数据流 / 控制流:** [核心流程，必要时用 Mermaid]
-
-**接口和契约:** [内部接口、外部 API、schema、状态机如何落地]
-
-**迁移 / 兼容性:** [迁移、兼容、回滚、灰度；不适用则写 不适用]
-
-**测试策略:** [Spec ID 对应的测试层级、RED/GREEN 命令和 TDD 证据记录方式]
-
-**TDD 证据目标:** `docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md`
-
-**风险和缓解:**
-
-| 风险 | 缓解方案 |
-| --- | --- |
-| [风险] | [缓解方案] |
-
-## 规格追踪
-
-| 规格 ID | 测试文件 / 命令 | 测试名称或断言 | TDD 证据文件 / 字段 | 实现任务 |
-| --- | --- | --- | --- | --- |
-| REQ-001 | `tests/path/test_file.py` | `test_specific_behavior` | `docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md` / RED-GREEN-最终验证 | 任务 1 |
-
----
+| Feature | <feature-name> |
+| Doc ID | <doc-id> |
+| 文档类型 | IPD |
+| 缩写含义 | Implementation Plan Document |
 ```
 
 ## 任务结构
 
-每个任务使用精确文件路径、完整代码、命令和预期输出：
+每个任务使用固定章节，避免把多个行为塞进一个大表：
 
 ````markdown
-### 任务 N：[组件名称]
+## <任务标题>（TASK-001 / REQ-001）
 
-**规格 ID:** REQ-001, AC-001
+### 任务目标
 
-**文件:**
-- 创建: `exact/path/to/file.py`
-- 修改: `exact/path/to/existing.py:123-145`
-- 测试: `tests/exact/path/to/test.py`
+说明本任务完成后系统应出现什么可观察变化。
+
+### 执行前提
+
+- 已确认需求：PRD 中的相关需求点。
+- 已确认设计：TDD/TID 中的相关决策或实现点。
+- 已确认测试：TCD 中的相关测试用例。
+
+### 修改范围
+
+| 类型 | 路径 | 说明 |
+| --- | --- | --- |
+| 创建 | `exact/path/to/new_file` | 创建原因和职责 |
+| 修改 | `exact/path/to/existing_file` | 修改内容和边界 |
+| 测试 | `tests/exact/path/to/test_file` | 覆盖行为或契约 |
+
+### 执行步骤
 
 - [ ] **步骤 1：根据规格 ID 写失败测试**
-
-```python
-def test_specific_behavior():
-    result = function(input)
-    assert result == expected
-```
-
-- [ ] **步骤 2：运行测试确认失败**
-
-运行: `pytest tests/path/test.py::test_name -v`
-预期: FAIL with "function not defined"
-
-- [ ] **步骤 3：RED 后写最小实现**
-
-此片段只是步骤 2 按预期失败后可使用的最小实现草图。
-
-```python
-def function(input):
-    return expected
-```
-
-- [ ] **步骤 4：运行测试确认通过**
-
-运行: `pytest tests/path/test.py::test_name -v`
-预期: PASS
-
+  - 规格 ID：REQ-001
+  - 测试位置：`tests/exact/path/to/test_file`
+  - 预期失败：失败来自缺失行为、契约或状态。
+- [ ] **步骤 2：运行测试确认 RED**
+  - 命令：`pytest tests/exact/path/to/test_file -v`
+  - 预期：FAIL，失败信息匹配目标行为缺口。
+- [ ] **步骤 3：写最小实现**
+  - 修改：`exact/path/to/existing_file`
+  - 边界：只实现本任务覆盖的行为。
+- [ ] **步骤 4：运行测试确认 GREEN**
+  - 命令：`pytest tests/exact/path/to/test_file -v`
+  - 预期：PASS。
 - [ ] **步骤 5：重构并重跑相关测试**
-
-运行: `pytest tests/path/test.py -v`
-预期: PASS
-
-- [ ] **步骤 6：记录 TDD 证据**
-
-写入或更新 `docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md`。生成真实计划时，把每个方括号占位内容替换成该任务的具体预期证据：
-
-```markdown
-## 任务 N：[组件名称]
-
-### TDD 证据
-
-- **规格/缺陷/验收:** REQ-001
-- **RED 测试:** `tests/path/test.py::test_name`
-- **RED 命令:** `pytest tests/path/test.py::test_name -v`
-- **RED 失败:** [预期失败摘要]
-- **GREEN 变更:** [最小实现摘要]
-- **GREEN 命令:** `pytest tests/path/test.py::test_name -v`
-- **REFACTOR 命令:** `pytest tests/path/test.py -v`
-- **最终验证:** [最终命令和结果]
-```
-
-校验证据：
-
-```bash
-python3 skills/test-driven-development/scripts/validate_tdd_evidence.py --strict docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md
-```
-
-- [ ] **步骤 7：提交**
-
-```bash
-git add tests/path/test.py src/path/file.py
-git commit -m "feat(scope): 增加具体功能"
-```
+  - 命令：`pytest tests/exact/path/to/test_file -v`
+  - 预期：PASS。
+- [ ] **步骤 6：记录 TED 证据**
+  - 写入：`docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md`
+  - 字段：规格/缺陷/验收、测试类型、RED 测试、RED 命令、RED 失败、GREEN 变更、GREEN 命令、REFACTOR 命令、最终验证。
 ````
-
-## 禁止占位符
-
-以下都是计划失败，不能出现：
-
-- `TBD`、`TODO`、`implement later`、`fill in details`。
-- “添加适当错误处理”“处理边界情况”但不给具体代码。
-- “为上述内容写测试”但不给实际测试代码。
-- “类似 任务 N”而不重复代码。
-- 只描述做什么，不展示怎么做。
-- 有技术文档标题，但没有关键决策、影响组件、测试策略或风险缓解。
-- 引用之前任务没有定义过的类型、函数或方法。
 
 ## 自审
 
-写完计划后，对照规格自审：
-
-1. **规格覆盖**：每个规格要求都能指向某个任务吗？列出缺口。
-2. **技术文档落地**：方案是否引用 TDD；存在 TID 时是否引用 TID；是否说明关键决策、影响组件、接口契约、迁移兼容、测试策略和风险缓解。
-3. **追踪矩阵**：每个 MUST Spec ID 是否映射到测试和任务。
-4. **TDD 证据**：每个会改变行为的任务是否要求写入固定 evidence 文件，并记录 RED/GREEN/REFACTOR Evidence。
-5. **测试来源**：每个失败测试是否来自 Spec ID、bug 复现或明确验收标准。
-6. **占位符扫描**：搜索禁止占位符和模糊表达，修复。
-7. **类型一致性**：后续任务使用的类型、函数名、属性名是否和前面定义一致。
-
-发现问题就直接修复。如果规格要求没有对应任务，补任务。
+- 每个 MUST Spec ID 是否进入 `## 任务总览`。
+- 每个任务是否有 `TASK-001` 这类稳定任务 ID。
+- 每个任务是否有明确文件路径、测试命令和预期结果。
+- 是否没有复述完整 TDD/TID 技术方案。
+- 是否没有把实际 RED/GREEN/REFACTOR 输出写进 IPD。
+- 是否指向同一 `doc_id` 的 TED 证据文件。
+- 是否运行了 `preflight.py`。
 
 ## 执行交接
 
-保存计划后，提供执行选择：
+保存 IPD 后，提供执行选择：
 
-> 计划已完成并保存到 `docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md`。有两种执行方式：
->
-> 1. **子代理驱动（推荐）**：每个任务派发新子代理，任务之间做评审，迭代更快。
-> 2. **当前会话执行**：使用 `executing-plans` 分批执行并设置检查点。
->
-> 选择哪一种？
+```text
+IPD 已保存到 docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md。
 
-如果选择子代理驱动，必须使用 `subagent-driven-development`。如果选择当前会话执行，必须使用 `executing-plans`。
+执行方式：
+1. 子代理驱动：使用 subagent-driven-development 按任务派发。
+2. 当前会话执行：使用 executing-plans 按检查点执行。
+```

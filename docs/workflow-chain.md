@@ -11,7 +11,7 @@
 3. 用 `writing-requirements` 编写可追踪、可测试、可评审的需求文档。
 4. 已批准需求文档再写 TDD 技术设计和 TID 技术实现；TDD 定义工程方案、关键决策和技术落点，TID 定义模块级实现拆解、接口签名、数据结构、迁移步骤和实现顺序约束。
 5. 基于需求文档、TDD/TID 补充测试用例文档。
-6. 基于测试用例、TDD/TID 写计划，并建立 Spec ID -> 测试 -> 任务 追踪。
+6. 基于测试用例、TDD/TID 编写 IPD 任务执行文档，并建立 Spec ID -> TASK -> 验证 -> TED 的执行落点。
 7. 读取文档时先用 `document-metadata` 读取 frontmatter metadata，再读正文；关系源、索引边界和 README 规则见 `docs/coding-plugins/document-contract.md`。
 8. 按计划隔离执行。
 9. 实现阶段遵守 TDD，测试必须来自需求文档、测试用例、bug 复现或明确验收标准，并留下 TDD 证据。
@@ -34,7 +34,7 @@
 | 4 | 需求文档 | `writing-requirements` | `docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md`, Spec ID, Traceability Matrix |
 | 5 | 技术文档 | `writing-technicals` | `docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md`, `docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md`, 规格到设计映射, 模块级实现和测试策略 |
 | 6 | 测试用例 | `writing-test-cases` | `docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md`, Spec ID -> 测试用例 |
-| 7 | 实现计划 | `writing-plans` | `docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md`, 技术设计来源, 技术实现来源, 测试用例来源, Spec ID -> 测试 -> 任务 追踪 |
+| 7 | IPD 任务执行文档 | `writing-plans` | `docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md`, 任务总览, TASK ID, 执行步骤, 验证方式, TED 记录要求 |
 | 8 | 文档契约 | `document-metadata`, `docs/coding-plugins/document-contract.md`, `scripts/preflight.py` | metadata-first 读取顺序、README 边界、related metadata、生成式索引 |
 | 9 | 隔离工作区 | `using-git-worktrees` | 独立 worktree 或确认在当前工作区执行 |
 | 10 | 执行调度 | `subagent-driven-development`, `executing-plans`, `dispatching-parallel-agents` | 子任务执行、批次执行或并行任务结果 |
@@ -84,7 +84,7 @@ flowchart TD
   DEV_KIND -->|已有已批准需求| TECH["writing-technicals"]
   DEV_KIND -->|已有技术设计| TEST_CASES["writing-test-cases"]
   DEV_KIND -->|已有测试用例| PLAN["writing-plans"]
-  DEV_KIND -->|已有实现计划| WORKTREE
+  DEV_KIND -->|已有 IPD| WORKTREE
   DEV_KIND -->|小型明确变更/纯内部重构| TDD["test-driven-development"]
   DEV_KIND -->|bug/CI/测试/构建失败或异常行为| DEBUG["systematic-debugging"]
 
@@ -98,7 +98,7 @@ flowchart TD
   TECH_DOC --> TEST_CASES
   TEST_CASES --> TEST_DOC["写 test-cases/<doc-id>-TCD.md"]
   TEST_DOC --> PLAN
-  PLAN --> PLAN_DOC["写 plans/<doc-id>-IPD.md、引用技术设计/技术实现和追踪矩阵"]
+  PLAN --> PLAN_DOC["写 plans/<doc-id>-IPD.md、拆分任务执行步骤"]
   PLAN_DOC --> WORKTREE
 
   WORKTREE --> WT_DEC{"仅创建 worktree？"}
@@ -174,7 +174,7 @@ flowchart TD
   D0 -->|已有已批准需求| TD["writing-technicals"]
   D0 -->|已有技术设计| TC["writing-test-cases"]
   D0 -->|已有测试用例| H["writing-plans"]
-  D0 -->|已有实现计划| K
+  D0 -->|已有 IPD| K
   D0 -->|小型明确变更/纯内部重构| O["test-driven-development"]
   D0 -->|bug/CI/测试/构建失败或异常行为| X["systematic-debugging"]
 ```
@@ -209,7 +209,7 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-  A["已有实现计划"] --> B["using-git-worktrees"]
+  A["已有 IPD"] --> B["using-git-worktrees"]
   B --> C["检测或创建隔离 worktree"]
   C --> D{"执行模式"}
   D -->|推荐| E["subagent-driven-development"]
@@ -395,7 +395,7 @@ Claude Code 侧使用 `.claude-plugin/plugin.json` 识别插件。技能以 `/co
 - 需求文档：`writing-requirements` 负责。
 - 技术设计和技术实现：`writing-technicals` 负责。
 - 测试用例：`writing-test-cases` 负责。
-- 实现计划：`writing-plans` 负责。
+- IPD 任务执行文档：`writing-plans` 负责。
 - TDD 证据：`test-driven-development` 负责。
 - 全局索引：`docs/coding-plugins/INDEX.md`。
 
@@ -452,7 +452,7 @@ docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md
 
 技术文档路径的 `<doc-id>` 应和同一文档链路的 PRD 路径一致。保存或移动技术文档后运行 `python3 scripts/preflight.py --write-index`，让 `docs/coding-plugins/INDEX.md` 同步反映最新文件树。technical 模板正文标题和表头默认使用中文，Spec ID、命令、路径和代码标识可保留英文。
 
-当同一 `doc_id` 已存在 PRD、TID、TCD、IPD 或 TED 时，TDD frontmatter 应维护 `related_specs`、`related_technical`、`related_test_cases`、`related_plans` 和 `related_evidence`。TID frontmatter 应反向链接 TDD，并链接同一 `doc_id` 的 PRD、TCD、IPD 和 TED。这些路径用于把需求契约、技术设计、技术实现、测试用例、实现计划和验证证据连成可检索链路。
+当同一 `doc_id` 已存在 PRD、TID、TCD、IPD 或 TED 时，TDD frontmatter 应维护 `related_specs`、`related_technical`、`related_test_cases`、`related_plans` 和 `related_evidence`。TID frontmatter 应反向链接 TDD，并链接同一 `doc_id` 的 PRD、TCD、IPD 和 TED。这些路径用于把需求契约、技术设计、技术实现、测试用例、IPD 任务执行文档和验证证据连成可检索链路。
 
 文档变更必须沿 metadata 关系向下游同步：`PRD -> TDD -> TID -> TCD -> IPD -> TED`。如果上游文档的 `updated` 晚于下游，说明下游还没有完成同步评审；preflight 会失败。下游正文确实无需变更时，也要更新下游 `updated`，表示已确认不受影响。
 
@@ -480,9 +480,9 @@ docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md
 
 测试用例文档不记录实际 RED/GREEN/REFACTOR 输出；实际执行证据仍由 `test-driven-development` 写入 `evidences/<doc-id>-TED.md`。
 
-### 计划层
+### IPD 任务执行层
 
-`writing-plans` 把 TDD/TID 和测试用例转成可执行计划。计划要求引用 `技术设计来源`、存在 TID 时引用 `技术实现来源`，并引用测试用例来源，明确精确文件路径、完整代码片段、测试命令、预期输出和 Spec ID -> 测试 -> 任务 追踪矩阵。
+`writing-plans` 把 PRD、TDD/TID 和 TCD 转成 `Implementation Plan Document (IPD)`。IPD 的中文定位是任务执行文档，负责把已确认的需求、技术约束和测试用例拆成可执行任务；它不复述完整技术方案，也不重定义需求。
 
 默认计划路径：
 
@@ -491,6 +491,14 @@ docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md
 ```
 
 计划路径的 `<doc-id>` 应和需求、技术设计、技术实现、测试用例路径一致，例如 `features/routing/requirements/routing-login-PRD.md` 对应 `features/routing/technicals/routing-login-TDD.md`、`features/routing/technicals/routing-login-TID.md`、`features/routing/test-cases/routing-login-TCD.md` 和 `features/routing/plans/routing-login-IPD.md`。
+
+IPD 正文应包含：
+
+- `## 任务总览`：每行一个 `TASK-001` 任务，标明覆盖规格、验证方式和 TED 目标。
+- `## 任务标题（TASK-001 / REQ-001）`：逐任务展开目标、前提、修改范围、执行步骤、验证方式和 TED 记录要求。
+- `## 完成检查`：确认每个 MUST Spec ID、测试命令和 TED 字段都有执行落点。
+
+完整技术方案以 TDD/TID 为准；测试设计以 TCD 为准；路径关系以 frontmatter metadata 和 INDEX 为准。
 
 计划文档应说明推荐执行方式：
 

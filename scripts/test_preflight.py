@@ -813,6 +813,28 @@ class PreflightTests(unittest.TestCase):
     def test_repository_document_templates_match_metadata_contract(self) -> None:
         preflight.check_document_templates_match_metadata_contract(Path(__file__).resolve().parents[1])
 
+    def test_ipd_template_rejects_technical_solution_snapshot_shape(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            template_dir = root / "skills" / "writing-plans" / "templates"
+            template_dir.mkdir(parents=True)
+            (template_dir / "implementation-plan.md").write_text(
+                "---\n"
+                "title: 实现计划\n"
+                "feature: routing\n"
+                "doc_id: routing\n"
+                "---\n\n"
+                "## 阅读摘要\n\n"
+                "## 文档信息\n\n"
+                "## 来源文档\n\n"
+                "## 技术设计快照\n\n"
+                "## 规格追踪\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "should not contain ## 技术设计快照"):
+                preflight.check_document_templates_match_metadata_contract(root)
+
     def test_document_template_contract_rejects_missing_doc_id_and_related_links(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -1466,7 +1488,7 @@ class PreflightTests(unittest.TestCase):
             plan_dir.mkdir(parents=True)
             (plan_dir / f"{plan_dir.parent.name}-IPD.md").write_text("# Plan\n", encoding="utf-8")
 
-            with self.assertRaisesRegex(preflight.PreflightError, "Plan is missing 技术设计来源"):
+            with self.assertRaisesRegex(preflight.PreflightError, "Plan is missing related_technical TDD"):
                 preflight.check_plan_technical_design_references(root)
 
     def test_plan_technical_implementation_source_check_rejects_missing_source_when_tid_exists(self) -> None:
@@ -1479,12 +1501,15 @@ class PreflightTests(unittest.TestCase):
             technicals_dir.mkdir()
             (technicals_dir / f"{feature_dir.name}-TID.md").write_text("# 技术实现\n", encoding="utf-8")
             (plan_dir / f"{feature_dir.name}-IPD.md").write_text(
-                "# Plan\n\n"
-                "**技术设计来源:** `docs/coding-plugins/features/routing/technicals/routing-TDD.md`\n",
+                "---\n"
+                "related_technical:\n"
+                "  - docs/coding-plugins/features/routing/technicals/routing-TDD.md\n"
+                "---\n\n"
+                "# Plan\n",
                 encoding="utf-8",
             )
 
-            with self.assertRaisesRegex(preflight.PreflightError, "Plan is missing 技术实现来源"):
+            with self.assertRaisesRegex(preflight.PreflightError, "Plan is missing related_technical TID"):
                 preflight.check_plan_technical_implementation_references(root)
 
     def test_plan_technical_implementation_source_check_is_scoped_by_doc_id(self) -> None:
@@ -1498,9 +1523,12 @@ class PreflightTests(unittest.TestCase):
             (technicals_dir / "routing-login-TID.md").write_text("# Login 技术实现\n", encoding="utf-8")
             (technicals_dir / "routing-reset-TID.md").write_text("# Reset 技术实现\n", encoding="utf-8")
             (plan_dir / "routing-login-IPD.md").write_text(
-                "# Plan\n\n"
-                "**技术设计来源:** `docs/coding-plugins/features/routing/technicals/routing-login-TDD.md`\n\n"
-                "**技术实现来源:** `docs/coding-plugins/features/routing/technicals/routing-login-TID.md`\n",
+                "---\n"
+                "related_technical:\n"
+                "  - docs/coding-plugins/features/routing/technicals/routing-login-TDD.md\n"
+                "  - docs/coding-plugins/features/routing/technicals/routing-login-TID.md\n"
+                "---\n\n"
+                "# Plan\n",
                 encoding="utf-8",
             )
 

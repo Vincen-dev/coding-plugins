@@ -1,5 +1,11 @@
 # Release Notes
 
+## 1.0.4 - 2026-07-02
+
+- 将 IPD 明确定义为 `Implementation Plan Document`，中文定位调整为任务执行文档。
+- 重写 IPD 模板和 `writing-plans` 规则，改为任务总览、TASK ID、逐任务执行步骤、验证方式和 TED 记录要求。
+- 将 IPD 技术引用检查改为读取 frontmatter `related_technical`，并新增 preflight 门禁防止 IPD 模板回退到技术方案快照结构。
+
 ## 1.0.3 - 2026-07-02
 
 - 将 PRD 模板调整为“需求总览 + 需求点章节”结构，需求点标题统一为 `## 标题（REQ-001）`。

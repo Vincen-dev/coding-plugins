@@ -113,11 +113,11 @@ related_evidence:
 ---
 ```
 
-## Plan frontmatter
+## IPD frontmatter
 
 ```yaml
 ---
-title: <功能名称>实现计划
+title: <功能名称> Implementation Plan Document
 status: draft
 feature: <feature-name>
 doc_id: <doc-id>

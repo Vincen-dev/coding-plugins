@@ -460,6 +460,17 @@ def check_document_templates_match_metadata_contract(root: Path) -> None:
             if frontmatter_list_values(prd_text, key):
                 offenders.append(f"{prd_path.relative_to(root)} should leave initial {key} empty")
 
+    ipd_path = template_paths["IPD"]
+    if ipd_path.exists():
+        ipd_text = ipd_path.read_text(encoding="utf-8")
+        if "## 任务总览" not in ipd_text:
+            offenders.append(f"{ipd_path.relative_to(root)} missing ## 任务总览")
+        if "TASK-001" not in ipd_text:
+            offenders.append(f"{ipd_path.relative_to(root)} missing TASK-001 task id")
+        for heading in ("## 来源文档", "## 技术设计快照", "## 规格追踪"):
+            if heading in ipd_text:
+                offenders.append(f"{ipd_path.relative_to(root)} should not contain {heading}")
+
     ted_path = template_paths["TED"]
     if ted_path.exists():
         ted_text = ted_path.read_text(encoding="utf-8")
@@ -1339,8 +1350,8 @@ def check_plan_technical_design_references(root: Path) -> None:
     missing: list[str] = []
     for plan_file in collect_plan_files(root):
         text = plan_file.read_text(encoding="utf-8")
-        refs = sorted(extract_technical_design_paths(text))
-        if "技术设计来源" not in text or not refs:
+        refs = sorted(ref for ref in frontmatter_list_values(text, "related_technical") if ref.endswith("-TDD.md"))
+        if not refs:
             offenders.append(str(plan_file.relative_to(root)))
             continue
         for relative_path in refs:
@@ -1348,7 +1359,7 @@ def check_plan_technical_design_references(root: Path) -> None:
                 missing.append(f"{plan_file.relative_to(root)} -> {relative_path}")
 
     if offenders:
-        raise PreflightError("Plan is missing 技术设计来源: " + ", ".join(offenders) + ".")
+        raise PreflightError("Plan is missing related_technical TDD: " + ", ".join(offenders) + ".")
     if missing:
         raise PreflightError("Plan references missing technical design: " + "; ".join(missing) + ".")
 
@@ -1367,9 +1378,9 @@ def check_plan_technical_implementation_references(root: Path) -> None:
             continue
 
         text = plan_file.read_text(encoding="utf-8")
-        refs = sorted(extract_technical_implementation_paths(text))
+        refs = sorted(ref for ref in frontmatter_list_values(text, "related_technical") if ref.endswith("-TID.md"))
         expected_values = {str(path.relative_to(root)) for path in expected_paths}
-        if "技术实现来源" not in text or not expected_values <= set(refs):
+        if not expected_values <= set(refs):
             offenders.append(str(plan_file.relative_to(root)))
             continue
         for relative_path in refs:
@@ -1377,7 +1388,7 @@ def check_plan_technical_implementation_references(root: Path) -> None:
                 missing.append(f"{plan_file.relative_to(root)} -> {relative_path}")
 
     if offenders:
-        raise PreflightError("Plan is missing 技术实现来源: " + ", ".join(offenders) + ".")
+        raise PreflightError("Plan is missing related_technical TID: " + ", ".join(offenders) + ".")
     if missing:
         raise PreflightError("Plan references missing technical implementation: " + "; ".join(missing) + ".")
 
