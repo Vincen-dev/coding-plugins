@@ -11,6 +11,8 @@ description: Use when writing or updating Coding Plugins PRD requirement documen
 
 **核心原则：**需求文档只定义“要什么”和“如何验收”，不写技术方案、测试用例步骤或实现计划。
 
+**结构原则：**PRD 正文按需求点阅读。先写轻量 `## 需求总览` 表用于检索和 validator 提取稳定 Spec ID，再为每个需求点创建独立章节，标题格式固定为 `## 标题（REQ-001）`。不要使用 `## REQ-001：标题`，避免正文阅读被编号主导。
+
 开始时声明：“我正在使用 writing-requirements 技能来编写需求文档。”
 
 ## 何时使用
@@ -35,7 +37,7 @@ description: Use when writing or updating Coding Plugins PRD requirement documen
 | 场景 | 文档 | 模板 |
 | --- | --- | --- |
 | 所有新 PRD | `docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md` | `templates/product-requirements-document.md` |
-| 普通功能、用户流程、可见行为 | 同一个 PRD | 参考 `templates/feature-spec.md` 补齐 Feature 需求章节 |
+| 普通功能、用户流程、可见行为 | 同一个 PRD | 参考 `templates/feature-spec.md` 补齐需求点章节 |
 | HTTP/RPC/API/SDK/CLI 契约 | 同一个 PRD | 参考 `templates/api-contract-spec.md` 补齐 API / SDK / CLI 契约章节 |
 | 数据结构、配置、事件 payload | 同一个 PRD | 参考 `templates/schema-spec.md` 补齐 Schema / 数据契约章节 |
 | 状态、工作流、生命周期 | 同一个 PRD | 参考 `templates/state-machine-spec.md` 补齐状态机 / 生命周期章节 |
@@ -53,15 +55,16 @@ description: Use when writing or updating Coding Plugins PRD requirement documen
 5. 用 `templates/product-requirements-document.md` 写入 `docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md`；场景模板只用于补齐对应章节。
 6. 补齐 frontmatter：`title`、`type`、`status`、`feature`、`doc_id`、`created`、`updated`、`tags`、`related_code`、`related_specs`、`related_technical`、`related_test_cases`、`related_plans`、`related_evidence`。
 7. 写正文 `## 文档信息`，保持中文展示；机器 key 不翻译。
-8. 为 MUST 需求分配稳定 ID：`REQ/API/SCHEMA/STATE/ERR/AC/NFR/MIG/OBS/NON`。
-9. 在 `## 追踪矩阵` 中写验证方式种子，但不写具体测试步骤；测试步骤属于 `writing-test-cases`。
-10. 运行规格校验：
+8. 拆分需求点：每个独立用户流程、契约、schema、状态机、维护约束或验收主题都必须进入 `## 需求总览`，并分配稳定 ID：`REQ/API/SCHEMA/STATE/ERR/AC/NFR/MIG/OBS/NON`。
+9. 为每个需求点创建独立章节，标题格式为 `## 标题（REQ-001）`，章节内按“用户或系统价值、需求描述、行为规则、输入与输出、关联契约、错误和边界、验收标准、验证方式”组织；不适用的小节可以写“不涉及”并说明原因。
+10. 在 `## 追踪矩阵` 中只写验证方式种子和验证证据占位，不写计划任务或具体测试步骤；测试步骤属于 `writing-test-cases`，实施任务属于 `writing-plans`。
+11. 运行规格校验：
 
 ```bash
 python3 skills/spec-driven-development/scripts/validate_spec.py <SPEC_FILE_PATH>
 ```
 
-11. 新增、移动、批准或废弃需求文档后运行：
+12. 新增、移动、批准或废弃需求文档后运行：
 
 ```bash
 python3 scripts/preflight.py --write-index
@@ -75,11 +78,12 @@ python3 scripts/preflight.py --write-index
 | 功能需求、契约字段、schema、状态迁移 | 代码文件修改清单 |
 | 错误和边界条件 | RED/GREEN/REFACTOR 实际证据 |
 | 验收标准和验证方式类型 | 逐条测试用例步骤 |
-| Traceability Matrix 种子 | 实现任务拆分 |
+| Traceability Matrix 种子 | 实现任务拆分、计划任务编号 |
 
 ## 自审
 
 - 每个 MUST 需求是否有稳定 Spec ID。
+- 每个需求点是否有独立 `## 标题（REQ-001）` 章节。
 - 每个 MUST 需求是否有验证方式。
 - 是否没有把技术设计或技术实现写进需求文档。
 - 是否没有把测试用例步骤写进需求文档。

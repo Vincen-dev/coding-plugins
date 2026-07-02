@@ -33,17 +33,23 @@ GOOD_SPEC = """# Export Config Specification
 
 CHINESE_SPEC = """# 导出配置规格
 
-## 功能需求
+## 需求总览
 
-| 编号 | 优先级 | 需求 | 验证方式 |
+| 需求点 | 标题 | 优先级 | 验证方式 |
 | --- | --- | --- | --- |
-| REQ-001 | 必须 | 导出的配置结果必须包含非空 `version` 字段。 | 单元测试验证导出配置 payload。 |
+| REQ-001 | 导出配置包含版本 | 必须 | 单元测试验证导出配置 payload。 |
+
+## 导出配置包含版本（REQ-001）
+
+### 需求描述
+
+导出的配置结果必须包含非空 `version` 字段。
 
 ## 追踪矩阵
 
-| 规格 ID | 验证类型 | 测试文件 / 命令 | 计划任务 | 状态 |
-| --- | --- | --- | --- | --- |
-| REQ-001 | 单元测试 | `python3 -m pytest tests/test_export_config.py` | Task 1 | 计划中 |
+| 规格 ID | 验证类型 | 验证证据 | 状态 |
+| --- | --- | --- | --- |
+| REQ-001 | 单元测试 | `python3 -m pytest tests/test_export_config.py` | 计划中 |
 """
 
 

@@ -42,6 +42,8 @@ class ScaffoldFeatureDocsTests(unittest.TestCase):
             self.assertIn("feature: metadata-chain", readme)
             self.assertIn("  - metadata", readme)
             self.assertIn("related_test_cases: []", prd)
+            self.assertIn("## 需求总览", prd)
+            self.assertIn("## 请写明需求点标题（REQ-001）", prd)
             self.assertIn("## 追踪矩阵", prd)
 
     def test_scaffold_uses_readable_prompts_instead_of_placeholder_residue(self) -> None:

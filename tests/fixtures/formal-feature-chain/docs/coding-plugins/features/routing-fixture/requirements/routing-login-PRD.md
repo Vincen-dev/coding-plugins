@@ -18,6 +18,12 @@ related_evidence:
 ---
 # Routing Login PRD
 
+## 阅读摘要
+
+- **本文结论:** 登录路由必须按会话状态进入首页或登录页。
+- **当前状态:** approved。
+- **先读重点:** 先看需求总览，再看登录路由需求点章节。
+
 ## 文档信息
 
 | 字段 | 内容 |
@@ -25,20 +31,82 @@ related_evidence:
 | 状态 | approved |
 | Feature | routing-fixture |
 | Doc ID | routing-login |
+| 文档类型 | PRD |
 
-## 需求
+关联关系以 frontmatter 的 `related_*` 字段为准；正文只描述需求点、验收和验证口径。
 
-| 编号 | 优先级 | 需求 | 验证方式 |
+## 目标
+
+登录路由根据会话状态选择首页或登录页，并让完整文档链路可以被 preflight 校验。
+
+## 非目标
+
+| 编号 | 非目标 |
+| --- | --- |
+| NON-001 | 不实现真实登录 UI 或会话存储。 |
+
+## 背景
+
+- 当前行为：fixture 用于验证正式文档链路闭包。
+- 目标用户或调用方：preflight 和文档链路维护者。
+- 约束：必须保持同一 `doc_id` 的 PRD、TDD、TID、TCD、IPD 和 TED 可追踪。
+
+## 需求总览
+
+| 需求点 | 标题 | 优先级 | 类型 | 验证方式 |
+| --- | --- | --- | --- | --- |
+| REQ-001 | 登录路由按会话状态分流 | 必须 | feature | `python3 -m unittest scripts.test_preflight.PreflightTests.test_golden_feature_fixture_satisfies_formal_document_chain` |
+
+## 登录路由按会话状态分流（REQ-001）
+
+### 用户或系统价值
+
+路由入口必须根据会话状态给出确定页面，避免已登录用户进入登录页或未登录用户进入首页。
+
+### 需求描述
+
+当文档链路模拟登录路由能力时，PRD 必须明确登录路由根据会话状态选择首页或登录页。
+
+### 行为规则
+
+- 会话有效时，登录路由进入首页。
+- 会话无效或缺失时，登录路由进入登录页。
+- 文档链路必须能把该需求追踪到 TDD、TID、TCD、IPD 和 TED。
+
+### 输入与输出
+
+| 项目 | 内容 |
+| --- | --- |
+| 输入 | 会话状态。 |
+| 输出 | 首页或登录页路由结果。 |
+
+### 关联契约
+
+- API / SDK / CLI：不涉及。
+- Schema / 数据：不涉及。
+- 状态机 / 生命周期：不涉及。
+- 维护 / 迁移 / 回归：保持正式文档链路闭包校验。
+
+### 错误和边界
+
+| 编号 | 条件 | 期望行为 | 验证方式 |
 | --- | --- | --- | --- |
-| REQ-001 | 必须 | 登录路由根据会话状态选择首页或登录页。 | `python3 -m unittest scripts.test_preflight.PreflightTests.test_golden_feature_fixture_satisfies_formal_document_chain` |
+| ERR-001 | 会话状态缺失。 | 路由进入登录页。 | `python3 -m unittest scripts.test_preflight.PreflightTests.test_golden_feature_fixture_satisfies_formal_document_chain` |
 
-## 可追踪性
+### 验收标准
 
-| 规格 ID | 状态 | 验证命令 | 证据 |
+| 编号 | 场景 | 前置条件 | 操作 | 期望结果 |
+| --- | --- | --- | --- | --- |
+| AC-001 | 完整链路校验 | 同一 `doc_id` 下存在 PRD、TDD、TID、TCD、IPD 和 TED | 运行 preflight fixture 测试 | 链路闭包通过 |
+
+### 验证方式
+
+- 验证类型：contract。
+- 覆盖对象：登录路由需求点和正式文档链路闭包。
+- 后续沉淀：TCD、IPD 和 TED 已在同一 `doc_id` 链路下维护。
+
+## 追踪矩阵
+
+| 规格 ID | 验证类型 | 验证证据 | 状态 |
 | --- | --- | --- | --- |
-| REQ-001 | covered | `python3 -m unittest scripts.test_preflight.PreflightTests.test_golden_feature_fixture_satisfies_formal_document_chain` | `docs/coding-plugins/features/routing-fixture/evidences/routing-login-TED.md` |
-
-## 技术引用
-
-- 技术设计：`docs/coding-plugins/features/routing-fixture/technicals/routing-login-TDD.md`
-- 技术实现：`docs/coding-plugins/features/routing-fixture/technicals/routing-login-TID.md`
+| REQ-001 | contract | `docs/coding-plugins/features/routing-fixture/evidences/routing-login-TED.md` | 已覆盖 |

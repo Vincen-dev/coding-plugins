@@ -418,11 +418,12 @@ docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md
 - 项目上下文。
 - 用户目标、非目标和成功标准。
 - PRD 章节类型选择：feature、API contract、schema、state machine、acceptance criteria、maintenance。
+- 需求点拆分：先用 `## 需求总览` 表列出每个需求点，再用 `## 标题（REQ-001）` 章节展开价值、描述、行为规则、输入输出、关联契约、错误边界、验收标准和验证方式。
 - 无新增需求时，只有维护、基线、回归、迁移或可观测性风险需要维护需求文档。
 - 路径和索引：`requirements/<doc-id>-PRD.md`，并通过 `python3 scripts/preflight.py --write-index` 更新 `INDEX.md`。
 - 稳定 Spec ID：`REQ/API/SCHEMA/STATE/ERR/AC/NFR/MIG/OBS/NON`。
 - 外部契约示例：请求/响应、schema 样例、状态迁移或错误样例。
-- Traceability Matrix 初稿。
+- Traceability Matrix 初稿只记录验证方式和验证证据，不写计划任务编号或测试步骤。
 - `validate_spec.py` 自动校验结果；需要机器读取时使用 `--format json`。
 - 需求文档自审结果。
 - 用户确认。
