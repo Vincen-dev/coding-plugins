@@ -361,9 +361,9 @@ class PreflightTests(unittest.TestCase):
                 "## 轻量例外\n\n"
                 "- **原因:** 已由规格和 TDD Evidence 完成，技术设计和计划只会重复既有证据。\n"
                 "- **验证方式:** python3 scripts/preflight.py\n\n"
-                "| 规格 ID | 证据 |\n"
-                "| --- | --- |\n"
-                "| REQ-001 | `docs/coding-plugins/features/routing/technicals/routing-TDD.md` |\n",
+                "| Doc ID | 规格 ID | 证据 |\n"
+                "| --- | --- | --- |\n"
+                "| routing | REQ-001 | `docs/coding-plugins/features/routing/technicals/routing-TDD.md` |\n",
                 encoding="utf-8",
             )
 
@@ -380,9 +380,59 @@ class PreflightTests(unittest.TestCase):
                 "## 轻量例外\n\n"
                 "- **原因:** 已由规格和 TDD Evidence 完成，技术设计和计划只会重复既有证据。\n"
                 "- **验证方式:** python3 scripts/preflight.py\n\n"
-                "| 规格 ID | 证据 |\n"
+                "| Doc ID | 规格 ID | 证据 |\n"
+                "| --- | --- | --- |\n"
+                "| routing | REQ-001 | `docs/coding-plugins/features/routing/evidences/routing-TED.md` |\n",
+                encoding="utf-8",
+            )
+
+            preflight.check_feature_document_chain_closure(root)
+
+    def test_lightweight_exception_is_scoped_by_doc_id(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature_dir = root / "docs" / "coding-plugins" / "features" / "routing"
+            (feature_dir / "requirements").mkdir(parents=True)
+            (feature_dir / "evidences").mkdir()
+            (feature_dir / "README.md").write_text(
+                "# Routing\n\n"
+                "## 文档信息\n\n"
+                "| 字段 | 内容 |\n"
                 "| --- | --- |\n"
-                "| REQ-001 | `docs/coding-plugins/features/routing/evidences/routing-TED.md` |\n",
+                "| 状态 | 已批准 |\n"
+                "| Feature | routing |\n\n"
+                "## 轻量例外\n\n"
+                "- **原因:** 两条 doc_id 链路都只需要证据归档。\n"
+                "- **验证方式:** python3 scripts/preflight.py\n\n"
+                "| Doc ID | 规格 ID | 证据 |\n"
+                "| --- | --- | --- |\n"
+                "| routing-login | REQ-LOGIN-001 | `docs/coding-plugins/features/routing/evidences/routing-login-TED.md` |\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "requirements" / "routing-login-PRD.md").write_text(
+                "---\nstatus: approved\nfeature: routing\n---\n"
+                "| 编号 | 优先级 | 需求 | 验证方式 |\n"
+                "| --- | --- | --- | --- |\n"
+                "| REQ-LOGIN-001 | 必须 | 登录分流 | TDD Evidence |\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "requirements" / "routing-register-PRD.md").write_text(
+                "---\nstatus: approved\nfeature: routing\n---\n"
+                "| 编号 | 优先级 | 需求 | 验证方式 |\n"
+                "| --- | --- | --- | --- |\n"
+                "| REQ-REGISTER-001 | 必须 | 注册分流 | TDD Evidence |\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "evidences" / "routing-login-TED.md").write_text("# Evidence\n", encoding="utf-8")
+            (feature_dir / "evidences" / "routing-register-TED.md").write_text("# Evidence\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(preflight.PreflightError, "routing-register"):
+                preflight.check_feature_document_chain_closure(root)
+
+            readme = feature_dir / "README.md"
+            readme.write_text(
+                readme.read_text(encoding="utf-8")
+                + "| routing-register | REQ-REGISTER-001 | `docs/coding-plugins/features/routing/evidences/routing-register-TED.md` |\n",
                 encoding="utf-8",
             )
 
@@ -707,6 +757,86 @@ class PreflightTests(unittest.TestCase):
             with self.assertRaisesRegex(preflight.PreflightError, "SCHEMA-001"):
                 preflight.check_traceability_closure(root)
 
+    def test_planned_chain_does_not_require_completed_ted(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature_dir = root / "docs" / "coding-plugins" / "features" / "routing"
+            (feature_dir / "requirements").mkdir(parents=True)
+            (feature_dir / "technicals").mkdir()
+            (feature_dir / "test-cases").mkdir()
+            (feature_dir / "plans").mkdir()
+            (feature_dir / "evidences").mkdir()
+            (feature_dir / "requirements" / "routing-login-PRD.md").write_text(
+                "---\nstatus: approved\nfeature: routing\ndoc_id: routing-login\nupdated: 2026-07-02\n---\n"
+                "| 需求点 | 标题 | 优先级 | 类型 | 验证方式 |\n"
+                "| --- | --- | --- | --- | --- |\n"
+                "| REQ-001 | 登录分流 | 必须 | behavior | behavior 测试 |\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "technicals" / "routing-login-TDD.md").write_text(
+                "---\nlifecycle_status: approved\n---\n"
+                "## 规格到设计映射\n\n| 规格 ID | 技术落点 |\n| --- | --- |\n| REQ-001 | `router` |\n\n"
+                "## 无需技术设计的规格\n\n| 规格 ID | 原因 |\n| --- | --- |\n| 无 | 无。 |\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "technicals" / "routing-login-TID.md").write_text(
+                "---\nlifecycle_status: approved\n---\n"
+                "## 实现点总览\n\n| 实现点 | 覆盖规格 |\n| --- | --- |\n| IMPL-001 | REQ-001 |\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "test-cases" / "routing-login-TCD.md").write_text(
+                "## 测试用例总览\n\n| 测试用例 | 覆盖规格 |\n| --- | --- |\n| TC-001 | REQ-001 |\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "plans" / "routing-login-IPD.md").write_text(
+                "---\nstatus: approved\n---\n"
+                "## 任务总览\n\n| 任务 | 覆盖规格 |\n| --- | --- |\n| TASK-001 | REQ-001 |\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "evidences" / "routing-login-TED.md").write_text(
+                "---\nstatus: draft\n---\n# TED\n\n## 计划证据目标\n\n- 待执行：REQ-001\n",
+                encoding="utf-8",
+            )
+
+            preflight.check_traceability_closure(root)
+
+    def test_implemented_chain_requires_completed_ted(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature_dir = root / "docs" / "coding-plugins" / "features" / "routing"
+            (feature_dir / "requirements").mkdir(parents=True)
+            (feature_dir / "technicals").mkdir()
+            (feature_dir / "test-cases").mkdir()
+            (feature_dir / "plans").mkdir()
+            (feature_dir / "evidences").mkdir()
+            (feature_dir / "requirements" / "routing-login-PRD.md").write_text(
+                "---\nstatus: approved\nfeature: routing\ndoc_id: routing-login\nupdated: 2026-07-02\n---\n"
+                "| 需求点 | 标题 | 优先级 | 类型 | 验证方式 |\n"
+                "| --- | --- | --- | --- | --- |\n"
+                "| REQ-001 | 登录分流 | 必须 | behavior | behavior 测试 |\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "technicals" / "routing-login-TID.md").write_text(
+                "---\nlifecycle_status: implemented\n---\n"
+                "## 实现点总览\n\n| 实现点 | 覆盖规格 |\n| --- | --- |\n| IMPL-001 | REQ-001 |\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "test-cases" / "routing-login-TCD.md").write_text(
+                "## 测试用例总览\n\n| 测试用例 | 覆盖规格 |\n| --- | --- |\n| TC-001 | REQ-001 |\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "plans" / "routing-login-IPD.md").write_text(
+                "## 任务总览\n\n| 任务 | 覆盖规格 |\n| --- | --- |\n| TASK-001 | REQ-001 |\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "evidences" / "routing-login-TED.md").write_text(
+                "# TED\n\n## TDD 证据\n\n- **规格/缺陷/验收:** REQ-001\n- **最终验证:** 未运行\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "TED missing REQ-001"):
+                preflight.check_traceability_closure(root)
+
     def test_legacy_docs_roots_are_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -742,6 +872,12 @@ class PreflightTests(unittest.TestCase):
 
     def test_fixture_case_workflow_is_documented(self) -> None:
         preflight.check_fixture_case_workflow_documented(Path(__file__).resolve().parents[1])
+
+    def test_document_creation_decision_matrix_is_documented(self) -> None:
+        preflight.check_document_creation_decision_matrix_documented(Path(__file__).resolve().parents[1])
+
+    def test_tid_template_documents_no_code_implementation_boundary(self) -> None:
+        preflight.check_tid_template_no_code_boundary(Path(__file__).resolve().parents[1])
 
     def test_prd_metadata_requires_existing_related_artifacts(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

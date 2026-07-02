@@ -52,7 +52,7 @@ description: Use when reading, creating, updating, migrating, or auditing Coding
 | `doc_id` | 文档链路 ID | 默认等于 `<feature-name>`；多 PRD feature 中必须对应文件名 `<doc-id>-XXX.md` 的前缀 |
 | `created` / `updated` | 生命周期日期 | 使用 `YYYY-MM-DD`，不要写进文件名；`updated` 同时表示文档已按上游变更完成同步评审 |
 | `tags` | README 检索标签 | README 必填，`INDEX.md` 从 README frontmatter 读取 |
-| `lifecycle_status` | technical 生命周期 | TDD/TID 使用：`draft`、`approved`、`implemented`、`stale`、`superseded` |
+| `lifecycle_status` | technical 生命周期 | TDD/TID 使用：`draft`、`approved`、`implemented`、`stale`、`superseded`；只有 `implemented` 表示需要 TED 最终验证闭环 |
 | `implemented_commits` | 已落地提交 | TDD/TID 使用；未落地时保留空列表 |
 | `validated_by` | 验证记录 | TDD/TID 使用，写命令或人工验证记录 |
 | `related_specs` | 当前仓库 spec 路径 | 只写 `docs/coding-plugins/...` 相对路径 |
@@ -67,7 +67,7 @@ description: Use when reading, creating, updating, migrating, or auditing Coding
 
 | 文档 | 必备 metadata | 关系要求 |
 | --- | --- | --- |
-| README | `title`、`status`、`feature`、`updated`、`tags` | 作为人工总览和检索入口，不维护手写 `产物链路` 或 `文档链路` |
+| README | `title`、`status`、`feature`、`updated`、`tags` | 作为人工总览和检索入口，不维护手写 `产物链路` 或 `文档链路`；轻量例外必须按 `Doc ID | 规格 ID | 证据` 限定到具体链路 |
 | PRD | `title`、`type`、`status`、`feature`、`doc_id`、`created`、`updated`、`tags` | 必须在对应下游文档存在时链接同一 `doc_id` 的 `related_technical`、`related_test_cases`、`related_plans`、`related_evidence`，并可链接 `related_specs`、`related_code` |
 | TDD 技术设计 | `title`、`status`、`lifecycle_status`、`feature`、`doc_id`、`created`、`updated`、`implemented_commits`、`validated_by` | approved PRD 正式链路必备；必须补齐同一 `doc_id` 的 `related_specs`、`related_technical`、`related_plans`、`related_evidence` |
 | TID 技术实现 | `title`、`status`、`lifecycle_status`、`feature`、`doc_id`、`created`、`updated`、`implemented_commits`、`validated_by` | approved PRD 正式链路必备；必须链接同一 `doc_id` 的 TDD、PRD、TCD、IPD 和 TED |

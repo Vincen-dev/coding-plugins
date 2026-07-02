@@ -213,7 +213,7 @@ TECHNICAL_GAP_REVIEW_REQUIRED_TERMS = ("未覆盖需求", "验收标准", "外�
 TECHNICAL_GAP_REVIEW_UNRESOLVED_TERMS = ("未处理", "待处理", "需澄清", "不清楚", "待确认")
 TECHNICAL_DESIGN_REQUIRED_SECTIONS = ("规格到设计映射", "无需技术设计的规格")
 LIGHTWEIGHT_EXCEPTION_REQUIRED_TERMS = ("## 轻量例外", "原因", "验证方式")
-LIGHTWEIGHT_EXCEPTION_TRACE_HEADERS = ("规格 ID", "证据")
+LIGHTWEIGHT_EXCEPTION_TRACE_HEADERS = ("Doc ID", "规格 ID", "证据")
 CASE_INDEX_REQUIRED_FIELDS = (
     "case_id",
     "source_type",
@@ -235,6 +235,18 @@ FIXTURE_CASE_WORKFLOW_REFERENCES = (
     "CASE-INDEX.md",
     "scripts/scaffold_fixture_case.py",
     "问题 -> CASE -> RED -> 修复 -> preflight",
+)
+DOCUMENT_DECISION_MATRIX_REFERENCES = (
+    "## 文档生成决策矩阵",
+    "不创建新文档",
+    "轻量例外",
+    "完整链路",
+    "PRD -> TDD -> TID -> TCD -> IPD -> TED",
+)
+TID_NO_CODE_BOUNDARY_REFERENCES = (
+    "implementation_mode",
+    "no_code",
+    "无代码实现边界",
 )
 
 
@@ -694,12 +706,13 @@ def parse_markdown_table(section: str) -> tuple[list[str], list[list[str]]]:
     return [], []
 
 
-def lightweight_exception_traceability_errors(root: Path, feature_root: Path) -> list[str]:
+def lightweight_exception_traceability_errors(root: Path, feature_root: Path, spec_file: Path) -> list[str]:
     readme = feature_root / "README.md"
     if not readme.exists():
         return [str(feature_root.relative_to(root))]
 
-    required_ids = required_spec_ids_from_specs(approved_spec_files_for_feature(feature_root))
+    doc_id = docs_index.document_doc_id(spec_file)
+    required_ids = required_spec_ids_from_specs([spec_file])
     if not required_ids:
         return []
 
@@ -709,15 +722,17 @@ def lightweight_exception_traceability_errors(root: Path, feature_root: Path) ->
         return [str(readme.relative_to(root))]
 
     headers, rows = parse_markdown_table(section)
-    if tuple(headers[:2]) != LIGHTWEIGHT_EXCEPTION_TRACE_HEADERS:
-        return [f"{readme.relative_to(root)} missing 规格 ID -> 证据 table"]
+    if tuple(headers[:3]) != LIGHTWEIGHT_EXCEPTION_TRACE_HEADERS:
+        return [f"{readme.relative_to(root)} missing Doc ID -> 规格 ID -> 证据 table for {doc_id}"]
 
     covered: set[str] = set()
     missing_evidence_paths: list[str] = []
     missing_evidence_for_ids: list[str] = []
     for row in rows:
-        ids = set(SPEC_ID_RE.findall(row[0]))
-        evidence_paths = EVIDENCE_PATH_RE.findall(row[1])
+        if len(row) < 3 or row[0].strip() != doc_id:
+            continue
+        ids = set(SPEC_ID_RE.findall(row[1]))
+        evidence_paths = EVIDENCE_PATH_RE.findall(row[2])
         if ids and not evidence_paths:
             missing_evidence_for_ids.extend(sorted(ids))
             continue
@@ -732,7 +747,7 @@ def lightweight_exception_traceability_errors(root: Path, feature_root: Path) ->
     missing_ids = sorted(required_ids - covered)
     errors: list[str] = []
     if missing_ids:
-        errors.append(f"{readme.relative_to(root)} missing Spec IDs: {', '.join(missing_ids)}")
+        errors.append(f"{readme.relative_to(root)} doc_id={doc_id} missing Spec IDs: {', '.join(missing_ids)}")
     if missing_evidence_paths:
         errors.append(f"{readme.relative_to(root)} references missing evidence: {', '.join(sorted(set(missing_evidence_paths)))}")
     if missing_evidence_for_ids:
@@ -759,7 +774,9 @@ def check_feature_document_chain_closure(root: Path) -> None:
             if has_technical and has_implementation and has_test_cases and has_plan:
                 continue
             if feature_has_lightweight_exception(feature_root):
-                lightweight_traceability_offenders.extend(lightweight_exception_traceability_errors(root, feature_root))
+                lightweight_traceability_offenders.extend(
+                    lightweight_exception_traceability_errors(root, feature_root, spec_file)
+                )
                 continue
             offenders.append(str(spec_file.relative_to(root)))
 
@@ -1289,6 +1306,27 @@ def structured_traceability_spec_ids(label: str, text: str) -> set[str]:
     return ids
 
 
+def document_metadata_status(path: Path) -> tuple[str, str]:
+    metadata = parse_frontmatter(path.read_text(encoding="utf-8"))
+    return metadata.get("status", ""), metadata.get("lifecycle_status", "")
+
+
+def chain_requires_completed_evidence(feature_root: Path, doc_id: str) -> bool:
+    documents = (
+        docs_index.feature_technical_design_files_for_doc_id(feature_root, doc_id)
+        + docs_index.feature_technical_implementation_files_for_doc_id(feature_root, doc_id)
+        + docs_index.feature_plan_files_for_doc_id(feature_root, doc_id)
+        + docs_index.feature_evidence_files_for_doc_id(feature_root, doc_id)
+    )
+    for document in documents:
+        status, lifecycle_status = document_metadata_status(document)
+        if status in {"implemented", "completed", "approved"} and document.name.endswith("-TED.md"):
+            return True
+        if lifecycle_status == "implemented" or status in {"implemented", "completed"}:
+            return True
+    return False
+
+
 def check_traceability_closure(root: Path) -> None:
     downstream_collectors: tuple[tuple[str, Callable[[Path, str], list[Path]]], ...] = (
         ("TID", docs_index.feature_technical_implementation_files_for_doc_id),
@@ -1307,6 +1345,10 @@ def check_traceability_closure(root: Path) -> None:
 
             for label, collect_documents in downstream_collectors:
                 documents = collect_documents(feature_root, doc_id)
+                if label == "TED" and not chain_requires_completed_evidence(feature_root, doc_id):
+                    if documents:
+                        continue
+                    continue
                 covered_ids: set[str] = set()
                 for document in documents:
                     covered_ids.update(structured_traceability_spec_ids(label, document.read_text(encoding="utf-8")))
@@ -1592,6 +1634,34 @@ def check_fixture_case_workflow_documented(root: Path) -> None:
         )
 
 
+def check_document_creation_decision_matrix_documented(root: Path) -> None:
+    skill_path = root / "skills" / "spec-driven-development" / "SKILL.md"
+    if not skill_path.exists():
+        raise PreflightError("Document creation decision matrix is missing: skills/spec-driven-development/SKILL.md.")
+
+    text = skill_path.read_text(encoding="utf-8")
+    missing = [reference for reference in DOCUMENT_DECISION_MATRIX_REFERENCES if reference not in text]
+    if missing:
+        raise PreflightError(
+            "Document creation decision matrix is incomplete: "
+            + f"{skill_path.relative_to(root)} missing {', '.join(missing)}."
+        )
+
+
+def check_tid_template_no_code_boundary(root: Path) -> None:
+    template_path = root / "skills" / "writing-technicals" / "templates" / "technical-implementation-document.md"
+    if not template_path.exists():
+        raise PreflightError("TID template is missing.")
+
+    text = template_path.read_text(encoding="utf-8")
+    missing = [reference for reference in TID_NO_CODE_BOUNDARY_REFERENCES if reference not in text]
+    if missing:
+        raise PreflightError(
+            "TID template no-code boundary is incomplete: "
+            + f"{template_path.relative_to(root)} missing {', '.join(missing)}."
+        )
+
+
 def collect_spec_files(root: Path) -> list[Path]:
     files: list[Path] = []
     for feature_root in collect_feature_roots(root):
@@ -1737,6 +1807,8 @@ def run_static_checks(root: Path) -> None:
     check_lifecycle_state_consistency(root)
     check_documentation_path_references(root)
     check_fixture_case_workflow_documented(root)
+    check_document_creation_decision_matrix_documented(root)
+    check_tid_template_no_code_boundary(root)
     check_removed_entry_references(root)
     check_sdd_templates_are_chinese(root)
     check_technical_templates_are_chinese(root)

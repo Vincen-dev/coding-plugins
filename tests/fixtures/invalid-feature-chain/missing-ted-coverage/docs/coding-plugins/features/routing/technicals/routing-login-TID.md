@@ -1,3 +1,6 @@
+---
+lifecycle_status: implemented
+---
 # Routing Login TID
 
 ## 实现点总览

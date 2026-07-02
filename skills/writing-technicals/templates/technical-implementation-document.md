@@ -2,6 +2,7 @@
 title: "<功能名称>技术实现"
 status: draft
 lifecycle_status: draft
+implementation_mode: code
 feature: "<feature-name>"
 doc_id: "<doc-id>"
 created: YYYY-MM-DD
@@ -35,6 +36,7 @@ related_evidence:
 | --- | --- |
 | 状态 | 草稿 |
 | 生命周期 | draft |
+| 实现模式 | code / no_code |
 | Feature | <feature-name> |
 | Doc ID | <doc-id> |
 | 文档类型 | TID |
@@ -44,6 +46,10 @@ related_evidence:
 ## 实现摘要
 
 <说明实现边界、主要代码落点和不实现的内容。>
+
+## 无代码实现边界
+
+当 `implementation_mode: no_code` 时，本节必须说明为什么没有代码实现、维护了哪些文档或配置边界、哪些 Spec ID 只需要证据归档，以及后续什么条件会触发代码实现。存在代码改动时写“不适用：本 TID 使用 `implementation_mode: code`，实现点见下文”。
 
 ## 实现点总览
 

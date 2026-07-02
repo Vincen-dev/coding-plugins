@@ -94,6 +94,7 @@ related_evidence:
 title: <功能名称>技术实现
 status: draft
 lifecycle_status: draft
+implementation_mode: code
 feature: <feature-name>
 doc_id: <doc-id>
 created: YYYY-MM-DD

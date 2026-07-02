@@ -466,7 +466,7 @@ python3 skills/writing-technicals/scripts/validate_technicals.py docs/coding-plu
 
 普通模式只让结构错误失败；`--strict` 会把泛化映射、stale technical、缺 lifecycle metadata、缺 TD 决策 ID、隐藏需求和旧映射表头都升级为失败。preflight 默认调用 strict validator，因此发布前不能留下 warning。
 
-没有 technical/plan 的轻量 feature 必须在 README 的 `## 轻量例外` 中写明 `原因`、`验证方式`，并补充 `规格 ID -> 证据` 表。该表必须覆盖 approved spec 的所有 MUST Spec ID，并指向真实存在的 evidence 文件。
+没有 technical/plan 的轻量链路必须在 README 的 `## 轻量例外` 中写明 `原因`、`验证方式`，并补充 `Doc ID -> 规格 ID -> 证据` 表。该表必须限定到具体 `doc_id`，覆盖对应 approved spec 的所有 MUST Spec ID，并指向真实存在的 evidence 文件。
 
 ### 测试用例层
 
