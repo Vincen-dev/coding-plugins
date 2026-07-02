@@ -12,7 +12,7 @@ related_technical:
 related_plans:
   - docs/coding-plugins/features/<feature-name>/plans/<feature-name>-IPD.md
 related_evidence:
-  - docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md
+  - docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md
 ---
 
 # <功能名称>测试用例
@@ -27,7 +27,7 @@ related_evidence:
 | 技术设计 | `docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TDD.md` |
 | 技术实现 | `docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TID.md` |
 | 实现计划 | `docs/coding-plugins/features/<feature-name>/plans/<feature-name>-IPD.md` |
-| TDD 证据 | `docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md` |
+| TDD 证据 | `docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md` |
 
 ## 测试策略摘要
 
@@ -37,7 +37,7 @@ related_evidence:
 
 | Spec ID | 测试类型 | 测试用例 ID | 测试名称 | 前置条件 | 步骤 | 断言 | 测试数据 | 证据目标 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| REQ-001 | behavior | TC-001 | <测试名称> | <前置条件> | <步骤> | <断言> | <数据> | `docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md` |
+| REQ-001 | behavior | TC-001 | <测试名称> | <前置条件> | <步骤> | <断言> | <数据> | `docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md` |
 
 ## 边界和错误用例
 

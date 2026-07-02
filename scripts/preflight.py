@@ -51,6 +51,7 @@ REMOVED_ENTRY_PATTERNS = (
     "docs/coding-plugins/plans/",
     "docs/coding-plugins/evidence/",
     "docs/coding-plugins/evidences/",
+    "docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md",
     "~/.config/" + "superpowers",
     "super" + "powers",
     "brain" + "storming",

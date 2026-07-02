@@ -16,7 +16,7 @@ related_test_cases:
 related_plans:
   - docs/coding-plugins/features/<feature-name>/plans/<feature-name>-IPD.md
 related_evidence:
-  - docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md
+  - docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md
 ---
 
 # <功能名称>技术实现
@@ -32,7 +32,7 @@ related_evidence:
 | 技术设计 | `docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TDD.md` |
 | 测试用例 | `docs/coding-plugins/features/<feature-name>/test-cases/<feature-name>-TCD.md` |
 | 实现计划 | `docs/coding-plugins/features/<feature-name>/plans/<feature-name>-IPD.md` |
-| TED 证据 | `docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md` |
+| TED 证据 | `docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md` |
 
 ## 实现摘要
 
@@ -66,7 +66,7 @@ related_evidence:
 
 | 规格 ID | 测试用例 | 计划任务 | TED 证据 |
 | --- | --- | --- | --- |
-| REQ-001 | `docs/coding-plugins/features/<feature-name>/test-cases/<feature-name>-TCD.md` | <Task N> | `docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md` |
+| REQ-001 | `docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md` | <Task N> | `docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md` |
 
 ## 风险和回滚
 

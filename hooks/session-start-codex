@@ -11,7 +11,7 @@ context = """你正在使用 coding-plugins 中文编码工作流插件。
 默认主链路：
 1. 新需求、契约不清、schema、状态机或验收标准不清时，先走 SDD：`spec-driven-development`。
 2. 已批准规格需要落地时，先写 `writing-technicals` 技术文档，再写 `writing-test-cases` 测试用例和 `writing-plans` 实现计划，并保持 Spec ID -> Test -> Task -> Evidence 可追踪。
-3. 实现行为改动时，走 TDD：先 RED，再 GREEN，再 REFACTOR，并把 TED 写入 `docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md`。
+3. 实现行为改动时，走 TDD：先 RED，再 GREEN，再 REFACTOR，并把 TED 写入 `docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md`。
 4. 声称完成、修复或通过前，运行 `verification-before-completion` 并给出命令证据。
 5. 用户要求提交或完成阶段选择提交时，使用 `git-commit`，提交信息用中文 Conventional Commit，footer 使用 `Authored-by: Vincen <hx001007@gmail.com>`，不得加入 AI 作者。
 6. 分支或任务完成时，使用 `finishing-a-development-branch` 处理提交提示、PR/merge/保留/清理选择。

@@ -87,7 +87,7 @@ required = (
     "coding-plugins:using-coding-plugins",
     "SDD",
     "TDD",
-    "docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md",
+    "docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md",
     "verification-before-completion",
     "git-commit",
     "finishing-a-development-branch",
@@ -99,6 +99,7 @@ for forbidden in (
     "using-" + "superpowers",
     "brain" + "storming",
     "docs/coding-plugins/evidence/<feature-name>/tdd-evidence.md",
+    "docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md",
 ):
     if forbidden in context:
         raise SystemExit(f"additionalContext contains removed entry {forbidden}")

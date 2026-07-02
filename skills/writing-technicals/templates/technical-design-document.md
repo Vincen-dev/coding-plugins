@@ -16,7 +16,7 @@ related_test_cases:
 related_plans:
   - docs/coding-plugins/features/<feature-name>/plans/<feature-name>-IPD.md
 related_evidence:
-  - docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md
+  - docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md
 ---
 
 # <功能名称>技术设计
@@ -32,7 +32,7 @@ related_evidence:
 | 技术实现 | `docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TID.md` |
 | 测试用例 | `docs/coding-plugins/features/<feature-name>/test-cases/<feature-name>-TCD.md` |
 | 计划 | `docs/coding-plugins/features/<feature-name>/plans/<feature-name>-IPD.md` |
-| TDD 证据| `docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md` |
+| TDD 证据| `docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md` |
 | 已实现提交 | [] |
 | 验证方式 | <验证命令或人工验证记录> |
 
@@ -55,7 +55,7 @@ related_evidence:
 
 | 规格 ID | 规格摘要 | 技术落点 | 关键决策 ID | 影响文件/符号 | 验证命令 | 证据 |
 | --- | --- | --- | --- | --- | --- | --- |
-| REQ-001 | <规格摘要> | `<path>::<symbol>` 或 <具体模块落点> | TD-001 | `<path>` | <测试命令或测试名称> | `docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md` |
+| REQ-001 | <规格摘要> | `<path>::<symbol>` 或 <具体模块落点> | TD-001 | `<path>` | <测试命令或测试名称> | `docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md` |
 
 ## 无需技术设计的规格
 

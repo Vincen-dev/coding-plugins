@@ -124,3 +124,17 @@ related_plans:
 - **REFACTOR 变更:** `migrate_document_contract.py` 移除本地重复的 frontmatter split/parse/render，统一调用 `document_metadata`。
 - **REFACTOR 命令:** `python3 -m unittest scripts.test_document_metadata scripts.test_document_contract_migration` PASS
 - **最终验证:** `python3 scripts/preflight.py` PASS。
+
+## 任务 9：Doc ID scoped TED guidance
+
+### TDD 证据
+
+- **规格/缺陷/验收:** REQ-011 / ERR-007：同一 feature 下多条文档链路时，TDD evidence 路径必须使用 `<doc-id>-TED.md`，不能继续在 active guidance 中要求 `<feature-name>-TED.md`。
+- **测试类型:** config
+- **RED 测试:** `scripts.test_preflight.PreflightTests.test_feature_name_ted_placeholder_references_are_rejected`
+- **RED 命令:** `python3 -m unittest scripts.test_preflight.PreflightTests.test_feature_name_ted_placeholder_references_are_rejected`
+- **RED 失败:** preflight 未拒绝 `docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md`，导致 TDD skill、plan、technical、test-case 模板和 SessionStart hook 可以继续传播旧占位符。
+- **GREEN 变更:** `REMOVED_ENTRY_PATTERNS` 增加旧 TED 占位符；SessionStart hook、TDD skill、writing-plans、writing-technicals 模板和 writing-test-cases 模板统一改为 `docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md`。
+- **GREEN 命令:** `python3 -m unittest scripts.test_preflight.PreflightTests.test_feature_name_ted_placeholder_references_are_rejected` PASS；`bash tests/hooks/test-session-start.sh` PASS
+- **REFACTOR 命令:** `rg "docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED\\.md|<feature-name>-TED" README.md docs hooks skills tests scripts .codex-plugin .claude-plugin .agents -S`，确认 active guidance 仅剩 preflight 防线、测试断言和历史 feature 文档正文。
+- **最终验证:** `python3 scripts/preflight.py` PASS。
