@@ -179,6 +179,7 @@ flowchart TD
   C -->|开发/修复/重构| D0{"第二层: 开发任务类型"}
 
   BS --> BSD{"确认进入落地？"}
+  BSD -->|否| Y
   BSD -->|是| D
   D0 -->|功能构想/产品方向未收敛| BS
   D0 -->|新需求/行为变更/契约不清且确认落地| D["spec-driven-development"]

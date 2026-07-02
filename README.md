@@ -10,27 +10,28 @@ Codex 侧包含 SessionStart hook，新建、恢复或清空会话时会注入 `
 
 ## 工作方式
 
-当代理看到你要构建或修改东西时，它不应该直接写代码。它会先把需求收敛成可追踪、可测试、可评审的规格。规格通过后，它会把架构决策写入 TDD 技术设计，把模块级落地写入 TID 技术实现，再写出 IPD 任务执行文档：文件、代码、测试、命令、预期结果都要写清楚。
+当代理看到你要构建或修改东西时，它不应该直接写代码。方案讨论、头脑风暴、产品方向不清或是否值得做尚未明确时，先用 `brainstorming` 收敛问题和方案，不创建正式 SDD 产物。确认进入落地后，再把需求收敛成可追踪、可测试、可评审的规格。规格通过后，它会把架构决策写入 TDD 技术设计，把模块级落地写入 TID 技术实现，再写出 IPD 任务执行文档：文件、代码、测试、命令、预期结果都要写清楚。
 
 之后进入实现阶段。推荐使用子代理驱动开发：每个任务由新子代理实现，主代理在任务之间做规格符合性和代码质量评审。没有子代理能力时，也可以在当前会话中按 IPD 批次执行并设置人工检查点。
 
 ## 基本流程
 
 1. **using-coding-plugins** - 入口技能。先判断直接意图，再判断开发任务类型。
-2. **spec-driven-development** - 实现前激活。编排本 feature 需要沉淀的 README、需求、技术设计、技术实现、测试用例、IPD 任务执行和证据文档；新 feature 可先生成文档骨架。
-3. **document-metadata** - 读取或维护文档关系时先读 frontmatter，再按 `related_*` 串联 README、需求文档、技术设计、测试用例、IPD 任务执行和证据。
-4. **writing-requirements** - 编写 feature、API contract、schema、state machine、acceptance 或 maintenance 需求内容，保存到 `docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md`。
-5. **writing-technicals** - 基于已批准需求文档写 TDD 技术设计和必要的 TID 技术实现，保存到 `docs/coding-plugins/features/<feature-name>/technicals/`。
-6. **writing-test-cases** - 基于需求文档、TDD/TID 编写测试用例文档，保存到 `docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md`。
-7. **writing-plans** - 基于已批准需求、TDD/TID 和测试用例写 IPD 任务执行文档。任务拆到 2 到 5 分钟粒度，并建立 Spec ID -> TASK -> 验证 -> TED 的执行落点。
-8. **using-git-worktrees** - 执行前使用。创建隔离 worktree 和新分支，避免污染当前工作区。
-9. **subagent-driven-development / executing-plans** - 根据 IPD 任务执行文档执行。优先子代理驱动；没有子代理时内联执行。
-10. **test-driven-development** - 实现时强制 RED-GREEN-REFACTOR：先从规格写失败测试，再最小实现，再重构，并把 TDD Evidence 写入 `docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md`。
-11. **requesting-code-review** - 任务之间或合并前评审，按严重级别报告问题。
-12. **receiving-code-review** - 收到评审后先验证反馈，再决定是否修改。
-13. **verification-before-completion** - 声明完成前运行测试、构建、规格覆盖或人工验收验证。
-14. **git-commit** - 每次完成后必须提交；生成中文 Conventional Commit，在 footer 添加本人 `Authored-by` 署名，并禁止 AI 作者或 AI 生成声明。
-15. **finishing-a-development-branch** - 提交完成后提出合并/PR/保留/丢弃选项并清理。
+2. **brainstorming** - SDD 前置入口。用于方案讨论、头脑风暴、产品方向不清或先分析不落地；只输出问题定义、方案对比和是否进入 SDD 的建议。
+3. **spec-driven-development** - 实现前激活。编排本 feature 需要沉淀的 README、需求、技术设计、技术实现、测试用例、IPD 任务执行和证据文档；新 feature 可先生成文档骨架。
+4. **document-metadata** - 读取或维护文档关系时先读 frontmatter，再按 `related_*` 串联 README、需求文档、技术设计、测试用例、IPD 任务执行和证据。
+5. **writing-requirements** - 编写 feature、API contract、schema、state machine、acceptance 或 maintenance 需求内容，保存到 `docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md`。
+6. **writing-technicals** - 基于已批准需求文档写 TDD 技术设计和必要的 TID 技术实现，保存到 `docs/coding-plugins/features/<feature-name>/technicals/`。
+7. **writing-test-cases** - 基于需求文档、TDD/TID 编写测试用例文档，保存到 `docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md`。
+8. **writing-plans** - 基于已批准需求、TDD/TID 和测试用例写 IPD 任务执行文档。任务拆到 2 到 5 分钟粒度，并建立 Spec ID -> TASK -> 验证 -> TED 的执行落点。
+9. **using-git-worktrees** - 执行前使用。创建隔离 worktree 和新分支，避免污染当前工作区。
+10. **subagent-driven-development / executing-plans** - 根据 IPD 任务执行文档执行。优先子代理驱动；没有子代理时内联执行。
+11. **test-driven-development** - 实现时强制 RED-GREEN-REFACTOR：先从规格写失败测试，再最小实现，再重构，并把 TDD Evidence 写入 `docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md`。
+12. **requesting-code-review** - 任务之间或合并前评审，按严重级别报告问题。
+13. **receiving-code-review** - 收到评审后先验证反馈，再决定是否修改。
+14. **verification-before-completion** - 声明完成前运行测试、构建、规格覆盖或人工验收验证。
+15. **git-commit** - 每次完成后必须提交；生成中文 Conventional Commit，在 footer 添加本人 `Authored-by` 署名，并禁止 AI 作者或 AI 生成声明。
+16. **finishing-a-development-branch** - 提交完成后提出合并/PR/保留/丢弃选项并清理。
 
 完整链路说明见 [docs/workflow-chain.md](docs/workflow-chain.md)。安装方式见 [docs/installation.md](docs/installation.md)。
 
@@ -47,6 +48,7 @@ Codex 侧包含 SessionStart hook，新建、恢复或清空会话时会注入 `
 
 **协作**
 
+- `brainstorming`：方案讨论、头脑风暴和产品方向不清时使用，先收敛问题和推荐路径，不创建正式 SDD 文档。
 - `document-metadata`：读取、创建、迁移或审计文档 frontmatter，先用 metadata 串联 README、PRD、TDD、TID、TCD、IPD、TED 和 INDEX。
 - `spec-driven-development`：规格驱动开发，编排需求、技术设计、技术实现、测试用例、IPD 任务执行和证据的落地链路。
 - `writing-requirements`：编写需求文档，把功能、接口、schema、状态机、验收和维护约束收敛为可测试契约。
@@ -187,6 +189,7 @@ claude --plugin-dir ./plugins/coding-plugins
 
 ```text
 /coding-plugins:using-coding-plugins
+/coding-plugins:brainstorming
 ```
 
 修改插件组件后运行 `/reload-plugins`。更多说明见 [docs/claude-code-usage.md](docs/claude-code-usage.md)。

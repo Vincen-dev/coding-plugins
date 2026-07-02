@@ -178,6 +178,14 @@ class RoutingBehaviorTests(unittest.TestCase):
                 artifact_positions = [contract["artifact_chain"].index(artifact) for artifact in scenario["artifacts"] if artifact != "README"]
                 self.assertEqual(artifact_positions, sorted(artifact_positions))
 
+    def test_plan_scenario_does_not_claim_ted_as_direct_artifact(self) -> None:
+        contract = self.read_json("docs/coding-plugins/scenario-routing.json")
+        scenario = next(item for item in contract["scenarios"] if item["id"] == "test_cases_to_plan")
+
+        self.assertEqual(scenario["skills"], ["document-metadata", "writing-plans"])
+        self.assertEqual(scenario["artifacts"], ["IPD"])
+        self.assertIn("TED target only", scenario["gates"])
+
     def test_claude_usage_documents_session_start_prompt(self) -> None:
         usage = self.read_text("docs/claude-code-usage.md")
         reference = self.read_text("skills/using-coding-plugins/references/claude-tools.md")
@@ -187,6 +195,15 @@ class RoutingBehaviorTests(unittest.TestCase):
         self.assertIn("/coding-plugins:using-coding-plugins", usage)
         self.assertIn("## 会话启动提示", reference)
         self.assertIn("/coding-plugins:using-coding-plugins", reference)
+
+    def test_user_facing_docs_include_brainstorming_entrypoint(self) -> None:
+        readme = self.read_text("README.md")
+        installation = self.read_text("docs/installation.md")
+
+        for document in (readme, installation):
+            self.assertIn("brainstorming", document)
+            self.assertIn("方案讨论", document)
+            self.assertIn("/coding-plugins:brainstorming", document)
 
     def test_brainstorming_is_pre_sdd_and_does_not_create_formal_artifacts(self) -> None:
         entry = self.read_text("skills/using-coding-plugins/SKILL.md")

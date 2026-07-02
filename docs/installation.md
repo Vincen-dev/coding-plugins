@@ -104,7 +104,10 @@ claude --plugin-dir /Users/vincen/workspace/plugins/coding-plugins
 
 ```text
 /coding-plugins:using-coding-plugins
+/coding-plugins:brainstorming
 ```
+
+`brainstorming` 用于方案讨论、头脑风暴、产品方向不清或先分析不落地；确认进入正式落地后再转入 `spec-driven-development`。
 
 修改插件组件后，在 Claude Code 中运行：
 
