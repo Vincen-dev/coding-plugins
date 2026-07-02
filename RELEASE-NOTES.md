@@ -1,5 +1,11 @@
 # Release Notes
 
+## 1.0.0 - 2026-07-02
+
+- 发布 1.0.0，确保 Codex personal 插件缓存可刷新到当前仓库的新主链路。
+- 收口入口路由为 `writing-requirements`、`writing-technicals`、`writing-test-cases` 和 `writing-plans`，避免继续触发旧 `writing-technical-design` 链路。
+- 将 approved PRD 正式链路固定为 PRD、TDD、TID、IPD 和 TED，并通过 metadata、INDEX 和 preflight 保持一致。
+
 ## 0.6.29 - 2026-06-29
 
 - 新增 `docs/coding-plugins/document-contract.md`，明确 metadata-first 文档读取顺序、README 边界和生成式索引职责。
