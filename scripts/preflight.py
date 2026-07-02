@@ -214,6 +214,13 @@ TECHNICAL_GAP_REVIEW_UNRESOLVED_TERMS = ("未处理", "待处理", "需澄清", 
 TECHNICAL_DESIGN_REQUIRED_SECTIONS = ("规格到设计映射", "无需技术设计的规格")
 LIGHTWEIGHT_EXCEPTION_REQUIRED_TERMS = ("## 轻量例外", "原因", "验证方式")
 LIGHTWEIGHT_EXCEPTION_TRACE_HEADERS = ("规格 ID", "证据")
+CASE_INDEX_REQUIRED_FIELDS = (
+    "case_id",
+    "source_type",
+    "source_reference",
+    "optimization_target",
+    "covered_risks",
+)
 DOC_SYNC_REFERENCES = (
     "docs/coding-plugins/INDEX.md",
     "docs/coding-plugins/features",
@@ -1089,6 +1096,48 @@ def markdown_section(text: str, heading: str) -> str | None:
     return text[match.start() : match.end() + next_match.start()]
 
 
+def check_formal_fixture_case_index(root: Path) -> None:
+    feature_roots = collect_feature_roots(root)
+    if not feature_roots:
+        return
+
+    index_path = root / "CASE-INDEX.md"
+    if not index_path.exists():
+        raise PreflightError("Missing CASE index: CASE-INDEX.md.")
+
+    text = index_path.read_text(encoding="utf-8")
+    missing_cases: list[str] = []
+    incomplete_cases: list[str] = []
+    case_ids: list[str] = []
+
+    for feature_root in feature_roots:
+        section = markdown_section(text, feature_root.name)
+        if section is None:
+            missing_cases.append(feature_root.name)
+            continue
+
+        missing_fields = [field for field in CASE_INDEX_REQUIRED_FIELDS if f"{field}:" not in section]
+        case_id_match = re.search(r"\bcase_id:[ \t]*([A-Za-z0-9_.-]+)", section)
+        if case_id_match:
+            case_ids.append(case_id_match.group(1))
+        else:
+            missing_fields.append("case_id value")
+        if missing_fields:
+            incomplete_cases.append(f"{feature_root.name} missing {', '.join(missing_fields)}")
+
+    duplicate_case_ids = sorted({case_id for case_id in case_ids if case_ids.count(case_id) > 1})
+    errors: list[str] = []
+    if missing_cases:
+        errors.append("missing features: " + ", ".join(missing_cases))
+    if incomplete_cases:
+        errors.extend(incomplete_cases)
+    if duplicate_case_ids:
+        errors.append("duplicate case_id: " + ", ".join(duplicate_case_ids))
+
+    if errors:
+        raise PreflightError("CASE index is incomplete: " + "; ".join(errors) + ".")
+
+
 def check_technical_design_gap_review(root: Path) -> None:
     missing_section: list[str] = []
     incomplete: list[str] = []
@@ -1188,6 +1237,40 @@ def check_technical_design_must_spec_coverage(root: Path) -> None:
 
     if offenders:
         raise PreflightError("Technical design does not cover required Spec IDs: " + "; ".join(offenders) + ".")
+
+
+def document_spec_ids(files: list[Path]) -> set[str]:
+    ids: set[str] = set()
+    for path in files:
+        ids.update(SPEC_ID_RE.findall(path.read_text(encoding="utf-8")))
+    return ids
+
+
+def check_traceability_closure(root: Path) -> None:
+    downstream_collectors: tuple[tuple[str, Callable[[Path, str], list[Path]]], ...] = (
+        ("TID", docs_index.feature_technical_implementation_files_for_doc_id),
+        ("TCD", docs_index.feature_test_case_files_for_doc_id),
+        ("IPD", docs_index.feature_plan_files_for_doc_id),
+        ("TED", docs_index.feature_evidence_files_for_doc_id),
+    )
+    offenders: list[str] = []
+
+    for feature_root in collect_feature_roots(root):
+        for spec_file in approved_spec_files_for_feature(feature_root):
+            doc_id = docs_index.document_doc_id(spec_file)
+            required_ids = required_spec_ids_from_specs([spec_file])
+            if not required_ids:
+                continue
+
+            for label, collect_documents in downstream_collectors:
+                documents = collect_documents(feature_root, doc_id)
+                covered_ids = document_spec_ids(documents)
+                missing_ids = sorted(required_ids - covered_ids)
+                if missing_ids:
+                    offenders.append(f"{spec_file.relative_to(root)} -> {label} missing {', '.join(missing_ids)}")
+
+    if offenders:
+        raise PreflightError("Traceability closure is incomplete: " + "; ".join(offenders) + ".")
 
 
 def frontmatter_list_values(text: str, key: str) -> list[str]:
@@ -1581,6 +1664,7 @@ def run_static_checks(root: Path) -> None:
     check_technical_design_gap_review(root)
     check_technical_design_required_sections(root)
     check_technical_design_must_spec_coverage(root)
+    check_traceability_closure(root)
     check_technical_design_related_metadata(root)
     check_technical_design_validator(root)
     check_artifact_index_covers_documents(root)

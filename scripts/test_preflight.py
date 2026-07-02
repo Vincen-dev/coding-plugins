@@ -464,6 +464,7 @@ class PreflightTests(unittest.TestCase):
         preflight.check_technical_design_gap_review(root)
         preflight.check_technical_design_required_sections(root)
         preflight.check_technical_design_must_spec_coverage(root)
+        preflight.check_traceability_closure(root)
         preflight.check_technical_design_related_metadata(root)
         preflight.check_technical_design_validator(root)
         preflight.check_spec_technical_design_references(root)
@@ -507,6 +508,91 @@ class PreflightTests(unittest.TestCase):
                 self.assertIn("## 测试用例总览", tcd_text, str(tcd))
                 self.assertIn("TC-001", tcd_text, str(tcd))
                 self.assertIn("关系源", tcd_text, str(tcd))
+
+    def test_formal_feature_fixture_requires_case_index(self) -> None:
+        root = FIXTURES_ROOT / "formal-feature-chain"
+
+        preflight.check_formal_fixture_case_index(root)
+
+    def test_case_index_must_cover_every_formal_fixture_feature(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            features_root = root / "docs" / "coding-plugins" / "features"
+            (features_root / "routing-fixture").mkdir(parents=True)
+            (features_root / "metadata-sync-fixture").mkdir()
+            (root / "CASE-INDEX.md").write_text(
+                "# Formal Feature Chain Case Index\n\n"
+                "## routing-fixture\n\n"
+                "- case_id: CASE-ROUTING-001\n"
+                "- source_type: synthetic_regression\n"
+                "- source_reference: tests\n"
+                "- optimization_target: routing chain\n"
+                "- covered_risks:\n"
+                "  - missing routing case\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "CASE index is incomplete"):
+                preflight.check_formal_fixture_case_index(root)
+
+    def test_traceability_closure_requires_prd_must_ids_in_downstream_documents(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature_dir = root / "docs" / "coding-plugins" / "features" / "routing"
+            (feature_dir / "requirements").mkdir(parents=True)
+            (feature_dir / "technicals").mkdir()
+            (feature_dir / "test-cases").mkdir()
+            (feature_dir / "plans").mkdir()
+            (feature_dir / "evidences").mkdir()
+            (feature_dir / "requirements" / "routing-login-PRD.md").write_text(
+                "---\nstatus: approved\nfeature: routing\ndoc_id: routing-login\nupdated: 2026-07-02\n---\n"
+                "# Login PRD\n\n"
+                "## 需求总览\n\n"
+                "| 需求点 | 标题 | 优先级 | 类型 | 验证方式 |\n"
+                "| --- | --- | --- | --- | --- |\n"
+                "| REQ-001 | 登录分流 | 必须 | behavior | behavior 测试 |\n"
+                "| REQ-002 | 错误提示 | 必须 | behavior | behavior 测试 |\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "technicals" / "routing-login-TID.md").write_text(
+                "# Login TID\n\n"
+                "## 实现点总览\n\n"
+                "| 实现点 | 标题 | 覆盖规格 |\n"
+                "| --- | --- | --- |\n"
+                "| IMPL-001 | 登录分流 | REQ-001 |\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "test-cases" / "routing-login-TCD.md").write_text(
+                "# Login TCD\n\n"
+                "## 测试用例总览\n\n"
+                "| 测试用例 | 标题 | 覆盖规格 |\n"
+                "| --- | --- | --- |\n"
+                "| TC-001 | 登录分流 | REQ-001 |\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "plans" / "routing-login-IPD.md").write_text(
+                "# Login IPD\n\n"
+                "## 任务总览\n\n"
+                "| 任务 | 标题 | 覆盖规格 |\n"
+                "| --- | --- | --- |\n"
+                "| TASK-001 | 登录分流 | REQ-001 |\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "evidences" / "routing-login-TED.md").write_text(
+                "# Login TED\n\n"
+                "## TDD 证据\n\n"
+                "- **规格/缺陷/验收:** REQ-001\n"
+                "- **最终验证:** PASS\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Traceability closure is incomplete"):
+                preflight.check_traceability_closure(root)
+
+    def test_formal_feature_fixture_satisfies_traceability_closure(self) -> None:
+        root = FIXTURES_ROOT / "formal-feature-chain"
+
+        preflight.check_traceability_closure(root)
 
     def test_legacy_docs_roots_are_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
