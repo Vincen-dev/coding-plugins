@@ -206,15 +206,13 @@ archived_at: YYYY-MM-DD
 | 状态 | 草稿 |
 | Feature | <feature-name> |
 | Doc ID | <doc-id> |
-| 需求文档 | `docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md` |
-| 技术设计 | `docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md` |
-| 技术实现 | `docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md` |
-| 测试用例 | `docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md` |
-| 实现计划 | `docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md` |
-| TDD 证据 | `docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md` |
+| 文档类型 | <PRD / TDD / TID / TCD / IPD / TED> |
+| 关系源 | frontmatter `related_*` 和 `docs/coding-plugins/INDEX.md` |
+| 阅读重点 | <本文正文最重要的章节，例如需求点、设计决策、实现点、测试用例、执行任务或验证证据> |
+| 同步状态 | 已按上游文档变更完成同步评审 |
 ```
 
-中文 `文档信息` 只服务人工阅读。路径关系和状态判断以 frontmatter 为准。
+中文 `文档信息` 只服务人工阅读，不维护 PRD/TDD/TID/TCD/IPD/TED 路径清单。路径关系和状态判断以 frontmatter 与 `docs/coding-plugins/INDEX.md` 为准。
 
 ## 同步更新规则
 

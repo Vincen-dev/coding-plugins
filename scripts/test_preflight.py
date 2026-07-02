@@ -835,6 +835,72 @@ class PreflightTests(unittest.TestCase):
             with self.assertRaisesRegex(preflight.PreflightError, "Implementation Plan Document"):
                 preflight.check_document_templates_match_metadata_contract(root)
 
+    def test_tid_template_rejects_legacy_validation_mapping_shape(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            template_dir = root / "skills" / "writing-technicals" / "templates"
+            template_dir.mkdir(parents=True)
+            (template_dir / "technical-implementation-document.md").write_text(
+                "---\n"
+                "title: 技术实现\n"
+                "feature: <feature-name>\n"
+                "doc_id: <doc-id>\n"
+                "---\n\n"
+                "## 阅读摘要\n\n"
+                "## 文档信息\n\n"
+                "## 验证映射\n\n"
+                "| 规格 ID | 测试用例 | 计划任务 | TED 证据 |\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "验证映射"):
+                preflight.check_document_templates_match_metadata_contract(root)
+
+    def test_tcd_template_rejects_legacy_spec_mapping_table_shape(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            template_dir = root / "skills" / "writing-test-cases" / "templates"
+            template_dir.mkdir(parents=True)
+            (template_dir / "test-cases.md").write_text(
+                "---\n"
+                "title: 测试用例\n"
+                "feature: <feature-name>\n"
+                "doc_id: <doc-id>\n"
+                "---\n\n"
+                "## 阅读摘要\n\n"
+                "## 文档信息\n\n"
+                "## Spec ID 到测试用例映射\n\n"
+                "| Spec ID | 测试类型 | 测试用例 ID |\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Spec ID 到测试用例映射"):
+                preflight.check_document_templates_match_metadata_contract(root)
+
+    def test_template_document_info_rejects_full_path_chain(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            template_dir = root / "skills" / "writing-test-cases" / "templates"
+            template_dir.mkdir(parents=True)
+            (template_dir / "test-cases.md").write_text(
+                "---\n"
+                "title: 测试用例\n"
+                "feature: <feature-name>\n"
+                "doc_id: <doc-id>\n"
+                "---\n\n"
+                "## 阅读摘要\n\n"
+                "## 文档信息\n\n"
+                "| 字段 | 内容 |\n"
+                "| --- | --- |\n"
+                "| 需求文档 | `docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md` |\n\n"
+                "## 测试用例总览\n\n"
+                "TC-001\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "full document paths"):
+                preflight.check_document_templates_match_metadata_contract(root)
+
     def test_document_template_contract_rejects_missing_doc_id_and_related_links(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -946,7 +1012,7 @@ class PreflightTests(unittest.TestCase):
             feature_dir.mkdir(parents=True)
             (feature_dir / "README.md").write_text("# Search", encoding="utf-8")
             (docs / "INDEX.md").write_text(
-                "| Feature | Doc ID | 功能根目录 | 需求文档 | 技术设计 | 技术实现 | 测试用例 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
+                "| Feature | Doc ID | 功能根目录 | 需求文档 | 技术设计 | 技术实现 | 测试用例 | 任务执行 | 证据 | 标签 | 更新日期 |\n"
                 "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
                 "| search | search | - | - | - | - | - | - | - | search | 2026-06-26 |\n",
                 encoding="utf-8",
@@ -965,7 +1031,7 @@ class PreflightTests(unittest.TestCase):
             technicals_dir.mkdir()
             (technicals_dir / f"{technicals_dir.parent.name}-TDD.md").write_text("# Technical", encoding="utf-8")
             (docs / "INDEX.md").write_text(
-                "| Feature | Doc ID | 功能根目录 | 需求文档 | 技术设计 | 技术实现 | 测试用例 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
+                "| Feature | Doc ID | 功能根目录 | 需求文档 | 技术设计 | 技术实现 | 测试用例 | 任务执行 | 证据 | 标签 | 更新日期 |\n"
                 "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
                 "| search | search | `docs/coding-plugins/features/search` | - | - | - | - | - | - | search | 2026-06-26 |\n",
                 encoding="utf-8",
@@ -982,7 +1048,7 @@ class PreflightTests(unittest.TestCase):
             spec_dir.mkdir(parents=True)
             (spec_dir / f"{spec_dir.parent.name}-PRD.md").write_text("# Feature", encoding="utf-8")
             (docs / "INDEX.md").write_text(
-                "| Feature | Doc ID | 功能根目录 | 需求文档 | 技术设计 | 技术实现 | 测试用例 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
+                "| Feature | Doc ID | 功能根目录 | 需求文档 | 技术设计 | 技术实现 | 测试用例 | 任务执行 | 证据 | 标签 | 更新日期 |\n"
                 "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
                 "| search | search | `docs/coding-plugins/features/search` | - | - | - | - | - | - | search | 2026-06-26 |\n",
                 encoding="utf-8",
@@ -1001,7 +1067,7 @@ class PreflightTests(unittest.TestCase):
             test_cases_dir.mkdir()
             (test_cases_dir / f"{test_cases_dir.parent.name}-TCD.md").write_text("# Test cases", encoding="utf-8")
             (docs / "INDEX.md").write_text(
-                "| Feature | Doc ID | 功能根目录 | 需求文档 | 技术设计 | 技术实现 | 测试用例 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
+                "| Feature | Doc ID | 功能根目录 | 需求文档 | 技术设计 | 技术实现 | 测试用例 | 任务执行 | 证据 | 标签 | 更新日期 |\n"
                 "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
                 "| search | search | `docs/coding-plugins/features/search` | - | - | - | - | - | - | search | 2026-06-26 |\n",
                 encoding="utf-8",
@@ -1020,7 +1086,7 @@ class PreflightTests(unittest.TestCase):
             plan_dir.mkdir()
             (plan_dir / f"{plan_dir.parent.name}-IPD.md").write_text("# Plan", encoding="utf-8")
             (docs / "INDEX.md").write_text(
-                "| Feature | Doc ID | 功能根目录 | 需求文档 | 技术设计 | 技术实现 | 测试用例 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
+                "| Feature | Doc ID | 功能根目录 | 需求文档 | 技术设计 | 技术实现 | 测试用例 | 任务执行 | 证据 | 标签 | 更新日期 |\n"
                 "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
                 "| search | search | `docs/coding-plugins/features/search` | - | - | - | - | - | - | search | 2026-06-26 |\n",
                 encoding="utf-8",
@@ -1037,7 +1103,7 @@ class PreflightTests(unittest.TestCase):
             evidence_dir.mkdir(parents=True)
             (evidence_dir / f"{evidence_dir.parent.name}-TED.md").write_text("# Evidence", encoding="utf-8")
             (docs / "INDEX.md").write_text(
-                "| Feature | Doc ID | 功能根目录 | 需求文档 | 技术设计 | 技术实现 | 测试用例 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
+                "| Feature | Doc ID | 功能根目录 | 需求文档 | 技术设计 | 技术实现 | 测试用例 | 任务执行 | 证据 | 标签 | 更新日期 |\n"
                 "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
                 "| search | search | `docs/coding-plugins/features/search` | - | - | - | - | - | - | search | 2026-06-26 |\n",
                 encoding="utf-8",
@@ -1193,7 +1259,7 @@ class PreflightTests(unittest.TestCase):
             (docs / "INDEX.md").write_text(
                 "# Coding Plugins Feature 索引\n\n"
                 "本索引用于按 `Feature` 检索 feature-first 文档链路。新增、移动、批准、废弃或拆分相关产物时同步更新本文件。\n\n"
-                "| Feature | Doc ID | 功能根目录 | 需求文档 | 技术设计 | 技术实现 | 测试用例 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
+                "| Feature | Doc ID | 功能根目录 | 需求文档 | 技术设计 | 技术实现 | 测试用例 | 任务执行 | 证据 | 标签 | 更新日期 |\n"
                 "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
                 "| search | search | `docs/coding-plugins/features/search` | `docs/coding-plugins/features/search/requirements/search-PRD.md` | - | - | - | - | - | wrong-tag | 2026-06-29 |\n",
                 encoding="utf-8",
@@ -1442,7 +1508,7 @@ class PreflightTests(unittest.TestCase):
             technicals_dir.mkdir(parents=True)
             (technicals_dir / f"{technicals_dir.parent.name}-TDD.md").write_text("# Technical", encoding="utf-8")
             (docs / "INDEX.md").write_text(
-                "| Feature | Doc ID | 功能根目录 | 需求文档 | 技术设计 | 技术实现 | 测试用例 | 实现计划 | 证据 | 标签 | 更新日期 |\n"
+                "| Feature | Doc ID | 功能根目录 | 需求文档 | 技术设计 | 技术实现 | 测试用例 | 任务执行 | 证据 | 标签 | 更新日期 |\n"
                 "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
                 "| plugin | routing | routing | `docs/coding-plugins/features/routing` | - | - | - | - | - | routing | 2026-06-26 |\n",
                 encoding="utf-8",

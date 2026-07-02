@@ -9,7 +9,7 @@ description: Use when writing or updating Coding Plugins PRD requirement documen
 
 本技能负责把需求、契约、schema、状态机、验收标准或维护约束写成可追踪、可验证的 PRD 需求文档。`spec-driven-development` 负责判断完整文档链路；本技能负责真正编写 `requirements/<doc-id>-PRD.md`。
 
-**核心原则：**需求文档只定义“要什么”和“如何验收”，不写技术方案、测试用例步骤或实现计划。
+**核心原则：**需求文档只定义“要什么”和“如何验收”，不写技术方案、测试用例步骤或执行任务拆分。
 
 **结构原则：**PRD 正文按需求点阅读。先写轻量 `## 需求总览` 表用于检索和 validator 提取稳定 Spec ID，再为每个需求点创建独立章节，标题格式固定为 `## 标题（REQ-001）`。不要使用 `## REQ-001：标题`，避免正文阅读被编号主导。
 
@@ -57,7 +57,7 @@ description: Use when writing or updating Coding Plugins PRD requirement documen
 7. 写正文 `## 文档信息`，保持中文展示；机器 key 不翻译。
 8. 拆分需求点：每个独立用户流程、契约、schema、状态机、维护约束或验收主题都必须进入 `## 需求总览`，并分配稳定 ID：`REQ/API/SCHEMA/STATE/ERR/AC/NFR/MIG/OBS/NON`。
 9. 为每个需求点创建独立章节，标题格式为 `## 标题（REQ-001）`，章节内按“用户或系统价值、需求描述、行为规则、输入与输出、关联契约、错误和边界、验收标准、验证方式”组织；不适用的小节可以写“不涉及”并说明原因。
-10. 在 `## 追踪矩阵` 中只写验证方式种子和验证证据占位，不写计划任务或具体测试步骤；测试步骤属于 `writing-test-cases`，实施任务属于 `writing-plans`。
+10. 在 `## 追踪矩阵` 中只写验证方式种子和验证证据占位，不写执行任务或具体测试步骤；测试步骤属于 `writing-test-cases`，实施任务属于 `writing-plans`。
 11. 运行规格校验：
 
 ```bash
@@ -78,7 +78,7 @@ python3 scripts/preflight.py --write-index
 | 功能需求、契约字段、schema、状态迁移 | 代码文件修改清单 |
 | 错误和边界条件 | RED/GREEN/REFACTOR 实际证据 |
 | 验收标准和验证方式类型 | 逐条测试用例步骤 |
-| Traceability Matrix 种子 | 实现任务拆分、计划任务编号 |
+| Traceability Matrix 种子 | 实现任务拆分、IPD 任务编号 |
 
 ## 自审
 

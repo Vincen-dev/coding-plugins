@@ -40,7 +40,7 @@
     {
       "id": "test_cases_to_plan",
       "doc_heading": "新需求",
-      "trigger": "已有批准 PRD、TDD、TID 和 TCD，需要实现计划",
+      "trigger": "已有批准 PRD、TDD、TID 和 TCD，需要 IPD 任务执行文档",
       "skills": ["document-metadata", "writing-plans"],
       "artifacts": ["IPD", "TED"],
       "gates": ["approved TCD required before IPD"]

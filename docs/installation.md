@@ -37,7 +37,7 @@ codex plugin marketplace list
 
 新建或重开 Codex 会话后，技能会以 `coding-plugins:<skill-name>` 形式出现在可用技能列表中。Codex 会在 `startup`、`resume` 和 `clear` 的 SessionStart 阶段运行 `hooks/run-hook.cmd session-start-codex`，自动注入 `coding-plugins:using-coding-plugins` 入口提示。
 
-规格、技术设计、技术实现、测试用例、计划和 TDD 证据的统一检索入口是：
+规格、技术设计、技术实现、测试用例、IPD 任务执行文档和 TDD 证据的统一检索入口是：
 
 ```text
 docs/coding-plugins/INDEX.md

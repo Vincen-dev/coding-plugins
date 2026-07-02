@@ -31,7 +31,7 @@ description: 开始任何任务时使用；建立 Coding Plugins 技能选择、
 | 创建、修改、优化 skill 或插件工作流 | `writing-skills` |
 | 编写需求文档、需求规格、API 契约、schema、状态机、验收或维护规格 | `writing-requirements` |
 | 编写 TDD 技术设计、TID 技术实现、架构方案、ADR 或 implementation design | `writing-technicals` |
-| 编写测试用例文档、测试设计、Spec ID 到测试用例映射 | `writing-test-cases` |
+| 编写测试用例文档、测试设计、TCD 测试用例章节 | `writing-test-cases` |
 | 需要隔离当前工作区、创建 worktree 或避免污染主分支 | `using-git-worktrees` |
 | 多个独立任务、多个失败点、可并行调查或实现 | `dispatching-parallel-agents` |
 
@@ -43,8 +43,8 @@ description: 开始任何任务时使用；建立 Coding Plugins 技能选择、
 | 维护、重构、依赖升级、迁移、安全或性能改造会影响外部行为、兼容性或验证口径 | `spec-driven-development` 编排，进入 `writing-requirements` 写 maintenance 需求文档 |
 | 已有批准 PRD，需要 TDD/TID 技术文档 | `writing-technicals` |
 | 已有批准 PRD 和 TDD/TID，需要 TCD 测试设计 | `writing-test-cases` |
-| 已有批准 PRD、TDD/TID 和 TCD，需要 IPD 落地步骤 | `writing-plans` |
-| 已有实现计划，需要执行 | 先 `using-git-worktrees`，再 `subagent-driven-development` 或 `executing-plans` |
+| 已有批准 PRD、TDD/TID 和 TCD，需要 IPD 任务执行文档 | `writing-plans` |
+| 已有 IPD 任务执行文档，需要执行 | 先 `using-git-worktrees`，再 `subagent-driven-development` 或 `executing-plans` |
 | 小型明确变更，验收标准清楚且可测试 | `test-driven-development`，必要时在计划或回复中写 inline spec |
 | bug、CI 失败、测试失败、构建失败、异常行为、原因不明或回归难复现 | `systematic-debugging`，需要修复时转 `test-driven-development` |
 | 纯内部重构且行为不变，但仍可测试 | `test-driven-development` |
@@ -55,7 +55,7 @@ description: 开始任何任务时使用；建立 Coding Plugins 技能选择、
 - 任何技能需要读取或维护 `docs/coding-plugins/features/<feature-name>/` 下的 README、PRD、TDD/TID、TCD、IPD 或 TED 关系时，先使用 `document-metadata` 确认 frontmatter 和 `related_*` 关系。
 - 需要声称完成、修复或通过前，必须使用 `verification-before-completion`。
 - 需要提交时必须使用 `git-commit`；提交前仍要检查 diff、作者身份和敏感文件。
-- 需要从需求进入计划时，先用 `writing-requirements` 写 PRD，再用 `writing-technicals` 写 TDD/TID，再用 `writing-test-cases` 写 TCD，最后用 `writing-plans` 拆 IPD 执行任务。
+- 需要从需求进入执行任务时，先用 `writing-requirements` 写 PRD，再用 `writing-technicals` 写 TDD/TID，再用 `writing-test-cases` 写 TCD，最后用 `writing-plans` 编写 IPD 任务执行文档。
 - 任务可并行拆分时，先用 `dispatching-parallel-agents` 拆分，再让每个子任务进入对应技能。
 - 直接验证、直接提交或只创建 worktree 的请求，完成该动作后即可汇报；只有用户要求收尾或开发链路结束时，才进入 `finishing-a-development-branch`。
 

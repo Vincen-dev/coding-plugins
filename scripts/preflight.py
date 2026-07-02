@@ -208,6 +208,7 @@ EVIDENCE_METADATA_REQUIRED_FIELDS = document_metadata.EVIDENCE_METADATA_REQUIRED
 ARCHIVED_EVIDENCE_METADATA_REQUIRED_FIELDS = document_metadata.ARCHIVED_EVIDENCE_METADATA_REQUIRED_FIELDS
 PLAN_METADATA_REQUIRED_FIELDS = document_metadata.PLAN_METADATA_REQUIRED_FIELDS
 CHINESE_DOCUMENT_INFO_REQUIRED_TERMS = ("## 文档信息", "状态", "Feature")
+DOCUMENT_INFO_BODY_PATH_MARKER = "docs/coding-plugins/features/<feature-name>/"
 TECHNICAL_GAP_REVIEW_REQUIRED_TERMS = ("未覆盖需求", "验收标准", "外部行为", "处理状态")
 TECHNICAL_GAP_REVIEW_UNRESOLVED_TERMS = ("未处理", "待处理", "需澄清", "不清楚", "待确认")
 TECHNICAL_DESIGN_REQUIRED_SECTIONS = ("规格到设计映射", "无需技术设计的规格")
@@ -452,6 +453,9 @@ def check_document_templates_match_metadata_contract(root: Path) -> None:
             offenders.append(f"{relative} missing ## 阅读摘要")
         if "## 文档信息" not in text:
             offenders.append(f"{relative} missing ## 文档信息")
+        document_info = markdown_section(text, "文档信息") or ""
+        if DOCUMENT_INFO_BODY_PATH_MARKER in document_info:
+            offenders.append(f"{relative} should not duplicate full document paths in ## 文档信息")
 
     prd_path = template_paths["PRD"]
     if prd_path.exists():
@@ -474,6 +478,38 @@ def check_document_templates_match_metadata_contract(root: Path) -> None:
         for heading in ("## 来源文档", "## 技术设计快照", "## 规格追踪"):
             if heading in ipd_text:
                 offenders.append(f"{ipd_path.relative_to(root)} should not contain {heading}")
+
+    tid_path = template_paths["TID"]
+    if tid_path.exists():
+        tid_text = tid_path.read_text(encoding="utf-8")
+        relative = tid_path.relative_to(root)
+        if "## 实现点总览" not in tid_text:
+            offenders.append(f"{relative} missing ## 实现点总览")
+        if "IMPL-001" not in tid_text:
+            offenders.append(f"{relative} missing IMPL-001 implementation point id")
+        for old_shape in ("## 验证映射", "计划任务"):
+            if old_shape in tid_text:
+                offenders.append(f"{relative} should not contain {old_shape}")
+
+    tcd_path = template_paths["TCD"]
+    if tcd_path.exists():
+        tcd_text = tcd_path.read_text(encoding="utf-8")
+        relative = tcd_path.relative_to(root)
+        if "## 测试用例总览" not in tcd_text:
+            offenders.append(f"{relative} missing ## 测试用例总览")
+        if "TC-001" not in tcd_text:
+            offenders.append(f"{relative} missing TC-001 test case id")
+        if "## Spec ID 到测试用例映射" in tcd_text:
+            offenders.append(f"{relative} should not contain ## Spec ID 到测试用例映射")
+
+    metadata_template_path = root / "skills" / "document-metadata" / "templates" / "document-metadata.md"
+    if metadata_template_path.exists():
+        metadata_template_text = metadata_template_path.read_text(encoding="utf-8")
+        document_info = markdown_section(metadata_template_text, "中文文档信息") or ""
+        if DOCUMENT_INFO_BODY_PATH_MARKER in document_info:
+            offenders.append(
+                f"{metadata_template_path.relative_to(root)} should not duplicate full document paths in 中文文档信息"
+            )
 
     ted_path = template_paths["TED"]
     if ted_path.exists():

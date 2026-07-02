@@ -1,6 +1,6 @@
 ---
 name: executing-plans
-description: 有书面实现计划，需要在当前会话按检查点执行时使用。
+description: 有书面 IPD 任务执行文档，需要在当前会话按检查点执行时使用。
 ---
 
 # 执行计划

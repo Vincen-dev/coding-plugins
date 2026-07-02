@@ -33,11 +33,11 @@ related_evidence: []
 | 状态 | 草稿 |
 | Feature | <feature-name> |
 | Doc ID | <doc-id> |
-| 需求文档 | `docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md` |
-| 技术设计 | `docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md` |
-| 技术实现 | `docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md` |
-| 测试用例 | `docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md` |
-| 实现计划 | `docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md` |
+| 文档类型 | TED |
+| 关系源 | frontmatter `related_*` 和 `docs/coding-plugins/INDEX.md` |
+| 阅读重点 | 最新任务的 TDD 证据、最终验证、风险 |
+
+关联关系以 frontmatter 的 `related_*` 字段为准；正文只记录真实 RED/GREEN/REFACTOR 输出、TDD 例外和最终验证。
 
 ## 任务 <N>：<任务名称>
 

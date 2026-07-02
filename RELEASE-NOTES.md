@@ -1,5 +1,11 @@
 # Release Notes
 
+## 1.0.6 - 2026-07-02
+
+- 收口 `document-metadata`、TDD/TID/TCD/TED 模板的正文 `文档信息`，正文不再重复维护完整路径链路表。
+- 将 TID 和 TCD 模板改为“总览 + 独立章节”结构，分别使用 `IMPL-001` 和 `TC-001` 作为稳定阅读锚点。
+- 同步入口技能、README、INDEX 和工作链路文档中的 IPD 任务执行文档口径，并新增 preflight 门禁防止旧映射结构回流。
+
 ## 1.0.5 - 2026-07-02
 
 - 修正 IPD 英文全称为 `Implementation Procedure Document`，与“任务执行文档”的职责定位保持一致。

@@ -37,15 +37,13 @@ related_evidence:
 | 生命周期 | draft |
 | Feature | <feature-name> |
 | Doc ID | <doc-id> |
-| 需求文档 | `docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md` |
-| 技术实现 | `docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md` |
-| 测试用例 | `docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md` |
-| 计划 | `docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md` |
-| TDD 证据| `docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md` |
+| 文档类型 | TDD |
+| 关系源 | frontmatter `related_*` 和 `docs/coding-plugins/INDEX.md` |
+| 阅读重点 | 设计摘要、规格缺口审查、规格到设计映射、关键决策 |
 | 已实现提交 | [] |
 | 验证方式 | <验证命令或人工验证记录> |
 
-关联关系以 frontmatter 的 `related_specs`、`related_technical`、`related_plans`、`related_evidence` 为准；本表只提供人工阅读摘要。approved PRD 链路必须创建 TID；纯文档或极轻量变更也在 TID 中说明“不新增代码实现”的范围边界。
+关联关系以 frontmatter 的 `related_*` 字段为准；正文只保留技术设计需要的决策、映射和约束。approved PRD 链路必须创建 TID；纯文档或极轻量变更也在 TID 中说明“不新增代码实现”的范围边界。
 
 ## 设计摘要
 

@@ -1,6 +1,6 @@
 ---
 name: writing-test-cases
-description: Use after approved requirement documents and technical documents exist, before writing IPD implementation plans, to create or update TCD test case documents under docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md.
+description: Use after approved requirement documents and technical documents exist, before writing IPD task execution documents, to create or update TCD test case documents under docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md.
 ---
 
 # 编写测试用例文档
@@ -17,7 +17,7 @@ description: Use after approved requirement documents and technical documents ex
 
 使用本技能：
 
-- 已有 approved requirement docs 和 TDD 技术设计；如存在 TID 技术实现，也必须读取，准备进入 IPD 实现计划。
+- 已有 approved requirement docs 和 TDD 技术设计；如存在 TID 技术实现，也必须读取，准备进入 IPD 任务执行文档。
 - 需要明确每个 MUST Spec ID 的测试层级、测试名称、测试数据、断言和边界覆盖。
 - 需要在计划前固定自动测试、契约测试、source-scan、配置测试或人工验收的边界。
 
@@ -55,7 +55,7 @@ skills/writing-test-cases/templates/test-cases.md
 
 | 应写入测试用例文档 | 不写入测试用例文档 |
 | --- | --- |
-| Spec ID 到测试用例的映射 | 实际 RED/GREEN 输出 |
+| 测试用例总览和独立测试用例章节 | 实际 RED/GREEN 输出 |
 | 测试层级和测试类型 | 代码实现任务拆分 |
 | 前置条件、步骤、断言、测试数据 | 技术选型讨论 |
 | 自动化或人工验收边界 | 发布前最终测试结果 |

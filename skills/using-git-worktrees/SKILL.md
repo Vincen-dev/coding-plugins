@@ -1,6 +1,6 @@
 ---
 name: using-git-worktrees
-description: 开始需要隔离当前工作区的功能工作，或执行实现计划前使用；优先使用平台原生工具，没有时回退到 git worktree。
+description: 开始需要隔离当前工作区的功能工作，或执行 IPD 任务执行文档前使用；优先使用平台原生工具，没有时回退到 git worktree。
 ---
 
 # 使用 Git Worktrees

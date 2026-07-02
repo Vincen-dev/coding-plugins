@@ -1,6 +1,6 @@
 # Coding Plugins 文档契约
 
-本文定义 `docs/coding-plugins/features/<feature-name>/` 下需求文档、技术设计、测试用例、实现计划、README、Evidence 和生成索引的职责边界。同一 feature 下允许多条文档链路，使用 `<doc-id>-PRD/TDD/TID/TCD/IPD/TED.md` 区分。
+本文定义 `docs/coding-plugins/features/<feature-name>/` 下需求文档、技术设计、测试用例、IPD 任务执行文档、README、Evidence 和生成索引的职责边界。同一 feature 下允许多条文档链路，使用 `<doc-id>-PRD/TDD/TID/TCD/IPD/TED.md` 区分。
 
 操作型规则由 `skills/document-metadata/SKILL.md` 维护；通用 frontmatter 模板使用 `skills/document-metadata/templates/document-metadata.md`。
 
@@ -9,7 +9,7 @@
 | 层级 | 来源文件 | 负责内容 | 不负责内容 |
 | --- | --- | --- | --- |
 | Metadata | 每个文档开头的 frontmatter | 状态、Feature、Doc ID、标签、生命周期、关联文档、日期 | 正式需求、设计细节、执行步骤 |
-| 正式正文 | spec、technical、test-cases、plan、evidence 的正文 | 需求契约、技术方案、测试用例、任务拆分、验证证据 | 生成式索引和重复的产物链路表 |
+| 正式正文 | spec、technical、test-cases、IPD、evidence 的正文 | 需求契约、技术方案、测试用例、任务拆分、验证证据 | 生成式索引和重复的产物链路表 |
 | README | feature root `README.md` | 人工摘要、轻量例外追踪、检索关键词 | 手写 `产物链路` 或 `文档链路` |
 | INDEX | `docs/coding-plugins/INDEX.md` | 生成式检索视图 | 手工维护的正式内容 |
 
@@ -53,7 +53,7 @@ python3 scripts/migrate_document_contract.py --dry-run
 python3 scripts/migrate_document_contract.py
 ```
 
-迁移脚本会把状态别名归一化，把 `related_specs` 中的裸 Spec ID 移到 `related_spec_ids`，并为 evidence 补齐基础 metadata。脚本不生成复杂技术设计或计划。
+迁移脚本会把状态别名归一化，把 `related_specs` 中的裸 Spec ID 移到 `related_spec_ids`，并为 evidence 补齐基础 metadata。脚本不生成复杂技术设计或 IPD 任务执行文档。
 
 ## Metadata 优先
 
@@ -62,7 +62,7 @@ python3 scripts/migrate_document_contract.py
 1. 先使用 `document-metadata` 技能确认读取顺序。
 2. 先确认 `feature`、`doc_id`、`status`、`updated`。
 3. 再读取同一 `doc_id` 链路的 `related_specs`、`related_technical`、`related_test_cases`、`related_plans`、`related_evidence`。
-4. 最后进入正文中的需求、设计、计划或证据。
+4. 最后进入正文中的需求、设计、IPD 任务执行或证据。
 
 当 frontmatter 和正文摘要冲突时，以 frontmatter 为准，并修正文档。
 
