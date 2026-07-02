@@ -1,5 +1,11 @@
 # Release Notes
 
+## 1.0.9 - 2026-07-02
+
+- 增加文档生成决策矩阵，明确不创建文档、轻量例外、计划链路、完整链路和完成链路的适用场景。
+- 将 README 轻量例外收口到 `doc_id` 粒度，要求使用 `Doc ID | 规格 ID | 证据` 表避免误豁免同一 feature 下的其他需求链路。
+- 按生命周期区分 TED 证据要求：计划链路允许 draft 证据目标，`implemented` 链路必须具备最终验证通过的 TED 覆盖；TID 模板新增 `implementation_mode` 和无代码实现边界。
+
 ## 1.0.8 - 2026-07-02
 
 - 新增 `formal-feature-chain` 的 `CASE-INDEX.md` 和 invalid fixture 案例库，把真实维护问题沉淀为可读、可回归的测试案例。
