@@ -55,7 +55,7 @@ claude --plugin-dir ./coding-plugins
 
 方案讨论、头脑风暴、产品方向不清或先分析不落地时，使用 `/coding-plugins:brainstorming`。确认进入正式落地后，再转入 `/coding-plugins:spec-driven-development`。
 
-之后 Claude 会根据技能 description 自动选择相关技能；也可以手动调用具体技能。
+之后 Claude 可能会根据技能 description 进行 best-effort 自动选择；关键链路不要依赖自动匹配。需要稳定进入插件流程时，手动调用 `/coding-plugins:using-coding-plugins`；已经明确场景时，手动调用具体技能。
 
 ## 会话启动提示
 

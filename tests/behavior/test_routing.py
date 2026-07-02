@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import re
 import subprocess
 import sys
 import unittest
@@ -181,6 +182,31 @@ class RoutingBehaviorTests(unittest.TestCase):
                 artifact_positions = [contract["artifact_chain"].index(artifact) for artifact in scenario["artifacts"] if artifact != "README"]
                 self.assertEqual(artifact_positions, sorted(artifact_positions))
 
+    def test_scenario_routing_contract_uses_structured_gates_and_case_coverage(self) -> None:
+        contract = self.read_json("docs/coding-plugins/scenario-routing.json")
+        case_index = self.read_text("tests/fixtures/formal-feature-chain/CASE-INDEX.md")
+        known_case_ids = set(re.findall(r"\bcase_id:[ \t]*([A-Za-z0-9_.-]+)", case_index))
+        known_gate_ids = set(contract["gate_catalog"])
+
+        self.assertEqual(contract["schema_version"], 2)
+        self.assertTrue(known_case_ids)
+        self.assertTrue(known_gate_ids)
+
+        for scenario in contract["scenarios"]:
+            with self.subTest(scenario=scenario["id"]):
+                case_ids = scenario.get("case_ids", [])
+                gate_ids = scenario.get("gate_ids", [])
+                self.assertTrue(case_ids, "scenario must link to at least one quality case")
+                self.assertTrue(gate_ids, "scenario must use structured gate ids")
+                self.assertEqual(len(gate_ids), len(set(gate_ids)), "scenario gate ids must be unique")
+
+                for case_id in case_ids:
+                    self.assertIn(case_id, known_case_ids)
+
+                for gate_id in gate_ids:
+                    self.assertRegex(gate_id, r"^[a-z0-9_]+$")
+                    self.assertIn(gate_id, known_gate_ids)
+
     def test_plan_scenario_does_not_claim_ted_as_direct_artifact(self) -> None:
         contract = self.read_json("docs/coding-plugins/scenario-routing.json")
         scenario = next(item for item in contract["scenarios"] if item["id"] == "test_cases_to_plan")
@@ -202,6 +228,13 @@ class RoutingBehaviorTests(unittest.TestCase):
         self.assertIn("方案讨论", usage)
         self.assertIn("## 会话启动提示", reference)
         self.assertIn("/coding-plugins:using-coding-plugins", reference)
+
+    def test_claude_usage_treats_auto_selection_as_best_effort(self) -> None:
+        usage = self.read_text("docs/claude-code-usage.md")
+
+        self.assertIn("best-effort", usage)
+        self.assertIn("手动调用", usage)
+        self.assertNotIn("会根据技能 description 自动选择相关技能；也可以手动调用具体技能。", usage)
 
     def test_user_facing_docs_include_brainstorming_entrypoint(self) -> None:
         readme = self.read_text("README.md")

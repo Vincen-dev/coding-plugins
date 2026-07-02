@@ -56,3 +56,69 @@
   - 用户只要求方案讨论，插件却过早创建 README、PRD、TDD、TCD、IPD 或 TED。
   - brainstorming 产物被误当成 approved 需求，绕过 SDD 和用户确认。
   - 方案比较没有明确目标、非目标、推荐路径和进入 SDD 的门禁。
+
+## workflow-gate-fixture
+
+- case_id: CASE-WORKFLOW-001
+- source_type: workflow_contract
+- source_reference: scenario-routing structured gates and route-to-case coverage
+- optimization_target: 验证场景路由不只依赖自由文本 gates，而是用 gate_id 和 case_id 建立可回归的质量约束。
+- covered_risks:
+  - 场景链路文档有 gate 文案，但没有稳定 ID，后续修改难以发现语义漂移。
+  - 新增场景没有绑定真实案例，导致流程看似完整但没有回归依据。
+  - 插件维护场景绕过 RED 行为测试或 fixture case，只改文档说明。
+
+## claude-entrypoint-fixture
+
+- case_id: CASE-CLAUDE-001
+- source_type: platform_entrypoint
+- source_reference: Claude Code namespaced skill entry and reload behavior
+- optimization_target: 验证 Claude Code 入口文档把自动选择视为 best-effort，并要求关键链路显式调用 `/coding-plugins:using-coding-plugins` 或具体技能。
+- covered_risks:
+  - 文档暗示 Claude Code 一定会自动选择正确技能，导致新链路没有被稳定使用。
+  - `/reload-plugins` 后没有重新发送入口提示，继续沿用旧上下文判断。
+  - 用户只知道插件已安装，但不知道如何手动进入 brainstorming 或 using-coding-plugins。
+
+## bug-debugging-fixture
+
+- case_id: CASE-BUG-001
+- source_type: workflow_regression
+- source_reference: systematic debugging before TDD bugfix
+- optimization_target: 验证 bug、CI 失败和异常行为必须先稳定复现或定位根因，再进入 TDD 修复和 TED 证据。
+- covered_risks:
+  - 代理看到错误后直接改代码，没有复现、根因或失败测试。
+  - 修复完成只报告“已解决”，没有 verification-before-completion 证据。
+  - TED 证据无法区分 bug 复现、RED 失败和最终验证。
+
+## review-feedback-fixture
+
+- case_id: CASE-REVIEW-001
+- source_type: workflow_regression
+- source_reference: code review and received feedback handling
+- optimization_target: 验证代码评审先输出 findings，处理反馈前先验证反馈是否成立，再决定修改、反驳或澄清。
+- covered_risks:
+  - review 输出先给总结，问题淹没在说明文字中。
+  - 收到反馈后无条件修改，未验证反馈是否真实、是否过期或是否和现有契约冲突。
+  - 反馈处理后没有回到验证或必要的 TDD 修复链路。
+
+## commit-finish-fixture
+
+- case_id: CASE-COMMIT-001
+- source_type: workflow_regression
+- source_reference: direct commit and branch finishing gates
+- optimization_target: 验证直接提交、完成收尾和分支集成必须先检查 diff、作者身份、敏感文件和最新提交。
+- covered_risks:
+  - 完成后没有提交，或提交没有中文 Conventional Commit 和 Authored-by footer。
+  - 未检查 staged diff 和敏感文件就提交。
+  - 分支收尾跳过提交或提交后没有验证最新 commit。
+
+## parallel-dispatch-fixture
+
+- case_id: CASE-PARALLEL-001
+- source_type: workflow_regression
+- source_reference: dispatching parallel agents and main-agent synthesis
+- optimization_target: 验证并行任务必须先拆分独立领域，子任务完成后由主代理审阅合并结果并运行整体验证。
+- covered_risks:
+  - 不相关任务被串行混在一个上下文里，导致遗漏或互相污染。
+  - 子代理结果未经主代理审阅就直接采纳。
+  - 并行结果只各自通过，没有做最终整体校验。

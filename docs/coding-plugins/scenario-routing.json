@@ -1,6 +1,31 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "artifact_chain": ["PRD", "TDD", "TID", "TCD", "IPD", "TED"],
+  "case_index": "tests/fixtures/formal-feature-chain/CASE-INDEX.md",
+  "gate_catalog": {
+    "no_formal_artifacts_during_brainstorming": "brainstorming 阶段不得创建 README、PRD、TDD、TID、TCD、IPD 或 TED。",
+    "user_confirmation_before_sdd": "用户确认进入正式落地后才进入 spec-driven-development。",
+    "prd_approved_before_technicals": "PRD approved 后才允许写 TDD/TID。",
+    "technicals_approved_before_tcd": "TDD/TID approved 后才允许写 TCD。",
+    "tcd_approved_before_ipd": "TCD approved 后才允许写 IPD。",
+    "approved_prd_required": "已有 PRD 到 technicals 的场景必须先存在 approved PRD。",
+    "approved_technicals_required": "已有 technicals 到 TCD 的场景必须先存在 approved TDD/TID。",
+    "approved_tcd_required": "已有 TCD 到 IPD 的场景必须先存在 approved TCD。",
+    "ted_target_only": "writing-plans 只能指定 TED 目标，不能把 TED 当成立即产物。",
+    "worktree_decision_before_execution": "执行 IPD 前必须先确认或创建隔离工作区。",
+    "red_before_green": "实现前必须先有 RED 失败测试或明确 TDD 例外。",
+    "verification_before_completion": "声明完成前必须运行验证并记录证据。",
+    "reproduce_before_fix": "bug 修复前必须先稳定复现或定位根因。",
+    "findings_before_summary": "代码评审必须先列 findings，再给摘要。",
+    "verify_feedback_before_implementation": "处理评审反馈前必须先验证反馈是否成立。",
+    "failing_behavior_test_before_workflow_change": "插件工作流变更前应先补可失败的行为测试或 fixture case。",
+    "quick_validate_before_completion": "skill 或插件维护完成前必须运行 quick_validate、preflight 或等价校验。",
+    "diff_review_before_commit": "提交前必须检查 status、diff、作者身份和敏感文件。",
+    "verify_latest_commit_after_commit": "提交后必须验证最新提交内容和作者信息。",
+    "commit_before_finish_unless_skipped": "分支收尾前默认先提交，除非用户明确跳过。",
+    "split_independent_domains_before_dispatch": "并行任务必须先拆分独立领域和输入上下文。",
+    "main_agent_reviews_merged_results": "并行结果合并前主代理必须审阅冲突、遗漏和整体验证。"
+  },
   "scenarios": [
     {
       "id": "idea_brainstorming",
@@ -8,6 +33,11 @@
       "trigger": "方案讨论、头脑风暴、产品方向不清、是否值得做或先分析不落地",
       "skills": ["brainstorming"],
       "artifacts": [],
+      "case_ids": ["CASE-BRAINSTORMING-001"],
+      "gate_ids": [
+        "no_formal_artifacts_during_brainstorming",
+        "user_confirmation_before_sdd"
+      ],
       "gates": [
         "no formal SDD artifacts during brainstorming",
         "user confirmation required before SDD"
@@ -26,6 +56,12 @@
         "writing-plans"
       ],
       "artifacts": ["README", "PRD", "TDD", "TID", "TCD", "IPD"],
+      "case_ids": ["CASE-ROUTING-001", "CASE-METADATA-001"],
+      "gate_ids": [
+        "prd_approved_before_technicals",
+        "technicals_approved_before_tcd",
+        "tcd_approved_before_ipd"
+      ],
       "gates": [
         "PRD approved before TDD/TID",
         "TDD/TID approved before TCD",
@@ -38,6 +74,8 @@
       "trigger": "已有批准 PRD，需要技术设计和技术实现文档",
       "skills": ["document-metadata", "writing-technicals"],
       "artifacts": ["TDD", "TID"],
+      "case_ids": ["CASE-ROUTING-001", "CASE-CREEK-001"],
+      "gate_ids": ["approved_prd_required"],
       "gates": ["approved PRD required"]
     },
     {
@@ -46,6 +84,8 @@
       "trigger": "已有批准 PRD、TDD 和 TID，需要测试用例设计",
       "skills": ["document-metadata", "writing-test-cases"],
       "artifacts": ["TCD"],
+      "case_ids": ["CASE-CREEK-001", "CASE-METADATA-001"],
+      "gate_ids": ["approved_technicals_required"],
       "gates": ["approved TDD/TID required"]
     },
     {
@@ -54,6 +94,8 @@
       "trigger": "已有批准 PRD、TDD、TID 和 TCD，需要 IPD 任务执行文档",
       "skills": ["document-metadata", "writing-plans"],
       "artifacts": ["IPD"],
+      "case_ids": ["CASE-ROUTING-001", "CASE-CACHE-001"],
+      "gate_ids": ["approved_tcd_required", "ted_target_only"],
       "gates": ["approved TCD required before IPD", "TED target only"]
     },
     {
@@ -68,6 +110,12 @@
         "verification-before-completion"
       ],
       "artifacts": ["TED"],
+      "case_ids": ["CASE-ROUTING-001", "CASE-CACHE-001"],
+      "gate_ids": [
+        "worktree_decision_before_execution",
+        "red_before_green",
+        "verification_before_completion"
+      ],
       "gates": ["worktree decision before execution", "RED before GREEN", "verification before completion"]
     },
     {
@@ -76,6 +124,8 @@
       "trigger": "bug、CI 失败、测试失败、构建失败、异常行为或原因不明回归",
       "skills": ["systematic-debugging", "test-driven-development", "verification-before-completion"],
       "artifacts": ["TED"],
+      "case_ids": ["CASE-BUG-001"],
+      "gate_ids": ["reproduce_before_fix", "verification_before_completion"],
       "gates": ["reproduce before fix", "verification before completion"]
     },
     {
@@ -84,6 +134,8 @@
       "trigger": "代码审查、合并前检查、review 或 PR 反馈处理",
       "skills": ["requesting-code-review", "receiving-code-review", "test-driven-development", "verification-before-completion"],
       "artifacts": [],
+      "case_ids": ["CASE-REVIEW-001"],
+      "gate_ids": ["findings_before_summary", "verify_feedback_before_implementation"],
       "gates": ["findings before summary", "verify feedback before implementation"]
     },
     {
@@ -92,6 +144,8 @@
       "trigger": "创建、修改、优化 skill 或插件工作流",
       "skills": ["writing-skills", "test-driven-development", "verification-before-completion"],
       "artifacts": ["TED"],
+      "case_ids": ["CASE-WORKFLOW-001", "CASE-CLAUDE-001"],
+      "gate_ids": ["failing_behavior_test_before_workflow_change", "quick_validate_before_completion"],
       "gates": ["failing behavior test before workflow change", "quick_validate before completion"]
     },
     {
@@ -100,6 +154,8 @@
       "trigger": "用户要求提交、更改已完成需要 commit",
       "skills": ["git-commit"],
       "artifacts": [],
+      "case_ids": ["CASE-COMMIT-001"],
+      "gate_ids": ["diff_review_before_commit", "verify_latest_commit_after_commit"],
       "gates": ["diff review before commit", "verify latest commit after commit"]
     },
     {
@@ -108,6 +164,8 @@
       "trigger": "完成验证后需要提交、分支收尾、merge、PR 或清理 worktree",
       "skills": ["verification-before-completion", "git-commit", "finishing-a-development-branch"],
       "artifacts": [],
+      "case_ids": ["CASE-COMMIT-001"],
+      "gate_ids": ["verification_before_completion", "commit_before_finish_unless_skipped"],
       "gates": ["verification before completion", "commit before finish unless explicitly skipped"]
     },
     {
@@ -116,6 +174,8 @@
       "trigger": "多个独立任务、多个失败点或可并行调查实现",
       "skills": ["dispatching-parallel-agents"],
       "artifacts": [],
+      "case_ids": ["CASE-PARALLEL-001"],
+      "gate_ids": ["split_independent_domains_before_dispatch", "main_agent_reviews_merged_results"],
       "gates": ["split independent domains before dispatch", "main agent reviews merged results"]
     }
   ]
