@@ -3,6 +3,17 @@
   "artifact_chain": ["PRD", "TDD", "TID", "TCD", "IPD", "TED"],
   "scenarios": [
     {
+      "id": "idea_brainstorming",
+      "doc_heading": "构思收敛",
+      "trigger": "方案讨论、头脑风暴、产品方向不清、是否值得做或先分析不落地",
+      "skills": ["brainstorming"],
+      "artifacts": [],
+      "gates": [
+        "no formal SDD artifacts during brainstorming",
+        "user confirmation required before SDD"
+      ]
+    },
+    {
       "id": "new_unclear_requirement",
       "doc_heading": "新需求",
       "trigger": "新需求、行为变更、接口契约、schema、状态机或验收标准尚未明确",

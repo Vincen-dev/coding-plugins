@@ -45,3 +45,14 @@
   - 某个文档更新后，相关文档没有同步更新。
   - related_* 关系存在，但正文无法说明阅读重点。
   - README 和 INDEX 无法帮助维护者理解文档链路。
+
+## brainstorming-fixture
+
+- case_id: CASE-BRAINSTORMING-001
+- source_type: workflow_regression
+- source_reference: pre-SDD idea exploration and solution comparison
+- optimization_target: 验证方案讨论、产品方向不清或是否值得做的入口先进入 brainstorming，而不是直接创建正式 PRD 链路。
+- covered_risks:
+  - 用户只要求方案讨论，插件却过早创建 README、PRD、TDD、TCD、IPD 或 TED。
+  - brainstorming 产物被误当成 approved 需求，绕过 SDD 和用户确认。
+  - 方案比较没有明确目标、非目标、推荐路径和进入 SDD 的门禁。

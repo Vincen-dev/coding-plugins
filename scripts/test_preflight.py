@@ -128,6 +128,18 @@ class PreflightTests(unittest.TestCase):
             with self.assertRaisesRegex(preflight.PreflightError, "Removed residue reference"):
                 preflight.check_removed_entry_references(root)
 
+    def test_current_brainstorming_skill_references_are_allowed(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            skill = root / "skills" / "brainstorming"
+            skill.mkdir(parents=True)
+            (skill / "SKILL.md").write_text(
+                "brainstorming hands off to spec-driven-development after user confirmation\n",
+                encoding="utf-8",
+            )
+
+            preflight.check_removed_entry_references(root)
+
     def test_removed_residue_scan_allows_release_history(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

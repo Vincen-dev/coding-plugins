@@ -22,6 +22,7 @@ description: 开始任何任务时使用；建立 Coding Plugins 技能选择、
 | 用户意图 | 使用技能 |
 | --- | --- |
 | 解释、搜索、读取、状态查询，不要求改代码 | 普通分析或对应工具 |
+| 方案讨论、头脑风暴、产品方向不清、是否值得做、先分析不落地 | `brainstorming` |
 | 读取、创建、迁移或审计 Coding Plugins 文档 metadata、frontmatter、README/INDEX 或 `related_*` 关系 | `document-metadata` |
 | 代码审查、合并前检查、需要第二视角 | `requesting-code-review` |
 | 收到 review、PR 反馈、别人要求修改 | `receiving-code-review` |
@@ -39,7 +40,8 @@ description: 开始任何任务时使用；建立 Coding Plugins 技能选择、
 
 | 任务情况 | 使用技能 |
 | --- | --- |
-| 新需求、功能构想、产品方向、接口契约、schema、状态机或验收标准不清 | `spec-driven-development` 编排，进入 `writing-requirements` |
+| 功能构想、产品方向或方案边界还未收敛，用户尚未确认进入正式文档链路 | `brainstorming` |
+| 新需求、行为变更、接口契约、schema、状态机或验收标准不清，且已经确认需要正式落地 | `spec-driven-development` 编排，进入 `writing-requirements` |
 | 维护、重构、依赖升级、迁移、安全或性能改造会影响外部行为、兼容性或验证口径 | `spec-driven-development` 编排，进入 `writing-requirements` 写 maintenance 需求文档 |
 | 已有批准 PRD，需要 TDD/TID 技术文档 | `writing-technicals` |
 | 已有批准 PRD 和 TDD/TID，需要 TCD 测试设计 | `writing-test-cases` |
@@ -56,6 +58,7 @@ description: 开始任何任务时使用；建立 Coding Plugins 技能选择、
 - 需要声称完成、修复或通过前，必须使用 `verification-before-completion`。
 - 需要提交时必须使用 `git-commit`；提交前仍要检查 diff、作者身份和敏感文件。
 - 需要从需求进入执行任务时，先用 `writing-requirements` 写 PRD，再用 `writing-technicals` 写 TDD/TID，再用 `writing-test-cases` 写 TCD，最后用 `writing-plans` 编写 IPD 任务执行文档。
+- `brainstorming` 只做 SDD 前的构思收敛；用户确认进入落地后，才转入 `spec-driven-development`，并且不得在 brainstorming 阶段创建 README、PRD、TDD/TID、TCD、IPD 或 TED。
 - 任务可并行拆分时，先用 `dispatching-parallel-agents` 拆分，再让每个子任务进入对应技能。
 - 直接验证、直接提交或只创建 worktree 的请求，完成该动作后即可汇报；只有用户要求收尾或开发链路结束时，才进入 `finishing-a-development-branch`。
 

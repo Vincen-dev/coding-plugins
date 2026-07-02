@@ -17,6 +17,11 @@ import preflight
 
 class RoutingBehaviorTests(unittest.TestCase):
     WORKFLOW_SCENARIOS = {
+        "构思收敛": (
+            "brainstorming",
+            "spec-driven-development",
+            "不创建 PRD/TDD/TID/TCD/IPD/TED",
+        ),
         "新需求": (
             "spec-driven-development",
             "document-metadata",
@@ -78,6 +83,7 @@ class RoutingBehaviorTests(unittest.TestCase):
         entry = self.read_text("skills/using-coding-plugins/SKILL.md")
 
         for skill_name in (
+            "brainstorming",
             "document-metadata",
             "requesting-code-review",
             "receiving-code-review",
@@ -96,6 +102,7 @@ class RoutingBehaviorTests(unittest.TestCase):
         entry = self.read_text("skills/using-coding-plugins/SKILL.md")
 
         for skill_name in (
+            "brainstorming",
             "spec-driven-development",
             "writing-requirements",
             "writing-technicals",
@@ -180,6 +187,22 @@ class RoutingBehaviorTests(unittest.TestCase):
         self.assertIn("/coding-plugins:using-coding-plugins", usage)
         self.assertIn("## 会话启动提示", reference)
         self.assertIn("/coding-plugins:using-coding-plugins", reference)
+
+    def test_brainstorming_is_pre_sdd_and_does_not_create_formal_artifacts(self) -> None:
+        entry = self.read_text("skills/using-coding-plugins/SKILL.md")
+        brainstorming = self.read_text("skills/brainstorming/SKILL.md")
+        workflow = self.read_text("docs/workflow-chain.md")
+        contract = self.read_json("docs/coding-plugins/scenario-routing.json")
+
+        self.assertIn("方案讨论、头脑风暴、产品方向不清、是否值得做", entry)
+        self.assertIn("brainstorming", entry)
+        self.assertIn("spec-driven-development", brainstorming)
+        self.assertIn("不创建 README、PRD、TDD、TID、TCD、IPD 或 TED", brainstorming)
+        self.assert_ordered(workflow, ("brainstorming", "spec-driven-development", "writing-requirements"))
+
+        scenario = next(item for item in contract["scenarios"] if item["id"] == "idea_brainstorming")
+        self.assertEqual(scenario["skills"], ["brainstorming"])
+        self.assertEqual(scenario["artifacts"], [])
 
 
 if __name__ == "__main__":

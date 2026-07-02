@@ -7,19 +7,20 @@
 `coding-plugins` 是一套编码代理方法论插件，支持 Codex 和 Claude Code。它的目标不是提供单个 API 工具，而是约束代理按稳定工程流程推进软件开发：
 
 1. 先判断任务类型。
-2. 新需求先进入 SDD，确定需要沉淀哪些落地文档。
-3. 用 `writing-requirements` 编写可追踪、可测试、可评审的需求文档。
-4. 已批准需求文档再写 TDD 技术设计和 TID 技术实现；TDD 定义工程方案、关键决策和技术落点，TID 定义模块级实现拆解、接口签名、数据结构、迁移步骤和实现顺序约束。
-5. 基于需求文档、TDD/TID 补充测试用例文档。
-6. 基于测试用例、TDD/TID 编写 IPD 任务执行文档，并建立 Spec ID -> TASK -> 验证 -> TED 的执行落点。
-7. 读取文档时先用 `document-metadata` 读取 frontmatter metadata，再读正文；关系源、索引边界和 README 规则见 `docs/coding-plugins/document-contract.md`。
-8. 按 IPD 任务执行文档隔离执行。
-9. 实现阶段遵守 TDD，测试必须来自需求文档、测试用例、bug 复现或明确验收标准，并留下 TDD 证据。
-10. 每个任务通过规格符合性和代码质量评审。
-11. 完成前必须验证规格覆盖和测试证据。
-12. 每次完成验证后必须进入 `git-commit`，按逻辑分批提交。
-13. 提交必须使用中文 Conventional Commit，在 footer 添加本人 `Authored-by` 署名，且禁止 AI 作者。
-14. 提交完成后做分支收尾和集成选择。
+2. 方案、方向或是否值得做尚未收敛时，先进入 `brainstorming`，不创建正式 SDD 产物。
+3. 新需求确认进入落地后进入 SDD，确定需要沉淀哪些落地文档。
+4. 用 `writing-requirements` 编写可追踪、可测试、可评审的需求文档。
+5. 已批准需求文档再写 TDD 技术设计和 TID 技术实现；TDD 定义工程方案、关键决策和技术落点，TID 定义模块级实现拆解、接口签名、数据结构、迁移步骤和实现顺序约束。
+6. 基于需求文档、TDD/TID 补充测试用例文档。
+7. 基于测试用例、TDD/TID 编写 IPD 任务执行文档，并建立 Spec ID -> TASK -> 验证 -> TED 的执行落点。
+8. 读取文档时先用 `document-metadata` 读取 frontmatter metadata，再读正文；关系源、索引边界和 README 规则见 `docs/coding-plugins/document-contract.md`。
+9. 按 IPD 任务执行文档隔离执行。
+10. 实现阶段遵守 TDD，测试必须来自需求文档、测试用例、bug 复现或明确验收标准，并留下 TDD 证据。
+11. 每个任务通过规格符合性和代码质量评审。
+12. 完成前必须验证规格覆盖和测试证据。
+13. 每次完成验证后必须进入 `git-commit`，按逻辑分批提交。
+14. 提交必须使用中文 Conventional Commit，在 footer 添加本人 `Authored-by` 署名，且禁止 AI 作者。
+15. 提交完成后做分支收尾和集成选择。
 
 ## 阶段划分
 
@@ -30,21 +31,22 @@
 | 0 | 平台加载 | `.agents/plugins/marketplace.json`, `.codex-plugin/plugin.json`, `.claude-plugin/plugin.json`, `hooks/hooks-codex.json` | Codex marketplace、Codex SessionStart hook、Codex / Claude Code 识别插件和 skills |
 | 1 | 入口路由 | `using-coding-plugins` | 判断直接意图和开发任务类型 |
 | 2 | 直接意图处理 | `requesting-code-review`, `receiving-code-review`, `verification-before-completion`, `git-commit`, `finishing-a-development-branch`, `writing-skills`, `using-git-worktrees`, `dispatching-parallel-agents` | 直接完成查询、评审、验证、提交、收尾、隔离或维护任务 |
-| 3 | SDD 文档编排 | `spec-driven-development` | 确认 README、需求文档、技术设计、技术实现、测试用例、IPD 任务执行、证据和 INDEX 的落地链路；新 feature 可创建文档骨架 |
-| 4 | 需求文档 | `writing-requirements` | `docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md`, Spec ID, Traceability Matrix |
-| 5 | 技术文档 | `writing-technicals` | `docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md`, `docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md`, 规格到设计映射, 模块级实现和测试策略 |
-| 6 | 测试用例 | `writing-test-cases` | `docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md`, Spec ID -> 测试用例 |
-| 7 | IPD 任务执行文档 | `writing-plans` | `docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md`, 任务总览, TASK ID, 执行步骤, 验证方式, TED 记录要求 |
-| 8 | 文档契约 | `document-metadata`, `docs/coding-plugins/document-contract.md`, `scripts/preflight.py` | metadata-first 读取顺序、README 边界、related metadata、生成式索引 |
-| 9 | 隔离工作区 | `using-git-worktrees` | 独立 worktree 或确认在当前工作区执行 |
-| 10 | 执行调度 | `subagent-driven-development`, `executing-plans`, `dispatching-parallel-agents` | 子任务执行、批次执行或并行任务结果 |
-| 11 | TDD 实现 | `test-driven-development` | RED -> GREEN -> REFACTOR，`docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md` |
-| 12 | 系统化调试 | `systematic-debugging` | 复现路径、根因、可测试修复入口 |
-| 13 | 评审门禁 | `spec-reviewer`, `code-quality-reviewer`, `requesting-code-review`, `receiving-code-review` | 规格符合性评审、代码质量评审、反馈处理 |
-| 14 | 完成前验证 | `verification-before-completion` | 测试、构建、规格覆盖或人工验收证据 |
-| 15 | 提交 | `git-commit` | 完成后必经提交，中文 Conventional Commit，`Authored-by` footer，无 AI 作者 |
-| 16 | 分支收尾 | `finishing-a-development-branch` | merge、PR、保留或丢弃选择，必要时清理 worktree |
-| 17 | 插件维护 | `writing-skills` | skill、prompt、脚本、manifest 或文档更新，并通过插件校验 |
+| 3 | 构思收敛 | `brainstorming` | 问题定义、方案对比、推荐路径和是否进入 SDD；不创建正式文档 |
+| 4 | SDD 文档编排 | `spec-driven-development` | 确认 README、需求文档、技术设计、技术实现、测试用例、IPD 任务执行、证据和 INDEX 的落地链路；新 feature 可创建文档骨架 |
+| 5 | 需求文档 | `writing-requirements` | `docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md`, Spec ID, Traceability Matrix |
+| 6 | 技术文档 | `writing-technicals` | `docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md`, `docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md`, 规格到设计映射, 模块级实现和测试策略 |
+| 7 | 测试用例 | `writing-test-cases` | `docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md`, Spec ID -> 测试用例 |
+| 8 | IPD 任务执行文档 | `writing-plans` | `docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md`, 任务总览, TASK ID, 执行步骤, 验证方式, TED 记录要求 |
+| 9 | 文档契约 | `document-metadata`, `docs/coding-plugins/document-contract.md`, `scripts/preflight.py` | metadata-first 读取顺序、README 边界、related metadata、生成式索引 |
+| 10 | 隔离工作区 | `using-git-worktrees` | 独立 worktree 或确认在当前工作区执行 |
+| 11 | 执行调度 | `subagent-driven-development`, `executing-plans`, `dispatching-parallel-agents` | 子任务执行、批次执行或并行任务结果 |
+| 12 | TDD 实现 | `test-driven-development` | RED -> GREEN -> REFACTOR，`docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md` |
+| 13 | 系统化调试 | `systematic-debugging` | 复现路径、根因、可测试修复入口 |
+| 14 | 评审门禁 | `spec-reviewer`, `code-quality-reviewer`, `requesting-code-review`, `receiving-code-review` | 规格符合性评审、代码质量评审、反馈处理 |
+| 15 | 完成前验证 | `verification-before-completion` | 测试、构建、规格覆盖或人工验收证据 |
+| 16 | 提交 | `git-commit` | 完成后必经提交，中文 Conventional Commit，`Authored-by` footer，无 AI 作者 |
+| 17 | 分支收尾 | `finishing-a-development-branch` | merge、PR、保留或丢弃选择，必要时清理 worktree |
+| 18 | 插件维护 | `writing-skills` | skill、prompt、脚本、manifest 或文档更新，并通过插件校验 |
 
 ## 主链路（完整总览）
 
@@ -55,6 +57,11 @@ flowchart TD
 
   C -->|解释/搜索/读取/状态查询| INFO["普通分析或对应工具"]
   INFO --> END["报告结果"]
+
+  C -->|方案讨论/头脑风暴/先分析不落地| BRAIN["brainstorming"]
+  BRAIN --> BRAIN_DEC{"用户确认进入落地？"}
+  BRAIN_DEC -->|否| END
+  BRAIN_DEC -->|是| SDD
 
   C -->|创建或修改 skill/plugin| SKILL["writing-skills"]
   SKILL --> SKILL_CHECK["quick_validate / 插件校验"]
@@ -79,7 +86,8 @@ flowchart TD
   PARALLEL --> PAR_SPLIT["按独立域拆分并分别路由"]
   PAR_SPLIT --> DEV_KIND
 
-  DEV_KIND -->|新需求/行为变更/契约不清| SDD["spec-driven-development"]
+  DEV_KIND -->|功能构想/产品方向未收敛| BRAIN
+  DEV_KIND -->|新需求/行为变更/契约不清且确认落地| SDD["spec-driven-development"]
   DEV_KIND -->|维护/迁移/安全/性能影响外部行为| SDD
   DEV_KIND -->|已有已批准需求| TECH["writing-technicals"]
   DEV_KIND -->|已有技术设计| TEST_CASES["writing-test-cases"]
@@ -157,6 +165,7 @@ flowchart TD
   B --> C{"第一层: 直接意图"}
 
   C -->|解释/搜索/读取/状态查询| Y["普通分析或对应工具"]
+  C -->|方案讨论/头脑风暴/先分析不落地| BS["brainstorming"]
   C -->|代码审查/合并前检查| CR["requesting-code-review"]
   C -->|处理 review/PR 反馈| RR["receiving-code-review"]
   C -->|验证完成/测试通过| V["verification-before-completion"]
@@ -169,7 +178,10 @@ flowchart TD
   C -->|多个独立任务| PA["dispatching-parallel-agents"]
   C -->|开发/修复/重构| D0{"第二层: 开发任务类型"}
 
-  D0 -->|新需求/行为变更/契约不清| D["spec-driven-development"]
+  BS --> BSD{"确认进入落地？"}
+  BSD -->|是| D
+  D0 -->|功能构想/产品方向未收敛| BS
+  D0 -->|新需求/行为变更/契约不清且确认落地| D["spec-driven-development"]
   D0 -->|维护/迁移/安全/性能影响外部行为| D
   D0 -->|已有已批准需求| TD["writing-technicals"]
   D0 -->|已有技术设计| TC["writing-test-cases"]
@@ -180,6 +192,19 @@ flowchart TD
 ```
 
 ## 场景流程图
+
+### 构思收敛
+
+```mermaid
+flowchart TD
+  A["方案讨论/头脑风暴/产品方向不清"] --> B["brainstorming"]
+  B --> C["读取上下文并定义问题"]
+  C --> D["提出 2-3 个方案和推荐路径"]
+  D --> E{"用户确认进入落地？"}
+  E -->|否| F["停留在分析，不创建正式文档"]
+  E -->|是| G["spec-driven-development"]
+  G --> H["进入正式 PRD 链路"]
+```
 
 ### 新需求或契约不清
 
@@ -349,6 +374,10 @@ flowchart TD
 
 本节是行为级测试的机器可读契约，记录不同场景下必须保持的技能顺序。修改入口路由、场景流程或技能命名时，需要同步更新这里和 `tests/behavior/test_routing.py`。
 
+### 构思收敛
+
+`brainstorming` -> 用户确认后进入 `spec-driven-development`；构思阶段本身不创建 PRD/TDD/TID/TCD/IPD/TED
+
 ### 新需求
 
 `spec-driven-development` -> `document-metadata` -> `writing-requirements` -> `writing-technicals` -> `writing-test-cases` -> `writing-plans` -> `using-git-worktrees` -> `test-driven-development` -> `verification-before-completion` -> `git-commit`
@@ -387,7 +416,9 @@ Claude Code 侧使用 `.claude-plugin/plugin.json` 识别插件。技能以 `/co
 
 ### SDD 编排层
 
-`spec-driven-development` 处理新需求、功能构想、行为变更、接口契约、schema、状态机和验收标准。它不再直接承担所有需求正文写作，而是负责判断当前 feature 需要沉淀哪些文档，并编排后续 skill 顺序。
+`brainstorming` 处理方案讨论、头脑风暴、产品方向不清和是否值得做这类 SDD 前置问题。它只输出问题定义、方案对比、推荐路径和是否进入 SDD 的判断，不创建 README、PRD、TDD、TID、TCD、IPD 或 TED。
+
+`spec-driven-development` 处理已确认需要落地的新需求、行为变更、接口契约、schema、状态机和验收标准。它不再直接承担所有需求正文写作，而是负责判断当前 feature 需要沉淀哪些文档，并编排后续 skill 顺序。
 
 它必须确认的落地文档包括：
 

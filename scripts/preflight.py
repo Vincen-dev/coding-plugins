@@ -63,7 +63,6 @@ REMOVED_ENTRY_PATTERNS = (
     "plans/<feature-name>-IPD.md",
     "~/.config/" + "superpowers",
     "super" + "powers",
-    "brain" + "storming",
 )
 RESIDUE_SCAN_ROOTS = (
     "README.md",
