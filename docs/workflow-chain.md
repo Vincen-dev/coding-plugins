@@ -367,7 +367,7 @@ flowchart TD
 
 ### 插件维护
 
-`writing-skills` -> `quick_validate` -> `verification-before-completion`
+`writing-skills` -> `test-driven-development` -> `quick_validate` -> `verification-before-completion`
 
 ### 并行任务
 

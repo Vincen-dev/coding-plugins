@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "artifact_chain": ["PRD", "TDD", "TID", "TCD", "IPD", "TED"],
+  "scenarios": [
+    {
+      "id": "new_unclear_requirement",
+      "doc_heading": "新需求",
+      "trigger": "新需求、行为变更、接口契约、schema、状态机或验收标准尚未明确",
+      "skills": [
+        "spec-driven-development",
+        "document-metadata",
+        "writing-requirements",
+        "writing-technicals",
+        "writing-test-cases",
+        "writing-plans"
+      ],
+      "artifacts": ["README", "PRD", "TDD", "TID", "TCD", "IPD"],
+      "gates": [
+        "PRD approved before TDD/TID",
+        "TDD/TID approved before TCD",
+        "TCD approved before IPD"
+      ]
+    },
+    {
+      "id": "approved_prd_to_technicals",
+      "doc_heading": "新需求",
+      "trigger": "已有批准 PRD，需要技术设计和技术实现文档",
+      "skills": ["document-metadata", "writing-technicals"],
+      "artifacts": ["TDD", "TID"],
+      "gates": ["approved PRD required"]
+    },
+    {
+      "id": "technicals_to_test_cases",
+      "doc_heading": "新需求",
+      "trigger": "已有批准 PRD、TDD 和 TID，需要测试用例设计",
+      "skills": ["document-metadata", "writing-test-cases"],
+      "artifacts": ["TCD"],
+      "gates": ["approved TDD/TID required"]
+    },
+    {
+      "id": "test_cases_to_plan",
+      "doc_heading": "新需求",
+      "trigger": "已有批准 PRD、TDD、TID 和 TCD，需要实现计划",
+      "skills": ["document-metadata", "writing-plans"],
+      "artifacts": ["IPD", "TED"],
+      "gates": ["approved TCD required before IPD"]
+    },
+    {
+      "id": "bug_or_ci_failure",
+      "doc_heading": "Bug 修复",
+      "trigger": "bug、CI 失败、测试失败、构建失败、异常行为或原因不明回归",
+      "skills": ["systematic-debugging", "test-driven-development", "verification-before-completion"],
+      "artifacts": ["TED"],
+      "gates": ["reproduce before fix", "verification before completion"]
+    },
+    {
+      "id": "plugin_workflow_maintenance",
+      "doc_heading": "插件维护",
+      "trigger": "创建、修改、优化 skill 或插件工作流",
+      "skills": ["writing-skills", "test-driven-development", "verification-before-completion"],
+      "artifacts": ["TED"],
+      "gates": ["failing behavior test before workflow change", "quick_validate before completion"]
+    },
+    {
+      "id": "direct_commit",
+      "doc_heading": "直接提交",
+      "trigger": "用户要求提交、更改已完成需要 commit",
+      "skills": ["git-commit"],
+      "artifacts": [],
+      "gates": ["diff review before commit", "verify latest commit after commit"]
+    }
+  ]
+}

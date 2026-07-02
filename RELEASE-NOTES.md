@@ -1,5 +1,11 @@
 # Release Notes
 
+## 1.0.1 - 2026-07-02
+
+- 增强 preflight，正式链路闭包要求 approved PRD 同时具备 TDD、TID、TCD 和 IPD。
+- 取消 `docs/coding-plugins/features/` 的旧残留扫描排除，避免新 feature 文档继续混入旧契约占位符。
+- 新增非生产 golden fixture 和结构化场景路由契约，验证新文档链路而不污染正式 feature 目录。
+
 ## 1.0.0 - 2026-07-02
 
 - 发布 1.0.0，确保 Codex personal 插件缓存可刷新到当前仓库的新主链路。

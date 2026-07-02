@@ -75,9 +75,7 @@ RESIDUE_SCAN_ROOTS = (
     ".agents",
     ".github",
 )
-RESIDUE_SCAN_EXCLUDED_PREFIXES = (
-    "docs/coding-plugins/features/",
-)
+RESIDUE_SCAN_EXCLUDED_PREFIXES: tuple[str, ...] = ()
 SDD_TEMPLATE_ENGLISH_STRUCTURE = (
     "# Acceptance Criteria",
     "# Specs Index",
@@ -632,8 +630,9 @@ def check_feature_document_chain_closure(root: Path) -> None:
             doc_id = docs_index.document_doc_id(spec_file)
             has_technical = bool(docs_index.feature_technical_design_files_for_doc_id(feature_root, doc_id))
             has_implementation = bool(docs_index.feature_technical_implementation_files_for_doc_id(feature_root, doc_id))
+            has_test_cases = bool(docs_index.feature_test_case_files_for_doc_id(feature_root, doc_id))
             has_plan = bool(docs_index.feature_plan_files_for_doc_id(feature_root, doc_id))
-            if has_technical and has_implementation and has_plan:
+            if has_technical and has_implementation and has_test_cases and has_plan:
                 continue
             if feature_has_lightweight_exception(feature_root):
                 lightweight_traceability_offenders.extend(lightweight_exception_traceability_errors(root, feature_root))
@@ -642,7 +641,7 @@ def check_feature_document_chain_closure(root: Path) -> None:
 
     if offenders:
         raise PreflightError(
-            "Feature document chain is incomplete; add TDD/TID/IPD or README lightweight exception: "
+            "Feature document chain is incomplete; add TDD/TID/TCD/IPD or README lightweight exception: "
             + ", ".join(offenders)
             + "."
         )

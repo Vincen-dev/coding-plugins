@@ -47,6 +47,7 @@ class RoutingBehaviorTests(unittest.TestCase):
         ),
         "插件维护": (
             "writing-skills",
+            "test-driven-development",
             "quick_validate",
             "verification-before-completion",
         ),
@@ -59,6 +60,9 @@ class RoutingBehaviorTests(unittest.TestCase):
 
     def read_text(self, relative_path: str) -> str:
         return (ROOT / relative_path).read_text(encoding="utf-8")
+
+    def read_json(self, relative_path: str) -> dict:
+        return json.loads(self.read_text(relative_path))
 
     def skill_names(self) -> list[str]:
         return sorted(path.parent.name for path in (ROOT / "skills").glob("*/SKILL.md"))
@@ -141,6 +145,31 @@ class RoutingBehaviorTests(unittest.TestCase):
             if next_heading != -1:
                 scenario_text = scenario_text[:next_heading]
             self.assert_ordered(scenario_text, expected_terms)
+
+    def test_scenario_routing_contract_matches_available_skills_and_workflow_docs(self) -> None:
+        contract = self.read_json("docs/coding-plugins/scenario-routing.json")
+        workflow = self.read_text("docs/workflow-chain.md")
+        entry = self.read_text("skills/using-coding-plugins/SKILL.md")
+        skill_names = set(self.skill_names())
+
+        self.assertEqual(contract["artifact_chain"], ["PRD", "TDD", "TID", "TCD", "IPD", "TED"])
+
+        for scenario in contract["scenarios"]:
+            self.assertRegex(scenario["id"], r"^[a-z0-9_]+$")
+            heading = f"### {scenario['doc_heading']}"
+            self.assertIn(heading, workflow)
+            scenario_text = workflow.split(heading, 1)[1]
+            next_heading = scenario_text.find("\n### ")
+            if next_heading != -1:
+                scenario_text = scenario_text[:next_heading]
+            for skill_name in scenario["skills"]:
+                self.assertIn(skill_name, skill_names)
+                self.assertIn(skill_name, entry)
+                self.assertIn(skill_name, scenario_text)
+
+            if scenario["artifacts"]:
+                artifact_positions = [contract["artifact_chain"].index(artifact) for artifact in scenario["artifacts"] if artifact != "README"]
+                self.assertEqual(artifact_positions, sorted(artifact_positions))
 
     def test_claude_usage_documents_session_start_prompt(self) -> None:
         usage = self.read_text("docs/claude-code-usage.md")

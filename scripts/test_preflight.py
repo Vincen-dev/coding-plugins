@@ -14,6 +14,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import preflight
 
 
+FIXTURES_ROOT = Path(__file__).resolve().parents[1] / "tests" / "fixtures"
+
+
 class PreflightTests(unittest.TestCase):
     def test_manifest_version_check_accepts_matching_versions(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -93,6 +96,19 @@ class PreflightTests(unittest.TestCase):
             skill.mkdir(parents=True)
             (skill / "SKILL.md").write_text(
                 "read docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TDD.md\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Removed residue reference"):
+                preflight.check_removed_entry_references(root)
+
+    def test_removed_entry_scan_includes_feature_documents(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            requirements = root / "docs" / "coding-plugins" / "features" / "routing" / "requirements"
+            requirements.mkdir(parents=True)
+            (requirements / "routing-PRD.md").write_text(
+                "legacy path docs/coding-plugins/features/<feature-name>/plans/<feature-name>-IPD.md\n",
                 encoding="utf-8",
             )
 
@@ -389,6 +405,24 @@ class PreflightTests(unittest.TestCase):
             with self.assertRaisesRegex(preflight.PreflightError, "routing-login-PRD.md"):
                 preflight.check_feature_document_chain_closure(root)
 
+    def test_feature_document_chain_requires_test_cases(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature_dir = root / "docs" / "coding-plugins" / "features" / "routing"
+            (feature_dir / "requirements").mkdir(parents=True)
+            (feature_dir / "technicals").mkdir()
+            (feature_dir / "plans").mkdir()
+            (feature_dir / "requirements" / "routing-login-PRD.md").write_text(
+                "---\nstatus: approved\nfeature: routing\n---\n# Login\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "technicals" / "routing-login-TDD.md").write_text("# Login TDD\n", encoding="utf-8")
+            (feature_dir / "technicals" / "routing-login-TID.md").write_text("# Login TID\n", encoding="utf-8")
+            (feature_dir / "plans" / "routing-login-IPD.md").write_text("# Login IPD\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(preflight.PreflightError, "routing-login-PRD.md"):
+                preflight.check_feature_document_chain_closure(root)
+
     def test_feature_document_chain_closure_is_scoped_by_doc_id(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -410,6 +444,35 @@ class PreflightTests(unittest.TestCase):
 
             with self.assertRaisesRegex(preflight.PreflightError, "routing-register-PRD.md"):
                 preflight.check_feature_document_chain_closure(root)
+
+    def test_golden_feature_fixture_satisfies_formal_document_chain(self) -> None:
+        root = FIXTURES_ROOT / "formal-feature-chain"
+
+        preflight.check_removed_entry_references(root)
+        preflight.check_feature_readmes(root)
+        preflight.check_feature_readme_metadata_contract(root)
+        preflight.check_feature_first_document_layout(root)
+        preflight.check_feature_document_chain_closure(root)
+        preflight.check_document_path_metadata(root)
+        preflight.check_document_doc_id_metadata(root)
+        preflight.check_document_related_metadata(root)
+        preflight.check_prd_related_metadata(root)
+        preflight.check_document_sync_freshness(root)
+        preflight.check_plan_metadata(root)
+        preflight.check_evidence_metadata(root)
+        preflight.check_chinese_document_info_sections(root)
+        preflight.check_technical_design_gap_review(root)
+        preflight.check_technical_design_required_sections(root)
+        preflight.check_technical_design_must_spec_coverage(root)
+        preflight.check_technical_design_related_metadata(root)
+        preflight.check_technical_design_validator(root)
+        preflight.check_spec_technical_design_references(root)
+        preflight.check_spec_technical_implementation_references(root)
+        preflight.check_plan_technical_design_references(root)
+        preflight.check_plan_technical_implementation_references(root)
+        preflight.check_technical_design_spec_ids(root)
+        preflight.check_tdd_evidence_spec_ids(root)
+        preflight.check_lifecycle_state_consistency(root)
 
     def test_legacy_docs_roots_are_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
