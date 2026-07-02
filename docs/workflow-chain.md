@@ -482,7 +482,7 @@ docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md
 
 ### IPD 任务执行层
 
-`writing-plans` 把 PRD、TDD/TID 和 TCD 转成 `Implementation Plan Document (IPD)`。IPD 的中文定位是任务执行文档，负责把已确认的需求、技术约束和测试用例拆成可执行任务；它不复述完整技术方案，也不重定义需求。
+`writing-plans` 把 PRD、TDD/TID 和 TCD 转成 `Implementation Procedure Document (IPD)`。IPD 的中文定位是任务执行文档，负责把已确认的需求、技术约束和测试用例拆成可执行任务；它不复述完整技术方案，也不重定义需求。
 
 默认计划路径：
 

@@ -467,6 +467,10 @@ def check_document_templates_match_metadata_contract(root: Path) -> None:
             offenders.append(f"{ipd_path.relative_to(root)} missing ## 任务总览")
         if "TASK-001" not in ipd_text:
             offenders.append(f"{ipd_path.relative_to(root)} missing TASK-001 task id")
+        if "Implementation Procedure Document" not in ipd_text:
+            offenders.append(f"{ipd_path.relative_to(root)} missing Implementation Procedure Document")
+        if "Implementation Plan Document" in ipd_text:
+            offenders.append(f"{ipd_path.relative_to(root)} should not contain Implementation Plan Document")
         for heading in ("## 来源文档", "## 技术设计快照", "## 规格追踪"):
             if heading in ipd_text:
                 offenders.append(f"{ipd_path.relative_to(root)} should not contain {heading}")

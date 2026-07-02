@@ -820,7 +820,7 @@ class PreflightTests(unittest.TestCase):
             template_dir.mkdir(parents=True)
             (template_dir / "implementation-plan.md").write_text(
                 "---\n"
-                "title: 实现计划\n"
+                "title: Implementation Plan Document\n"
                 "feature: routing\n"
                 "doc_id: routing\n"
                 "---\n\n"
@@ -832,7 +832,7 @@ class PreflightTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            with self.assertRaisesRegex(preflight.PreflightError, "should not contain ## 技术设计快照"):
+            with self.assertRaisesRegex(preflight.PreflightError, "Implementation Plan Document"):
                 preflight.check_document_templates_match_metadata_contract(root)
 
     def test_document_template_contract_rejects_missing_doc_id_and_related_links(self) -> None:

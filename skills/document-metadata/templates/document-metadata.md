@@ -117,7 +117,7 @@ related_evidence:
 
 ```yaml
 ---
-title: <功能名称> Implementation Plan Document
+title: <功能名称> Implementation Procedure Document
 status: draft
 feature: <feature-name>
 doc_id: <doc-id>

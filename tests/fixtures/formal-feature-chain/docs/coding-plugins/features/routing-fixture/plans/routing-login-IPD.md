@@ -1,5 +1,5 @@
 ---
-title: Routing Login Implementation Plan Document
+title: Routing Login Implementation Procedure Document
 status: approved
 feature: routing-fixture
 doc_id: routing-login
@@ -26,7 +26,7 @@ related_evidence:
 | Feature | routing-fixture |
 | Doc ID | routing-login |
 | 文档类型 | IPD |
-| 缩写含义 | Implementation Plan Document |
+| 缩写含义 | Implementation Procedure Document |
 
 ## 目标
 

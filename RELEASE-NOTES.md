@@ -1,8 +1,13 @@
 # Release Notes
 
+## 1.0.5 - 2026-07-02
+
+- 修正 IPD 英文全称为 `Implementation Procedure Document`，与“任务执行文档”的职责定位保持一致。
+- 增加 preflight 模板门禁，防止 IPD 模板继续使用旧的 `Implementation Plan Document`。
+
 ## 1.0.4 - 2026-07-02
 
-- 将 IPD 明确定义为 `Implementation Plan Document`，中文定位调整为任务执行文档。
+- 将 IPD 明确定义为 `Implementation Procedure Document`，中文定位调整为任务执行文档。
 - 重写 IPD 模板和 `writing-plans` 规则，改为任务总览、TASK ID、逐任务执行步骤、验证方式和 TED 记录要求。
 - 将 IPD 技术引用检查改为读取 frontmatter `related_technical`，并新增 preflight 门禁防止 IPD 模板回退到技术方案快照结构。
 

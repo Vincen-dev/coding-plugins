@@ -1,5 +1,5 @@
 ---
-title: <功能名称> Implementation Plan Document
+title: <功能名称> Implementation Procedure Document
 status: draft
 feature: <feature-name>
 doc_id: <doc-id>
@@ -33,7 +33,7 @@ related_evidence:
 | Feature | <feature-name> |
 | Doc ID | <doc-id> |
 | 文档类型 | IPD |
-| 缩写含义 | Implementation Plan Document |
+| 缩写含义 | Implementation Procedure Document |
 
 关联关系以 frontmatter 的 `related_*` 字段为准；正文只保留执行任务需要的上下文、步骤和验证口径。
 
