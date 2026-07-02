@@ -1,5 +1,11 @@
 # Release Notes
 
+## 1.0.10 - 2026-07-02
+
+- 新增 `brainstorming` 构思收敛入口，用于方案讨论、头脑风暴、产品方向不清和先分析不落地场景，确认进入落地后再转入 SDD。
+- 同步 README、安装文档、Claude Code usage、workflow-chain 和 scenario-routing，明确 `brainstorming` 不创建正式 SDD 产物。
+- 扩展行为测试覆盖主要入口场景、Claude usage、Codex 默认提示和 `writing-plans` 的 TED 产物边界。
+
 ## 1.0.9 - 2026-07-02
 
 - 增加文档生成决策矩阵，明确不创建文档、轻量例外、计划链路、完整链路和完成链路的适用场景。

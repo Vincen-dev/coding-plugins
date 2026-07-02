@@ -193,6 +193,8 @@ class RoutingBehaviorTests(unittest.TestCase):
         self.assertIn("## 会话启动提示", usage)
         self.assertIn("把下面提示作为 Claude Code 会话开始消息", usage)
         self.assertIn("/coding-plugins:using-coding-plugins", usage)
+        self.assertIn("/coding-plugins:brainstorming", usage)
+        self.assertIn("方案讨论", usage)
         self.assertIn("## 会话启动提示", reference)
         self.assertIn("/coding-plugins:using-coding-plugins", reference)
 
@@ -204,6 +206,33 @@ class RoutingBehaviorTests(unittest.TestCase):
             self.assertIn("brainstorming", document)
             self.assertIn("方案讨论", document)
             self.assertIn("/coding-plugins:brainstorming", document)
+
+    def test_scenario_routing_contract_covers_all_major_entrypoints(self) -> None:
+        contract = self.read_json("docs/coding-plugins/scenario-routing.json")
+        scenario_ids = {scenario["id"] for scenario in contract["scenarios"]}
+
+        for scenario_id in (
+            "idea_brainstorming",
+            "new_unclear_requirement",
+            "approved_prd_to_technicals",
+            "technicals_to_test_cases",
+            "test_cases_to_plan",
+            "existing_ipd_execution",
+            "bug_or_ci_failure",
+            "code_review_or_feedback",
+            "plugin_workflow_maintenance",
+            "direct_commit",
+            "finish_branch",
+            "parallel_tasks",
+        ):
+            self.assertIn(scenario_id, scenario_ids)
+
+    def test_codex_default_prompts_include_brainstorming_entrypoint(self) -> None:
+        manifest = self.read_json(".codex-plugin/plugin.json")
+        prompts = manifest["interface"]["defaultPrompt"]
+
+        self.assertTrue(any("方案" in prompt or "值得做" in prompt for prompt in prompts))
+        self.assertTrue(any("规格" in prompt for prompt in prompts))
 
     def test_brainstorming_is_pre_sdd_and_does_not_create_formal_artifacts(self) -> None:
         entry = self.read_text("skills/using-coding-plugins/SKILL.md")

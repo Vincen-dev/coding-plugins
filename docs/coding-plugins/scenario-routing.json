@@ -57,12 +57,34 @@
       "gates": ["approved TCD required before IPD", "TED target only"]
     },
     {
+      "id": "existing_ipd_execution",
+      "doc_heading": "已有 IPD 执行",
+      "trigger": "已有 IPD 任务执行文档，需要隔离工作区并执行任务",
+      "skills": [
+        "using-git-worktrees",
+        "subagent-driven-development",
+        "executing-plans",
+        "test-driven-development",
+        "verification-before-completion"
+      ],
+      "artifacts": ["TED"],
+      "gates": ["worktree decision before execution", "RED before GREEN", "verification before completion"]
+    },
+    {
       "id": "bug_or_ci_failure",
       "doc_heading": "Bug 修复",
       "trigger": "bug、CI 失败、测试失败、构建失败、异常行为或原因不明回归",
       "skills": ["systematic-debugging", "test-driven-development", "verification-before-completion"],
       "artifacts": ["TED"],
       "gates": ["reproduce before fix", "verification before completion"]
+    },
+    {
+      "id": "code_review_or_feedback",
+      "doc_heading": "代码评审或处理反馈",
+      "trigger": "代码审查、合并前检查、review 或 PR 反馈处理",
+      "skills": ["requesting-code-review", "receiving-code-review", "test-driven-development", "verification-before-completion"],
+      "artifacts": [],
+      "gates": ["findings before summary", "verify feedback before implementation"]
     },
     {
       "id": "plugin_workflow_maintenance",
@@ -79,6 +101,22 @@
       "skills": ["git-commit"],
       "artifacts": [],
       "gates": ["diff review before commit", "verify latest commit after commit"]
+    },
+    {
+      "id": "finish_branch",
+      "doc_heading": "完成收尾",
+      "trigger": "完成验证后需要提交、分支收尾、merge、PR 或清理 worktree",
+      "skills": ["verification-before-completion", "git-commit", "finishing-a-development-branch"],
+      "artifacts": [],
+      "gates": ["verification before completion", "commit before finish unless explicitly skipped"]
+    },
+    {
+      "id": "parallel_tasks",
+      "doc_heading": "并行任务",
+      "trigger": "多个独立任务、多个失败点或可并行调查实现",
+      "skills": ["dispatching-parallel-agents"],
+      "artifacts": [],
+      "gates": ["split independent domains before dispatch", "main agent reviews merged results"]
     }
   ]
 }
