@@ -5,11 +5,13 @@ lifecycle_status: implemented
 feature: technical-design-artifacts
 doc_id: technical-design-artifacts
 created: 2026-06-26
-updated: 2026-06-29
+updated: 2026-07-02
 implemented_commits: historical
 validated_by: python3 scripts/preflight.py
 related_specs:
   - docs/coding-plugins/features/technical-design-artifacts/requirements/technical-design-artifacts-PRD.md
+related_technical:
+  - docs/coding-plugins/features/technical-design-artifacts/technicals/technical-design-artifacts-TID.md
 related_plans:
   - docs/coding-plugins/features/technical-design-artifacts/plans/technical-design-artifacts-IPD.md
 related_evidence:

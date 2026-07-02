@@ -4,10 +4,11 @@ status: approved
 feature: session-start-hook
 doc_id: session-start-hook
 created: 2026-06-29
-updated: 2026-06-29
+updated: 2026-07-02
 related_specs:
   - docs/coding-plugins/features/session-start-hook/requirements/session-start-hook-PRD.md
 ---
+
 # Codex 会话启动入口注入
 
 ## 任务 1： SessionStart hook 注入入口规则

@@ -4,14 +4,16 @@ status: approved
 feature: spec-technical-quality-gates
 doc_id: spec-technical-quality-gates
 created: 2026-06-29
-updated: 2026-06-29
+updated: 2026-07-02
 related_specs:
   - docs/coding-plugins/features/spec-technical-quality-gates/requirements/spec-technical-quality-gates-PRD.md
 related_technical:
   - docs/coding-plugins/features/spec-technical-quality-gates/technicals/spec-technical-quality-gates-TDD.md
+  - docs/coding-plugins/features/spec-technical-quality-gates/technicals/spec-technical-quality-gates-TID.md
 related_plans:
   - docs/coding-plugins/features/spec-technical-quality-gates/plans/spec-technical-quality-gates-IPD.md
 ---
+
 # Spec 与 Technical 质量门禁
 
 ## 任务 1： Technical template and section gates

@@ -5,7 +5,7 @@ status: approved
 feature: behavior-tests
 doc_id: behavior-tests
 created: 2026-06-26
-updated: 2026-06-26
+updated: 2026-07-02
 tags:
   - testing
   - routing

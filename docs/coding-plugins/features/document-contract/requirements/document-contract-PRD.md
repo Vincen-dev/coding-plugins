@@ -5,7 +5,7 @@ status: approved
 feature: document-contract
 doc_id: document-contract
 created: 2026-06-29
-updated: 2026-06-29
+updated: 2026-07-02
 tags:
   - docs
   - metadata
@@ -22,6 +22,7 @@ related_specs:
   - docs/coding-plugins/features/artifact-index/requirements/artifact-index-PRD.md
 related_technical:
   - docs/coding-plugins/features/document-contract/technicals/document-contract-TDD.md
+  - docs/coding-plugins/features/document-contract/technicals/document-contract-TID.md
 related_plans:
   - docs/coding-plugins/features/document-contract/plans/document-contract-IPD.md
 related_evidence:

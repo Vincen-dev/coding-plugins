@@ -4,10 +4,11 @@ status: approved
 feature: behavior-tests
 doc_id: behavior-tests
 created: 2026-06-29
-updated: 2026-06-29
+updated: 2026-07-02
 related_specs:
   - docs/coding-plugins/features/behavior-tests/requirements/behavior-tests-PRD.md
 ---
+
 # 插件行为级测试
 
 ## 任务 1： 入口路由和平台行为测试

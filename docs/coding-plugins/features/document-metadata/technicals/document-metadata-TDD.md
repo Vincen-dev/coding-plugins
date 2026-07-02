@@ -5,11 +5,13 @@ lifecycle_status: implemented
 feature: document-metadata
 doc_id: document-metadata
 created: 2026-06-26
-updated: 2026-07-01
+updated: 2026-07-02
 implemented_commits: historical
 validated_by: python3 scripts/preflight.py
 related_specs:
   - docs/coding-plugins/features/document-metadata/requirements/document-metadata-PRD.md
+related_technical:
+  - docs/coding-plugins/features/document-metadata/technicals/document-metadata-TID.md
 related_plans:
   - docs/coding-plugins/features/document-metadata/plans/document-metadata-IPD.md
 related_evidence:
@@ -57,6 +59,7 @@ related_evidence:
 | REQ-010 | preflight 必须按 metadata 关系校验文档同步新鲜度。 | `scripts/preflight.py`：按 PRD、TDD、TID、TCD、IPD、TED 依赖图比较 `updated`；`scripts/test_preflight.py`：覆盖 PRD 到 TDD、TCD 到 IPD 和正常同步场景 | TD-007 | `scripts/preflight.py`<br>`scripts/test_preflight.py`<br>`skills/document-metadata/SKILL.md` | 单元测试 `test_document_sync_freshness_rejects_stale_downstream_doc`。 | `docs/coding-plugins/features/document-metadata/evidences/document-metadata-TED.md` |
 | REQ-011 | 文档 metadata 必须区分 `feature` 与 `doc_id`。 | `scripts/docs_index.py`：按 Doc ID 分行生成索引<br>`scripts/preflight.py`：按同一 Doc ID 检查链路闭包、related metadata、technical coverage 和同步新鲜度<br>`validate_technicals.py`：按 related specs 或同一 Doc ID 限定 MUST coverage<br>`scaffold_feature_docs.py`：支持 `--doc-id` 和 `doc_id` metadata | TD-008 | `scripts/docs_index.py`<br>`scripts/preflight.py`<br>`skills/writing-technicals/scripts/validate_technicals.py`<br>`skills/spec-driven-development/scripts/scaffold_feature_docs.py` | `python3 -m unittest scripts/test_docs_index.py scripts/test_preflight.py skills/writing-technicals/scripts/test_validate_technicals.py skills/spec-driven-development/scripts/test_scaffold_feature_docs.py` | `docs/coding-plugins/features/document-metadata/evidences/document-metadata-TED.md` |
 | REQ-012 | PRD 不再使用文档级 `spec_id` metadata。 | `scripts/preflight.py`：新增 PRD `doc_id` 必填和路径一致性门禁<br>`scaffold_feature_docs.py` 和 PRD 模板：移除文档级 `spec_id`，保留 `doc_id`<br>真实 PRD：迁移 frontmatter 到 `doc_id` | TD-009 | `scripts/preflight.py`<br>`scripts/test_preflight.py`<br>`skills/spec-driven-development/scripts/scaffold_feature_docs.py`<br>`skills/writing-requirements/templates/product-requirements-document.md`<br>`docs/coding-plugins/features/*/requirements/*-PRD.md` | `python3 -m unittest scripts/test_preflight.py skills/spec-driven-development/scripts/test_scaffold_feature_docs.py` | `docs/coding-plugins/features/document-metadata/evidences/document-metadata-TED.md` |
+| REQ-013 | approved PRD 的正式文档链路必须同时具备 TDD、TID 和 IPD。 | `scripts/preflight.py`：链路闭包同时检查 TDD、TID 和 IPD<br>`skills/writing-technicals/SKILL.md`：TID 改为正式链路必需产物<br>`docs/coding-plugins/features/*/technicals/*-TID.md`：回填历史 TID | TD-010 | `scripts/preflight.py`<br>`scripts/test_preflight.py`<br>`skills/writing-technicals/SKILL.md`<br>`docs/coding-plugins/features/*/technicals/*-TID.md` | `python3 -m unittest scripts.test_preflight.PreflightTests.test_feature_document_chain_requires_technical_implementation`<br>`python3 scripts/preflight.py` | `docs/coding-plugins/features/document-metadata/evidences/document-metadata-TED.md` |
 
 ## 无需技术设计的规格
 
@@ -77,6 +80,7 @@ related_evidence:
 | TD-007 | 用 `updated` 做同步新鲜度门禁 | 不引入额外数据库或状态文件，直接复用已有 metadata 生命周期字段 | 同一天内的多次变更只按日期粒度判断，仍需要人工评审正文影响 |
 | TD-008 | 用 `doc_id` 作为同一 feature 下的链路边界 | 支持一个 feature 模块沉淀多份 PRD，同时避免 technical、plan、evidence 被其他链路误判为缺失或过期 | 旧文档不强制批量迁移，校验器可从文件名前缀推导 doc_id |
 | TD-009 | 移除 PRD 文档级 `spec_id`，由 `doc_id` 承担链路标识 | 避免 `spec_id` 与正文条目级 Spec ID、文件名前缀、doc_id 三套概念并存 | 需要迁移现有 PRD frontmatter，并补 preflight 防止缺失 doc_id |
+| TD-010 | TID 成为 approved PRD 正式链路必需产物 | 技术实现细节不能只沉在 TDD 或 IPD 中，必须有独立 TID 承接模块级实现约束 | 需要回填历史 TID，并让 preflight 阻止缺失 TID 的正式链路 |
 
 ## 影响组件
 
@@ -90,6 +94,8 @@ related_evidence:
 | `skills/document-metadata/SKILL.md` | 新增 metadata-first 操作技能 | REQ-007, AC-003 |
 | `skills/document-metadata/templates/document-metadata.md` | 新增通用 metadata 模板 | REQ-008 |
 | `skills/using-coding-plugins/references/claude-tools.md` | 增加 Claude namespace 显式技能入口 | REQ-007 |
+| `docs/coding-plugins/features/**/technicals/**-TID.md` | 回填 approved PRD 正式链路的技术实现文档 | REQ-013 |
+| `scripts/preflight.py` | 链路闭包增加 TID 必需检查 | REQ-013 |
 | `README.md` / `docs/workflow-chain.md` / `docs/coding-plugins/document-contract.md` | 将文档关系读取入口指向 `document-metadata` | REQ-009 |
 | `scripts/preflight.py` | 增加文档同步新鲜度校验 | REQ-010 |
 | `scripts/test_preflight.py` | 增加过期下游文档和正常同步场景单元测试 | REQ-010 |

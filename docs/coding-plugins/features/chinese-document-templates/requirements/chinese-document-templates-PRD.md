@@ -5,7 +5,7 @@ status: approved
 feature: chinese-document-templates
 doc_id: chinese-document-templates
 created: 2026-06-29
-updated: 2026-06-29
+updated: 2026-07-02
 tags:
   - docs
   - templates
@@ -20,6 +20,7 @@ related_code:
 related_specs: []
 related_technical:
   - docs/coding-plugins/features/chinese-document-templates/technicals/chinese-document-templates-TDD.md
+  - docs/coding-plugins/features/chinese-document-templates/technicals/chinese-document-templates-TID.md
 related_plans:
   - docs/coding-plugins/features/chinese-document-templates/plans/chinese-document-templates-IPD.md
 related_evidence:

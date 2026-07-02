@@ -5,11 +5,13 @@ lifecycle_status: implemented
 feature: feature-first-docs
 doc_id: feature-first-docs
 created: 2026-06-26
-updated: 2026-07-01
+updated: 2026-07-02
 implemented_commits: historical
 validated_by: python3 scripts/preflight.py
 related_specs:
   - docs/coding-plugins/features/feature-first-docs/requirements/feature-first-docs-PRD.md
+related_technical:
+  - docs/coding-plugins/features/feature-first-docs/technicals/feature-first-docs-TID.md
 related_plans:
   - docs/coding-plugins/features/feature-first-docs/plans/feature-first-docs-IPD.md
 related_evidence:

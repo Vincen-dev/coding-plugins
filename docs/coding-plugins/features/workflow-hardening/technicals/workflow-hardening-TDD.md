@@ -5,11 +5,13 @@ lifecycle_status: implemented
 feature: workflow-hardening
 doc_id: workflow-hardening
 created: 2026-06-29
-updated: 2026-06-29
+updated: 2026-07-02
 implemented_commits: historical
 validated_by: python3 scripts/preflight.py
 related_specs:
   - docs/coding-plugins/features/workflow-hardening/requirements/workflow-hardening-PRD.md
+related_technical:
+  - docs/coding-plugins/features/workflow-hardening/technicals/workflow-hardening-TID.md
 related_evidence:
   - docs/coding-plugins/features/workflow-hardening/evidences/workflow-hardening-TED.md
 related_plans:

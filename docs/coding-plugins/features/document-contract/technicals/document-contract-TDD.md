@@ -5,11 +5,13 @@ lifecycle_status: implemented
 feature: document-contract
 doc_id: document-contract
 created: 2026-06-29
-updated: 2026-06-29
+updated: 2026-07-02
 implemented_commits: pending-this-change
 validated_by: python3 scripts/preflight.py
 related_specs:
   - docs/coding-plugins/features/document-contract/requirements/document-contract-PRD.md
+related_technical:
+  - docs/coding-plugins/features/document-contract/technicals/document-contract-TID.md
 related_plans:
   - docs/coding-plugins/features/document-contract/plans/document-contract-IPD.md
 related_evidence:

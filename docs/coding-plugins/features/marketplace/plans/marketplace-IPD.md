@@ -4,11 +4,12 @@ status: completed
 feature: marketplace
 doc_id: marketplace
 created: 2026-06-29
-updated: 2026-06-29
+updated: 2026-07-02
 related_specs:
   - docs/coding-plugins/features/marketplace/requirements/marketplace-PRD.md
 related_technical:
   - docs/coding-plugins/features/marketplace/technicals/marketplace-TDD.md
+  - docs/coding-plugins/features/marketplace/technicals/marketplace-TID.md
 related_evidence:
   - docs/coding-plugins/features/marketplace/evidences/marketplace-TED.md
 ---
@@ -23,6 +24,7 @@ related_evidence:
 | Feature | marketplace |
 | 需求文档 | `docs/coding-plugins/features/marketplace/requirements/marketplace-PRD.md` |
 | 技术设计 | `docs/coding-plugins/features/marketplace/technicals/marketplace-TDD.md` |
+| 技术实现 | `docs/coding-plugins/features/marketplace/technicals/marketplace-TID.md` |
 | TDD 证据 | `docs/coding-plugins/features/marketplace/evidences/marketplace-TED.md` |
 
 **目标:** 记录并固化 `coding-plugins` 的 Codex marketplace、personal marketplace 和 Claude Code 安装入口。
@@ -34,6 +36,8 @@ related_evidence:
 **规格来源:** `docs/coding-plugins/features/marketplace/requirements/marketplace-PRD.md`
 
 **技术设计来源:** `docs/coding-plugins/features/marketplace/technicals/marketplace-TDD.md`
+
+**技术实现来源:** `docs/coding-plugins/features/marketplace/technicals/marketplace-TID.md`
 
 ## 技术设计快照
 

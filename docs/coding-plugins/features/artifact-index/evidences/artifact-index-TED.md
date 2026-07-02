@@ -4,14 +4,16 @@ status: approved
 feature: artifact-index
 doc_id: artifact-index
 created: 2026-06-29
-updated: 2026-06-29
+updated: 2026-07-02
 related_specs:
   - docs/coding-plugins/features/artifact-index/requirements/artifact-index-PRD.md
 related_technical:
   - docs/coding-plugins/features/artifact-index/technicals/artifact-index-TDD.md
+  - docs/coding-plugins/features/artifact-index/technicals/artifact-index-TID.md
 related_plans:
   - docs/coding-plugins/features/artifact-index/plans/artifact-index-IPD.md
 ---
+
 # Coding Plugins 产物总索引
 
 ## 任务 1： preflight 校验总索引覆盖

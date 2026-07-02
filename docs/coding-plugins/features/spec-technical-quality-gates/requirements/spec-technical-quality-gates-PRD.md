@@ -5,7 +5,7 @@ status: approved
 feature: spec-technical-quality-gates
 doc_id: spec-technical-quality-gates
 created: 2026-06-29
-updated: 2026-06-29
+updated: 2026-07-02
 tags:
   - spec
   - technical-design
@@ -20,6 +20,7 @@ related_specs:
   - docs/coding-plugins/features/technical-design-artifacts/requirements/technical-design-artifacts-PRD.md
 related_technical:
   - docs/coding-plugins/features/spec-technical-quality-gates/technicals/spec-technical-quality-gates-TDD.md
+  - docs/coding-plugins/features/spec-technical-quality-gates/technicals/spec-technical-quality-gates-TID.md
 related_plans:
   - docs/coding-plugins/features/spec-technical-quality-gates/plans/spec-technical-quality-gates-IPD.md
 related_evidence:

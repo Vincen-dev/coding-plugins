@@ -5,7 +5,7 @@ status: approved
 feature: session-start-hook
 doc_id: session-start-hook
 created: 2026-06-26
-updated: 2026-06-29
+updated: 2026-07-02
 tags:
   - codex
   - hook

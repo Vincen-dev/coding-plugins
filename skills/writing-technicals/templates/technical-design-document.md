@@ -36,7 +36,7 @@ related_evidence:
 | 已实现提交 | [] |
 | 验证方式 | <验证命令或人工验证记录> |
 
-关联关系以 frontmatter 的 `related_specs`、`related_technical`、`related_plans`、`related_evidence` 为准；本表只提供人工阅读摘要。纯文档或极轻量变更不创建 TID 时，删除本文档中的 TID 路径并在“技术实现文档”章节说明原因。
+关联关系以 frontmatter 的 `related_specs`、`related_technical`、`related_plans`、`related_evidence` 为准；本表只提供人工阅读摘要。approved PRD 链路必须创建 TID；纯文档或极轻量变更也在 TID 中说明“不新增代码实现”的范围边界。
 
 ## 设计摘要
 
@@ -73,7 +73,7 @@ related_evidence:
 
 `docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md`
 
-<说明该设计如何落到技术实现文档；如果不需要 TID，写明原因。>
+<说明该设计如何落到技术实现文档；如果不新增代码实现，写明 TID 中维护的实现边界和同步约束。>
 
 ## 影响组件
 

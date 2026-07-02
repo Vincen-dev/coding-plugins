@@ -5,7 +5,7 @@ status: approved
 feature: document-metadata
 doc_id: document-metadata
 created: 2026-06-26
-updated: 2026-07-01
+updated: 2026-07-02
 tags:
   - metadata
   - chinese
@@ -22,12 +22,14 @@ related_code:
   - skills/spec-driven-development/scripts/scaffold_feature_docs.py
   - skills/writing-requirements/SKILL.md
   - skills/writing-requirements/templates/product-requirements-document.md
+  - skills/writing-technicals/SKILL.md
   - skills/writing-plans/SKILL.md
   - skills/writing-technicals/templates/technical-design-document.md
 related_specs:
   - docs/coding-plugins/features/technical-design-artifacts/requirements/technical-design-artifacts-PRD.md
 related_technical:
   - docs/coding-plugins/features/document-metadata/technicals/document-metadata-TDD.md
+  - docs/coding-plugins/features/document-metadata/technicals/document-metadata-TID.md
 related_plans:
   - docs/coding-plugins/features/document-metadata/plans/document-metadata-IPD.md
 related_evidence:
@@ -80,6 +82,7 @@ related_evidence:
 | REQ-010 | 必须 | preflight 必须按 metadata 关系校验文档同步新鲜度：PRD、TDD、TID、TCD、IPD 的下游文档 `updated` 不得早于上游文档。 | 单元测试 `test_document_sync_freshness_rejects_stale_downstream_doc`。 |
 | REQ-011 | 必须 | 文档 metadata 必须区分 `feature` 与 `doc_id`：`feature` 表示模块目录，`doc_id` 表示同一 feature 下的具体文档链路，索引、preflight 和模板按 `doc_id` 关联 PRD、TDD、TID、TCD、IPD、TED。 | 单元测试 `test_docs_index_renders_one_row_per_doc_id`、`test_feature_document_chain_closure_is_scoped_by_doc_id`、`test_document_sync_freshness_is_scoped_by_doc_id`。 |
 | REQ-012 | 必须 | PRD 不再使用文档级 `spec_id` metadata；文档链路唯一标识统一由 `doc_id` 承担，具体需求条目仍使用正文中的 `REQ/API/SCHEMA/STATE/ERR/AC/NFR/MIG/OBS/NON-xxx`。 | 单元测试 `test_prd_doc_id_metadata_is_required`、`test_prd_doc_id_metadata_must_match_filename` 和脚手架测试。 |
+| REQ-013 | 必须 | approved PRD 的正式文档链路必须同时具备 TDD 技术设计、TID 技术实现和 IPD 实现计划；TID 不再是可选产物。 | 单元测试 `test_feature_document_chain_requires_technical_implementation` 和 `python3 scripts/preflight.py`。 |
 
 ## 错误和边界情况
 
@@ -93,6 +96,7 @@ related_evidence:
 | ERR-006 | PRD、TDD、TID、TCD 或 IPD 的 `updated` 晚于相关下游文档。 | preflight 失败并指出下游文档早于上游文档，需要同步更新或同步评审。 | 单元测试。 |
 | ERR-007 | 同一 feature 下存在多条 PRD 链路，但 metadata、索引或校验按 feature 全局混合。 | preflight 和 validator 只比较同一 `doc_id` 的上下游文档；跨链路依赖必须显式写入 `related_specs`。 | 单元测试。 |
 | ERR-008 | PRD 缺少 `doc_id`，或 `doc_id` 与 `routing-login-PRD.md` 这类文件名前缀不一致。 | preflight 失败并提示 doc_id metadata 缺失或与路径不一致。 | 单元测试。 |
+| ERR-009 | approved PRD 已有 TDD 和 IPD，但缺少同一 `doc_id` 的 TID。 | preflight 失败并提示文档链路不完整，需要补齐同一文档链路的 TID 文件。 | 单元测试。 |
 
 ## 验收标准
 
@@ -104,6 +108,7 @@ related_evidence:
 | AC-004 | 上游文档变更后发布前检查 | PRD、TDD、TID、TCD 或 IPD 更新晚于下游文档 | 运行 `python3 scripts/preflight.py` | preflight 阻止发布并提示需要同步下游文档。 |
 | AC-005 | 同一 feature 下多需求链路 | `features/routing` 同时存在 `routing-login-PRD.md` 和 `routing-register-PRD.md` | 运行 `python3 scripts/preflight.py --write-index` 和 `python3 scripts/preflight.py` | INDEX 按 Doc ID 分行，链路闭包、metadata relation、同步新鲜度和 technical coverage 只检查对应 `doc_id`。 |
 | AC-006 | 新建 PRD 文档 | 使用 SDD scaffold 或 writing-requirements 模板创建 PRD | 查看 frontmatter | 文档包含 `doc_id`，不包含文档级 `spec_id`。 |
+| AC-007 | approved PRD 正式链路 | PRD 已 approved 且没有 README 轻量例外 | 运行 `python3 scripts/preflight.py` | 缺少同一 `doc_id` 的 TDD、TID 或 IPD 时失败。 |
 
 ## 追踪矩阵
 
@@ -121,6 +126,7 @@ related_evidence:
 | REQ-010 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 5 | 已覆盖 |
 | REQ-011 | 单元测试 | `python3 -m unittest scripts/test_docs_index.py scripts/test_preflight.py skills/writing-technicals/scripts/test_validate_technicals.py skills/spec-driven-development/scripts/test_scaffold_feature_docs.py` | Task 6 | 已覆盖 |
 | REQ-012 | 单元测试 | `python3 -m unittest scripts/test_preflight.py skills/spec-driven-development/scripts/test_scaffold_feature_docs.py` | Task 7 | 已覆盖 |
+| REQ-013 | 单元测试 / 命令验证 | `python3 -m unittest scripts.test_preflight.PreflightTests.test_feature_document_chain_requires_technical_implementation` / `python3 scripts/preflight.py` | Task 11 | 已覆盖 |
 | ERR-001 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
 | ERR-002 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |
 | ERR-003 | 单元测试 | `python3 -m unittest scripts/test_preflight.py` | Task 1 | 已覆盖 |

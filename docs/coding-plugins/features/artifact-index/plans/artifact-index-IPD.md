@@ -4,11 +4,12 @@ status: approved
 feature: artifact-index
 doc_id: artifact-index
 created: 2026-06-29
-updated: 2026-06-29
+updated: 2026-07-02
 related_specs:
   - docs/coding-plugins/features/artifact-index/requirements/artifact-index-PRD.md
 related_technical:
   - docs/coding-plugins/features/artifact-index/technicals/artifact-index-TDD.md
+  - docs/coding-plugins/features/artifact-index/technicals/artifact-index-TID.md
 related_evidence:
   - docs/coding-plugins/features/artifact-index/evidences/artifact-index-TED.md
 ---
@@ -23,6 +24,7 @@ related_evidence:
 | Feature | artifact-index |
 | 需求文档 | `docs/coding-plugins/features/artifact-index/requirements/artifact-index-PRD.md` |
 | 技术设计 | `docs/coding-plugins/features/artifact-index/technicals/artifact-index-TDD.md` |
+| 技术实现 | `docs/coding-plugins/features/artifact-index/technicals/artifact-index-TID.md` |
 | TDD 证据 | `docs/coding-plugins/features/artifact-index/evidences/artifact-index-TED.md` |
 
 > **给代理执行者：** REQUIRED SUB-SKILL: 使用 `coding-plugins:executing-plans` 或当前会话按检查点执行本计划。步骤使用 checkbox (`- [x]`) 语法追踪。
@@ -36,6 +38,8 @@ related_evidence:
 **规格来源:** `docs/coding-plugins/features/artifact-index/requirements/artifact-index-PRD.md`
 
 **技术设计来源:** `docs/coding-plugins/features/artifact-index/technicals/artifact-index-TDD.md`
+
+**技术实现来源:** `docs/coding-plugins/features/artifact-index/technicals/artifact-index-TID.md`
 
 ## 技术设计快照
 

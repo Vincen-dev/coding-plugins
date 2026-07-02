@@ -4,11 +4,12 @@ status: approved
 feature: downstream-compatibility
 doc_id: downstream-compatibility
 created: 2026-07-01
-updated: 2026-07-01
+updated: 2026-07-02
 related_specs:
   - docs/coding-plugins/features/downstream-compatibility/requirements/downstream-compatibility-PRD.md
 related_technical:
   - docs/coding-plugins/features/downstream-compatibility/technicals/downstream-compatibility-TDD.md
+  - docs/coding-plugins/features/downstream-compatibility/technicals/downstream-compatibility-TID.md
 related_evidence:
   - docs/coding-plugins/features/downstream-compatibility/evidences/downstream-compatibility-TED.md
 ---
@@ -23,6 +24,7 @@ related_evidence:
 | Feature | downstream-compatibility |
 | 需求文档 | `docs/coding-plugins/features/downstream-compatibility/requirements/downstream-compatibility-PRD.md` |
 | 技术设计 | `docs/coding-plugins/features/downstream-compatibility/technicals/downstream-compatibility-TDD.md` |
+| 技术实现 | `docs/coding-plugins/features/downstream-compatibility/technicals/downstream-compatibility-TID.md` |
 | TDD 证据 | `docs/coding-plugins/features/downstream-compatibility/evidences/downstream-compatibility-TED.md` |
 
 **目标:** 修复真实下游项目暴露出的非轻量模式问题：validator 兼容、迁移脚本、evidence 归档、状态收敛、测试质量字段和外部引用检查。
@@ -34,6 +36,8 @@ related_evidence:
 **规格来源:** `docs/coding-plugins/features/downstream-compatibility/requirements/downstream-compatibility-PRD.md`
 
 **技术设计来源:** `docs/coding-plugins/features/downstream-compatibility/technicals/downstream-compatibility-TDD.md`
+
+**技术实现来源:** `docs/coding-plugins/features/downstream-compatibility/technicals/downstream-compatibility-TID.md`
 
 ## 技术设计快照
 

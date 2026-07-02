@@ -4,11 +4,12 @@ status: completed
 feature: preflight
 doc_id: preflight
 created: 2026-06-29
-updated: 2026-06-29
+updated: 2026-07-02
 related_specs:
   - docs/coding-plugins/features/preflight/requirements/preflight-PRD.md
 related_technical:
   - docs/coding-plugins/features/preflight/technicals/preflight-TDD.md
+  - docs/coding-plugins/features/preflight/technicals/preflight-TID.md
 related_evidence:
   - docs/coding-plugins/features/preflight/evidences/preflight-TED.md
 ---
@@ -23,6 +24,7 @@ related_evidence:
 | Feature | preflight |
 | 需求文档 | `docs/coding-plugins/features/preflight/requirements/preflight-PRD.md` |
 | 技术设计 | `docs/coding-plugins/features/preflight/technicals/preflight-TDD.md` |
+| 技术实现 | `docs/coding-plugins/features/preflight/technicals/preflight-TID.md` |
 | TDD 证据 | `docs/coding-plugins/features/preflight/evidences/preflight-TED.md` |
 
 **目标:** 记录并固化 `python3 scripts/preflight.py` 作为插件发布前检查的完整执行链路。
@@ -34,6 +36,8 @@ related_evidence:
 **规格来源:** `docs/coding-plugins/features/preflight/requirements/preflight-PRD.md`
 
 **技术设计来源:** `docs/coding-plugins/features/preflight/technicals/preflight-TDD.md`
+
+**技术实现来源:** `docs/coding-plugins/features/preflight/technicals/preflight-TID.md`
 
 ## 技术设计快照
 

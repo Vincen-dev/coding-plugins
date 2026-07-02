@@ -4,11 +4,12 @@ status: completed
 feature: workflow-hardening
 doc_id: workflow-hardening
 created: 2026-06-29
-updated: 2026-06-29
+updated: 2026-07-02
 related_specs:
   - docs/coding-plugins/features/workflow-hardening/requirements/workflow-hardening-PRD.md
 related_technical:
   - docs/coding-plugins/features/workflow-hardening/technicals/workflow-hardening-TDD.md
+  - docs/coding-plugins/features/workflow-hardening/technicals/workflow-hardening-TID.md
 related_evidence:
   - docs/coding-plugins/features/workflow-hardening/evidences/workflow-hardening-TED.md
 ---
@@ -23,6 +24,7 @@ related_evidence:
 | Feature | workflow-hardening |
 | 需求文档 | `docs/coding-plugins/features/workflow-hardening/requirements/workflow-hardening-PRD.md` |
 | 技术设计 | `docs/coding-plugins/features/workflow-hardening/technicals/workflow-hardening-TDD.md` |
+| 技术实现 | `docs/coding-plugins/features/workflow-hardening/technicals/workflow-hardening-TID.md` |
 | TDD 证据 | `docs/coding-plugins/features/workflow-hardening/evidences/workflow-hardening-TED.md` |
 
 **目标:** 按优先级补强插件主链路的行为测试、文档契约、远程发布审计、Claude 入口和 validator 样例。
@@ -34,6 +36,8 @@ related_evidence:
 **规格来源:** `docs/coding-plugins/features/workflow-hardening/requirements/workflow-hardening-PRD.md`
 
 **技术设计来源:** `docs/coding-plugins/features/workflow-hardening/technicals/workflow-hardening-TDD.md`
+
+**技术实现来源:** `docs/coding-plugins/features/workflow-hardening/technicals/workflow-hardening-TID.md`
 
 ## 技术设计快照
 

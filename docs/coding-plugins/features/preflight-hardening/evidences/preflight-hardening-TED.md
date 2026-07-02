@@ -4,10 +4,11 @@ status: approved
 feature: preflight-hardening
 doc_id: preflight-hardening
 created: 2026-06-29
-updated: 2026-06-29
+updated: 2026-07-02
 related_specs:
   - docs/coding-plugins/features/preflight-hardening/requirements/preflight-hardening-PRD.md
 ---
+
 # Preflight 覆盖面增强
 
 ## 任务 1： 增强插件结构和追踪校验

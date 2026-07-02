@@ -4,11 +4,12 @@ status: approved
 feature: document-contract
 doc_id: document-contract
 created: 2026-06-29
-updated: 2026-06-29
+updated: 2026-07-02
 related_specs:
   - docs/coding-plugins/features/document-contract/requirements/document-contract-PRD.md
 related_technical:
   - docs/coding-plugins/features/document-contract/technicals/document-contract-TDD.md
+  - docs/coding-plugins/features/document-contract/technicals/document-contract-TID.md
 related_evidence:
   - docs/coding-plugins/features/document-contract/evidences/document-contract-TED.md
 ---
@@ -23,6 +24,7 @@ related_evidence:
 | Feature | document-contract |
 | 需求文档 | `docs/coding-plugins/features/document-contract/requirements/document-contract-PRD.md` |
 | 技术设计 | `docs/coding-plugins/features/document-contract/technicals/document-contract-TDD.md` |
+| 技术实现 | `docs/coding-plugins/features/document-contract/technicals/document-contract-TID.md` |
 | TDD 证据 | `docs/coding-plugins/features/document-contract/evidences/document-contract-TED.md` |
 
 **目标:** 将文档关系源从 README 正文表格迁移到 frontmatter，并让 preflight 强制校验。
@@ -34,6 +36,8 @@ related_evidence:
 **规格来源:** `docs/coding-plugins/features/document-contract/requirements/document-contract-PRD.md`
 
 **技术设计来源:** `docs/coding-plugins/features/document-contract/technicals/document-contract-TDD.md`
+
+**技术实现来源:** `docs/coding-plugins/features/document-contract/technicals/document-contract-TID.md`
 
 ## 技术设计快照
 

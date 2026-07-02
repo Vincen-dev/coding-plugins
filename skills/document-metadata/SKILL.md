@@ -69,8 +69,8 @@ description: Use when reading, creating, updating, migrating, or auditing Coding
 | --- | --- | --- |
 | README | `title`、`status`、`feature`、`updated`、`tags` | 作为人工总览和检索入口，不维护手写 `产物链路` 或 `文档链路` |
 | PRD | `title`、`type`、`status`、`feature`、`doc_id`、`created`、`updated`、`tags` | 必须在对应下游文档存在时链接同一 `doc_id` 的 `related_technical`、`related_test_cases`、`related_plans`、`related_evidence`，并可链接 `related_specs`、`related_code` |
-| TDD 技术设计 | `title`、`status`、`lifecycle_status`、`feature`、`doc_id`、`created`、`updated`、`implemented_commits`、`validated_by` | 必须补齐同一 `doc_id` 下存在的 `related_specs`、`related_technical`、`related_plans`、`related_evidence` |
-| TID 技术实现 | `title`、`status`、`lifecycle_status`、`feature`、`doc_id`、`created`、`updated`、`implemented_commits`、`validated_by` | 必须链接同一 `doc_id` 的 TDD、PRD、TCD、IPD 和 TED |
+| TDD 技术设计 | `title`、`status`、`lifecycle_status`、`feature`、`doc_id`、`created`、`updated`、`implemented_commits`、`validated_by` | approved PRD 正式链路必备；必须补齐同一 `doc_id` 的 `related_specs`、`related_technical`、`related_plans`、`related_evidence` |
+| TID 技术实现 | `title`、`status`、`lifecycle_status`、`feature`、`doc_id`、`created`、`updated`、`implemented_commits`、`validated_by` | approved PRD 正式链路必备；必须链接同一 `doc_id` 的 TDD、PRD、TCD、IPD 和 TED |
 | TCD 测试用例 | `title`、`status`、`feature`、`doc_id`、`created`、`updated` | 必须链接同一 `doc_id` 下存在的 PRD、TDD/TID、计划和 evidence |
 | IPD 实现计划 | `title`、`status`、`feature`、`doc_id`、`created`、`updated` | 必须链接同一 `doc_id` 的 PRD、TDD/TID、TCD 和 evidence |
 | TED 证据 | `title`、`status`、`feature`、`doc_id`、`created`、`updated` | 必须链接同一 `doc_id` 的 PRD、TDD/TID 和计划 |
@@ -133,6 +133,7 @@ PRD -> TDD -> TID -> TCD -> IPD -> TED
 | `doc_id` 与文件名前缀不一致 | 以文件名 `<doc-id>-XXX.md` 为准修正 metadata |
 | 中文 `文档信息` 和 frontmatter 不一致 | 以 frontmatter 为准更新中文摘要 |
 | 新增文档后忘记 INDEX | 运行 `python3 scripts/preflight.py --write-index` |
+| approved PRD 只有 TDD 没有 TID | 创建同一 `doc_id` 的 `<doc-id>-TID.md`，并同步 PRD、TDD、IPD、TED 的 `related_technical` |
 | 改了 PRD 但没有同步 TDD/TID/TCD/IPD/TED | 按同步更新机制评审下游文档，更新正文或至少更新 `updated` |
 
 ## 相关契约

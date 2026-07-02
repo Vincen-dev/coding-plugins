@@ -4,14 +4,16 @@ status: approved
 feature: technical-design-artifacts
 doc_id: technical-design-artifacts
 created: 2026-06-29
-updated: 2026-06-29
+updated: 2026-07-02
 related_specs:
   - docs/coding-plugins/features/technical-design-artifacts/requirements/technical-design-artifacts-PRD.md
 related_technical:
   - docs/coding-plugins/features/technical-design-artifacts/technicals/technical-design-artifacts-TDD.md
+  - docs/coding-plugins/features/technical-design-artifacts/technicals/technical-design-artifacts-TID.md
 related_plans:
   - docs/coding-plugins/features/technical-design-artifacts/plans/technical-design-artifacts-IPD.md
 ---
+
 # 技术设计产物独立维护
 
 ## 任务 1： technical 文档层和 preflight 校验

@@ -5,7 +5,7 @@ status: approved
 feature: marketplace
 doc_id: marketplace
 created: 2026-06-26
-updated: 2026-06-29
+updated: 2026-07-02
 tags:
   - marketplace
   - installation
@@ -22,6 +22,7 @@ related_specs:
   - docs/coding-plugins/features/preflight/requirements/preflight-PRD.md
 related_technical:
   - docs/coding-plugins/features/marketplace/technicals/marketplace-TDD.md
+  - docs/coding-plugins/features/marketplace/technicals/marketplace-TID.md
 related_plans:
   - docs/coding-plugins/features/marketplace/plans/marketplace-IPD.md
 related_evidence:

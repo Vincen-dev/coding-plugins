@@ -4,14 +4,16 @@ status: approved
 feature: marketplace
 doc_id: marketplace
 created: 2026-06-29
-updated: 2026-06-29
+updated: 2026-07-02
 related_specs:
   - docs/coding-plugins/features/marketplace/requirements/marketplace-PRD.md
 related_technical:
   - docs/coding-plugins/features/marketplace/technicals/marketplace-TDD.md
+  - docs/coding-plugins/features/marketplace/technicals/marketplace-TID.md
 related_plans:
   - docs/coding-plugins/features/marketplace/plans/marketplace-IPD.md
 ---
+
 # 插件 Marketplace 安装入口
 
 ## 任务 1： Marketplace 文档闭环回填

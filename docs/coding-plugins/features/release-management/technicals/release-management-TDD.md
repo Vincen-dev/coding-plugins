@@ -5,11 +5,13 @@ lifecycle_status: implemented
 feature: release-management
 doc_id: release-management
 created: 2026-06-29
-updated: 2026-06-29
+updated: 2026-07-02
 implemented_commits: historical
 validated_by: python3 scripts/preflight.py
 related_specs:
   - docs/coding-plugins/features/release-management/requirements/release-management-PRD.md
+related_technical:
+  - docs/coding-plugins/features/release-management/technicals/release-management-TID.md
 related_evidence:
   - docs/coding-plugins/features/release-management/evidences/release-management-TED.md
 related_plans:

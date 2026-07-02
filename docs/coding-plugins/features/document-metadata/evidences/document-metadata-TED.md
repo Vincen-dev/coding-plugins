@@ -4,14 +4,16 @@ status: approved
 feature: document-metadata
 doc_id: document-metadata
 created: 2026-06-29
-updated: 2026-07-01
+updated: 2026-07-02
 related_specs:
   - docs/coding-plugins/features/document-metadata/requirements/document-metadata-PRD.md
 related_technical:
   - docs/coding-plugins/features/document-metadata/technicals/document-metadata-TDD.md
+  - docs/coding-plugins/features/document-metadata/technicals/document-metadata-TID.md
 related_plans:
   - docs/coding-plugins/features/document-metadata/plans/document-metadata-IPD.md
 ---
+
 # 文档元数据规则和技能化
 
 ## 任务 1： Plan metadata and Chinese summary checks
@@ -152,3 +154,17 @@ related_plans:
 - **GREEN 命令:** `python3 -m unittest scripts.test_preflight.PreflightTests.test_feature_name_artifact_placeholder_references_are_rejected` PASS
 - **REFACTOR 命令:** `rg "\\[feature\\]-(PRD|TDD|TID|TCD|IPD|TED)|<feature-name>-(PRD|TDD|TID|TCD|IPD|TED)" README.md hooks skills tests scripts .codex-plugin .claude-plugin .agents -S`，确认 active guidance 仅剩 preflight 防线、测试断言和 `doc_id = <feature-name>` 的概念说明。
 - **最终验证:** `python3 scripts/preflight.py` PASS。
+
+## 任务 11：Mandatory technical implementation documents
+
+### TDD 证据
+
+- **规格/缺陷/验收:** REQ-013 / ERR-009 / AC-007
+- **测试类型:** unit
+- **RED 测试:** `scripts.test_preflight.PreflightTests.test_feature_document_chain_requires_technical_implementation`
+- **RED 命令:** `python3 -m unittest scripts.test_preflight.PreflightTests.test_feature_document_chain_requires_technical_implementation`
+- **RED 失败:** approved PRD 已有 TDD 和 IPD 但缺少 TID 时，旧 `check_feature_document_chain_closure` 未失败。
+- **GREEN 变更:** `check_feature_document_chain_closure` 同时检查 TDD、TID 和 IPD；回填 13 个历史 `<doc-id>-TID.md`，同步 PRD/TDD/IPD/TED 的 `related_technical` 和 `updated`；`writing-technicals`、`document-metadata` 和 `workflow-chain` 改为方案 B。
+- **GREEN 命令:** `python3 -m unittest scripts.test_preflight.PreflightTests.test_feature_document_chain_requires_technical_implementation scripts.test_preflight.PreflightTests.test_feature_document_chain_closure_is_scoped_by_doc_id` PASS
+- **REFACTOR 命令:** `python3 -m unittest scripts.test_preflight scripts.test_docs_index` PASS
+- **最终验证:** `python3 scripts/preflight.py --write-index` PASS；`python3 scripts/preflight.py` PASS。

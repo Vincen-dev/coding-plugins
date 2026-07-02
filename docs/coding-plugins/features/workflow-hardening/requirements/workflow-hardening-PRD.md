@@ -5,7 +5,7 @@ status: approved
 feature: workflow-hardening
 doc_id: workflow-hardening
 created: 2026-06-29
-updated: 2026-06-29
+updated: 2026-07-02
 tags:
   - workflow
   - routing
@@ -25,6 +25,7 @@ related_specs:
   - docs/coding-plugins/features/release-management/requirements/release-management-PRD.md
 related_technical:
   - docs/coding-plugins/features/workflow-hardening/technicals/workflow-hardening-TDD.md
+  - docs/coding-plugins/features/workflow-hardening/technicals/workflow-hardening-TID.md
 related_plans:
   - docs/coding-plugins/features/workflow-hardening/plans/workflow-hardening-IPD.md
 related_evidence:

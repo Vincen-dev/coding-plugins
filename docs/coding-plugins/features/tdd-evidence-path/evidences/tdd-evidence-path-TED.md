@@ -4,10 +4,11 @@ status: approved
 feature: tdd-evidence-path
 doc_id: tdd-evidence-path
 created: 2026-06-29
-updated: 2026-06-29
+updated: 2026-07-02
 related_specs:
   - docs/coding-plugins/features/tdd-evidence-path/requirements/tdd-evidence-path-PRD.md
 ---
+
 # TDD 证据 固定落地路径
 
 ## 任务 1： preflight 校验 evidence 文件

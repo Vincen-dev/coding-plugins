@@ -4,11 +4,12 @@ status: approved
 feature: feature-first-docs
 doc_id: feature-first-docs
 created: 2026-06-26
-updated: 2026-07-01
+updated: 2026-07-02
 related_specs:
   - docs/coding-plugins/features/feature-first-docs/requirements/feature-first-docs-PRD.md
 related_technical:
   - docs/coding-plugins/features/feature-first-docs/technicals/feature-first-docs-TDD.md
+  - docs/coding-plugins/features/feature-first-docs/technicals/feature-first-docs-TID.md
 related_evidence:
   - docs/coding-plugins/features/feature-first-docs/evidences/feature-first-docs-TED.md
 ---
@@ -23,6 +24,7 @@ related_evidence:
 | Feature | feature-first-docs |
 | 需求文档 | `docs/coding-plugins/features/feature-first-docs/requirements/feature-first-docs-PRD.md` |
 | 技术设计 | `docs/coding-plugins/features/feature-first-docs/technicals/feature-first-docs-TDD.md` |
+| 技术实现 | `docs/coding-plugins/features/feature-first-docs/technicals/feature-first-docs-TID.md` |
 | TDD 证据 | `docs/coding-plugins/features/feature-first-docs/evidences/feature-first-docs-TED.md` |
 
 > **给代理执行者：** REQUIRED SUB-SKILL: 使用 `coding-plugins:executing-plans` 或当前会话按检查点执行本计划。步骤使用 checkbox (`- [x]`) 语法追踪。
@@ -36,6 +38,8 @@ related_evidence:
 **规格来源:** `docs/coding-plugins/features/feature-first-docs/requirements/feature-first-docs-PRD.md`
 
 **技术设计来源:** `docs/coding-plugins/features/feature-first-docs/technicals/feature-first-docs-TDD.md`
+
+**技术实现来源:** `docs/coding-plugins/features/feature-first-docs/technicals/feature-first-docs-TID.md`
 
 ## 技术设计快照
 

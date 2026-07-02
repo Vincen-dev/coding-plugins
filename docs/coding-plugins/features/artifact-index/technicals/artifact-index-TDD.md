@@ -5,11 +5,13 @@ lifecycle_status: implemented
 feature: artifact-index
 doc_id: artifact-index
 created: 2026-06-29
-updated: 2026-06-29
+updated: 2026-07-02
 implemented_commits: historical
 validated_by: python3 scripts/preflight.py
 related_specs:
   - docs/coding-plugins/features/artifact-index/requirements/artifact-index-PRD.md
+related_technical:
+  - docs/coding-plugins/features/artifact-index/technicals/artifact-index-TID.md
 related_plans:
   - docs/coding-plugins/features/artifact-index/plans/artifact-index-IPD.md
 related_evidence:

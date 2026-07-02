@@ -631,8 +631,9 @@ def check_feature_document_chain_closure(root: Path) -> None:
         for spec_file in approved_specs:
             doc_id = docs_index.document_doc_id(spec_file)
             has_technical = bool(docs_index.feature_technical_design_files_for_doc_id(feature_root, doc_id))
+            has_implementation = bool(docs_index.feature_technical_implementation_files_for_doc_id(feature_root, doc_id))
             has_plan = bool(docs_index.feature_plan_files_for_doc_id(feature_root, doc_id))
-            if has_technical and has_plan:
+            if has_technical and has_implementation and has_plan:
                 continue
             if feature_has_lightweight_exception(feature_root):
                 lightweight_traceability_offenders.extend(lightweight_exception_traceability_errors(root, feature_root))
@@ -641,7 +642,7 @@ def check_feature_document_chain_closure(root: Path) -> None:
 
     if offenders:
         raise PreflightError(
-            "Feature document chain is incomplete; add technical/plan or README lightweight exception: "
+            "Feature document chain is incomplete; add TDD/TID/IPD or README lightweight exception: "
             + ", ".join(offenders)
             + "."
         )
@@ -1300,7 +1301,8 @@ def check_plan_technical_implementation_references(root: Path) -> None:
         if feature_context is None:
             continue
         _feature, feature_root = feature_context
-        expected_paths = docs_index.feature_technical_implementation_files(feature_root)
+        doc_id = docs_index.document_doc_id(plan_file)
+        expected_paths = docs_index.feature_technical_implementation_files_for_doc_id(feature_root, doc_id)
         if not expected_paths:
             continue
 

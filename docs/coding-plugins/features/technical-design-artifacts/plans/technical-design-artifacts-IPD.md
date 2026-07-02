@@ -4,11 +4,12 @@ status: approved
 feature: technical-design-artifacts
 doc_id: technical-design-artifacts
 created: 2026-06-26
-updated: 2026-06-29
+updated: 2026-07-02
 related_specs:
   - docs/coding-plugins/features/technical-design-artifacts/requirements/technical-design-artifacts-PRD.md
 related_technical:
   - docs/coding-plugins/features/technical-design-artifacts/technicals/technical-design-artifacts-TDD.md
+  - docs/coding-plugins/features/technical-design-artifacts/technicals/technical-design-artifacts-TID.md
 related_evidence:
   - docs/coding-plugins/features/technical-design-artifacts/evidences/technical-design-artifacts-TED.md
 ---
@@ -23,6 +24,7 @@ related_evidence:
 | Feature | technical-design-artifacts |
 | 需求文档 | `docs/coding-plugins/features/technical-design-artifacts/requirements/technical-design-artifacts-PRD.md` |
 | 技术设计 | `docs/coding-plugins/features/technical-design-artifacts/technicals/technical-design-artifacts-TDD.md` |
+| 技术实现 | `docs/coding-plugins/features/technical-design-artifacts/technicals/technical-design-artifacts-TID.md` |
 | TDD 证据 | `docs/coding-plugins/features/technical-design-artifacts/evidences/technical-design-artifacts-TED.md` |
 
 > **给代理执行者：** REQUIRED SUB-SKILL: 使用 `coding-plugins:executing-plans` 或当前会话按检查点执行本计划。步骤使用 checkbox (`- [ ]`) 语法追踪。
@@ -36,6 +38,8 @@ related_evidence:
 **规格来源:** `docs/coding-plugins/features/technical-design-artifacts/requirements/technical-design-artifacts-PRD.md`
 
 **技术设计来源:** `docs/coding-plugins/features/technical-design-artifacts/technicals/technical-design-artifacts-TDD.md`
+
+**技术实现来源:** `docs/coding-plugins/features/technical-design-artifacts/technicals/technical-design-artifacts-TID.md`
 
 ## 技术设计快照
 

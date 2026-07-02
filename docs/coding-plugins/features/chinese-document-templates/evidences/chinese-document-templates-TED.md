@@ -4,14 +4,16 @@ status: approved
 feature: chinese-document-templates
 doc_id: chinese-document-templates
 created: 2026-06-29
-updated: 2026-06-29
+updated: 2026-07-02
 related_specs:
   - docs/coding-plugins/features/chinese-document-templates/requirements/chinese-document-templates-PRD.md
 related_technical:
   - docs/coding-plugins/features/chinese-document-templates/technicals/chinese-document-templates-TDD.md
+  - docs/coding-plugins/features/chinese-document-templates/technicals/chinese-document-templates-TID.md
 related_plans:
   - docs/coding-plugins/features/chinese-document-templates/plans/chinese-document-templates-IPD.md
 ---
+
 # 中文文档模板展示字段 TDD 证据
 
 ## 任务 1：更新校验器和 RED/GREEN 单测

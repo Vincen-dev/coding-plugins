@@ -4,14 +4,16 @@ status: approved
 feature: preflight
 doc_id: preflight
 created: 2026-06-29
-updated: 2026-06-29
+updated: 2026-07-02
 related_specs:
   - docs/coding-plugins/features/preflight/requirements/preflight-PRD.md
 related_technical:
   - docs/coding-plugins/features/preflight/technicals/preflight-TDD.md
+  - docs/coding-plugins/features/preflight/technicals/preflight-TID.md
 related_plans:
   - docs/coding-plugins/features/preflight/plans/preflight-IPD.md
 ---
+
 # 插件发布前检查
 
 ## 任务 1： Preflight 文档闭环回填

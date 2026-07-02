@@ -5,11 +5,13 @@ lifecycle_status: implemented
 feature: preflight
 doc_id: preflight
 created: 2026-06-29
-updated: 2026-06-29
+updated: 2026-07-02
 implemented_commits: historical
 validated_by: python3 scripts/preflight.py
 related_specs:
   - docs/coding-plugins/features/preflight/requirements/preflight-PRD.md
+related_technical:
+  - docs/coding-plugins/features/preflight/technicals/preflight-TID.md
 related_evidence:
   - docs/coding-plugins/features/preflight/evidences/preflight-TED.md
 related_plans:

@@ -5,7 +5,7 @@ status: approved
 feature: preflight-hardening
 doc_id: preflight-hardening
 created: 2026-06-26
-updated: 2026-06-29
+updated: 2026-07-02
 tags:
   - preflight
   - validation

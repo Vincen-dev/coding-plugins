@@ -5,11 +5,13 @@ lifecycle_status: implemented
 feature: marketplace
 doc_id: marketplace
 created: 2026-06-29
-updated: 2026-06-29
+updated: 2026-07-02
 implemented_commits: historical
 validated_by: python3 scripts/preflight.py
 related_specs:
   - docs/coding-plugins/features/marketplace/requirements/marketplace-PRD.md
+related_technical:
+  - docs/coding-plugins/features/marketplace/technicals/marketplace-TID.md
 related_evidence:
   - docs/coding-plugins/features/marketplace/evidences/marketplace-TED.md
 related_plans:

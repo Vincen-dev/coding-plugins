@@ -5,7 +5,7 @@ status: approved
 feature: release-management
 doc_id: release-management
 created: 2026-06-26
-updated: 2026-06-29
+updated: 2026-07-02
 tags:
   - release
   - version
@@ -24,6 +24,7 @@ related_specs:
   - docs/coding-plugins/features/preflight/requirements/preflight-PRD.md
 related_technical:
   - docs/coding-plugins/features/release-management/technicals/release-management-TDD.md
+  - docs/coding-plugins/features/release-management/technicals/release-management-TID.md
 related_plans:
   - docs/coding-plugins/features/release-management/plans/release-management-IPD.md
 related_evidence:

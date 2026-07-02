@@ -372,6 +372,23 @@ class PreflightTests(unittest.TestCase):
 
             preflight.check_feature_document_chain_closure(root)
 
+    def test_feature_document_chain_requires_technical_implementation(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature_dir = root / "docs" / "coding-plugins" / "features" / "routing"
+            (feature_dir / "requirements").mkdir(parents=True)
+            (feature_dir / "technicals").mkdir()
+            (feature_dir / "plans").mkdir()
+            (feature_dir / "requirements" / "routing-login-PRD.md").write_text(
+                "---\nstatus: approved\nfeature: routing\n---\n# Login\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "technicals" / "routing-login-TDD.md").write_text("# Login TDD\n", encoding="utf-8")
+            (feature_dir / "plans" / "routing-login-IPD.md").write_text("# Login IPD\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(preflight.PreflightError, "routing-login-PRD.md"):
+                preflight.check_feature_document_chain_closure(root)
+
     def test_feature_document_chain_closure_is_scoped_by_doc_id(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -388,6 +405,7 @@ class PreflightTests(unittest.TestCase):
                 encoding="utf-8",
             )
             (feature_dir / "technicals" / "routing-login-TDD.md").write_text("# Login TDD\n", encoding="utf-8")
+            (feature_dir / "technicals" / "routing-login-TID.md").write_text("# Login TID\n", encoding="utf-8")
             (feature_dir / "plans" / "routing-login-IPD.md").write_text("# Login IPD\n", encoding="utf-8")
 
             with self.assertRaisesRegex(preflight.PreflightError, "routing-register-PRD.md"):
@@ -1351,6 +1369,25 @@ class PreflightTests(unittest.TestCase):
 
             with self.assertRaisesRegex(preflight.PreflightError, "Plan is missing 技术实现来源"):
                 preflight.check_plan_technical_implementation_references(root)
+
+    def test_plan_technical_implementation_source_check_is_scoped_by_doc_id(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature_dir = root / "docs" / "coding-plugins" / "features" / "routing"
+            plan_dir = feature_dir / "plans"
+            technicals_dir = feature_dir / "technicals"
+            plan_dir.mkdir(parents=True)
+            technicals_dir.mkdir()
+            (technicals_dir / "routing-login-TID.md").write_text("# Login 技术实现\n", encoding="utf-8")
+            (technicals_dir / "routing-reset-TID.md").write_text("# Reset 技术实现\n", encoding="utf-8")
+            (plan_dir / "routing-login-IPD.md").write_text(
+                "# Plan\n\n"
+                "**技术设计来源:** `docs/coding-plugins/features/routing/technicals/routing-login-TDD.md`\n\n"
+                "**技术实现来源:** `docs/coding-plugins/features/routing/technicals/routing-login-TID.md`\n",
+                encoding="utf-8",
+            )
+
+            preflight.check_plan_technical_implementation_references(root)
 
     def test_evidence_metadata_requires_existing_technical_implementation_relation(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

@@ -5,11 +5,13 @@ lifecycle_status: implemented
 feature: downstream-compatibility
 doc_id: downstream-compatibility
 created: 2026-07-01
-updated: 2026-07-01
+updated: 2026-07-02
 implemented_commits: pending-this-change
 validated_by: python3 scripts/preflight.py
 related_specs:
   - docs/coding-plugins/features/downstream-compatibility/requirements/downstream-compatibility-PRD.md
+related_technical:
+  - docs/coding-plugins/features/downstream-compatibility/technicals/downstream-compatibility-TID.md
 related_plans:
   - docs/coding-plugins/features/downstream-compatibility/plans/downstream-compatibility-IPD.md
 related_evidence:

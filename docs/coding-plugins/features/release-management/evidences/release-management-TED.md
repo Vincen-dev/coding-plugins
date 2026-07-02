@@ -4,14 +4,16 @@ status: approved
 feature: release-management
 doc_id: release-management
 created: 2026-06-29
-updated: 2026-06-29
+updated: 2026-07-02
 related_specs:
   - docs/coding-plugins/features/release-management/requirements/release-management-PRD.md
 related_technical:
   - docs/coding-plugins/features/release-management/technicals/release-management-TDD.md
+  - docs/coding-plugins/features/release-management/technicals/release-management-TID.md
 related_plans:
   - docs/coding-plugins/features/release-management/plans/release-management-IPD.md
 ---
+
 # 插件发布和版本管理
 
 ## 任务 1： 版本 bump 脚本和 release 校验

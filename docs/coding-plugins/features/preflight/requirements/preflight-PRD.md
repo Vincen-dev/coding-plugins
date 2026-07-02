@@ -5,7 +5,7 @@ status: approved
 feature: preflight
 doc_id: preflight
 created: 2026-06-26
-updated: 2026-06-29
+updated: 2026-07-02
 tags:
   - ci
   - validation
@@ -20,6 +20,7 @@ related_code:
 related_specs: []
 related_technical:
   - docs/coding-plugins/features/preflight/technicals/preflight-TDD.md
+  - docs/coding-plugins/features/preflight/technicals/preflight-TID.md
 related_plans:
   - docs/coding-plugins/features/preflight/plans/preflight-IPD.md
 related_evidence:

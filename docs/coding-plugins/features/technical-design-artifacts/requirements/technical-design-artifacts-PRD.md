@@ -5,7 +5,7 @@ status: approved
 feature: technical-design-artifacts
 doc_id: technical-design-artifacts
 created: 2026-06-26
-updated: 2026-06-29
+updated: 2026-07-02
 tags:
   - technical-design
   - architecture
@@ -21,6 +21,7 @@ related_code:
 related_specs: []
 related_technical:
   - docs/coding-plugins/features/technical-design-artifacts/technicals/technical-design-artifacts-TDD.md
+  - docs/coding-plugins/features/technical-design-artifacts/technicals/technical-design-artifacts-TID.md
 related_plans:
   - docs/coding-plugins/features/technical-design-artifacts/plans/technical-design-artifacts-IPD.md
 related_evidence:

@@ -4,14 +4,16 @@ status: approved
 feature: workflow-hardening
 doc_id: workflow-hardening
 created: 2026-06-29
-updated: 2026-06-29
+updated: 2026-07-02
 related_specs:
   - docs/coding-plugins/features/workflow-hardening/requirements/workflow-hardening-PRD.md
 related_technical:
   - docs/coding-plugins/features/workflow-hardening/technicals/workflow-hardening-TDD.md
+  - docs/coding-plugins/features/workflow-hardening/technicals/workflow-hardening-TID.md
 related_plans:
   - docs/coding-plugins/features/workflow-hardening/plans/workflow-hardening-IPD.md
 ---
+
 # 插件工作链路硬化
 
 ## 任务 1： 行为场景顺序测试

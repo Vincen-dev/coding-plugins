@@ -4,14 +4,16 @@ status: approved
 feature: technical-design-validator
 doc_id: technical-design-validator
 created: 2026-06-29
-updated: 2026-06-29
+updated: 2026-07-02
 related_specs:
   - docs/coding-plugins/features/technical-design-validator/requirements/technical-design-validator-PRD.md
 related_technical:
   - docs/coding-plugins/features/technical-design-validator/technicals/technical-design-validator-TDD.md
+  - docs/coding-plugins/features/technical-design-validator/technicals/technical-design-validator-TID.md
 related_plans:
   - docs/coding-plugins/features/technical-design-validator/plans/technical-design-validator-IPD.md
 ---
+
 # Technical Design Validator
 
 ## 任务 1： Standalone validator structural checks

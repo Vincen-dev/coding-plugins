@@ -9,7 +9,7 @@
 1. 先判断任务类型。
 2. 新需求先进入 SDD，确定需要沉淀哪些落地文档。
 3. 用 `writing-requirements` 编写可追踪、可测试、可评审的需求文档。
-4. 已批准需求文档再写 TDD 技术设计，定义工程方案、关键决策和技术落点；需要代码、schema、接口、状态机或迁移落地时，补 TID 技术实现。
+4. 已批准需求文档再写 TDD 技术设计和 TID 技术实现；TDD 定义工程方案、关键决策和技术落点，TID 定义模块级实现拆解、接口签名、数据结构、迁移步骤和实现顺序约束。
 5. 基于需求文档、TDD/TID 补充测试用例文档。
 6. 基于测试用例、TDD/TID 写计划，并建立 Spec ID -> 测试 -> 任务 追踪。
 7. 读取文档时先用 `document-metadata` 读取 frontmatter metadata，再读正文；关系源、索引边界和 README 规则见 `docs/coding-plugins/document-contract.md`。
@@ -429,7 +429,7 @@ docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md
 
 ### 技术文档层
 
-`writing-technicals` 把批准需求文档转成独立工程方案。TDD 技术设计负责关键决策、影响组件、数据流、接口落地、兼容策略、测试策略和风险缓解；TID 技术实现负责模块级实现拆解、接口签名、数据结构、迁移步骤和实现顺序约束。两者都不负责逐步任务清单，也不能补写或重定义需求。
+`writing-technicals` 把批准需求文档转成独立工程方案。TDD 技术设计负责关键决策、影响组件、数据流、接口落地、兼容策略、测试策略和风险缓解；TID 技术实现负责模块级实现拆解、接口签名、数据结构、迁移步骤和实现顺序约束。两者都不负责逐步任务清单，也不能补写或重定义需求。方案 B 下，approved PRD 的正式链路必须同时沉淀 TDD 和 TID；没有代码实现时，TID 也要记录“不新增代码实现”的范围边界。
 
 技术文档阶段必须先在 TDD 中完成 `## 规格缺口审查`。如果发现未覆盖需求、验收标准不清、新增外部行为、错误边界或兼容要求不清，停止 technical，回到 `spec-driven-development` 更新 spec、重新校验并取得确认，再继续 technical。preflight 会校验 TDD 文档包含规格缺口审查，并拦截未处理、待处理、需澄清、不清楚或待确认的缺口。
 

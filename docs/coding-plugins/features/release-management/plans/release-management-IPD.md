@@ -4,11 +4,12 @@ status: completed
 feature: release-management
 doc_id: release-management
 created: 2026-06-29
-updated: 2026-06-29
+updated: 2026-07-02
 related_specs:
   - docs/coding-plugins/features/release-management/requirements/release-management-PRD.md
 related_technical:
   - docs/coding-plugins/features/release-management/technicals/release-management-TDD.md
+  - docs/coding-plugins/features/release-management/technicals/release-management-TID.md
 related_evidence:
   - docs/coding-plugins/features/release-management/evidences/release-management-TED.md
 ---
@@ -23,6 +24,7 @@ related_evidence:
 | Feature | release-management |
 | 需求文档 | `docs/coding-plugins/features/release-management/requirements/release-management-PRD.md` |
 | 技术设计 | `docs/coding-plugins/features/release-management/technicals/release-management-TDD.md` |
+| 技术实现 | `docs/coding-plugins/features/release-management/technicals/release-management-TID.md` |
 | TDD 证据 | `docs/coding-plugins/features/release-management/evidences/release-management-TED.md` |
 
 **目标:** 补齐 release tag、GitHub Release 和远程 push 权限的可重复发布链路。
@@ -34,6 +36,8 @@ related_evidence:
 **规格来源:** `docs/coding-plugins/features/release-management/requirements/release-management-PRD.md`
 
 **技术设计来源:** `docs/coding-plugins/features/release-management/technicals/release-management-TDD.md`
+
+**技术实现来源:** `docs/coding-plugins/features/release-management/technicals/release-management-TID.md`
 
 ## 技术设计快照
 
