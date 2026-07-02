@@ -231,6 +231,11 @@ DOC_SYNC_REFERENCES = (
     "python3 scripts/preflight.py --write-index",
     "python3 scripts/preflight.py",
 )
+FIXTURE_CASE_WORKFLOW_REFERENCES = (
+    "CASE-INDEX.md",
+    "scripts/scaffold_fixture_case.py",
+    "问题 -> CASE -> RED -> 修复 -> preflight",
+)
 
 
 def repo_root() -> Path:
@@ -1246,6 +1251,44 @@ def document_spec_ids(files: list[Path]) -> set[str]:
     return ids
 
 
+def markdown_sections_with_heading_token(text: str, token_prefix: str) -> list[str]:
+    sections: list[str] = []
+    heading_re = re.compile(rf"^##[ \t]+.*\b{re.escape(token_prefix)}-\d{{3,}}\b.*$", re.MULTILINE)
+    for match in heading_re.finditer(text):
+        next_match = re.search(r"^##[ \t]+", text[match.end() :], re.MULTILINE)
+        if next_match is None:
+            sections.append(text[match.start() :])
+        else:
+            sections.append(text[match.start() : match.end() + next_match.start()])
+    return sections
+
+
+def structured_traceability_spec_ids(label: str, text: str) -> set[str]:
+    if label == "TED":
+        return completed_evidence_spec_ids(text)
+
+    section_names_by_label = {
+        "TID": ("实现点总览",),
+        "TCD": ("测试用例总览",),
+        "IPD": ("任务总览",),
+    }
+    heading_tokens_by_label = {
+        "TID": ("IMPL",),
+        "TCD": ("TC",),
+        "IPD": ("TASK",),
+    }
+
+    ids: set[str] = set()
+    for section_name in section_names_by_label.get(label, ()):
+        section = markdown_section(text, section_name)
+        if section:
+            ids.update(SPEC_ID_RE.findall(section))
+    for token in heading_tokens_by_label.get(label, ()):
+        for section in markdown_sections_with_heading_token(text, token):
+            ids.update(SPEC_ID_RE.findall(section))
+    return ids
+
+
 def check_traceability_closure(root: Path) -> None:
     downstream_collectors: tuple[tuple[str, Callable[[Path, str], list[Path]]], ...] = (
         ("TID", docs_index.feature_technical_implementation_files_for_doc_id),
@@ -1264,7 +1307,9 @@ def check_traceability_closure(root: Path) -> None:
 
             for label, collect_documents in downstream_collectors:
                 documents = collect_documents(feature_root, doc_id)
-                covered_ids = document_spec_ids(documents)
+                covered_ids: set[str] = set()
+                for document in documents:
+                    covered_ids.update(structured_traceability_spec_ids(label, document.read_text(encoding="utf-8")))
                 missing_ids = sorted(required_ids - covered_ids)
                 if missing_ids:
                     offenders.append(f"{spec_file.relative_to(root)} -> {label} missing {', '.join(missing_ids)}")
@@ -1533,6 +1578,20 @@ def check_documentation_path_references(root: Path) -> None:
         raise PreflightError("Documentation is missing required path references: " + "; ".join(missing) + ".")
 
 
+def check_fixture_case_workflow_documented(root: Path) -> None:
+    skill_path = root / "skills" / "writing-skills" / "SKILL.md"
+    if not skill_path.exists():
+        raise PreflightError("Fixture case workflow documentation is missing: skills/writing-skills/SKILL.md.")
+
+    text = skill_path.read_text(encoding="utf-8")
+    missing = [reference for reference in FIXTURE_CASE_WORKFLOW_REFERENCES if reference not in text]
+    if missing:
+        raise PreflightError(
+            "Fixture case workflow documentation is incomplete: "
+            + f"{skill_path.relative_to(root)} missing {', '.join(missing)}."
+        )
+
+
 def collect_spec_files(root: Path) -> list[Path]:
     files: list[Path] = []
     for feature_root in collect_feature_roots(root):
@@ -1603,6 +1662,7 @@ def build_validation_commands(
         [python, "-m", "unittest", "scripts/test_remote_audit.py"],
         [python, "-m", "unittest", "scripts/test_bump_version.py"],
         [python, "-m", "unittest", "scripts/test_prepare_release.py"],
+        [python, "-m", "unittest", "scripts/test_scaffold_fixture_case.py"],
         [python, "-m", "unittest", "tests.behavior.test_routing"],
         [python, "-m", "unittest", "skills/spec-driven-development/scripts/test_validate_spec.py"],
         [python, "-m", "unittest", "skills/spec-driven-development/scripts/test_scaffold_feature_docs.py"],
@@ -1676,6 +1736,7 @@ def run_static_checks(root: Path) -> None:
     check_tdd_evidence_spec_ids(root)
     check_lifecycle_state_consistency(root)
     check_documentation_path_references(root)
+    check_fixture_case_workflow_documented(root)
     check_removed_entry_references(root)
     check_sdd_templates_are_chinese(root)
     check_technical_templates_are_chinese(root)

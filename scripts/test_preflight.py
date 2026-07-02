@@ -594,6 +594,119 @@ class PreflightTests(unittest.TestCase):
 
         preflight.check_traceability_closure(root)
 
+    def test_invalid_feature_chain_fixtures_cover_known_failure_modes(self) -> None:
+        invalid_root = FIXTURES_ROOT / "invalid-feature-chain"
+        cases = {
+            "missing-test-case": (
+                preflight.check_feature_document_chain_closure,
+                "Feature document chain is incomplete",
+            ),
+            "missing-ted-coverage": (
+                preflight.check_traceability_closure,
+                "Traceability closure is incomplete",
+            ),
+            "broken-metadata-link": (
+                preflight.check_prd_related_metadata,
+                "references missing",
+            ),
+            "stale-downstream-doc": (
+                preflight.check_document_sync_freshness,
+                "Document sync freshness is invalid",
+            ),
+            "legacy-path-regression": (
+                preflight.check_legacy_docs_roots,
+                "Legacy docs path is no longer active",
+            ),
+        }
+
+        for case_name, (check, message) in cases.items():
+            with self.subTest(case=case_name):
+                case_root = invalid_root / case_name
+                self.assertTrue(case_root.exists(), case_name)
+                with self.assertRaisesRegex(preflight.PreflightError, message):
+                    check(case_root)
+
+    def test_traceability_closure_requires_ids_in_expected_document_sections(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature_dir = root / "docs" / "coding-plugins" / "features" / "routing"
+            (feature_dir / "requirements").mkdir(parents=True)
+            (feature_dir / "technicals").mkdir()
+            (feature_dir / "test-cases").mkdir()
+            (feature_dir / "plans").mkdir()
+            (feature_dir / "evidences").mkdir()
+            (feature_dir / "requirements" / "routing-login-PRD.md").write_text(
+                "---\nstatus: approved\nfeature: routing\ndoc_id: routing-login\nupdated: 2026-07-02\n---\n"
+                "# Login PRD\n\n"
+                "## 需求总览\n\n"
+                "| 需求点 | 标题 | 优先级 | 类型 | 验证方式 |\n"
+                "| --- | --- | --- | --- | --- |\n"
+                "| REQ-001 | 登录分流 | 必须 | behavior | behavior 测试 |\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "technicals" / "routing-login-TID.md").write_text(
+                "# Login TID\n\n"
+                "## 实现摘要\n\n"
+                "REQ-001 只在摘要里被提到。\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "test-cases" / "routing-login-TCD.md").write_text(
+                "# Login TCD\n\n"
+                "## 测试策略摘要\n\n"
+                "REQ-001 只在摘要里被提到。\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "plans" / "routing-login-IPD.md").write_text(
+                "# Login IPD\n\n"
+                "## 目标\n\n"
+                "REQ-001 只在目标里被提到。\n",
+                encoding="utf-8",
+            )
+            (feature_dir / "evidences" / "routing-login-TED.md").write_text(
+                "# Login TED\n\n"
+                "## 备注\n\n"
+                "REQ-001 只在备注里被提到。\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Traceability closure is incomplete"):
+                preflight.check_traceability_closure(root)
+
+    def test_traceability_closure_covers_non_req_required_spec_ids(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature_dir = root / "docs" / "coding-plugins" / "features" / "contract"
+            (feature_dir / "requirements").mkdir(parents=True)
+            (feature_dir / "technicals").mkdir()
+            (feature_dir / "test-cases").mkdir()
+            (feature_dir / "plans").mkdir()
+            (feature_dir / "evidences").mkdir()
+            (feature_dir / "requirements" / "contract-api-PRD.md").write_text(
+                "---\nstatus: approved\nfeature: contract\ndoc_id: contract-api\nupdated: 2026-07-02\n---\n"
+                "# Contract PRD\n\n"
+                "| 需求点 | 标题 | 优先级 | 类型 | 验证方式 |\n"
+                "| --- | --- | --- | --- | --- |\n"
+                "| API-001 | 查询接口 | 必须 | api | contract 测试 |\n"
+                "| SCHEMA-001 | 返回结构 | 必须 | schema | schema 测试 |\n"
+                "| STATE-001 | 生命周期 | 必须 | state | 状态转换测试 |\n"
+                "| AC-001 | 验收标准 | 必须 | acceptance | 验收测试 |\n"
+                "| ERR-001 | 错误码 | 必须 | api | contract 测试 |\n",
+                encoding="utf-8",
+            )
+            for directory, suffix, body in (
+                ("technicals", "TID", "## 实现点总览\n\n| 实现点 | 覆盖规格 |\n| --- | --- |\n| IMPL-001 | API-001 |\n"),
+                ("test-cases", "TCD", "## 测试用例总览\n\n| 测试用例 | 覆盖规格 |\n| --- | --- |\n| TC-001 | API-001 |\n"),
+                ("plans", "IPD", "## 任务总览\n\n| 任务 | 覆盖规格 |\n| --- | --- |\n| TASK-001 | API-001 |\n"),
+                ("evidences", "TED", "## TDD 证据\n\n- **规格/缺陷/验收:** API-001\n- **最终验证:** PASS\n"),
+            ):
+                (feature_dir / directory / f"contract-api-{suffix}.md").write_text(
+                    f"# Contract {suffix}\n\n{body}",
+                    encoding="utf-8",
+                )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "SCHEMA-001"):
+                preflight.check_traceability_closure(root)
+
     def test_legacy_docs_roots_are_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -616,6 +729,7 @@ class PreflightTests(unittest.TestCase):
         self.assertIn("test_validate_tdd_evidence.py", command_text)
         self.assertIn("test_bump_version.py", command_text)
         self.assertIn("test_prepare_release.py", command_text)
+        self.assertIn("test_scaffold_fixture_case.py", command_text)
         self.assertIn("scripts/test_docs_index.py", command_text)
         self.assertIn("scripts/test_manifest_checks.py", command_text)
         self.assertIn("scripts/test_remote_audit.py", command_text)
@@ -625,6 +739,9 @@ class PreflightTests(unittest.TestCase):
         self.assertIn("tests/hooks/test-session-start.sh", command_text)
         self.assertIn("validate_spec.py", command_text)
         self.assertIn("--strict docs/coding-plugins/features/preflight/evidences/preflight-TED.md", command_text)
+
+    def test_fixture_case_workflow_is_documented(self) -> None:
+        preflight.check_fixture_case_workflow_documented(Path(__file__).resolve().parents[1])
 
     def test_prd_metadata_requires_existing_related_artifacts(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

@@ -134,6 +134,19 @@ description: Use when [specific triggering conditions]
 3. 记录失败合理化。
 4. 修技能直到通过。
 
+## 插件案例沉淀
+
+当优化 `coding-plugins` 自身，并且问题来自真实项目、安装缓存、metadata 同步、文档可读性或 validator 回归时，不要只写抽象规则。把问题沉淀成可回归的 fixture case：
+
+1. 先用一句话描述问题和风险。
+2. 在 `tests/fixtures/formal-feature-chain/CASE-INDEX.md` 登记案例，写清 `case_id`、`source_type`、`source_reference`、`optimization_target` 和 `covered_risks`。
+3. 优先运行 `python3 scripts/scaffold_fixture_case.py` 生成 fixture 骨架，再按实际场景补正文。
+4. 写 RED 测试证明当前插件会漏掉这个问题。
+5. 修 preflight、validator、模板或 skill 规则。
+6. 运行 `python3 scripts/preflight.py`，确认 CASE、文档链路和 validator 都通过。
+
+固定流程是：问题 -> CASE -> RED -> 修复 -> preflight。只有 CASE 进入索引且有测试守护，真实项目问题才算沉淀为插件能力。
+
 ## 说服原则
 
 阅读 `persuasion-principles.md`。好技能不仅列规则，还要解释为什么规则必要、常见绕过方式是什么、违反会导致什么结果。
