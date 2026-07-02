@@ -1,5 +1,11 @@
 # Release Notes
 
+## 1.0.8 - 2026-07-02
+
+- 新增 `formal-feature-chain` 的 `CASE-INDEX.md` 和 invalid fixture 案例库，把真实维护问题沉淀为可读、可回归的测试案例。
+- 增强 traceability closure，要求 PRD 中 `必须` 的 Spec ID 在 TID、TCD、IPD 和 TED 的正式结构中闭环覆盖。
+- 新增 `scripts/scaffold_fixture_case.py`，用于生成 fixture case 骨架，并在 `writing-skills` 中固定“问题 -> CASE -> RED -> 修复 -> preflight”的插件优化流程。
+
 ## 1.0.7 - 2026-07-02
 
 - 扩展 `formal-feature-chain` golden fixture，新增 Creek wrapper API 契约、插件缓存刷新和 metadata 同步三个实战化场景。
