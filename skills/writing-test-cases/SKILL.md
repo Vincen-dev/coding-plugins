@@ -1,6 +1,6 @@
 ---
 name: writing-test-cases
-description: Use after approved requirement documents and technical documents exist, before writing IPD implementation plans, to create or update TCD test case documents under docs/coding-plugins/features/<feature-name>/test-cases/<feature-name>-TCD.md.
+description: Use after approved requirement documents and technical documents exist, before writing IPD implementation plans, to create or update TCD test case documents under docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md.
 ---
 
 # 编写测试用例文档
@@ -30,15 +30,15 @@ description: Use after approved requirement documents and technical documents ex
 ## 落地路径
 
 ```text
-docs/coding-plugins/features/<feature-name>/test-cases/<feature-name>-TCD.md
+docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md
 ```
 
 ## 编写流程
 
 1. 使用 `document-metadata` 读取 README、requirements、technical、plan 和 evidence 关系。
 2. 读取 approved requirement docs，列出所有 MUST Spec ID。
-3. 读取 `technicals/<feature-name>-TDD.md`，确认技术落点、关键决策和测试策略；如果存在 `technicals/<feature-name>-TID.md`，继续读取模块实现、接口结构、迁移约束和实现顺序约束。
-4. 创建或更新 `test-cases/<feature-name>-TCD.md`。
+3. 读取 `technicals/<doc-id>-TDD.md`，确认技术落点、关键决策和测试策略；如果存在 `technicals/<doc-id>-TID.md`，继续读取模块实现、接口结构、迁移约束和实现顺序约束。
+4. 创建或更新 `test-cases/<doc-id>-TCD.md`。
 5. 为每个 MUST Spec ID 写测试用例，包含测试层级、测试名称、前置条件、步骤、断言、数据和证据目标。
 6. 对不需要测试用例的 Spec ID 写明豁免原因。
 7. 更新 `docs/coding-plugins/INDEX.md`。

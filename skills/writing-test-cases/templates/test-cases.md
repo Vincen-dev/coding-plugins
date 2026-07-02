@@ -5,12 +5,12 @@ feature: <feature-name>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 related_specs:
-  - docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md
+  - docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md
 related_technical:
-  - docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TDD.md
-  - docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TID.md
+  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md
+  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md
 related_plans:
-  - docs/coding-plugins/features/<feature-name>/plans/<feature-name>-IPD.md
+  - docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md
 related_evidence:
   - docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md
 ---
@@ -23,10 +23,10 @@ related_evidence:
 | --- | --- |
 | 状态 | 草稿 |
 | Feature | <feature-name> |
-| 需求文档 | `docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md` |
-| 技术设计 | `docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TDD.md` |
-| 技术实现 | `docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TID.md` |
-| 实现计划 | `docs/coding-plugins/features/<feature-name>/plans/<feature-name>-IPD.md` |
+| 需求文档 | `docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md` |
+| 技术设计 | `docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md` |
+| 技术实现 | `docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md` |
+| 实现计划 | `docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md` |
 | TDD 证据 | `docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md` |
 
 ## 测试策略摘要

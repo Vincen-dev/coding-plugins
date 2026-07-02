@@ -138,3 +138,17 @@ related_plans:
 - **GREEN 命令:** `python3 -m unittest scripts.test_preflight.PreflightTests.test_feature_name_ted_placeholder_references_are_rejected` PASS；`bash tests/hooks/test-session-start.sh` PASS
 - **REFACTOR 命令:** `rg "docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED\\.md|<feature-name>-TED" README.md docs hooks skills tests scripts .codex-plugin .claude-plugin .agents -S`，确认 active guidance 仅剩 preflight 防线、测试断言和历史 feature 文档正文。
 - **最终验证:** `python3 scripts/preflight.py` PASS。
+
+## 任务 10：Doc ID scoped artifact placeholders
+
+### TDD 证据
+
+- **规格/缺陷/验收:** REQ-011 / ERR-007：active guidance 中的 PRD、TDD、TID、TCD、IPD 文件路径必须表达 feature 目录和 doc_id 文件名前缀的区别，不能继续要求 `docs/coding-plugins/features/<feature-name>/**/<feature-name>-XXX.md`。
+- **测试类型:** config
+- **RED 测试:** `scripts.test_preflight.PreflightTests.test_feature_name_artifact_placeholder_references_are_rejected`
+- **RED 命令:** `python3 -m unittest scripts.test_preflight.PreflightTests.test_feature_name_artifact_placeholder_references_are_rejected`
+- **RED 失败:** preflight 未拒绝 `docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TDD.md`，导致 writing-plans、writing-technicals、writing-test-cases 和模板仍可能按 feature-name 文件名生成多链路文档。
+- **GREEN 变更:** `REMOVED_ENTRY_PATTERNS` 增加 PRD/TDD/TID/TCD/IPD 旧 artifact 占位符；writing-plans、writing-technicals、writing-test-cases、TDD evidence 模板、technical/test-case 模板和 spec index 参考统一改为 `<doc-id>-XXX.md` 文件名。
+- **GREEN 命令:** `python3 -m unittest scripts.test_preflight.PreflightTests.test_feature_name_artifact_placeholder_references_are_rejected` PASS
+- **REFACTOR 命令:** `rg "\\[feature\\]-(PRD|TDD|TID|TCD|IPD|TED)|<feature-name>-(PRD|TDD|TID|TCD|IPD|TED)" README.md hooks skills tests scripts .codex-plugin .claude-plugin .agents -S`，确认 active guidance 仅剩 preflight 防线、测试断言和 `doc_id = <feature-name>` 的概念说明。
+- **最终验证:** `python3 scripts/preflight.py` PASS。

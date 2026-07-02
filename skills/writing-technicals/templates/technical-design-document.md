@@ -8,13 +8,13 @@ updated: YYYY-MM-DD
 implemented_commits: []
 validated_by: "<验证命令或人工验证记录>"
 related_specs:
-  - docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md
+  - docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md
 related_technical:
-  - docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TID.md
+  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md
 related_test_cases:
-  - docs/coding-plugins/features/<feature-name>/test-cases/<feature-name>-TCD.md
+  - docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md
 related_plans:
-  - docs/coding-plugins/features/<feature-name>/plans/<feature-name>-IPD.md
+  - docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md
 related_evidence:
   - docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md
 ---
@@ -28,10 +28,10 @@ related_evidence:
 | 状态 | 草稿 |
 | 生命周期 | draft |
 | Feature | <feature-name> |
-| 需求文档 | `docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md` |
-| 技术实现 | `docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TID.md` |
-| 测试用例 | `docs/coding-plugins/features/<feature-name>/test-cases/<feature-name>-TCD.md` |
-| 计划 | `docs/coding-plugins/features/<feature-name>/plans/<feature-name>-IPD.md` |
+| 需求文档 | `docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md` |
+| 技术实现 | `docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md` |
+| 测试用例 | `docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md` |
+| 计划 | `docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md` |
 | TDD 证据| `docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md` |
 | 已实现提交 | [] |
 | 验证方式 | <验证命令或人工验证记录> |
@@ -71,7 +71,7 @@ related_evidence:
 
 ## 技术实现文档
 
-`docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TID.md`
+`docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md`
 
 <说明该设计如何落到技术实现文档；如果不需要 TID，写明原因。>
 

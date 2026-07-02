@@ -25,7 +25,7 @@
 需求文档路径固定使用：
 
 ```text
-docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md
+docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md
 ```
 
 规格类型不再决定文件名。Feature、API contract、schema、state machine、acceptance 和 maintenance 都沉淀为同一个 PRD 中的章节；如果内容属于多个独立 feature，拆成多个 feature root。日期、状态、标签和相关代码只写 metadata 和 `INDEX.md`，不写入文件名。

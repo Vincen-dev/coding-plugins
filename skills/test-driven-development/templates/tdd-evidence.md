@@ -2,14 +2,15 @@
 title: <能力> TDD 证据
 status: draft
 feature: <feature-name>
+doc_id: <doc-id>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 related_specs:
-  - docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md
+  - docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md
 related_technical:
-  - docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TDD.md
+  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md
 related_plans:
-  - docs/coding-plugins/features/<feature-name>/plans/<feature-name>-IPD.md
+  - docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md
 ---
 
 # <能力> TDD 证据
@@ -20,6 +21,7 @@ related_plans:
 | --- | --- |
 | 状态 | 草稿 |
 | Feature | <feature-name> |
+| Doc ID | <doc-id> |
 
 ## 任务 <N>：<任务名称>
 

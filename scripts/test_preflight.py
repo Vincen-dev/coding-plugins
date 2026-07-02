@@ -86,6 +86,19 @@ class PreflightTests(unittest.TestCase):
             with self.assertRaisesRegex(preflight.PreflightError, "Removed residue reference"):
                 preflight.check_removed_entry_references(root)
 
+    def test_feature_name_artifact_placeholder_references_are_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            skill = root / "skills" / "writing-plans"
+            skill.mkdir(parents=True)
+            (skill / "SKILL.md").write_text(
+                "read docs/coding-plugins/features/<feature-name>/technicals/<feature-name>-TDD.md\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "Removed residue reference"):
+                preflight.check_removed_entry_references(root)
+
     def test_superpowers_references_are_rejected_in_active_guidance(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

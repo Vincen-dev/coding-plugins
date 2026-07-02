@@ -2,7 +2,7 @@
 
 | Feature | 类型 | 状态 | 规格 | 标签 | 更新时间 |
 | --- | --- | --- | --- | --- | --- | --- |
-| <feature-name> | feature | draft | `docs/coding-plugins/features/<feature-name>/requirements/<feature-name>-PRD.md` | <tags> | YYYY-MM-DD |
+| <feature-name> | feature | draft | `docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md` | <tags> | YYYY-MM-DD |
 
 规则：
 
