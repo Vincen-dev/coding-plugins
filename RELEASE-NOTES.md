@@ -1,5 +1,11 @@
 # Release Notes
 
+## 1.0.7 - 2026-07-02
+
+- 扩展 `formal-feature-chain` golden fixture，新增 Creek wrapper API 契约、插件缓存刷新和 metadata 同步三个实战化场景。
+- 将 routing fixture 的 TID/TCD 升级到 `IMPL-001`、`TC-001` 章节结构，覆盖最新模板可读性规则。
+- 新增多场景 fixture 覆盖测试，确保案例数量和 TID/TCD 章节锚点不会回退。
+
 ## 1.0.6 - 2026-07-02
 
 - 收口 `document-metadata`、TDD/TID/TCD/TED 模板的正文 `文档信息`，正文不再重复维护完整路径链路表。

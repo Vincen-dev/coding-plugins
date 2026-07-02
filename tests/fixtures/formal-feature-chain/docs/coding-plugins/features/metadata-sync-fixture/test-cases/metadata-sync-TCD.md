@@ -1,0 +1,71 @@
+---
+title: Metadata Sync TCD
+status: approved
+feature: metadata-sync-fixture
+doc_id: metadata-sync
+created: 2026-07-02
+updated: 2026-07-02
+related_specs:
+  - docs/coding-plugins/features/metadata-sync-fixture/requirements/metadata-sync-PRD.md
+related_technical:
+  - docs/coding-plugins/features/metadata-sync-fixture/technicals/metadata-sync-TDD.md
+  - docs/coding-plugins/features/metadata-sync-fixture/technicals/metadata-sync-TID.md
+related_test_cases: []
+related_plans:
+  - docs/coding-plugins/features/metadata-sync-fixture/plans/metadata-sync-IPD.md
+related_evidence:
+  - docs/coding-plugins/features/metadata-sync-fixture/evidences/metadata-sync-TED.md
+---
+# Metadata Sync TCD
+
+## 文档信息
+
+| 字段 | 内容 |
+| --- | --- |
+| 状态 | approved |
+| Feature | metadata-sync-fixture |
+| Doc ID | metadata-sync |
+| 文档类型 | TCD |
+| 关系源 | frontmatter `related_*` 和 `docs/coding-plugins/INDEX.md` |
+| 阅读重点 | 测试策略摘要、测试用例总览、测试用例章节 |
+
+## 测试策略摘要
+
+使用 contract 测试验证 metadata 同步 freshness 规则。
+
+## 测试用例总览
+
+| 测试用例 | 标题 | 覆盖规格 | 测试类型 | 执行方式 | 证据目标 |
+| --- | --- | --- | --- | --- | --- |
+| TC-001 | 下游过期链路被拒绝 | REQ-001 | contract | 自动化 | TED |
+
+## 下游过期链路被拒绝（TC-001 / REQ-001）
+
+### 测试目标
+
+验证上游 `updated` 晚于下游时，preflight 会拒绝文档链路。
+
+### 前置条件
+
+- 构造同一 `doc_id` 的 PRD 和 TDD。
+- PRD `updated` 晚于 TDD。
+
+### 测试步骤
+
+1. 运行同步 freshness 检查。
+2. 观察错误输出。
+
+### 断言
+
+- preflight 报告下游文档过期。
+- 下游更新时间不早于上游时通过。
+
+### 测试数据
+
+| 数据项 | 取值 | 用途 |
+| --- | --- | --- |
+| updated | 2026-07-02 | 同步 freshness 比较 |
+
+### 证据目标
+
+- TED 记录：`docs/coding-plugins/features/metadata-sync-fixture/evidences/metadata-sync-TED.md`

@@ -25,9 +25,46 @@ related_evidence:
 | 状态 | approved |
 | Feature | routing-fixture |
 | Doc ID | routing-login |
+| 文档类型 | TCD |
+| 关系源 | frontmatter `related_*` 和 `docs/coding-plugins/INDEX.md` |
+| 阅读重点 | 测试策略摘要、测试用例总览、测试用例章节 |
 
-## 测试用例
+## 测试策略摘要
 
-| 测试 ID | 规格 ID | 层级 | 命令 | 期望 |
+使用 contract 测试验证正式文档链路闭包，确保 routing-login 的 PRD、TDD、TID、TCD、IPD 和 TED 同步存在。
+
+## 测试用例总览
+
+| 测试用例 | 标题 | 覆盖规格 | 测试类型 | 执行方式 | 证据目标 |
 | --- | --- | --- | --- | --- |
-| TC-001 | REQ-001 | contract | `python3 -m unittest scripts.test_preflight.PreflightTests.test_golden_feature_fixture_satisfies_formal_document_chain` | 完整链路通过校验 |
+| TC-001 | 正式链路闭包校验 | REQ-001 | contract | 自动化 | TED |
+
+## 正式链路闭包校验（TC-001 / REQ-001）
+
+### 测试目标
+
+验证 routing-login 的正式文档链路满足 approved PRD 的闭包要求。
+
+### 前置条件
+
+- 同一 `doc_id` 下存在 PRD、TDD、TID、TCD、IPD 和 TED。
+
+### 测试步骤
+
+1. 运行 golden fixture 校验。
+2. 检查 preflight 是否读取同一 `doc_id` 的全部文档。
+
+### 断言
+
+- fixture 完整时校验通过。
+- 缺少 TCD、TID 或 IPD 时对应负例测试失败。
+
+### 测试数据
+
+| 数据项 | 取值 | 用途 |
+| --- | --- | --- |
+| doc_id | routing-login | 匹配同一文档链路 |
+
+### 证据目标
+
+- TED 记录：`docs/coding-plugins/features/routing-fixture/evidences/routing-login-TED.md`

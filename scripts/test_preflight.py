@@ -474,6 +474,40 @@ class PreflightTests(unittest.TestCase):
         preflight.check_tdd_evidence_spec_ids(root)
         preflight.check_lifecycle_state_consistency(root)
 
+    def test_golden_feature_fixture_covers_multiple_realistic_scenarios(self) -> None:
+        root = FIXTURES_ROOT / "formal-feature-chain"
+        features_root = root / "docs" / "coding-plugins" / "features"
+        expected_features = {
+            "routing-fixture",
+            "creek-wrapper-fixture",
+            "plugin-cache-fixture",
+            "metadata-sync-fixture",
+        }
+
+        actual_features = {path.name for path in features_root.iterdir() if path.is_dir()}
+        self.assertTrue(expected_features.issubset(actual_features))
+
+        for feature in expected_features:
+            feature_root = features_root / feature
+            self.assertTrue((feature_root / "README.md").exists(), feature)
+
+            tids = sorted((feature_root / "technicals").glob("*-TID.md"))
+            tcds = sorted((feature_root / "test-cases").glob("*-TCD.md"))
+            self.assertTrue(tids, feature)
+            self.assertTrue(tcds, feature)
+
+            for tid in tids:
+                tid_text = tid.read_text(encoding="utf-8")
+                self.assertIn("## 实现点总览", tid_text, str(tid))
+                self.assertIn("IMPL-001", tid_text, str(tid))
+                self.assertIn("关系源", tid_text, str(tid))
+
+            for tcd in tcds:
+                tcd_text = tcd.read_text(encoding="utf-8")
+                self.assertIn("## 测试用例总览", tcd_text, str(tcd))
+                self.assertIn("TC-001", tcd_text, str(tcd))
+                self.assertIn("关系源", tcd_text, str(tcd))
+
     def test_legacy_docs_roots_are_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
