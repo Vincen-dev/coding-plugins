@@ -41,14 +41,19 @@ claude --plugin-dir ./coding-plugins
 
 ## 推荐入口
 
-首次使用时调用：
+默认入口：
 
 ```text
 /coding-plugins:using-coding-plugins
+```
+
+构思入口：
+
+```text
 /coding-plugins:brainstorming
 ```
 
-方案讨论、头脑风暴、产品方向不清或先分析不落地时，可以直接调用 `/coding-plugins:brainstorming`。确认进入正式落地后，再转入 `/coding-plugins:spec-driven-development`。
+方案讨论、头脑风暴、产品方向不清或先分析不落地时，使用 `/coding-plugins:brainstorming`。确认进入正式落地后，再转入 `/coding-plugins:spec-driven-development`。
 
 之后 Claude 会根据技能 description 自动选择相关技能；也可以手动调用具体技能。
 

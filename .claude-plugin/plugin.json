@@ -2,8 +2,8 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "coding-plugins",
   "displayName": "Coding Plugins",
-  "version": "1.0.10",
-  "description": "中文 SDD/TDD 编码工作流插件，提供规格、计划、测试、调试、评审、中文 Git 提交和分支收尾技能。",
+  "version": "1.0.11",
+  "description": "中文构思收敛、SDD/TDD 编码工作流插件，提供方案讨论、规格、计划、测试、调试、评审、中文 Git 提交和分支收尾技能。",
   "author": {
     "name": "Vincen",
     "email": "hx001007@gmail.com",

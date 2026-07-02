@@ -1,5 +1,11 @@
 # Release Notes
 
+## 1.0.11 - 2026-07-02
+
+- 同步 Codex 和 Claude manifest 文案，明确插件包含方案讨论和构思收敛入口，提升 `brainstorming` 可发现性。
+- 将 Claude Code usage 的推荐入口拆分为默认入口和构思入口，避免误导用户每次启动都直接调用 `brainstorming`。
+- 强化 `scenario-routing` 行为测试，要求场景标题唯一，并补齐 PRD、TDD/TID、TCD 到 IPD 的分段链路契约。
+
 ## 1.0.10 - 2026-07-02
 
 - 新增 `brainstorming` 构思收敛入口，用于方案讨论、头脑风暴、产品方向不清和先分析不落地场景，确认进入落地后再转入 SDD。

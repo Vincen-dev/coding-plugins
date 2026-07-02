@@ -383,6 +383,18 @@ flowchart TD
 
 `spec-driven-development` -> `document-metadata` -> `writing-requirements` -> `writing-technicals` -> `writing-test-cases` -> `writing-plans` -> `using-git-worktrees` -> `test-driven-development` -> `verification-before-completion` -> `git-commit`
 
+### 已有 PRD 到技术文档
+
+`document-metadata` -> `writing-technicals`
+
+### 技术文档到测试用例
+
+`document-metadata` -> `writing-test-cases`
+
+### 测试用例到 IPD
+
+`document-metadata` -> `writing-plans`
+
 ### Bug 修复
 
 `systematic-debugging` -> `test-driven-development` -> `verification-before-completion`

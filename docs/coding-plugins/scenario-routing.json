@@ -34,7 +34,7 @@
     },
     {
       "id": "approved_prd_to_technicals",
-      "doc_heading": "新需求",
+      "doc_heading": "已有 PRD 到技术文档",
       "trigger": "已有批准 PRD，需要技术设计和技术实现文档",
       "skills": ["document-metadata", "writing-technicals"],
       "artifacts": ["TDD", "TID"],
@@ -42,7 +42,7 @@
     },
     {
       "id": "technicals_to_test_cases",
-      "doc_heading": "新需求",
+      "doc_heading": "技术文档到测试用例",
       "trigger": "已有批准 PRD、TDD 和 TID，需要测试用例设计",
       "skills": ["document-metadata", "writing-test-cases"],
       "artifacts": ["TCD"],
@@ -50,7 +50,7 @@
     },
     {
       "id": "test_cases_to_plan",
-      "doc_heading": "新需求",
+      "doc_heading": "测试用例到 IPD",
       "trigger": "已有批准 PRD、TDD、TID 和 TCD，需要 IPD 任务执行文档",
       "skills": ["document-metadata", "writing-plans"],
       "artifacts": ["IPD"],

@@ -79,6 +79,16 @@ class RoutingBehaviorTests(unittest.TestCase):
             self.assertGreater(index, cursor, f"{term!r} is missing or out of order")
             cursor = index
 
+    def markdown_section(self, text: str, heading: str) -> str:
+        marker = f"\n### {heading}\n"
+        start = text.find(marker)
+        self.assertNotEqual(start, -1, f"missing section heading: {heading}")
+        start += len(marker)
+        next_heading = text.find("\n### ", start)
+        if next_heading == -1:
+            return text[start:]
+        return text[start:next_heading]
+
     def test_using_entry_routes_direct_intents_to_required_skills(self) -> None:
         entry = self.read_text("skills/using-coding-plugins/SKILL.md")
 
@@ -146,11 +156,7 @@ class RoutingBehaviorTests(unittest.TestCase):
         scenario_section = workflow.split("## 场景链路契约", 1)[1]
 
         for scenario, expected_terms in self.WORKFLOW_SCENARIOS.items():
-            self.assertIn(f"### {scenario}", scenario_section)
-            scenario_text = scenario_section.split(f"### {scenario}", 1)[1]
-            next_heading = scenario_text.find("\n### ")
-            if next_heading != -1:
-                scenario_text = scenario_text[:next_heading]
+            scenario_text = self.markdown_section(scenario_section, scenario)
             self.assert_ordered(scenario_text, expected_terms)
 
     def test_scenario_routing_contract_matches_available_skills_and_workflow_docs(self) -> None:
@@ -160,15 +166,12 @@ class RoutingBehaviorTests(unittest.TestCase):
         skill_names = set(self.skill_names())
 
         self.assertEqual(contract["artifact_chain"], ["PRD", "TDD", "TID", "TCD", "IPD", "TED"])
+        headings = [scenario["doc_heading"] for scenario in contract["scenarios"]]
+        self.assertEqual(len(headings), len(set(headings)), "scenario doc_heading values must be unique")
 
         for scenario in contract["scenarios"]:
             self.assertRegex(scenario["id"], r"^[a-z0-9_]+$")
-            heading = f"### {scenario['doc_heading']}"
-            self.assertIn(heading, workflow)
-            scenario_text = workflow.split(heading, 1)[1]
-            next_heading = scenario_text.find("\n### ")
-            if next_heading != -1:
-                scenario_text = scenario_text[:next_heading]
+            scenario_text = self.markdown_section(workflow, scenario["doc_heading"])
             for skill_name in scenario["skills"]:
                 self.assertIn(skill_name, skill_names)
                 self.assertIn(skill_name, entry)
@@ -194,6 +197,8 @@ class RoutingBehaviorTests(unittest.TestCase):
         self.assertIn("把下面提示作为 Claude Code 会话开始消息", usage)
         self.assertIn("/coding-plugins:using-coding-plugins", usage)
         self.assertIn("/coding-plugins:brainstorming", usage)
+        self.assertIn("默认入口", usage)
+        self.assertIn("构思入口", usage)
         self.assertIn("方案讨论", usage)
         self.assertIn("## 会话启动提示", reference)
         self.assertIn("/coding-plugins:using-coding-plugins", reference)
@@ -230,9 +235,14 @@ class RoutingBehaviorTests(unittest.TestCase):
     def test_codex_default_prompts_include_brainstorming_entrypoint(self) -> None:
         manifest = self.read_json(".codex-plugin/plugin.json")
         prompts = manifest["interface"]["defaultPrompt"]
+        manifest_text = json.dumps(manifest, ensure_ascii=False)
+        claude_manifest = self.read_text(".claude-plugin/plugin.json")
 
         self.assertTrue(any("方案" in prompt or "值得做" in prompt for prompt in prompts))
         self.assertTrue(any("规格" in prompt for prompt in prompts))
+        self.assertIn("构思", manifest_text)
+        self.assertIn("方案讨论", manifest_text)
+        self.assertIn("构思", claude_manifest)
 
     def test_brainstorming_is_pre_sdd_and_does_not_create_formal_artifacts(self) -> None:
         entry = self.read_text("skills/using-coding-plugins/SKILL.md")
