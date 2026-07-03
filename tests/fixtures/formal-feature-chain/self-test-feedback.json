@@ -1,0 +1,223 @@
+{
+  "schema_version": 1,
+  "source_contract": "docs/coding-plugins/scenario-routing.json",
+  "description": "Prompt-level self-test feedback cases for routing, gate, artifact, execution, review and commit behavior.",
+  "cases": [
+    {
+      "id": "FB-BRAINSTORM-001",
+      "user_prompt": "帮我先讨论这个产品方向是否值得做，不要创建正式需求文档。",
+      "expected_scenario_id": "idea_brainstorming",
+      "expected_skills": ["brainstorming"],
+      "expected_gate_ids": ["no_formal_artifacts_during_brainstorming"],
+      "expected_case_ids": ["CASE-BRAINSTORMING-001"],
+      "feedback_signal": "artifact"
+    },
+    {
+      "id": "FB-BRAINSTORM-002",
+      "user_prompt": "我们先做方案比较，等我确认后再进入正式 SDD。",
+      "expected_scenario_id": "idea_brainstorming",
+      "expected_skills": ["brainstorming"],
+      "expected_gate_ids": ["user_confirmation_before_sdd"],
+      "expected_case_ids": ["CASE-BRAINSTORMING-001"],
+      "feedback_signal": "gate"
+    },
+    {
+      "id": "FB-NEWREQ-001",
+      "user_prompt": "我要新增一个行为变更，但验收标准还不清楚，先走完整规格链。",
+      "expected_scenario_id": "new_unclear_requirement",
+      "expected_skills": ["spec-driven-development", "writing-requirements", "writing-technicals"],
+      "expected_gate_ids": ["prd_approved_before_technicals"],
+      "expected_case_ids": ["CASE-ROUTING-001"],
+      "feedback_signal": "route"
+    },
+    {
+      "id": "FB-NEWREQ-002",
+      "user_prompt": "这个接口契约要落地，PRD、技术设计、测试用例和 IPD 都要串起来。",
+      "expected_scenario_id": "new_unclear_requirement",
+      "expected_skills": ["writing-test-cases", "writing-plans"],
+      "expected_gate_ids": ["technicals_approved_before_tcd", "tcd_approved_before_ipd"],
+      "expected_case_ids": ["CASE-METADATA-001"],
+      "feedback_signal": "gate"
+    },
+    {
+      "id": "FB-PRD-TECH-001",
+      "user_prompt": "PRD 已经 approved，现在需要写 TDD 和 TID。",
+      "expected_scenario_id": "approved_prd_to_technicals",
+      "expected_skills": ["document-metadata", "writing-technicals"],
+      "expected_gate_ids": ["approved_prd_required"],
+      "expected_case_ids": ["CASE-ROUTING-001"],
+      "feedback_signal": "route"
+    },
+    {
+      "id": "FB-PRD-TECH-002",
+      "user_prompt": "已有需求规格，请把 API 契约转成技术设计和实现点。",
+      "expected_scenario_id": "approved_prd_to_technicals",
+      "expected_skills": ["writing-technicals"],
+      "expected_gate_ids": ["approved_prd_required"],
+      "expected_case_ids": ["CASE-CREEK-001"],
+      "feedback_signal": "artifact"
+    },
+    {
+      "id": "FB-TECH-TCD-001",
+      "user_prompt": "TDD 和 TID 都完成了，下一步补测试用例设计。",
+      "expected_scenario_id": "technicals_to_test_cases",
+      "expected_skills": ["document-metadata", "writing-test-cases"],
+      "expected_gate_ids": ["approved_technicals_required"],
+      "expected_case_ids": ["CASE-CREEK-001"],
+      "feedback_signal": "route"
+    },
+    {
+      "id": "FB-TECH-TCD-002",
+      "user_prompt": "技术方案已批准，把 metadata 同步场景的测试矩阵补齐。",
+      "expected_scenario_id": "technicals_to_test_cases",
+      "expected_skills": ["writing-test-cases"],
+      "expected_gate_ids": ["approved_technicals_required"],
+      "expected_case_ids": ["CASE-METADATA-001"],
+      "feedback_signal": "artifact"
+    },
+    {
+      "id": "FB-TCD-IPD-001",
+      "user_prompt": "测试用例文档已经 approved，开始写任务执行文档。",
+      "expected_scenario_id": "test_cases_to_plan",
+      "expected_skills": ["document-metadata", "writing-plans"],
+      "expected_gate_ids": ["approved_tcd_required"],
+      "expected_case_ids": ["CASE-ROUTING-001"],
+      "feedback_signal": "route"
+    },
+    {
+      "id": "FB-TCD-IPD-002",
+      "user_prompt": "生成 IPD 时只指定 TED 目标，不要把 TED 当成立即产物。",
+      "expected_scenario_id": "test_cases_to_plan",
+      "expected_skills": ["writing-plans"],
+      "expected_gate_ids": ["ted_target_only"],
+      "expected_case_ids": ["CASE-CACHE-001"],
+      "feedback_signal": "artifact"
+    },
+    {
+      "id": "FB-IPD-EXEC-001",
+      "user_prompt": "已有 IPD 了，继续执行 TASK-001，先确认隔离工作区。",
+      "expected_scenario_id": "existing_ipd_execution",
+      "expected_skills": ["using-git-worktrees", "subagent-driven-development"],
+      "expected_gate_ids": ["worktree_decision_before_execution"],
+      "expected_case_ids": ["CASE-STATE-001"],
+      "feedback_signal": "execution"
+    },
+    {
+      "id": "FB-IPD-EXEC-002",
+      "user_prompt": "按 IPD 实现任务，但必须先 RED，再 GREEN，完成前跑验证。",
+      "expected_scenario_id": "existing_ipd_execution",
+      "expected_skills": ["test-driven-development", "verification-before-completion"],
+      "expected_gate_ids": ["red_before_green", "verification_before_completion"],
+      "expected_case_ids": ["CASE-CACHE-001"],
+      "feedback_signal": "gate"
+    },
+    {
+      "id": "FB-BUG-001",
+      "user_prompt": "CI 失败了，先别直接改，帮我复现并定位根因。",
+      "expected_scenario_id": "bug_or_ci_failure",
+      "expected_skills": ["systematic-debugging"],
+      "expected_gate_ids": ["reproduce_before_fix"],
+      "expected_case_ids": ["CASE-BUG-001"],
+      "feedback_signal": "gate"
+    },
+    {
+      "id": "FB-BUG-002",
+      "user_prompt": "这个 bug 修好后，要有失败复现测试和完成前验证证据。",
+      "expected_scenario_id": "bug_or_ci_failure",
+      "expected_skills": ["test-driven-development", "verification-before-completion"],
+      "expected_gate_ids": ["verification_before_completion"],
+      "expected_case_ids": ["CASE-BUG-001"],
+      "feedback_signal": "execution"
+    },
+    {
+      "id": "FB-REVIEW-001",
+      "user_prompt": "请做一次代码审查，先列问题，再给总结。",
+      "expected_scenario_id": "code_review_or_feedback",
+      "expected_skills": ["requesting-code-review"],
+      "expected_gate_ids": ["findings_before_summary"],
+      "expected_case_ids": ["CASE-REVIEW-001"],
+      "feedback_signal": "review"
+    },
+    {
+      "id": "FB-REVIEW-002",
+      "user_prompt": "收到 PR 反馈后不要马上改，先验证反馈是否成立。",
+      "expected_scenario_id": "code_review_or_feedback",
+      "expected_skills": ["receiving-code-review"],
+      "expected_gate_ids": ["verify_feedback_before_implementation"],
+      "expected_case_ids": ["CASE-REVIEW-001"],
+      "feedback_signal": "gate"
+    },
+    {
+      "id": "FB-PLUGIN-001",
+      "user_prompt": "我要优化插件 workflow，先补能失败的行为测试。",
+      "expected_scenario_id": "plugin_workflow_maintenance",
+      "expected_skills": ["writing-skills", "test-driven-development"],
+      "expected_gate_ids": ["failing_behavior_test_before_workflow_change"],
+      "expected_case_ids": ["CASE-WORKFLOW-001"],
+      "feedback_signal": "gate"
+    },
+    {
+      "id": "FB-PLUGIN-002",
+      "user_prompt": "修改 skill 后完成前必须跑 quick validate 或 preflight。",
+      "expected_scenario_id": "plugin_workflow_maintenance",
+      "expected_skills": ["verification-before-completion"],
+      "expected_gate_ids": ["quick_validate_before_completion"],
+      "expected_case_ids": ["CASE-CLAUDE-001"],
+      "feedback_signal": "execution"
+    },
+    {
+      "id": "FB-COMMIT-001",
+      "user_prompt": "提交当前改动，先检查 diff、作者身份和敏感文件。",
+      "expected_scenario_id": "direct_commit",
+      "expected_skills": ["git-commit"],
+      "expected_gate_ids": ["diff_review_before_commit"],
+      "expected_case_ids": ["CASE-COMMIT-001"],
+      "feedback_signal": "gate"
+    },
+    {
+      "id": "FB-COMMIT-002",
+      "user_prompt": "提交完成后，请确认最新 commit 的作者和 Authored-by。",
+      "expected_scenario_id": "direct_commit",
+      "expected_skills": ["git-commit"],
+      "expected_gate_ids": ["verify_latest_commit_after_commit"],
+      "expected_case_ids": ["CASE-COMMIT-001"],
+      "feedback_signal": "execution"
+    },
+    {
+      "id": "FB-FINISH-001",
+      "user_prompt": "任务完成准备收尾，先确认验证通过再进入分支收尾。",
+      "expected_scenario_id": "finish_branch",
+      "expected_skills": ["verification-before-completion", "finishing-a-development-branch"],
+      "expected_gate_ids": ["verification_before_completion"],
+      "expected_case_ids": ["CASE-COMMIT-001"],
+      "feedback_signal": "execution"
+    },
+    {
+      "id": "FB-FINISH-002",
+      "user_prompt": "准备 merge 或 PR 前，除非我明确跳过，否则先提交。",
+      "expected_scenario_id": "finish_branch",
+      "expected_skills": ["git-commit", "finishing-a-development-branch"],
+      "expected_gate_ids": ["commit_before_finish_unless_skipped"],
+      "expected_case_ids": ["CASE-COMMIT-001"],
+      "feedback_signal": "gate"
+    },
+    {
+      "id": "FB-PARALLEL-001",
+      "user_prompt": "这里有多个独立失败点，先拆分成可并行调查的任务。",
+      "expected_scenario_id": "parallel_tasks",
+      "expected_skills": ["dispatching-parallel-agents"],
+      "expected_gate_ids": ["split_independent_domains_before_dispatch"],
+      "expected_case_ids": ["CASE-PARALLEL-001"],
+      "feedback_signal": "route"
+    },
+    {
+      "id": "FB-PARALLEL-002",
+      "user_prompt": "子任务都返回后，主代理要审阅合并结果并跑整体验证。",
+      "expected_scenario_id": "parallel_tasks",
+      "expected_skills": ["dispatching-parallel-agents"],
+      "expected_gate_ids": ["main_agent_reviews_merged_results"],
+      "expected_case_ids": ["CASE-PARALLEL-001"],
+      "feedback_signal": "review"
+    }
+  ]
+}

@@ -9,6 +9,7 @@
     "TED"
   ],
   "case_index": "tests/fixtures/formal-feature-chain/CASE-INDEX.md",
+  "self_test_feedback": "tests/fixtures/formal-feature-chain/self-test-feedback.json",
   "gate_catalog": {
     "no_formal_artifacts_during_brainstorming": "brainstorming 阶段不得创建 README、PRD、TDD、TID、TCD、IPD 或 TED。",
     "user_confirmation_before_sdd": "用户确认进入正式落地后才进入 spec-driven-development。",

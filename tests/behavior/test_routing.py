@@ -209,6 +209,47 @@ class RoutingBehaviorTests(unittest.TestCase):
 
                 self.assertNotIn("gates", scenario, "free-text gates must not duplicate structured gate_ids")
 
+    def test_self_test_feedback_covers_every_routing_scenario(self) -> None:
+        contract = self.read_json("docs/coding-plugins/scenario-routing.json")
+        feedback_path = ROOT / contract["self_test_feedback"]
+        feedback = json.loads(feedback_path.read_text(encoding="utf-8"))
+        scenarios = {scenario["id"]: scenario for scenario in contract["scenarios"]}
+        known_gate_ids = set(contract["gate_catalog"])
+        known_case_ids = set(
+            re.findall(r"\bcase_id:[ \t]*([A-Za-z0-9_.-]+)", self.read_text(contract["case_index"]))
+        )
+        cases = feedback["cases"]
+
+        self.assertEqual(feedback["schema_version"], 1)
+        self.assertGreaterEqual(len(cases), len(scenarios) * 2)
+        self.assertEqual(len({case["id"] for case in cases}), len(cases))
+
+        covered_by_scenario: dict[str, int] = {scenario_id: 0 for scenario_id in scenarios}
+        covered_gates: set[str] = set()
+        covered_cases: set[str] = set()
+        for case in cases:
+            with self.subTest(case=case["id"]):
+                scenario = scenarios[case["expected_scenario_id"]]
+                covered_by_scenario[scenario["id"]] += 1
+                self.assertRegex(case["id"], r"^FB-[A-Z0-9-]+$")
+                self.assertGreaterEqual(len(case["user_prompt"]), 12)
+                self.assertIn(case["feedback_signal"], {"route", "gate", "artifact", "execution", "review"})
+                self.assertTrue(case["expected_skills"])
+                self.assertTrue(case["expected_gate_ids"])
+                self.assertTrue(case["expected_case_ids"])
+                self.assertTrue(set(case["expected_skills"]).issubset(set(scenario["skills"])))
+                self.assertTrue(set(case["expected_gate_ids"]).issubset(set(scenario["gate_ids"])))
+                self.assertTrue(set(case["expected_case_ids"]).issubset(set(scenario["case_ids"])))
+                self.assertTrue(set(case["expected_gate_ids"]).issubset(known_gate_ids))
+                self.assertTrue(set(case["expected_case_ids"]).issubset(known_case_ids))
+                covered_gates.update(case["expected_gate_ids"])
+                covered_cases.update(case["expected_case_ids"])
+
+        for scenario_id, count in covered_by_scenario.items():
+            self.assertGreaterEqual(count, 2, f"{scenario_id} needs at least two self-test feedback cases")
+        self.assertEqual(covered_gates, known_gate_ids)
+        self.assertEqual(covered_cases, known_case_ids)
+
     def test_plan_scenario_does_not_claim_ted_as_direct_artifact(self) -> None:
         contract = self.read_json("docs/coding-plugins/scenario-routing.json")
         scenario = next(item for item in contract["scenarios"] if item["id"] == "test_cases_to_plan")
