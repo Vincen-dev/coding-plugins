@@ -35,6 +35,17 @@
   - IPD 只复述技术方案，没有形成可执行任务。
   - TED 没有记录缓存刷新验证结果。
 
+## workflow-state-fixture
+
+- case_id: CASE-STATE-001
+- source_type: workflow_contract
+- source_reference: spec-superflow state and contract freshness analysis
+- optimization_target: 验证已有 IPD 执行前能检测 feature/doc_id 当前阶段、上游文档 hash 和 plan stale 状态。
+- covered_risks:
+  - 代理恢复旧任务时只凭聊天记忆继续执行，没有检查 PRD/TDD/TID/TCD/IPD 是否齐全。
+  - 上游需求、技术或测试用例变更后，IPD 仍被当成可执行计划。
+  - IPD 没有明确 Intent Lock、Scope Fence、Required Tests 和 Rewind Triggers，导致实现阶段 scope drift。
+
 ## metadata-sync-fixture
 
 - case_id: CASE-METADATA-001

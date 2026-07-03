@@ -61,7 +61,9 @@ docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md
 6. 为每个任务创建独立章节，标题格式固定为 `## 任务标题（TASK-001 / REQ-001）`。
 7. 每个任务必须包含：任务目标、执行前提、修改范围、执行步骤、验证方式、TED 记录要求。
 8. 行为变更任务必须要求 RED/GREEN/REFACTOR；无法自动测试时必须要求 TED 例外记录。
-9. 新增或更新 IPD 后运行 `python3 scripts/preflight.py --write-index`，再运行 `python3 scripts/preflight.py`。
+9. 运行 `python3 scripts/workflow_state.py hash --feature <feature-name> --doc-id <doc-id>`，把结果写入 IPD frontmatter 的 `source_hash`。
+10. 在 IPD 正文写 `## 执行锁定区`，包含 Intent Lock、Scope Fence、Required Spec IDs、Required Tests、Review Gates 和 Rewind Triggers。
+11. 新增或更新 IPD 后运行 `python3 scripts/preflight.py --write-index`，再运行 `python3 scripts/preflight.py`。
 
 ## 文档结构
 
@@ -84,6 +86,7 @@ related_test_cases:
   - docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md
 related_evidence:
   - docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md
+source_hash: sha256:<由 scripts/workflow_state.py hash 生成>
 ---
 
 # <功能名称>任务执行文档（IPD）
@@ -98,6 +101,14 @@ related_evidence:
 | 文档类型 | IPD |
 | 缩写含义 | Implementation Procedure Document |
 ```
+
+`source_hash` 只覆盖上游 PRD、TDD、TID 和 TCD，用来检测 IPD 是否落后于已批准上游文档。执行前用：
+
+```bash
+python3 scripts/workflow_state.py inspect --feature <feature-name> --doc-id <doc-id> --json
+```
+
+如果输出 `state: plan-stale`，不得继续执行，先回到 `writing-plans` 刷新 IPD。
 
 ## 任务结构
 
@@ -155,6 +166,7 @@ related_evidence:
 - 是否没有复述完整 TDD/TID 技术方案。
 - 是否没有把实际 RED/GREEN/REFACTOR 输出写进 IPD。
 - 是否指向同一 `doc_id` 的 TED 证据文件。
+- 是否写入 `source_hash` 并包含 `## 执行锁定区`。
 - 是否运行了 `preflight.py`。
 
 ## 执行交接

@@ -14,6 +14,7 @@ related_test_cases:
   - docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md
 related_evidence:
   - docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md
+source_hash: sha256:<由 scripts/workflow_state.py hash --feature <feature-name> --doc-id <doc-id> 生成>
 ---
 
 # <功能名称>任务执行文档（IPD）
@@ -46,6 +47,16 @@ related_evidence:
 - 推荐方式：`subagent-driven-development`，按任务派发并在任务间评审。
 - 降级方式：`executing-plans`，在当前会话按检查点执行。
 - 执行约束：不得跳过 RED/GREEN/REFACTOR；无法自动测试时必须在 TED 写 TDD 例外记录。
+- 新鲜度检查：执行前运行 `python3 scripts/workflow_state.py inspect --feature <feature-name> --doc-id <doc-id> --json`；如果状态是 `plan-stale`，先回到 `writing-plans` 更新 IPD。
+
+## 执行锁定区
+
+- **Intent Lock:** <一句话锁定本 IPD 执行意图，执行阶段不得扩展到其他目标。>
+- **Scope Fence:** <列出本次明确包含和明确不包含的边界。>
+- **Required Spec IDs:** REQ-001
+- **Required Tests:** <列出必须先 RED 再 GREEN 的测试或人工验收证据。>
+- **Review Gates:** <列出任务间必须进行的规格符合性或代码质量评审。>
+- **Rewind Triggers:** 上游 PRD/TDD/TID/TCD 变更、source_hash 不匹配、新增外部行为、接口或 schema 改动、验证失败且影响需求契约。
 
 ## 上游约束摘要
 

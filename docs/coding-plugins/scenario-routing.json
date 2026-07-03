@@ -110,7 +110,7 @@
         "verification-before-completion"
       ],
       "artifacts": ["TED"],
-      "case_ids": ["CASE-ROUTING-001", "CASE-CACHE-001"],
+      "case_ids": ["CASE-ROUTING-001", "CASE-CACHE-001", "CASE-STATE-001"],
       "gate_ids": [
         "worktree_decision_before_execution",
         "red_before_green",

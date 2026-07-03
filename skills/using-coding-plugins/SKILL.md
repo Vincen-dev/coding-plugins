@@ -55,6 +55,8 @@ description: 开始任何任务时使用；建立 Coding Plugins 技能选择、
 
 - 用户点名技能时，优先读取该技能；若明显不适用，说明原因并转入更合适技能。
 - 任何技能需要读取或维护 `docs/coding-plugins/features/<feature-name>/` 下的 README、PRD、TDD/TID、TCD、IPD 或 TED 关系时，先使用 `document-metadata` 确认 frontmatter 和 `related_*` 关系。
+- 当用户说“继续”“恢复”“开始实现”“执行 IPD”，且能识别 `feature` 和 `doc_id` 时，先运行 `python3 scripts/workflow_state.py inspect --feature <feature> --doc-id <doc-id> --json`。输出必须说明当前状态、判断原因、缺失产物、是否 stale、推荐下一个 skill。
+- 如果 `workflow_state.py` 输出 `plan-stale`，不得进入实现；先路由到 `writing-plans` 刷新 IPD 的 `source_hash` 和执行锁定区。
 - 需要声称完成、修复或通过前，必须使用 `verification-before-completion`。
 - 需要提交时必须使用 `git-commit`；提交前仍要检查 diff、作者身份和敏感文件。
 - 需要从需求进入执行任务时，先用 `writing-requirements` 写 PRD，再用 `writing-technicals` 写 TDD/TID，再用 `writing-test-cases` 写 TCD，最后用 `writing-plans` 编写 IPD 任务执行文档。
@@ -75,6 +77,23 @@ description: 开始任何任务时使用；建立 Coding Plugins 技能选择、
 3. 先收集足够上下文，再编辑。
 4. 修改前说明编辑意图。
 5. 完成前用命令、测试、审查或可复现证据验证；行为改动还要回报 TDD 证据 或 TDD 例外记录。
+
+## 恢复状态输出
+
+恢复旧任务或准备执行 IPD 时，输出固定字段：
+
+```text
+当前检测状态：
+- Feature:
+- Doc ID:
+- State:
+- Reason:
+- Missing artifacts:
+- Stale:
+- Recommended next skill:
+```
+
+如果无法识别 `feature` 或 `doc_id`，先通过 `docs/coding-plugins/INDEX.md`、README frontmatter 或用户当前路径定位；定位失败时再向用户提一个阻塞问题。
 
 ## 输出原则
 
