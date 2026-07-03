@@ -631,7 +631,7 @@ TDD 证据可以声明 `测试类型`：`behavior`、`contract`、`architecture`
 
 `subagent-driven-development` 内置两个专门评审模板：
 
-- `scripts/subagent_prompt_builder.py`：推荐生成入口，按 IPD 当前任务章节、`workflow_brief.py` 上下文预算和 `source_hash` 填充提示词；review prompt 或 `--kind all --json` 缺少实现报告或 git 范围时会失败。
+- `scripts/subagent_prompt_builder.py`：推荐生成入口，按 IPD 当前任务章节、`workflow_brief.py` 上下文预算和 `source_hash` 填充提示词；`--json` 会按 `--kind` 过滤输出，`--kind all --json` 缺少实现报告或 git 范围时会失败。
 - `spec-reviewer-prompt.md`：检查实现是否符合任务规格。
 - `code-quality-reviewer-prompt.md`：检查实现是否构建良好、测试充分、可维护。
 

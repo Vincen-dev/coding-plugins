@@ -227,6 +227,15 @@ def build_prompts(
     }
 
 
+def output_payload_for_kind(payload: dict[str, Any], kind: str) -> dict[str, Any]:
+    if kind == "all":
+        return payload
+    filtered = dict(payload)
+    filtered["prompt_hashes"] = {kind: payload["prompt_hashes"][kind]}
+    filtered["prompts"] = {kind: payload["prompts"][kind]}
+    return filtered
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Build deterministic prompts for IPD task subagents.")
     parser.add_argument("--root", default=".")
@@ -237,7 +246,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--kind",
         choices=("all", "implementer", "spec-reviewer", "code-quality-reviewer"),
         default="all",
-        help="Prompt kind to print. JSON output always contains all prompts.",
+        help="Prompt kind to print. JSON output is filtered to this kind unless kind is all.",
     )
     parser.add_argument("--workdir")
     parser.add_argument("--implementer-report", default="[待实现子代理回报后填入]")
@@ -270,7 +279,7 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     if args.json:
-        print(json.dumps(payload, ensure_ascii=False, indent=2))
+        print(json.dumps(output_payload_for_kind(payload, args.kind), ensure_ascii=False, indent=2))
         return 0
 
     if args.kind == "all":

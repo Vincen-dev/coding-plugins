@@ -6,6 +6,7 @@ from __future__ import annotations
 import sys
 import tempfile
 import unittest
+import json
 from contextlib import redirect_stdout
 from io import StringIO
 from pathlib import Path
@@ -215,6 +216,67 @@ class SubagentPromptBuilderTests(unittest.TestCase):
         self.assertEqual(exit_code, 0)
         self.assertIn("prompt_hashes", stdout.getvalue())
         self.assertNotIn("[待实现子代理回报后填入]", stdout.getvalue())
+
+    def test_implementer_json_cli_only_emits_implementer_prompt(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature, doc_id = self.write_ready_ipd(root)
+            stdout = StringIO()
+
+            with redirect_stdout(stdout):
+                exit_code = subagent_prompt_builder.main(
+                    [
+                        "--root",
+                        str(root),
+                        "--feature",
+                        feature,
+                        "--doc-id",
+                        doc_id,
+                        "--task",
+                        "TASK-001",
+                        "--kind",
+                        "implementer",
+                        "--json",
+                    ]
+                )
+
+        payload = json.loads(stdout.getvalue())
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(set(payload["prompts"]), {"implementer"})
+        self.assertEqual(set(payload["prompt_hashes"]), {"implementer"})
+        self.assertNotIn("[待实现子代理回报后填入]", stdout.getvalue())
+
+    def test_spec_reviewer_json_cli_only_emits_spec_prompt_without_git_range(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature, doc_id = self.write_ready_ipd(root)
+            stdout = StringIO()
+
+            with redirect_stdout(stdout):
+                exit_code = subagent_prompt_builder.main(
+                    [
+                        "--root",
+                        str(root),
+                        "--feature",
+                        feature,
+                        "--doc-id",
+                        doc_id,
+                        "--task",
+                        "TASK-001",
+                        "--kind",
+                        "spec-reviewer",
+                        "--implementer-report",
+                        "Status: DONE",
+                        "--json",
+                    ]
+                )
+
+        payload = json.loads(stdout.getvalue())
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(set(payload["prompts"]), {"spec-reviewer"})
+        self.assertEqual(set(payload["prompt_hashes"]), {"spec-reviewer"})
+        self.assertNotIn("[commit before task]", stdout.getvalue())
+        self.assertNotIn("[current commit]", stdout.getvalue())
 
     def test_review_prompt_cli_accepts_real_review_inputs(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
