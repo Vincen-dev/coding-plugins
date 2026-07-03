@@ -67,11 +67,13 @@ def extract_task_section(ipd_text: str, task: str) -> tuple[str, str]:
 
 def review_input_failures(args: argparse.Namespace) -> list[str]:
     failures: list[str] = []
-    if args.kind not in {"spec-reviewer", "code-quality-reviewer"}:
+    emits_review_prompts = args.kind in {"spec-reviewer", "code-quality-reviewer"} or (args.kind == "all" and args.json)
+    if not emits_review_prompts:
         return failures
     if args.implementer_report == "[待实现子代理回报后填入]":
         failures.append("--implementer-report is required for review prompts")
-    if args.kind == "code-quality-reviewer":
+    emits_code_quality_prompt = args.kind in {"all", "code-quality-reviewer"}
+    if emits_code_quality_prompt:
         if args.base_sha == "[commit before task]":
             failures.append("--base-sha is required for code-quality-reviewer prompts")
         if args.head_sha == "[current commit]":

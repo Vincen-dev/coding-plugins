@@ -166,6 +166,56 @@ class SubagentPromptBuilderTests(unittest.TestCase):
         self.assertIn("--base-sha", stdout.getvalue())
         self.assertIn("--head-sha", stdout.getvalue())
 
+    def test_all_json_cli_requires_review_inputs_before_emitting_prompts(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature, doc_id = self.write_ready_ipd(root)
+            stdout = StringIO()
+
+            with redirect_stdout(stdout):
+                exit_code = subagent_prompt_builder.main(
+                    [
+                        "--root",
+                        str(root),
+                        "--feature",
+                        feature,
+                        "--doc-id",
+                        doc_id,
+                        "--task",
+                        "TASK-001",
+                        "--json",
+                    ]
+                )
+
+        self.assertEqual(exit_code, 1)
+        self.assertIn("--implementer-report", stdout.getvalue())
+        self.assertIn("--base-sha", stdout.getvalue())
+        self.assertIn("--head-sha", stdout.getvalue())
+
+    def test_all_summary_cli_does_not_require_review_inputs(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature, doc_id = self.write_ready_ipd(root)
+            stdout = StringIO()
+
+            with redirect_stdout(stdout):
+                exit_code = subagent_prompt_builder.main(
+                    [
+                        "--root",
+                        str(root),
+                        "--feature",
+                        feature,
+                        "--doc-id",
+                        doc_id,
+                        "--task",
+                        "TASK-001",
+                    ]
+                )
+
+        self.assertEqual(exit_code, 0)
+        self.assertIn("prompt_hashes", stdout.getvalue())
+        self.assertNotIn("[待实现子代理回报后填入]", stdout.getvalue())
+
     def test_review_prompt_cli_accepts_real_review_inputs(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
