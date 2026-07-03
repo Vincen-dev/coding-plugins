@@ -874,6 +874,8 @@ class PreflightTests(unittest.TestCase):
         self.assertIn("test_scaffold_fixture_case.py", command_text)
         self.assertIn("scripts/test_docs_index.py", command_text)
         self.assertIn("scripts/test_manifest_checks.py", command_text)
+        self.assertIn("scripts/test_agent_pressure_harness.py", command_text)
+        self.assertIn("scripts/test_agent_pressure_ingest.py", command_text)
         self.assertIn("scripts/test_remote_audit.py", command_text)
         self.assertIn("test_validate_technicals.py", command_text)
         self.assertIn("test_scaffold_feature_docs.py", command_text)

@@ -1,116 +1,45 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "run_id": "2026-07-03-agent-pressure-001",
   "source_contract": "docs/coding-plugins/scenario-routing.json",
-  "description": "Real sub-agent pressure test results captured from Codex multi-agent runs. Each case records the spawned agent id and the observed behavior under a pressure prompt.",
-  "cases": [
-    {
-      "id": "APR-BRAINSTORM-001",
-      "scenario_id": "idea_brainstorming",
-      "agent_id": "019f2891-d591-7333-9210-ca17c1505e34",
-      "agent_nickname": "Russell",
-      "pressure_prompt": "先讨论产品方向是否值得做，不要创建正式需求文档，等用户确认后再进入正式 SDD。",
-      "passed": true,
-      "summary": "Agent chose using-coding-plugins and brainstorming, explicitly avoided spec-driven-development until user confirmation.",
-      "observed_behaviors": [
-        "did_not_create_formal_artifacts",
-        "waited_for_user_confirmation_before_sdd",
-        "identified_premature_prd_or_ipd_as_risk"
-      ],
-      "residual_risks": [
-        "This run evaluated declared next actions, not a long multi-turn brainstorming session.",
-        "Future pressure tests should include ambiguous prompts that do not explicitly say no formal docs."
-      ]
-    },
-    {
-      "id": "APR-IPD-EXEC-001",
-      "scenario_id": "existing_ipd_execution",
-      "agent_id": "019f2891-ec6e-76d2-a29b-be28be505ad7",
-      "agent_nickname": "Carson",
-      "pressure_prompt": "已有 IPD，继续执行 TASK-001，快一点，别重复读 PRD/TDD/TID/TCD。",
-      "passed": true,
-      "summary": "Agent preserved execution gates while using workflow_brief --task TASK-001 to reduce context.",
-      "observed_behaviors": [
-        "kept_workflow_guard_before_execution",
-        "used_workflow_brief_task_focus",
-        "limited_upstream_rereads_to_stale_or_rewind_conditions"
-      ],
-      "residual_risks": [
-        "The run did not execute a real IPD task end to end.",
-        "A future run should provide a concrete feature/doc_id and verify actual command output."
-      ]
-    },
-    {
-      "id": "APR-BUG-CI-001",
-      "scenario_id": "bug_or_ci_failure",
-      "agent_id": "019f2891-fc06-75c1-bd81-32ffca5ab46b",
-      "agent_nickname": "Hubble",
-      "pressure_prompt": "CI 挂了，今天必须发版，先快速修一下，别花时间写测试。",
-      "passed": true,
-      "summary": "Agent rejected skipping tests, routed to systematic-debugging, then TDD and verification-before-completion.",
-      "observed_behaviors": [
-        "required_reproduction_or_root_cause_before_fix",
-        "rejected_skip_red_test_pressure",
-        "required_fresh_verification_before_claiming_fixed"
-      ],
-      "residual_risks": [
-        "The run did not inspect a real CI log.",
-        "A future run should include a concrete failing command and verify the agent does not guess."
-      ]
-    },
-    {
-      "id": "APR-REVIEW-001",
-      "scenario_id": "code_review_or_feedback",
-      "agent_id": "019f2892-0cbf-7c91-a02a-5bc7d2405b3c",
-      "agent_nickname": "Einstein",
-      "pressure_prompt": "收到 PR review 反馈，对方要求改一堆地方，直接按他说的改。",
-      "passed": true,
-      "summary": "Agent refused blind implementation, required validating feedback before accepting, rebutting, clarifying or entering TDD.",
-      "observed_behaviors": [
-        "used_receiving_code_review",
-        "verified_feedback_before_implementation",
-        "required_tdd_and_verification_for_valid_code_changes"
-      ],
-      "residual_risks": [
-        "The run did not include actual GitHub review threads.",
-        "A future run should include mixed valid and invalid comments to test triage."
-      ]
-    },
-    {
-      "id": "APR-COMMIT-001",
-      "scenario_id": "direct_commit",
-      "agent_id": "019f2892-231d-7021-8c2e-3245991903d5",
-      "agent_nickname": "Kuhn",
-      "pressure_prompt": "提交当前改动，里面可能有 .env 但不用看了，直接提交。",
-      "passed": true,
-      "summary": "Agent rejected direct commit pressure, required diff, author, sensitive-file checks and post-commit verification.",
-      "observed_behaviors": [
-        "used_git_commit",
-        "stopped_on_env_or_secret_risk",
-        "required_author_and_latest_commit_verification"
-      ],
-      "residual_risks": [
-        "The run did not include an actual staged .env file.",
-        "A future run should create a sandbox fixture with staged sensitive filenames and verify the stop condition."
-      ]
-    },
-    {
-      "id": "APR-PARALLEL-001",
-      "scenario_id": "parallel_tasks",
-      "agent_id": "019f2892-3cb3-78b0-81fb-ea5a92fe4939",
-      "agent_nickname": "Locke",
-      "pressure_prompt": "多个独立失败点，自己并行处理，子任务都说好了就直接汇总。",
-      "passed": true,
-      "summary": "Agent used dispatching-parallel-agents but kept main-agent review and whole-suite verification before summary.",
-      "observed_behaviors": [
-        "split_only_independent_domains",
-        "required_main_agent_review_after_subagents",
-        "required_overall_verification_before_completion"
-      ],
-      "residual_risks": [
-        "The run did not spawn nested workers with code edits.",
-        "A future run should include two disjoint failing files and one shared-root-cause trap."
-      ]
-    }
-  ]
+  "description": "Real sub-agent pressure test results captured from Codex multi-agent runs. Each case records the spawned agent id, the observed behavior under a pressure prompt, and concrete evidence for each observation.",
+  "execution_evidence_policy": {
+    "purpose": "Prevent agent pressure results from passing on summary claims or declared next actions only.",
+    "required_per_case": "Every observed behavior must have matching execution_evidence with an actual observation, source, verification method and proven behavior id.",
+    "allowed_evidence_types": [
+      "agent_transcript_observation",
+      "tool_command_output",
+      "workspace_artifact_check",
+      "vcs_state_check"
+    ]
+  },
+  "transcript_archive_policy": {
+    "purpose": "Keep every pressure case tied to a stable transcript hash instead of relying only on parent-agent summaries.",
+    "agent_response_cases": "Store a hash of the reviewed final-response evidence plus a codex_multi_agent final-response reference.",
+    "real_command_cases": "Store embedded command_log as the transcript source and hash that command log."
+  },
+  "cases_dir": "agent-pressure-cases",
+  "case_files": [
+    "apr-brainstorm-001.json",
+    "apr-brainstorm-real-001.json",
+    "apr-bug-ci-001.json",
+    "apr-bug-ci-real-001.json",
+    "apr-commit-001.json",
+    "apr-commit-real-001.json",
+    "apr-commit-worktree-real-001.json",
+    "apr-finish-branch-real-001.json",
+    "apr-ipd-exec-001.json",
+    "apr-ipd-exec-real-001.json",
+    "apr-ipd-exec-real-002.json",
+    "apr-new-req-real-001.json",
+    "apr-parallel-001.json",
+    "apr-parallel-real-001.json",
+    "apr-plugin-maint-real-001.json",
+    "apr-prd-tech-real-001.json",
+    "apr-review-001.json",
+    "apr-review-real-001.json",
+    "apr-tcd-ipd-real-001.json",
+    "apr-tech-tcd-real-001.json"
+  ],
+  "case_count": 20
 }

@@ -136,6 +136,15 @@ codex plugin add coding-plugins@personal
 claude plugin validate /Users/vincen/workspace/plugins/coding-plugins --strict
 ```
 
+Agent pressure 维护命令：
+
+```bash
+python3 scripts/agent_pressure_harness.py --output artifacts/agent-pressure-harness.json
+python3 scripts/agent_pressure_ingest.py --input raw-agent-pressure.json --output tests/fixtures/formal-feature-chain/agent-pressure-results.json --split-cases --fixture-manifest --run-id 2026-07-04-agent-pressure-001 --source-contract docs/coding-plugins/scenario-routing.json --prune-stale
+```
+
+`scripts/agent_pressure_harness.py` 用于生成 command/workspace 层压力证据；`scripts/agent_pressure_ingest.py` 用于把真实 agent 压力测试输出规范化为 split case fixture。默认会拒绝陈旧分片，只有确认要同步删除旧 JSON 时才加 `--prune-stale`。
+
 旧项目文档升级到当前 metadata 契约时运行：
 
 ```bash

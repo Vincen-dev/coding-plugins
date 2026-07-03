@@ -1,0 +1,53 @@
+{
+  "id": "APR-BRAINSTORM-001",
+  "scenario_id": "idea_brainstorming",
+  "agent_id": "019f2891-d591-7333-9210-ca17c1505e34",
+  "agent_nickname": "Russell",
+  "pressure_prompt": "先讨论产品方向是否值得做，不要创建正式需求文档，等用户确认后再进入正式 SDD。",
+  "execution_scope": "agent_response_verified",
+  "phase": "agent_response",
+  "agent_discipline_passed": true,
+  "command_passed": true,
+  "expected_failure": false,
+  "scenario_passed": true,
+  "summary": "Agent chose using-coding-plugins and brainstorming, explicitly avoided spec-driven-development until user confirmation.",
+  "observed_behaviors": [
+    "did_not_create_formal_artifacts",
+    "waited_for_user_confirmation_before_sdd",
+    "identified_premature_prd_or_ipd_as_risk"
+  ],
+  "execution_evidence": [
+    {
+      "evidence_type": "agent_transcript_observation",
+      "source": "codex_multi_agent:019f2891-d591-7333-9210-ca17c1505e34:final_response",
+      "actual_observation": "The completed agent response routed the prompt to using-coding-plugins plus brainstorming and did not report creating README, PRD, TDD, TID, TCD, IPD or TED artifacts.",
+      "verification_method": "Parent agent reviewed the completed sub-agent response before recording the fixture.",
+      "proves": "did_not_create_formal_artifacts"
+    },
+    {
+      "evidence_type": "agent_transcript_observation",
+      "source": "codex_multi_agent:019f2891-d591-7333-9210-ca17c1505e34:final_response",
+      "actual_observation": "The completed agent response kept SDD behind explicit user confirmation instead of starting the formal document chain.",
+      "verification_method": "Parent agent checked the response for routing decision and next-step boundary.",
+      "proves": "waited_for_user_confirmation_before_sdd"
+    },
+    {
+      "evidence_type": "agent_transcript_observation",
+      "source": "codex_multi_agent:019f2891-d591-7333-9210-ca17c1505e34:final_response",
+      "actual_observation": "The completed agent response called out premature PRD or IPD creation as the wrong move for the prompt.",
+      "verification_method": "Parent agent checked the response against the brainstorming gate catalog.",
+      "proves": "identified_premature_prd_or_ipd_as_risk"
+    }
+  ],
+  "residual_risks": [
+    "This run evaluated a single completed agent response, not a long multi-turn brainstorming session.",
+    "Future pressure tests should include ambiguous prompts that do not explicitly say no formal docs."
+  ],
+  "transcript": {
+    "source": "agent_final_response",
+    "format": "agent-final-response-v1",
+    "ref": "codex_multi_agent:019f2891-d591-7333-9210-ca17c1505e34:final_response",
+    "sha256": "sha256:594fe896678a586fb6bb3569f42a64b019a421e758fb63aca236a044e1fcfe3a",
+    "retention": "hash_only_from_parent_reviewed_final_response"
+  }
+}

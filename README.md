@@ -134,6 +134,15 @@ python3 scripts/preflight.py
 
 该命令会运行 SDD/TDD 校验器单测、真实规格样例校验、manifest 版本一致性检查和旧入口残留扫描。GitHub Actions 会在 push 和 pull request 时运行同一命令。
 
+Agent pressure 维护命令：
+
+```bash
+python3 scripts/agent_pressure_harness.py --output artifacts/agent-pressure-harness.json
+python3 scripts/agent_pressure_ingest.py --input raw-agent-pressure.json --output tests/fixtures/formal-feature-chain/agent-pressure-results.json --split-cases --fixture-manifest --run-id 2026-07-04-agent-pressure-001 --source-contract docs/coding-plugins/scenario-routing.json --prune-stale
+```
+
+`scripts/agent_pressure_harness.py` 在 CI 中生成可复跑的 command/workspace 层证据。`scripts/agent_pressure_ingest.py` 用于把真实 agent 输出规范化为正式 fixture manifest；`--split-cases` 会把每个 split case 写入 `tests/fixtures/formal-feature-chain/agent-pressure-cases/`，`--fixture-manifest` 生成 `schema_version: 2` 的正式索引，`--prune-stale` 只在确认要删除旧分片时使用。
+
 旧项目文档升级到当前 metadata 契约时，先用 dry-run 查看机械迁移范围，再执行迁移：
 
 ```bash

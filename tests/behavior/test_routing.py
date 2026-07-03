@@ -70,6 +70,20 @@ class RoutingBehaviorTests(unittest.TestCase):
     def read_json(self, relative_path: str) -> dict:
         return json.loads(self.read_text(relative_path))
 
+    def read_agent_pressure_results(self, relative_path: str) -> dict:
+        manifest_path = ROOT / relative_path
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        case_files = manifest.get("case_files")
+        if case_files is None:
+            return manifest
+
+        case_dir = manifest_path.parent / manifest["cases_dir"]
+        cases = []
+        for case_file in case_files:
+            case_path = case_dir / case_file
+            cases.append(json.loads(case_path.read_text(encoding="utf-8")))
+        return {**manifest, "cases": cases}
+
     def skill_names(self) -> list[str]:
         return sorted(path.parent.name for path in (ROOT / "skills").glob("*/SKILL.md"))
 
@@ -253,30 +267,157 @@ class RoutingBehaviorTests(unittest.TestCase):
     def test_agent_pressure_results_capture_real_subagent_runs(self) -> None:
         contract = self.read_json("docs/coding-plugins/scenario-routing.json")
         results_path = ROOT / contract["agent_pressure_results"]
-        results = json.loads(results_path.read_text(encoding="utf-8"))
+        manifest = json.loads(results_path.read_text(encoding="utf-8"))
+        self.assertLess(
+            results_path.stat().st_size,
+            12000,
+            "agent pressure manifest must stay small; store cases as split fixture files",
+        )
+        self.assertIn("cases_dir", manifest)
+        self.assertIn("case_files", manifest)
+        self.assertEqual(manifest["case_count"], len(manifest["case_files"]))
+        self.assertEqual(manifest["case_files"], sorted(manifest["case_files"]))
+        self.assertNotIn("cases", manifest, "split case files prevent a single growing pressure fixture")
+        results = self.read_agent_pressure_results(contract["agent_pressure_results"])
+        self.assertEqual(manifest["case_count"], len(results["cases"]))
         scenarios = {scenario["id"] for scenario in contract["scenarios"]}
         feedback = self.read_json(contract["self_test_feedback"])
         feedback_scenarios = {case["expected_scenario_id"] for case in feedback["cases"]}
 
-        self.assertEqual(results["schema_version"], 1)
+        self.assertEqual(results["schema_version"], 2)
         self.assertRegex(results["run_id"], r"^\d{4}-\d{2}-\d{2}-agent-pressure-\d{3}$")
         self.assertGreaterEqual(len(results["cases"]), 6)
         self.assertEqual(len({case["id"] for case in results["cases"]}), len(results["cases"]))
+        allowed_evidence_types = {
+            "agent_transcript_observation",
+            "tool_command_output",
+            "workspace_artifact_check",
+            "vcs_state_check",
+        }
+        required_evidence_fields = {
+            "evidence_type",
+            "source",
+            "actual_observation",
+            "verification_method",
+            "proves",
+        }
+        required_status_fields = {
+            "agent_discipline_passed",
+            "command_passed",
+            "expected_failure",
+            "scenario_passed",
+            "phase",
+        }
+        required_command_log_fields = {
+            "command",
+            "cwd",
+            "exit_code",
+            "stdout_sha256",
+            "stderr_sha256",
+            "stdout_excerpt",
+        }
+        required_transcript_fields = {
+            "source",
+            "format",
+            "sha256",
+        }
+        volatile_status_terms = (
+            " M .github/workflows/ci.yml",
+            "?? scripts/agent_pressure_harness.py",
+            "?? scripts/agent_pressure_ingest.py",
+        )
 
         covered_scenarios: set[str] = set()
+        real_execution_scenarios: set[str] = set()
+        real_execution_behaviors: set[str] = set()
         for case in results["cases"]:
             with self.subTest(case=case["id"]):
                 self.assertRegex(case["agent_id"], r"^[0-9a-f-]{36}$")
                 self.assertIn(case["scenario_id"], scenarios)
                 self.assertIn(case["scenario_id"], feedback_scenarios)
                 self.assertTrue(case["pressure_prompt"])
-                self.assertTrue(case["passed"], case["summary"])
+                self.assertNotIn("passed", case, "split agent discipline and command status fields instead")
+                self.assertTrue(required_status_fields.issubset(case))
+                self.assertTrue(case["agent_discipline_passed"], case["summary"])
+                self.assertTrue(case["scenario_passed"], case["summary"])
+                self.assertIn(case["phase"], {"agent_response", "real_command_positive", "historical_red"})
+                if case["expected_failure"]:
+                    self.assertFalse(case["command_passed"], "expected-failure cases must not claim command success")
+                    self.assertEqual(case["phase"], "historical_red")
+                elif case.get("execution_depth") == "real_command":
+                    self.assertTrue(case["command_passed"], case["summary"])
                 self.assertTrue(case["observed_behaviors"])
                 self.assertTrue(case["residual_risks"])
+                self.assertNotEqual(
+                    case.get("execution_scope"),
+                    "statement_only",
+                    "agent pressure results must not pass on declared next actions only",
+                )
+                transcript = case.get("transcript", {})
+                self.assertTrue(required_transcript_fields.issubset(transcript))
+                self.assertIn(transcript["source"], {"agent_final_response", "command_log"})
+                self.assertIn(transcript["format"], {"agent-final-response-v1", "command-log-v1"})
+                self.assertRegex(transcript["sha256"], r"^sha256:[0-9a-f]{64}$")
+                if transcript["source"] == "agent_final_response":
+                    self.assertIn(case["agent_id"], transcript.get("ref", ""))
+                execution_evidence = case.get("execution_evidence", [])
+                self.assertTrue(execution_evidence, "case must include actual execution evidence")
+                self.assertGreaterEqual(
+                    len(execution_evidence),
+                    len(case["observed_behaviors"]),
+                    "each observed behavior should be backed by concrete evidence",
+                )
+                self.assertEqual(
+                    {evidence["proves"] for evidence in execution_evidence},
+                    set(case["observed_behaviors"]),
+                    "execution evidence must map back to the observed behavior ids exactly",
+                )
+                for evidence in execution_evidence:
+                    self.assertTrue(required_evidence_fields.issubset(evidence))
+                    self.assertIn(evidence["evidence_type"], allowed_evidence_types)
+                    self.assertTrue(evidence["source"])
+                    self.assertTrue(evidence["actual_observation"])
+                    self.assertTrue(evidence["verification_method"])
+                    self.assertTrue(evidence["proves"])
+                    self.assertNotIn(
+                        evidence["evidence_type"],
+                        {"agent_summary", "self_report", "claim_only"},
+                    )
+                if case.get("execution_depth") == "real_command":
+                    command_log = case.get("command_log", [])
+                    self.assertTrue(command_log, "real command pressure cases must include command logs")
+                    self.assertEqual(transcript["source"], "command_log")
+                    self.assertEqual(transcript.get("command_count"), len(command_log))
+                    for command in command_log:
+                        self.assertTrue(required_command_log_fields.issubset(command))
+                        self.assertTrue(command["command"])
+                        self.assertTrue(command["cwd"])
+                        self.assertIsInstance(command["exit_code"], int)
+                        self.assertRegex(command["stdout_sha256"], r"^sha256:[0-9a-f]{64}$")
+                        self.assertRegex(command["stderr_sha256"], r"^sha256:[0-9a-f]{64}$")
+                        for term in volatile_status_terms:
+                            self.assertNotIn(
+                                term,
+                                command["stdout_excerpt"],
+                                "pressure case excerpts should summarize volatile worktree state instead of embedding stale file lists",
+                            )
+                    self.assertTrue(
+                        any(
+                            evidence["evidence_type"] in {"tool_command_output", "workspace_artifact_check", "vcs_state_check"}
+                            for evidence in execution_evidence
+                        ),
+                        "real command pressure cases must include non-transcript evidence",
+                    )
+                    real_execution_scenarios.add(case["scenario_id"])
+                    real_execution_behaviors.update(case["observed_behaviors"])
                 covered_scenarios.add(case["scenario_id"])
 
         for required in (
             "idea_brainstorming",
+            "new_unclear_requirement",
+            "approved_prd_to_technicals",
+            "technicals_to_test_cases",
+            "test_cases_to_plan",
             "existing_ipd_execution",
             "bug_or_ci_failure",
             "code_review_or_feedback",
@@ -284,6 +425,28 @@ class RoutingBehaviorTests(unittest.TestCase):
             "parallel_tasks",
         ):
             self.assertIn(required, covered_scenarios)
+
+        for required in (
+            "idea_brainstorming",
+            "new_unclear_requirement",
+            "approved_prd_to_technicals",
+            "technicals_to_test_cases",
+            "test_cases_to_plan",
+            "existing_ipd_execution",
+            "bug_or_ci_failure",
+            "code_review_or_feedback",
+            "plugin_workflow_maintenance",
+            "direct_commit",
+            "finish_branch",
+            "parallel_tasks",
+        ):
+            self.assertIn(required, real_execution_scenarios)
+
+        for required in (
+            "located_fixture_root_without_parent_correction",
+            "verified_no_commit_created",
+        ):
+            self.assertIn(required, real_execution_behaviors)
 
     def test_plan_scenario_does_not_claim_ted_as_direct_artifact(self) -> None:
         contract = self.read_json("docs/coding-plugins/scenario-routing.json")
@@ -357,6 +520,19 @@ class RoutingBehaviorTests(unittest.TestCase):
             self.assertIn("brainstorming", document)
             self.assertIn("方案讨论", document)
             self.assertIn("/coding-plugins:brainstorming", document)
+
+    def test_user_facing_docs_describe_agent_pressure_maintenance(self) -> None:
+        readme = self.read_text("README.md")
+        installation = self.read_text("docs/installation.md")
+        release_notes = self.read_text("RELEASE-NOTES.md")
+
+        for document in (readme, installation):
+            self.assertIn("scripts/agent_pressure_harness.py", document)
+            self.assertIn("scripts/agent_pressure_ingest.py", document)
+            self.assertIn("--fixture-manifest", document)
+            self.assertIn("--prune-stale", document)
+        self.assertIn("agent pressure", release_notes)
+        self.assertIn("split case", release_notes)
 
     def test_scenario_routing_contract_covers_all_major_entrypoints(self) -> None:
         contract = self.read_json("docs/coding-plugins/scenario-routing.json")

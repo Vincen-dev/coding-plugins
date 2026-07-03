@@ -22,3 +22,14 @@ jobs:
 
       - name: Run preflight checks
         run: python3 scripts/preflight.py
+
+      - name: Generate agent pressure harness artifact
+        run: python3 scripts/agent_pressure_harness.py --output artifacts/agent-pressure-harness.json
+
+      - name: Upload agent pressure harness artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-pressure-harness
+          path: artifacts/agent-pressure-harness.json
+          if-no-files-found: error
