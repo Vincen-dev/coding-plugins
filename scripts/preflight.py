@@ -1728,6 +1728,7 @@ def build_validation_commands(
         [python, "-m", "unittest", "scripts/test_docs_index.py"],
         [python, "-m", "unittest", "scripts/test_document_contract_migration.py"],
         [python, "-m", "unittest", "scripts/test_manifest_checks.py"],
+        [python, "-m", "unittest", "scripts/test_decision_points.py"],
         [python, "-m", "unittest", "scripts/test_workflow_state.py"],
         [python, "-m", "unittest", "scripts/test_workflow_mode.py"],
         [python, "-m", "unittest", "scripts/test_workflow_guard.py"],

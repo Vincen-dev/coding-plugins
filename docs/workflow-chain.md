@@ -377,6 +377,21 @@ flowchart TD
 
 `docs/coding-plugins/scenario-routing.json` 使用 `case_ids` 关联 `tests/fixtures/formal-feature-chain/CASE-INDEX.md` 中的质量案例，使用 `gate_ids` 关联 `gate_catalog` 中的稳定门禁定义。新增场景时，不能只写自由文本说明；必须补充可回归案例和结构化 gate。
 
+### 决策点协议
+
+`scripts/decision_points.py` 定义 DP-0 到 DP-7 的稳定用户确认点，`docs/coding-plugins/scenario-routing.json` 的每个场景必须通过 `decision_points` 字段引用至少一个决策点。决策点不是替代 `gate_ids`：`gate_ids` 描述机器或流程门禁，`decision_points` 描述需要用户明确确认的暂停点。
+
+| 决策点 | 名称 | 触发位置 |
+| --- | --- | --- |
+| DP-0 | 进入正式链路确认 | 从 brainstorming/analysis 进入正式 SDD 文档链前 |
+| DP-1 | 需求批准 | PRD 完成后、TDD/TID 前 |
+| DP-2 | 技术方案批准 | TDD/TID 完成后、TCD 前 |
+| DP-3 | 测试用例批准 | TCD 完成后、IPD 前 |
+| DP-4 | 执行计划批准 | IPD 完成后、实现前 |
+| DP-5 | TDD 例外或调试升级 | RED 受阻、连续修复失败或偏离 IPD 时 |
+| DP-6 | 完成验证确认 | 声称完成、修复或提交前 |
+| DP-7 | 提交和分支收尾确认 | commit、PR、merge、worktree 清理前 |
+
 ### 构思收敛
 
 `brainstorming` -> 用户确认后进入 `spec-driven-development`；构思阶段本身不创建 PRD/TDD/TID/TCD/IPD/TED

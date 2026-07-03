@@ -106,6 +106,27 @@ description: 开始任何任务时使用；建立 Coding Plugins 技能选择、
 
 如果无法识别 `feature` 或 `doc_id`，先通过 `docs/coding-plugins/INDEX.md`、README frontmatter 或用户当前路径定位；定位失败时再向用户提一个阻塞问题。
 
+## 决策点协议
+
+工作流中的用户确认点使用 DP-0 到 DP-7 编号。需要展示或校验完整定义时运行：
+
+```bash
+python3 scripts/decision_points.py --json
+```
+
+| 决策点 | 名称 | 默认位置 |
+| --- | --- | --- |
+| DP-0 | 进入正式链路确认 | brainstorming/analysis 转入正式 SDD 前 |
+| DP-1 | 需求批准 | PRD 完成后、TDD/TID 前 |
+| DP-2 | 技术方案批准 | TDD/TID 完成后、TCD 前 |
+| DP-3 | 测试用例批准 | TCD 完成后、IPD 前 |
+| DP-4 | 执行计划批准 | IPD 完成后、实现前 |
+| DP-5 | TDD 例外或调试升级 | RED 受阻、连续修复失败或偏离 IPD 时 |
+| DP-6 | 完成验证确认 | 声称完成、修复或提交前 |
+| DP-7 | 提交和分支收尾确认 | commit、PR、merge、worktree 清理前 |
+
+到达决策点时，先说明对应 DP 编号、所需输入和预期输出；未经用户确认，不得跨过该门禁。
+
 ## 输出原则
 
 中文回复优先，工程名词可保留英文。保持结论清楚、步骤可执行、证据具体。
