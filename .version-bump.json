@@ -10,6 +10,14 @@
       "field": "version"
     },
     {
+      "path": "plugin.json",
+      "field": "version"
+    },
+    {
+      "path": "gemini-extension.json",
+      "field": "version"
+    },
+    {
       "path": ".version-bump.json",
       "field": "version"
     }

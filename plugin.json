@@ -1,0 +1,38 @@
+{
+  "name": "coding-plugins",
+  "description": "Chinese coding workflow plugin for brainstorming, SDD, TDD, debugging, review, commit, and branch finishing.",
+  "version": "1.0.11",
+  "author": {
+    "name": "Vincen",
+    "email": "hx001007@gmail.com",
+    "url": "https://github.com/Vincen-dev"
+  },
+  "homepage": "https://github.com/Vincen-dev/coding-plugins",
+  "repository": "https://github.com/Vincen-dev/coding-plugins",
+  "license": "MIT",
+  "keywords": [
+    "coding",
+    "skills",
+    "planning",
+    "sdd",
+    "specification",
+    "contract",
+    "tdd",
+    "debugging",
+    "code-review",
+    "git",
+    "commit",
+    "workflow",
+    "chinese",
+    "claude-code",
+    "codex",
+    "cursor",
+    "gemini-cli",
+    "opencode",
+    "trae",
+    "qoder",
+    "copilot"
+  ],
+  "category": "Developer Tools",
+  "skills": "skills/"
+}

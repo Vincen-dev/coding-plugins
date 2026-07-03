@@ -1,204 +1,348 @@
-# Coding Plugins
+<h1 align="center">Coding Plugins</h1>
 
-Coding Plugins 是中文编码代理方法论插件，支持 Codex 和 Claude Code。它由一组可组合的 skills、提示词模板、参考资料和脚本组成，用来约束编码代理在做软件开发时先写清规格、再写 IPD 任务执行文档、再小步实现、再验证和收尾。
+<p align="center">
+  <strong>面向 Codex、Claude Code、Gemini CLI 和本地 skills 客户端的中文 AI 编码工作流插件</strong>
+</p>
 
-本插件以 SDD（Specification-Driven Development）和 TDD（Test-Driven Development）为主链路。默认文档路径使用 `docs/coding-plugins/`；如果项目或用户已有约定，以用户约定为准。
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT License"></a>
+  <a href="https://github.com/Vincen-dev/coding-plugins/stargazers"><img src="https://img.shields.io/github/stars/Vincen-dev/coding-plugins" alt="GitHub Stars"></a>
+  <a href=".codex-plugin/plugin.json"><img src="https://img.shields.io/badge/plugin-coding--plugins-orange" alt="Coding Plugins plugin"></a>
+  <a href="SECURITY.md"><img src="https://img.shields.io/badge/security-policy-green" alt="Security Policy"></a>
+</p>
 
-Codex 侧包含 SessionStart hook，新建、恢复或清空会话时会注入 `coding-plugins:using-coding-plugins` 入口提示，降低入口技能漏用概率。Claude Code 侧仍通过 `/coding-plugins:<skill-name>` 命名空间手动或按描述触发。
+<p align="center">
+  <a href="#快速开始">快速开始</a> |
+  <a href="INSTALL.md">安装</a> |
+  <a href="#为什么需要它">为什么</a> |
+  <a href="#核心-skills">Skills</a> |
+  <a href="#工作流">工作流</a> |
+  <a href="#平台支持">平台支持</a> |
+  <a href="#常见问题">FAQ</a>
+</p>
 
-需求文档、技术设计、技术实现、测试用例、IPD 任务执行文档和 TDD Evidence 的统一检索入口是 [docs/coding-plugins/INDEX.md](docs/coding-plugins/INDEX.md)。文档按 `docs/coding-plugins/features/<feature-name>/` 集中维护，并用 `<doc-id>-PRD/TDD/TID/TCD/IPD/TED.md` 区分同一 feature 下的多条文档链路；新增或移动相关产物后运行 `python3 scripts/preflight.py --write-index` 重新生成总索引，`python3 scripts/preflight.py` 会校验索引和真实文件树完全一致。文档分层和 metadata-first 读取规则见 [docs/coding-plugins/document-contract.md](docs/coding-plugins/document-contract.md)，实际读写文档关系时使用 `document-metadata` skill 和 `skills/document-metadata/templates/document-metadata.md` 模板。
+---
 
-## 工作方式
+中文 AI 编码工作流插件：把“先想清楚要做什么”和“代码真正按计划落地”连成一条可验证链路。
 
-当代理看到你要构建或修改东西时，它不应该直接写代码。方案讨论、头脑风暴、产品方向不清或是否值得做尚未明确时，先用 `brainstorming` 收敛问题和方案，不创建正式 SDD 产物。确认进入落地后，再把需求收敛成可追踪、可测试、可评审的规格。规格通过后，它会把架构决策写入 TDD 技术设计，把模块级落地写入 TID 技术实现，再写出 IPD 任务执行文档：文件、代码、测试、命令、预期结果都要写清楚。
+Coding Plugins 支持 Codex、Claude Code、Gemini CLI、GitHub Copilot CLI，以及 OpenCode / Trae / Qoder / Cursor 等可加载本地 `skills/` 的客户端。它提供一组中文 skills、提示词模板、脚本和文档契约，用来约束 AI 编码代理：先收敛需求，再写规格和 IPD 任务执行文档，再小步实现、测试、评审、提交和收尾。
 
-之后进入实现阶段。推荐使用子代理驱动开发：每个任务由新子代理实现，主代理在任务之间做规格符合性和代码质量评审。没有子代理能力时，也可以在当前会话中按 IPD 批次执行并设置人工检查点。
+## 为什么需要它
 
-## 基本流程
+用 AI 写代码时，常见失控点不是“模型不会写代码”，而是流程没有边界：
 
-1. **using-coding-plugins** - 入口技能。先判断直接意图，再判断开发任务类型。
-2. **brainstorming** - SDD 前置入口。用于方案讨论、头脑风暴、产品方向不清或先分析不落地；只输出问题定义、方案对比和是否进入 SDD 的建议。
-3. **spec-driven-development** - 实现前激活。编排本 feature 需要沉淀的 README、需求、技术设计、技术实现、测试用例、IPD 任务执行和证据文档；新 feature 可先生成文档骨架。
-4. **document-metadata** - 读取或维护文档关系时先读 frontmatter，再按 `related_*` 串联 README、需求文档、技术设计、测试用例、IPD 任务执行和证据。
-5. **writing-requirements** - 编写 feature、API contract、schema、state machine、acceptance 或 maintenance 需求内容，保存到 `docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md`。
-6. **writing-technicals** - 基于已批准需求文档写 TDD 技术设计和必要的 TID 技术实现，保存到 `docs/coding-plugins/features/<feature-name>/technicals/`。
-7. **writing-test-cases** - 基于需求文档、TDD/TID 编写测试用例文档，保存到 `docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md`。
-8. **writing-plans** - 基于已批准需求、TDD/TID 和测试用例写 IPD 任务执行文档。任务拆到 2 到 5 分钟粒度，并建立 Spec ID -> TASK -> 验证 -> TED 的执行落点。
-9. **using-git-worktrees** - 执行前使用。创建隔离 worktree 和新分支，避免污染当前工作区。
-10. **subagent-driven-development / executing-plans** - 根据 IPD 任务执行文档执行。优先子代理驱动；没有子代理时内联执行。子代理提示词优先由 `scripts/subagent_prompt_builder.py` 从当前 IPD 任务章节生成。
-11. **test-driven-development** - 实现时强制 RED-GREEN-REFACTOR：先从规格写失败测试，再最小实现，再重构，并把 TDD Evidence 写入 `docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md`。
-12. **requesting-code-review** - 任务之间或合并前评审，按严重级别报告问题。
-13. **receiving-code-review** - 收到评审后先验证反馈，再决定是否修改。
-14. **verification-before-completion** - 声明完成前运行测试、构建、规格覆盖或人工验收验证。
-15. **git-commit** - 每次完成后必须提交；生成中文 Conventional Commit，在 footer 添加本人 `Authored-by` 署名，并禁止 AI 作者或 AI 生成声明。
-16. **finishing-a-development-branch** - 提交完成后提出合并/PR/保留/丢弃选项并清理。
+- **需求还没说清楚，代码已经开始改。** 你说“加个权限控制”，代理马上改几十个文件，最后才发现 RBAC、ABAC、页面权限和接口权限根本不是一回事。
+- **计划文档写了，但执行阶段仍然跑偏。** PRD、技术设计、测试用例都在，真正实现时却没有人检查任务是否 stale、测试是否先失败、评审是否独立、提交是否安全。
+- **长会话和多代理协作容易丢状态。** 会话压缩、子代理上下文过大、重复读取上游文档、任务之间没有稳定 hash，都会让流程成本变高。
 
-完整链路说明见 [docs/workflow-chain.md](docs/workflow-chain.md)。安装方式见 [docs/installation.md](docs/installation.md)。
-
-## 技能库
-
-**测试**
-
-- `test-driven-development`：RED-GREEN-REFACTOR 循环，包含测试反模式、压力场景和 TDD Evidence 校验脚本。
-
-**调试**
-
-- `systematic-debugging`：四阶段根因定位流程，包含根因追踪、防御式修复、基于条件等待等参考。
-- `verification-before-completion`：声明完成前用证据确认真的修好。
-
-**协作**
-
-- `brainstorming`：方案讨论、头脑风暴和产品方向不清时使用，先收敛问题和推荐路径，不创建正式 SDD 文档。
-- `document-metadata`：读取、创建、迁移或审计文档 frontmatter，先用 metadata 串联 README、PRD、TDD、TID、TCD、IPD、TED 和 INDEX。
-- `spec-driven-development`：规格驱动开发，编排需求、技术设计、技术实现、测试用例、IPD 任务执行和证据的落地链路。
-- `writing-requirements`：编写需求文档，把功能、接口、schema、状态机、验收和维护约束收敛为可测试契约。
-- `writing-technicals`：把批准需求转成 TDD 技术设计和 TID 技术实现，维护 technicals 索引。
-- `writing-test-cases`：在 technicals 后、IPD 任务执行文档前编写测试用例文档。
-- `writing-plans`：编写 IPD 任务执行文档。
-- `executing-plans`：带检查点的批次执行。
-- `dispatching-parallel-agents`：并行子代理工作流。
-- `requesting-code-review`：代码评审请求模板。
-- `receiving-code-review`：处理评审反馈。
-- `git-commit`：中文 Conventional Commit，检查作者身份，在 footer 添加本人 `Authored-by` 署名，禁止 AI 作者。
-- `using-git-worktrees`：并行开发分支和隔离工作区。
-- `finishing-a-development-branch`：分支收尾和集成决策。
-- `subagent-driven-development`：每任务子代理实现，两阶段评审；`subagent_prompt_builder.py` 固化实现、规格评审和代码质量评审提示词。
-
-**元技能**
-
-- `writing-skills`：按照可复用技能最佳实践创建和测试新技能。
-- `using-coding-plugins`：中文入口技能。
-
-## 哲学
-
-- **测试驱动开发**：永远先写测试。
-- **规格驱动开发**：永远先写清楚可验证契约。
-- **系统化优先**：流程胜过猜测。
-- **降低复杂度**：简单性是首要设计目标。
-- **证据胜过声明**：完成前必须验证。
-
-## 安装说明
-
-本仓库已经包含 Codex marketplace 元数据：
+Coding Plugins 用一组机器可检查的约束把这些风险收住：
 
 ```text
-.agents/plugins/marketplace.json
-.codex-plugin/plugin.json
-hooks/hooks-codex.json
+brainstorming
+  -> requirements / technicals / test-cases
+  -> IPD execution plan
+  -> workflow state + guard + brief
+  -> TDD implementation
+  -> spec review + code review
+  -> verification
+  -> Chinese Conventional Commit
+  -> branch finishing
 ```
 
-从 GitHub 安装：
+| 设计原则 | 说明 |
+| --- | --- |
+| Spec First | 需求、技术设计、测试用例和 IPD 未准备好时，不急着实现 |
+| IPD Contract | 执行阶段以当前任务章节、执行锁定区和 `source_hash` 为准 |
+| Guarded Execution | `workflow_state.py`、`workflow_guard.py`、`workflow_brief.py` 负责状态、新鲜度和短上下文 |
+| TDD Discipline | 生产代码前先写失败测试，完成后记录 TDD Evidence 或例外 |
+| Review Gate | 子代理实现后做规格符合性和代码质量评审 |
+| Commit Safety | 中文 Conventional Commit，检查作者身份、敏感文件和 `Authored-by` footer |
+| Multi-platform | 同一套 `skills/` 支持多种 AI 编码客户端 |
 
-```bash
-codex plugin marketplace add https://github.com/Vincen-dev/coding-plugins.git
-codex plugin add coding-plugins@coding-plugins
+## 适用场景
+
+### 推荐使用
+
+| 场景 | 原因 |
+| --- | --- |
+| 中大型功能开发 | 需要需求、技术设计、测试用例、执行计划和评审门禁 |
+| 棕地项目维护 | 先读现有结构，再把变更压到明确任务和验证命令 |
+| 安全、数据、权限、同步、支付等高风险变更 | 需要可追踪 Spec ID、测试证据和评审记录 |
+| 多代理或多任务执行 | 需要子代理提示词、prompt hash、执行锁定区和主代理复核 |
+| 长期维护的插件或工具链 | 需要 metadata、索引、preflight、release 规则保持一致 |
+| 需要中文提交和严格收尾 | 提交前检查 diff、作者身份、敏感文件和最新验证 |
+
+### 不推荐直接走完整链路
+
+| 场景 | 建议 |
+| --- | --- |
+| 一次性脚本、纯问答、代码解释 | 直接分析或小范围编辑即可 |
+| 已完全明确的 1 到 2 文件小修 | 走 `test-driven-development`，必要时写 inline spec |
+| 纯格式整理 | 保持行为不变，跑针对性验证即可 |
+
+### 经验法则
+
+如果这个改动需要向团队解释超过 5 分钟，或者失败后会影响用户数据、安全、发布、支付、同步、权限和长期维护，就应该进入 Coding Plugins 的正式链路。
+
+## 推荐使用方式
+
+入口永远从 `using-coding-plugins` 开始。
+
+安装后告诉 Agent：
+
+```text
+使用 coding-plugins:using-coding-plugins 开始
 ```
 
-从本地仓库安装：
-
-```bash
-codex plugin marketplace add /Users/vincen/workspace/plugins/coding-plugins
-codex plugin add coding-plugins@coding-plugins
-```
-
-本机个人安装使用 `/Users/vincen/.agents/plugins/marketplace.json` 和 `/Users/vincen/plugins/coding-plugins`，安装命令：
-
-```bash
-codex plugin add coding-plugins@personal
-```
-
-Claude Code 不使用 Codex marketplace，直接加载插件目录：
-
-```bash
-claude --plugin-dir /Users/vincen/workspace/plugins/coding-plugins
-```
-
-详细步骤见 [docs/installation.md](docs/installation.md)。
-
-### 发布前检查
-
-提升版本时运行：
-
-```bash
-python3 scripts/bump_version.py <version>
-```
-
-版本同步目标由 [.version-bump.json](.version-bump.json) 维护。然后更新 [RELEASE-NOTES.md](RELEASE-NOTES.md) 中对应版本的变更记录。
-
-提交、push 或发布前运行：
-
-```bash
-python3 scripts/preflight.py --write-index
-python3 scripts/preflight.py
-```
-
-该命令会运行 SDD/TDD 校验器单测、真实规格样例校验、manifest 版本一致性检查和旧入口残留扫描。GitHub Actions 会在 push 和 pull request 时运行同一命令。
-
-Agent pressure 维护命令：
-
-```bash
-python3 scripts/agent_pressure_harness.py --output artifacts/agent-pressure-harness.json
-python3 scripts/agent_pressure_ingest.py --input raw-agent-pressure.json --output tests/fixtures/formal-feature-chain/agent-pressure-results.json --split-cases --fixture-manifest --run-id 2026-07-04-agent-pressure-001 --source-contract docs/coding-plugins/scenario-routing.json --prune-stale
-```
-
-`scripts/agent_pressure_harness.py` 在 CI 中生成可复跑的 command/workspace 层证据。`scripts/agent_pressure_ingest.py` 用于把真实 agent 输出规范化为正式 fixture manifest；`--split-cases` 会把每个 split case 写入 `tests/fixtures/formal-feature-chain/agent-pressure-cases/`，`--fixture-manifest` 生成 `schema_version: 2` 的正式索引，`--prune-stale` 只在确认要删除旧分片时使用。
-
-旧项目文档升级到当前 metadata 契约时，先用 dry-run 查看机械迁移范围，再执行迁移：
-
-```bash
-python3 scripts/migrate_document_contract.py --dry-run
-python3 scripts/migrate_document_contract.py
-```
-
-跨仓库或本机绝对路径引用统一写入 `external_references`。默认 preflight 不检查这些路径；需要本机审计时运行：
-
-```bash
-python3 scripts/preflight.py --check-external-references
-```
-
-提交并确认工作区干净后，准备公开 release metadata：
-
-```bash
-python3 scripts/prepare_release.py --notes-out /tmp/coding-plugins-release-notes.md
-```
-
-确认输出 `Release ready: v<version>` 后创建并推送 tag：
-
-```bash
-git tag -a v<version> -m "coding-plugins <version>"
-git push origin v<version>
-```
-
-`.github/workflows/release.yml` 会在 `v*` tag push 后运行 preflight、校验 tag 与 manifest 版本一致，并用当前版本 release notes 创建 GitHub Release。
-
-发布后可手动审计远程 tag、GitHub Release 和直接 push 权限：
-
-```bash
-python3 scripts/remote_audit.py --owner Vincen-dev --repo coding-plugins --tag v<version> --expected-pusher Vincen-dev
-```
-
-### Codex
-
-Codex 侧通过 `.codex-plugin/plugin.json` 识别插件，并使用 `skills/*/agents/openai.yaml` 提供展示元数据。插件结构校验：
-
-```bash
-codex plugin add coding-plugins@personal
-bash tests/hooks/test-session-start.sh
-```
-
-### Claude Code
-
-Claude Code 侧通过 `.claude-plugin/plugin.json` 识别插件，技能会以 `/coding-plugins:<skill-name>` 形式出现。本地加载：
-
-```bash
-claude --plugin-dir ./plugins/coding-plugins
-```
-
-常用入口：
+或在 Claude Code 中：
 
 ```text
 /coding-plugins:using-coding-plugins
 /coding-plugins:brainstorming
 ```
 
-修改插件组件后运行 `/reload-plugins`。更多说明见 [docs/claude-code-usage.md](docs/claude-code-usage.md)。
+`using-coding-plugins` 是默认入口；`brainstorming` 是构思入口，适合方案讨论、价值判断和产品方向还不清楚的阶段。入口 skill 会先判断这是咨询、构思、规格、实现、调试、评审、提交还是收尾，再路由到对应 skill。
+
+## 工作流
+
+```text
+你说：“帮我做一个权限控制”
+        |
+        v
+using-coding-plugins
+  判断任务类型，选择轻量路径或正式 SDD 链路
+        |
+        v
+brainstorming
+  先问清目标、边界、方案和是否值得做
+        |
+        v
+spec-driven-development
+  编排 README / PRD / TDD / TID / TCD / IPD / TED
+        |
+        v
+writing-requirements -> writing-technicals -> writing-test-cases -> writing-plans
+  需求、技术设计、测试用例和 IPD 任务执行文档落盘
+        |
+        v
+workflow_state.py + workflow_guard.py + workflow_brief.py
+  检查状态、source_hash、新鲜度、执行锁定区和当前任务短上下文
+        |
+        v
+subagent-driven-development 或 executing-plans
+  每个任务小步实现，优先用 subagent_prompt_builder.py 生成稳定提示词
+        |
+        v
+test-driven-development
+  RED -> GREEN -> REFACTOR，记录 TDD Evidence
+        |
+        v
+requesting-code-review -> receiving-code-review
+  规格符合性和代码质量评审，重要问题先修再继续
+        |
+        v
+verification-before-completion
+  新鲜验证通过后才声明完成
+        |
+        v
+git-commit -> finishing-a-development-branch
+  中文提交、Authored-by footer、分支收尾
+```
+
+关键约束：
+
+- IPD 未批准、缺 `source_hash` 或 stale 时，不进入执行。
+- 执行阶段默认只读当前 IPD 任务章节、执行锁定区和必要短上下文。
+- 子代理不得自己吞完整计划和上游 PRD/TDD/TID/TCD。
+- 评审提示词必须使用真实实现报告，代码质量评审必须使用真实 `base/head` SHA。
+- 没有新鲜测试、构建、preflight 或人工验收证据，不能声明完成。
+
+完整链路见 [docs/workflow-chain.md](docs/workflow-chain.md)。
+
+## 核心能力
+
+| 能力 | 对应文件或脚本 |
+| --- | --- |
+| 工作流状态和 stale detection | `scripts/workflow_state.py` |
+| 执行门禁 | `scripts/workflow_guard.py` |
+| 短上下文生成 | `scripts/workflow_brief.py` |
+| 工作流轻重模式判断 | `scripts/workflow_mode.py` |
+| 子代理提示词生成 | `scripts/subagent_prompt_builder.py` |
+| 文档 metadata 和索引 | `scripts/document_metadata.py`, `scripts/docs_index.py` |
+| 真实 agent 压力证据 | `scripts/agent_pressure_harness.py`, `scripts/agent_pressure_ingest.py` |
+| 发布前检查 | `scripts/preflight.py` |
+| 版本同步 | `scripts/bump_version.py`, `.version-bump.json` |
+| Release 准备和远程审计 | `scripts/prepare_release.py`, `scripts/remote_audit.py` |
+
+## 核心 Skills
+
+| # | Skill | 阶段 | 职责 |
+| --- | --- | --- | --- |
+| 1 | `using-coding-plugins` | 入口 | 判断任务类型，选择正确 skill 和平台工具映射 |
+| 2 | `brainstorming` | 构思 | 方案讨论、价值判断、边界收敛，不创建正式文档 |
+| 3 | `spec-driven-development` | 编排 | 决定需要哪些正式规格、技术、测试、计划和证据产物 |
+| 4 | `document-metadata` | 文档关系 | 维护 frontmatter、README、INDEX 和 `related_*` 链路 |
+| 5 | `writing-requirements` | 需求 | 编写 PRD、API contract、schema、state machine、acceptance 或 maintenance 规格 |
+| 6 | `writing-technicals` | 技术 | 编写 TDD 技术设计和 TID 技术实现 |
+| 7 | `writing-test-cases` | 测试设计 | 编写 TCD 测试用例文档 |
+| 8 | `writing-plans` | 执行计划 | 编写 IPD 任务执行文档和执行锁定区 |
+| 9 | `using-git-worktrees` | 隔离 | 创建或确认隔离工作区 |
+| 10 | `subagent-driven-development` | 执行 | 每任务子代理实现，两阶段评审 |
+| 11 | `executing-plans` | 执行 | 无子代理时按 IPD 检查点内联执行 |
+| 12 | `test-driven-development` | 实现 | RED-GREEN-REFACTOR 和 TDD Evidence |
+| 13 | `systematic-debugging` | 调试 | 根因定位、假设验证、防御式修复 |
+| 14 | `dispatching-parallel-agents` | 并行 | 拆分多个独立任务或调查方向 |
+| 15 | `requesting-code-review` | 评审 | 代码评审请求和严重级别报告 |
+| 16 | `receiving-code-review` | 修复反馈 | 验证评审反馈，再决定是否修改 |
+| 17 | `verification-before-completion` | 验证 | 声明完成前运行并阅读验证输出 |
+| 18 | `git-commit` | 提交 | 中文 Conventional Commit、作者身份和敏感文件检查 |
+| 19 | `finishing-a-development-branch` | 收尾 | merge、PR、保留或清理分支 |
+| 20 | `writing-skills` | 插件维护 | 创建、优化和测试技能 |
+
+## 快速开始
+
+### 安装
+
+完整安装说明见 [INSTALL.md](INSTALL.md)。
+
+| 平台 | 推荐方式 |
+| --- | --- |
+| Codex CLI | `codex plugin marketplace add https://github.com/Vincen-dev/coding-plugins.git` 后 `codex plugin add coding-plugins@coding-plugins` |
+| Codex App | 先用 CLI 添加 marketplace，再在 App 插件面板启用 |
+| Claude Code | `claude --plugin-dir /absolute/path/to/coding-plugins` |
+| Gemini CLI | `gemini extensions install https://github.com/Vincen-dev/coding-plugins` |
+| GitHub Copilot CLI | 通用 `plugin.json` 已准备；具体安装命令待平台确认 |
+| OpenCode / Trae / Qoder / Trae CN | clone 仓库，把 `skills/` symlink 或复制到客户端技能目录 |
+| Cursor | 当前按本地 `skills/` symlink/copy 接入 |
+
+### 使用
+
+新需求：
+
+```text
+使用 coding-plugins:using-coding-plugins 开始。我要实现 <功能>。
+```
+
+已有 IPD：
+
+```text
+继续执行 <feature>/<doc-id> 的 IPD，从 TASK-001 开始。
+```
+
+小修：
+
+```text
+这是一个小型明确变更，按 test-driven-development 修复。
+```
+
+提交：
+
+```text
+提交代码。
+```
+
+### 验证插件仓库
+
+```bash
+python3 scripts/preflight.py
+git diff --check
+```
+
+修改 Codex hook 时额外运行：
+
+```bash
+bash tests/hooks/test-session-start.sh
+```
+
+维护真实 agent pressure 证据时运行：
+
+```bash
+python3 scripts/agent_pressure_harness.py --output artifacts/agent-pressure-harness.json
+python3 scripts/agent_pressure_ingest.py --input raw-agent-pressure.json --output tests/fixtures/formal-feature-chain/agent-pressure-results.json --split-cases --fixture-manifest --run-id 2026-07-04-agent-pressure-001 --source-contract docs/coding-plugins/scenario-routing.json --prune-stale
+```
+
+`--fixture-manifest` 会生成正式分片索引，`--prune-stale` 只在确认要同步删除旧分片时使用。
+
+## 文档目录约定
+
+默认文档路径：
+
+```text
+docs/coding-plugins/
+└── features/
+    └── <feature-name>/
+        ├── README.md
+        ├── requirements/<doc-id>-PRD.md
+        ├── technicals/<doc-id>-TDD.md
+        ├── technicals/<doc-id>-TID.md
+        ├── test-cases/<doc-id>-TCD.md
+        ├── plans/<doc-id>-IPD.md
+        └── evidences/<doc-id>-TED.md
+```
+
+实际 feature 根目录是 `docs/coding-plugins/features/<feature-name>/`。
+
+统一索引：
+
+```text
+docs/coding-plugins/INDEX.md
+```
+
+新增、移动或删除 feature 文档后运行：
+
+```bash
+python3 scripts/preflight.py --write-index
+python3 scripts/preflight.py
+```
+
+文档 metadata 规则见 [docs/coding-plugins/document-contract.md](docs/coding-plugins/document-contract.md)。
+
+## 平台支持
+
+| 平台 | 支持方式 | 入口 | 备注 |
+| --- | --- | --- | --- |
+| OpenAI Codex CLI | `.codex-plugin/plugin.json` + `.agents/plugins/marketplace.json` | `coding-plugins:using-coding-plugins` | 包含 `hooks/hooks-codex.json` SessionStart hook |
+| OpenAI Codex App | CLI 添加 marketplace 后在 App 启用 | `coding-plugins:using-coding-plugins` | 更新后重启 App |
+| Claude Code | `.claude-plugin/plugin.json` | `/coding-plugins:using-coding-plugins` | 修改插件后运行 `/reload-plugins` |
+| Gemini CLI | `gemini-extension.json` + `GEMINI.md` | `using-coding-plugins` | 安装后读取 Gemini 上下文 |
+| GitHub Copilot CLI | 根 `plugin.json` | `using-coding-plugins` | 通用插件 manifest 已准备，安装命令待平台确认 |
+| OpenCode / Trae / Qoder / Trae CN | `.agents/skills -> ../skills` 或复制 `skills/` | `using-coding-plugins` | 本地 skills 客户端 |
+| Cursor | 本地 `skills/` symlink/copy | `using-coding-plugins` | 后续可补一键安装脚本 |
+
+## 安全与发布
+
+- 安全策略见 [SECURITY.md](SECURITY.md)。
+- 安装和发布细节见 [INSTALL.md](INSTALL.md)。
+- 版本同步由 [.version-bump.json](.version-bump.json) 管理。
+- 发布前运行 `python3 scripts/preflight.py`。
+- 推送 tag 后由 `.github/workflows/release.yml` 创建 GitHub Release。
+
+## 常见问题
+
+### Coding Plugins 和普通 prompt 有什么区别？
+
+普通 prompt 依赖本次会话的临时记忆。Coding Plugins 把流程拆成可复用 skills、模板、脚本和文档契约，并用 preflight、workflow guard、TDD evidence、agent pressure fixture 等机制做回归。
+
+### 一定要写完整 PRD/TDD/TID/TCD/IPD 吗？
+
+不一定。小型明确变更可以走 `test-driven-development` 或 workflow mode 的轻量路径。影响外部行为、数据、安全、发布或长期维护的变更，才应该进入完整链路。
+
+### 子代理会不会消耗更多 token？
+
+会增加调度成本，但通过 `workflow_brief.py`、`subagent_prompt_builder.py`、按 `--kind` 过滤 JSON 输出、prompt hash 和执行锁定区，可以减少重复上下文。复杂任务中，子代理成本换来的是更低跑偏率和更强评审隔离。
+
+### 为什么要保留 IPD？
+
+IPD 是执行阶段的合约。它把 Spec ID、任务、文件范围、验证命令、TDD Evidence 和完成检查放在同一份文档里，让代理知道每一步该改什么、怎么证明完成、什么时候必须回退。
+
+### 能和项目已有文档体系共存吗？
+
+可以。默认路径是 `docs/coding-plugins/`，但用户或团队已有约定时优先使用已有约定。跨仓库或本机绝对路径引用应写入 `external_references`，需要本机审计时运行 `python3 scripts/preflight.py --check-external-references`。
+
+### 为什么提交规则这么严格？
+
+提交是工作流边界。`git-commit` 会检查 diff、作者身份、敏感文件和 `Authored-by` footer，避免把 AI 作者、秘密信息或多个无关变更混进一次提交。
+
+## 版本历史
+
+变更记录见 [RELEASE-NOTES.md](RELEASE-NOTES.md)。

@@ -514,7 +514,7 @@ class RoutingBehaviorTests(unittest.TestCase):
 
     def test_user_facing_docs_include_brainstorming_entrypoint(self) -> None:
         readme = self.read_text("README.md")
-        installation = self.read_text("docs/installation.md")
+        installation = self.read_text("INSTALL.md")
 
         for document in (readme, installation):
             self.assertIn("brainstorming", document)
@@ -523,7 +523,7 @@ class RoutingBehaviorTests(unittest.TestCase):
 
     def test_user_facing_docs_describe_agent_pressure_maintenance(self) -> None:
         readme = self.read_text("README.md")
-        installation = self.read_text("docs/installation.md")
+        installation = self.read_text("INSTALL.md")
         release_notes = self.read_text("RELEASE-NOTES.md")
 
         for document in (readme, installation):

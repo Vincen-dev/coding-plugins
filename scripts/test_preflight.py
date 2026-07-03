@@ -31,6 +31,14 @@ class PreflightTests(unittest.TestCase):
                 json.dumps({"version": "1.2.3"}),
                 encoding="utf-8",
             )
+            (root / "plugin.json").write_text(
+                json.dumps({"version": "1.2.3"}),
+                encoding="utf-8",
+            )
+            (root / "gemini-extension.json").write_text(
+                json.dumps({"version": "1.2.3"}),
+                encoding="utf-8",
+            )
 
             preflight.check_manifest_versions(root)
 
@@ -45,6 +53,14 @@ class PreflightTests(unittest.TestCase):
             )
             (root / ".claude-plugin" / "plugin.json").write_text(
                 json.dumps({"version": "1.2.4"}),
+                encoding="utf-8",
+            )
+            (root / "plugin.json").write_text(
+                json.dumps({"version": "1.2.3"}),
+                encoding="utf-8",
+            )
+            (root / "gemini-extension.json").write_text(
+                json.dumps({"version": "1.2.3"}),
                 encoding="utf-8",
             )
 
@@ -2289,7 +2305,7 @@ class PreflightTests(unittest.TestCase):
             root = Path(tmp)
             (root / "docs").mkdir()
             (root / "README.md").write_text("python3 scripts/preflight.py\n", encoding="utf-8")
-            (root / "docs" / "installation.md").write_text("hooks/hooks-codex.json\n", encoding="utf-8")
+            (root / "INSTALL.md").write_text("hooks/hooks-codex.json\n", encoding="utf-8")
             (root / "docs" / "workflow-chain.md").write_text("docs/coding-plugins/INDEX.md\n", encoding="utf-8")
 
             with self.assertRaisesRegex(preflight.PreflightError, "Documentation is missing required path references"):
@@ -2307,11 +2323,35 @@ class PreflightTests(unittest.TestCase):
                 )
             )
             (root / "README.md").write_text(baseline, encoding="utf-8")
-            (root / "docs" / "installation.md").write_text(baseline, encoding="utf-8")
+            (root / "INSTALL.md").write_text(baseline, encoding="utf-8")
             (root / "docs" / "workflow-chain.md").write_text(baseline, encoding="utf-8")
 
             with self.assertRaisesRegex(preflight.PreflightError, "Documentation is missing required path references"):
                 preflight.check_documentation_path_references(root)
+
+    def test_public_docs_release_guidance_rejects_static_version_badges(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "README.md").write_text(
+                '<img src="https://img.shields.io/badge/version-1.2.3-orange">\n',
+                encoding="utf-8",
+            )
+            (root / "INSTALL.md").write_text("通用 plugin.json 已准备\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(preflight.PreflightError, "static version badge"):
+                preflight.check_public_docs_release_guidance(root)
+
+    def test_public_docs_release_guidance_rejects_unverified_copilot_commands(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "README.md").write_text("通用 plugin.json 已准备\n", encoding="utf-8")
+            (root / "INSTALL.md").write_text(
+                "copilot plugin install coding-plugins@coding-plugins\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(preflight.PreflightError, "unverified Copilot plugin command"):
+                preflight.check_public_docs_release_guidance(root)
 
     def test_release_management_check_rejects_missing_release_notes_version(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

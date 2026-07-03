@@ -21,10 +21,23 @@ class ManifestChecksTests(unittest.TestCase):
             root = Path(tmp)
             (root / ".codex-plugin").mkdir()
             (root / ".claude-plugin").mkdir()
+            (root / ".agents").mkdir()
             (root / "skills").mkdir()
             (root / "assets").mkdir()
             (root / "README.md").write_text("# Plugin\n", encoding="utf-8")
+            (root / "INSTALL.md").write_text("# Install\n", encoding="utf-8")
+            (root / "SECURITY.md").write_text("# Security\n", encoding="utf-8")
+            (root / "GEMINI.md").write_text("# Plugin\n", encoding="utf-8")
+            (root / ".agents" / "skills").mkdir()
             (root / "assets" / "logo.svg").write_text("<svg></svg>\n", encoding="utf-8")
+            (root / "plugin.json").write_text(
+                json.dumps({"version": "1.2.3", "skills": "skills/"}),
+                encoding="utf-8",
+            )
+            (root / "gemini-extension.json").write_text(
+                json.dumps({"version": "1.2.3", "contextFileName": "GEMINI.md"}),
+                encoding="utf-8",
+            )
             (root / ".codex-plugin" / "plugin.json").write_text(
                 json.dumps(
                     {
@@ -42,6 +55,7 @@ class ManifestChecksTests(unittest.TestCase):
 
             manifest_checks.check_required_plugin_files(root)
             manifest_checks.check_manifest_versions(root)
+            manifest_checks.check_platform_entrypoints(root)
             manifest_checks.check_codex_hook_config_declared(root)
             manifest_checks.check_manifest_asset_paths(root)
             self.assertEqual(manifest_checks.current_manifest_version(root), "1.2.3")
@@ -52,6 +66,16 @@ class ManifestChecksTests(unittest.TestCase):
             root = Path(tmp)
             (root / ".codex-plugin").mkdir()
             (root / ".claude-plugin").mkdir()
+            (root / "skills").mkdir()
+            (root / "GEMINI.md").write_text("# Plugin\n", encoding="utf-8")
+            (root / "plugin.json").write_text(
+                json.dumps({"version": "1.2.5", "skills": "missing/"}),
+                encoding="utf-8",
+            )
+            (root / "gemini-extension.json").write_text(
+                json.dumps({"version": "1.2.6", "contextFileName": "MISSING.md"}),
+                encoding="utf-8",
+            )
             (root / ".codex-plugin" / "plugin.json").write_text(
                 json.dumps({"version": "1.2.3", "interface": {"logo": "./assets/missing.svg"}}),
                 encoding="utf-8",
@@ -63,16 +87,63 @@ class ManifestChecksTests(unittest.TestCase):
 
             with self.assertRaisesRegex(manifest_checks.ManifestCheckError, "Manifest versions differ"):
                 manifest_checks.check_manifest_versions(root)
+            with self.assertRaisesRegex(manifest_checks.ManifestCheckError, "Root plugin manifest must declare skills"):
+                manifest_checks.check_platform_entrypoints(root)
             with self.assertRaisesRegex(manifest_checks.ManifestCheckError, "Codex manifest must declare hooks"):
                 manifest_checks.check_codex_hook_config_declared(root)
             with self.assertRaisesRegex(manifest_checks.ManifestCheckError, "Manifest asset path does not exist"):
                 manifest_checks.check_manifest_asset_paths(root)
+
+    def test_platform_entrypoints_accept_agents_skills_symlink_text_fallback(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / ".agents").mkdir()
+            (root / "skills").mkdir()
+            (root / "GEMINI.md").write_text("# Plugin\n", encoding="utf-8")
+            (root / ".agents" / "skills").write_text("../skills\n", encoding="utf-8")
+            (root / "plugin.json").write_text(
+                json.dumps({"version": "1.2.3", "skills": "skills/"}),
+                encoding="utf-8",
+            )
+            (root / "gemini-extension.json").write_text(
+                json.dumps({"version": "1.2.3", "contextFileName": "GEMINI.md"}),
+                encoding="utf-8",
+            )
+
+            manifest_checks.check_platform_entrypoints(root)
+
+    def test_platform_entrypoints_rejects_invalid_agents_skills_file(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / ".agents").mkdir()
+            (root / "skills").mkdir()
+            (root / "GEMINI.md").write_text("# Plugin\n", encoding="utf-8")
+            (root / ".agents" / "skills").write_text("missing\n", encoding="utf-8")
+            (root / "plugin.json").write_text(
+                json.dumps({"version": "1.2.3", "skills": "skills/"}),
+                encoding="utf-8",
+            )
+            (root / "gemini-extension.json").write_text(
+                json.dumps({"version": "1.2.3", "contextFileName": "GEMINI.md"}),
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(manifest_checks.ManifestCheckError, "must resolve to a directory"):
+                manifest_checks.check_platform_entrypoints(root)
 
     def test_preflight_converts_manifest_check_errors(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             (root / ".codex-plugin").mkdir()
             (root / ".claude-plugin").mkdir()
+            (root / "plugin.json").write_text(
+                json.dumps({"version": "1.2.3"}),
+                encoding="utf-8",
+            )
+            (root / "gemini-extension.json").write_text(
+                json.dumps({"version": "1.2.3"}),
+                encoding="utf-8",
+            )
             (root / ".codex-plugin" / "plugin.json").write_text(
                 json.dumps({"version": "1.2.3"}),
                 encoding="utf-8",

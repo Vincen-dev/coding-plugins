@@ -22,7 +22,7 @@ class WorkflowModeTests(unittest.TestCase):
     def test_docs_only_for_documentation_changes(self) -> None:
         result = workflow_mode.infer_mode(
             "更新 README 和安装说明",
-            files=["README.md", "docs/installation.md"],
+            files=["README.md", "INSTALL.md"],
             task_count=2,
         )
 

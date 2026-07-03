@@ -230,6 +230,11 @@ DOC_SYNC_REFERENCES = (
     "python3 scripts/preflight.py --write-index",
     "python3 scripts/preflight.py",
 )
+PUBLIC_DOCS_RELEASE_GUIDANCE_FILES = ("README.md", "INSTALL.md")
+STATIC_VERSION_BADGE_RE = re.compile(r"img\.shields\.io/badge/version-")
+UNVERIFIED_COPILOT_COMMAND_RE = re.compile(
+    r"\bcopilot\s+plugin\s+(?:marketplace|add|install|update|uninstall|remove)\b"
+)
 FIXTURE_CASE_WORKFLOW_REFERENCES = (
     "CASE-INDEX.md",
     "scripts/scaffold_fixture_case.py",
@@ -316,6 +321,10 @@ def check_release_management_files(root: Path) -> None:
 
 def check_codex_hook_config_declared(root: Path) -> None:
     run_manifest_check(manifest_checks.check_codex_hook_config_declared, root)
+
+
+def check_platform_entrypoints(root: Path) -> None:
+    run_manifest_check(manifest_checks.check_platform_entrypoints, root)
 
 
 def iter_text_files(root: Path) -> list[Path]:
@@ -1605,7 +1614,7 @@ def check_plan_technical_implementation_references(root: Path) -> None:
 def check_documentation_path_references(root: Path) -> None:
     required_docs = (
         root / "README.md",
-        root / "docs" / "installation.md",
+        root / "INSTALL.md",
         root / "docs" / "workflow-chain.md",
     )
     missing: list[str] = []
@@ -1617,6 +1626,23 @@ def check_documentation_path_references(root: Path) -> None:
 
     if missing:
         raise PreflightError("Documentation is missing required path references: " + "; ".join(missing) + ".")
+
+
+def check_public_docs_release_guidance(root: Path) -> None:
+    offenders: list[str] = []
+    for relative_path in PUBLIC_DOCS_RELEASE_GUIDANCE_FILES:
+        path = root / relative_path
+        if not path.exists():
+            continue
+        text = path.read_text(encoding="utf-8")
+        if STATIC_VERSION_BADGE_RE.search(text):
+            offenders.append(f"{relative_path} contains static version badge")
+        match = UNVERIFIED_COPILOT_COMMAND_RE.search(text)
+        if match is not None:
+            offenders.append(f"{relative_path} contains unverified Copilot plugin command: {match.group(0)}")
+
+    if offenders:
+        raise PreflightError("Public docs release guidance is invalid: " + "; ".join(offenders) + ".")
 
 
 def check_fixture_case_workflow_documented(root: Path) -> None:
@@ -1781,6 +1807,7 @@ def run_static_checks(root: Path) -> None:
     check_required_plugin_files(root)
     check_manifest_versions(root)
     check_release_management_files(root)
+    check_platform_entrypoints(root)
     check_codex_hook_config_declared(root)
     check_manifest_asset_paths(root)
     check_skill_agent_metadata(root)
@@ -1813,6 +1840,7 @@ def run_static_checks(root: Path) -> None:
     check_tdd_evidence_spec_ids(root)
     check_lifecycle_state_consistency(root)
     check_documentation_path_references(root)
+    check_public_docs_release_guidance(root)
     check_fixture_case_workflow_documented(root)
     check_document_creation_decision_matrix_documented(root)
     check_tid_template_no_code_boundary(root)
