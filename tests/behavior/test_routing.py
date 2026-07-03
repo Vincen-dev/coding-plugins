@@ -224,6 +224,19 @@ class RoutingBehaviorTests(unittest.TestCase):
         self.assertIn("plan-unlocked", template)
         self.assertIn("plan-stale", template)
 
+    def test_ipd_template_keeps_execution_brief_inside_ipd(self) -> None:
+        template = self.read_text("skills/writing-plans/templates/implementation-plan.md")
+        skill = self.read_text("skills/writing-plans/SKILL.md")
+        entry = self.read_text("skills/using-coding-plugins/SKILL.md")
+
+        self.assertIn("## 执行简报", template)
+        self.assertIn("每次新计划新建 IPD", template)
+        self.assertIn("不得向旧 IPD 追加新计划任务", skill)
+        self.assertIn("scripts/workflow_brief.py", entry)
+        self.assertIn("不重复读取完整 PRD/TDD/TID/TCD", entry)
+        self.assertNotIn("execution-contract.md", template)
+        self.assertNotIn("execution-contract.md", skill)
+
     def test_claude_usage_documents_session_start_prompt(self) -> None:
         usage = self.read_text("docs/claude-code-usage.md")
         reference = self.read_text("skills/using-coding-plugins/references/claude-tools.md")

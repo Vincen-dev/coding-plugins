@@ -183,8 +183,22 @@ class WorkflowGuardTests(unittest.TestCase):
 
             result = workflow_guard.check(root, feature=feature, doc_id=doc_id, target="execute")
 
-        self.assertTrue(result["pass"])
-        self.assertEqual(result["state"], "ready-for-execution")
+            self.assertTrue(result["pass"])
+            self.assertEqual(result["state"], "ready-for-execution")
+            self.assertEqual(
+                result["next_context"]["must_read"],
+                ["docs/coding-plugins/features/workflow-runtime/plans/workflow-runtime-guard-IPD.md"],
+            )
+            self.assertIn(
+                "docs/coding-plugins/features/workflow-runtime/requirements/workflow-runtime-guard-PRD.md",
+                result["next_context"]["may_skip"],
+            )
+            self.assertIn("## 执行锁定区", result["next_context"]["focus_sections"])
+            self.assertIn("## 任务总览", result["next_context"]["focus_sections"])
+            self.assertEqual(
+                result["next_context"]["new_plan_policy"],
+                "create a new IPD for each new plan; do not append new plan tasks to an existing IPD",
+            )
 
 
 if __name__ == "__main__":

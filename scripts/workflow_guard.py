@@ -21,6 +21,7 @@ EXECUTION_LOCK_FIELDS = (
     "Review Gates",
     "Rewind Triggers",
 )
+NEW_PLAN_POLICY = "create a new IPD for each new plan; do not append new plan tasks to an existing IPD"
 
 
 def parse_execution_lock(text: str) -> dict[str, str] | None:
@@ -66,11 +67,39 @@ def validate_execution_lock(path: Path) -> list[str]:
     return []
 
 
+def build_next_context(root: Path, state: dict[str, Any], *, target: str, passed: bool) -> dict[str, Any]:
+    artifacts = state["artifacts"]
+    upstream_paths = [
+        artifacts[suffix]["path"]
+        for suffix in ("PRD", "TDD", "TID", "TCD")
+        if artifacts[suffix]["exists"]
+    ]
+    ipd_path = artifacts["IPD"]["path"] if artifacts["IPD"]["exists"] else None
+
+    if target == "execute" and passed and ipd_path:
+        return {
+            "must_read": [ipd_path],
+            "may_skip": upstream_paths,
+            "focus_sections": ["## 执行简报", "## 执行锁定区", "## 任务总览", "## <任务标题>（TASK-001 / REQ-001）"],
+            "execution_source": "IPD task chapters",
+            "new_plan_policy": NEW_PLAN_POLICY,
+        }
+
+    return {
+        "must_read": [path for path in upstream_paths if path],
+        "may_skip": [],
+        "focus_sections": [],
+        "execution_source": "document chain",
+        "new_plan_policy": NEW_PLAN_POLICY,
+    }
+
+
 def check(root: Path | str, *, feature: str, doc_id: str, target: str) -> dict[str, Any]:
     if target not in VALID_TARGETS:
         raise ValueError(f"invalid workflow guard target: {target}")
 
-    state = workflow_state.inspect_document_chain(root, feature=feature, doc_id=doc_id)
+    root_path = Path(root)
+    state = workflow_state.inspect_document_chain(root_path, feature=feature, doc_id=doc_id)
     allowed_states = {
         "plan": {"ready-for-plan"},
         "execute": {"ready-for-execution"},
@@ -79,7 +108,7 @@ def check(root: Path | str, *, feature: str, doc_id: str, target: str) -> dict[s
 
     failures: list[str] = []
     if target == "execute" and state["state"] == "ready-for-execution":
-        ipd_path = Path(root) / state["artifacts"]["IPD"]["path"]
+        ipd_path = root_path / state["artifacts"]["IPD"]["path"]
         failures.extend(validate_execution_lock(ipd_path))
         passed = passed and not failures
 
@@ -104,6 +133,7 @@ def check(root: Path | str, *, feature: str, doc_id: str, target: str) -> dict[s
         "missing_artifacts": state["missing_artifacts"],
         "stale": state["stale"],
         "failures": failures,
+        "next_context": build_next_context(root_path, state, target=target, passed=passed),
     }
 
 

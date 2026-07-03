@@ -58,6 +58,13 @@ source_hash: sha256:<由 scripts/workflow_state.py hash --feature <feature-name>
 - **Review Gates:** <列出任务间必须进行的规格符合性或代码质量评审。>
 - **Rewind Triggers:** 上游 PRD/TDD/TID/TCD 变更、source_hash 不匹配、新增外部行为、接口或 schema 改动、验证失败且影响需求契约。
 
+## 执行简报
+
+- **执行来源:** 只按本 IPD 的任务章节执行；最终执行靠已规划好的任务推进。
+- **上下文预算:** 执行阶段优先读取执行简报、执行锁定区、任务总览和当前任务章节。
+- **可跳过内容:** PRD/TDD/TID/TCD 已由 `source_hash` 锁定，除非触发 Rewind Triggers 或 guard 失败，否则不重复读取完整上游文档。
+- **新计划策略:** 每次新计划新建 IPD，不向旧 IPD 追加任务。
+
 ## 上游约束摘要
 
 - 需求约束：<用 1 到 3 条列出 PRD 中会影响执行的 MUST 需求。>
