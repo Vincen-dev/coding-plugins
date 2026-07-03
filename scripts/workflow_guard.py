@@ -29,6 +29,8 @@ def check(root: Path | str, *, feature: str, doc_id: str, target: str) -> dict[s
     if not passed:
         if state["missing_artifacts"]:
             failures.append(f"missing artifacts: {', '.join(state['missing_artifacts'])}")
+        if state["state"] == "plan-unlocked":
+            failures.append("IPD source_hash is missing")
         if state["stale"]:
             failures.append("IPD source_hash is stale")
         if state["state"] not in allowed_states:

@@ -82,6 +82,35 @@ class WorkflowGuardTests(unittest.TestCase):
         self.assertEqual(result["state"], "plan-stale")
         self.assertEqual(result["next_skill"], "writing-plans")
 
+    def test_execute_target_blocks_plan_without_source_hash(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature = "workflow-runtime"
+            doc_id = "workflow-runtime-guard"
+            write_approved_upstream(root, feature, doc_id)
+            write_doc(path_for(root, feature, doc_id, "plans", "IPD"), status="approved")
+
+            result = workflow_guard.check(root, feature=feature, doc_id=doc_id, target="execute")
+
+        self.assertFalse(result["pass"])
+        self.assertEqual(result["state"], "plan-unlocked")
+        self.assertIn("IPD source_hash is missing", result["failures"])
+
+    def test_execute_target_blocks_unapproved_plan(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature = "workflow-runtime"
+            doc_id = "workflow-runtime-guard"
+            write_approved_upstream(root, feature, doc_id)
+            source_hash = workflow_state.compute_upstream_hash(root, feature=feature, doc_id=doc_id)
+            write_doc(path_for(root, feature, doc_id, "plans", "IPD"), status="draft", source_hash=source_hash)
+
+            result = workflow_guard.check(root, feature=feature, doc_id=doc_id, target="execute")
+
+        self.assertFalse(result["pass"])
+        self.assertEqual(result["state"], "plan-draft")
+        self.assertIn("state 'plan-draft' cannot enter target 'execute'", result["failures"])
+
     def test_execute_target_passes_current_plan(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

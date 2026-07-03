@@ -141,6 +141,14 @@ def inspect_document_chain(root: Path | str, *, feature: str, doc_id: str) -> di
         result.update(state="ready-for-plan", next_skill="writing-plans", reason="upstream documents are approved")
         return result
 
+    if not approved(artifacts, "IPD"):
+        result.update(state="plan-draft", next_skill="writing-plans", reason="IPD is not approved")
+        return result
+
+    if not ipd_source_hash:
+        result.update(state="plan-unlocked", next_skill="writing-plans", reason="IPD source_hash is missing")
+        return result
+
     if ipd_source_hash and chain_hash and ipd_source_hash != chain_hash:
         result.update(
             state="plan-stale",

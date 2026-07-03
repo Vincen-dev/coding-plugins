@@ -41,6 +41,26 @@ class DecisionPointTests(unittest.TestCase):
                 for ref in refs:
                     self.assertIn(ref, known)
 
+    def test_scenario_routing_uses_expected_decision_point_mapping(self) -> None:
+        contract = json.loads((ROOT / "docs" / "coding-plugins" / "scenario-routing.json").read_text(encoding="utf-8"))
+        expected = {
+            "idea_brainstorming": ["DP-0"],
+            "new_unclear_requirement": ["DP-0", "DP-1", "DP-2", "DP-3", "DP-4"],
+            "approved_prd_to_technicals": ["DP-1", "DP-2"],
+            "technicals_to_test_cases": ["DP-2", "DP-3"],
+            "test_cases_to_plan": ["DP-3", "DP-4"],
+            "existing_ipd_execution": ["DP-4", "DP-5", "DP-6"],
+            "bug_or_ci_failure": ["DP-5", "DP-6"],
+            "code_review_or_feedback": ["DP-5", "DP-6"],
+            "plugin_workflow_maintenance": ["DP-0", "DP-5", "DP-6"],
+            "direct_commit": ["DP-7"],
+            "finish_branch": ["DP-6", "DP-7"],
+            "parallel_tasks": ["DP-5", "DP-6"],
+        }
+
+        actual = {scenario["id"]: scenario["decision_points"] for scenario in contract["scenarios"]}
+        self.assertEqual(actual, expected)
+
     def test_entry_skill_documents_decision_point_protocol(self) -> None:
         entry = (ROOT / "skills" / "using-coding-plugins" / "SKILL.md").read_text(encoding="utf-8")
 

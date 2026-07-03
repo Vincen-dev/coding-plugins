@@ -108,7 +108,7 @@ source_hash: sha256:<由 scripts/workflow_state.py hash 生成>
 python3 scripts/workflow_state.py inspect --feature <feature-name> --doc-id <doc-id> --json
 ```
 
-如果输出 `state: plan-stale`，不得继续执行，先回到 `writing-plans` 刷新 IPD。
+如果输出 `state: plan-draft`、`plan-unlocked` 或 `plan-stale`，不得继续执行，先回到 `writing-plans` 批准 IPD、补齐 `source_hash`，或刷新 IPD。
 
 进入实现前运行执行门禁：
 

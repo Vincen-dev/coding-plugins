@@ -67,7 +67,7 @@ description: 开始任何任务时使用；建立 Coding Plugins 技能选择、
 - 任何技能需要读取或维护 `docs/coding-plugins/features/<feature-name>/` 下的 README、PRD、TDD/TID、TCD、IPD 或 TED 关系时，先使用 `document-metadata` 确认 frontmatter 和 `related_*` 关系。
 - 当用户说“继续”“恢复”“开始实现”“执行 IPD”，且能识别 `feature` 和 `doc_id` 时，先运行 `python3 scripts/workflow_state.py inspect --feature <feature> --doc-id <doc-id> --json`。输出必须说明当前状态、判断原因、缺失产物、是否 stale、推荐下一个 skill。
 - 执行 IPD 前必须运行 `python3 scripts/workflow_guard.py check --feature <feature> --doc-id <doc-id> --target execute --json`；未通过时按 `next_skill` 回退，不得继续实现。
-- 如果 `workflow_state.py` 输出 `plan-stale`，不得进入实现；先路由到 `writing-plans` 刷新 IPD 的 `source_hash` 和执行锁定区。
+- 如果 `workflow_state.py` 输出 `plan-draft`、`plan-unlocked` 或 `plan-stale`，不得进入实现；先路由到 `writing-plans` 批准 IPD、补齐 `source_hash`，或刷新执行锁定区。
 - 需要声称完成、修复或通过前，必须使用 `verification-before-completion`。
 - 需要提交时必须使用 `git-commit`；提交前仍要检查 diff、作者身份和敏感文件。
 - 需要从需求进入执行任务时，先用 `writing-requirements` 写 PRD，再用 `writing-technicals` 写 TDD/TID，再用 `writing-test-cases` 写 TCD，最后用 `writing-plans` 编写 IPD 任务执行文档。

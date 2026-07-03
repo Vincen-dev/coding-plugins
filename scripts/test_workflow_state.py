@@ -105,6 +105,47 @@ class WorkflowStateTests(unittest.TestCase):
         self.assertTrue(result["stale"])
         self.assertIn("source_hash does not match current upstream chain", result["reason"])
 
+    def test_plan_without_source_hash_routes_back_to_writing_plans(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature = "workflow-runtime"
+            doc_id = "workflow-runtime-guard"
+            write_doc(artifact_path(root, feature, doc_id, "requirements", "PRD"), status="approved")
+            write_doc(artifact_path(root, feature, doc_id, "technicals", "TDD"), status="approved")
+            write_doc(artifact_path(root, feature, doc_id, "technicals", "TID"), status="approved")
+            write_doc(artifact_path(root, feature, doc_id, "test-cases", "TCD"), status="approved")
+            write_doc(artifact_path(root, feature, doc_id, "plans", "IPD"), status="approved")
+
+            result = workflow_state.inspect_document_chain(root, feature=feature, doc_id=doc_id)
+
+        self.assertEqual(result["state"], "plan-unlocked")
+        self.assertEqual(result["next_skill"], "writing-plans")
+        self.assertFalse(result["stale"])
+        self.assertIn("source_hash is missing", result["reason"])
+
+    def test_unapproved_plan_routes_back_to_writing_plans(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature = "workflow-runtime"
+            doc_id = "workflow-runtime-guard"
+            write_doc(artifact_path(root, feature, doc_id, "requirements", "PRD"), status="approved")
+            write_doc(artifact_path(root, feature, doc_id, "technicals", "TDD"), status="approved")
+            write_doc(artifact_path(root, feature, doc_id, "technicals", "TID"), status="approved")
+            write_doc(artifact_path(root, feature, doc_id, "test-cases", "TCD"), status="approved")
+            source_hash = workflow_state.compute_upstream_hash(root, feature=feature, doc_id=doc_id)
+            write_doc(
+                artifact_path(root, feature, doc_id, "plans", "IPD"),
+                status="draft",
+                source_hash=source_hash,
+            )
+
+            result = workflow_state.inspect_document_chain(root, feature=feature, doc_id=doc_id)
+
+        self.assertEqual(result["state"], "plan-draft")
+        self.assertEqual(result["next_skill"], "writing-plans")
+        self.assertFalse(result["stale"])
+        self.assertIn("IPD is not approved", result["reason"])
+
     def test_current_plan_routes_to_worktree_execution(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
