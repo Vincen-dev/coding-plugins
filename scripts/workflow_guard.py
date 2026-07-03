@@ -12,6 +12,58 @@ import workflow_state
 
 
 VALID_TARGETS = {"plan", "execute"}
+EXECUTION_LOCK_HEADING = "## 执行锁定区"
+EXECUTION_LOCK_FIELDS = (
+    "Intent Lock",
+    "Scope Fence",
+    "Required Spec IDs",
+    "Required Tests",
+    "Review Gates",
+    "Rewind Triggers",
+)
+
+
+def parse_execution_lock(text: str) -> dict[str, str] | None:
+    section_start = text.find(f"\n{EXECUTION_LOCK_HEADING}\n")
+    if section_start == -1:
+        if text.startswith(f"{EXECUTION_LOCK_HEADING}\n"):
+            section_start = 0
+        else:
+            return None
+    else:
+        section_start += 1
+
+    section_body_start = section_start + len(EXECUTION_LOCK_HEADING) + 1
+    next_heading = text.find("\n## ", section_body_start)
+    section = text[section_body_start:] if next_heading == -1 else text[section_body_start:next_heading]
+
+    fields: dict[str, str] = {}
+    for line in section.splitlines():
+        stripped = line.strip()
+        if not stripped.startswith("- **") or ":**" not in stripped:
+            continue
+        label, value = stripped[4:].split(":**", 1)
+        label = label.strip().strip("*")
+        fields[label] = value.strip()
+    return fields
+
+
+def validate_execution_lock(path: Path) -> list[str]:
+    if not path.exists():
+        return []
+    fields = parse_execution_lock(path.read_text(encoding="utf-8"))
+    if fields is None:
+        return ["IPD execution lock section is missing"]
+
+    missing = [field for field in EXECUTION_LOCK_FIELDS if not fields.get(field)]
+    if missing:
+        return [f"IPD execution lock is missing fields: {', '.join(missing)}"]
+
+    placeholders = [field for field in EXECUTION_LOCK_FIELDS if "<" in fields[field] or ">" in fields[field]]
+    if placeholders:
+        return [f"IPD execution lock has placeholder fields: {', '.join(placeholders)}"]
+
+    return []
 
 
 def check(root: Path | str, *, feature: str, doc_id: str, target: str) -> dict[str, Any]:
@@ -26,6 +78,11 @@ def check(root: Path | str, *, feature: str, doc_id: str, target: str) -> dict[s
     passed = state["state"] in allowed_states and not state["stale"]
 
     failures: list[str] = []
+    if target == "execute" and state["state"] == "ready-for-execution":
+        ipd_path = Path(root) / state["artifacts"]["IPD"]["path"]
+        failures.extend(validate_execution_lock(ipd_path))
+        passed = passed and not failures
+
     if not passed:
         if state["missing_artifacts"]:
             failures.append(f"missing artifacts: {', '.join(state['missing_artifacts'])}")

@@ -375,7 +375,7 @@ flowchart TD
 
 本节是行为级测试的机器可读契约，记录不同场景下必须保持的技能顺序。修改入口路由、场景流程或技能命名时，需要同步更新这里、`docs/coding-plugins/scenario-routing.json` 和 `tests/behavior/test_routing.py`。
 
-`docs/coding-plugins/scenario-routing.json` 使用 `case_ids` 关联 `tests/fixtures/formal-feature-chain/CASE-INDEX.md` 中的质量案例，使用 `gate_ids` 关联 `gate_catalog` 中的稳定门禁定义。新增场景时，不能只写自由文本说明；必须补充可回归案例和结构化 gate。
+`docs/coding-plugins/scenario-routing.json` 使用 `case_ids` 关联 `tests/fixtures/formal-feature-chain/CASE-INDEX.md` 中的质量案例，使用 `gate_ids` 关联 `gate_catalog` 中的稳定门禁定义。新增场景时，不能写自由文本 `gates`；必须补充可回归案例和结构化 `gate_ids`。
 
 ### 决策点协议
 

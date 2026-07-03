@@ -207,13 +207,22 @@ class RoutingBehaviorTests(unittest.TestCase):
                     self.assertRegex(gate_id, r"^[a-z0-9_]+$")
                     self.assertIn(gate_id, known_gate_ids)
 
+                self.assertNotIn("gates", scenario, "free-text gates must not duplicate structured gate_ids")
+
     def test_plan_scenario_does_not_claim_ted_as_direct_artifact(self) -> None:
         contract = self.read_json("docs/coding-plugins/scenario-routing.json")
         scenario = next(item for item in contract["scenarios"] if item["id"] == "test_cases_to_plan")
 
         self.assertEqual(scenario["skills"], ["document-metadata", "writing-plans"])
         self.assertEqual(scenario["artifacts"], ["IPD"])
-        self.assertIn("TED target only", scenario["gates"])
+        self.assertIn("ted_target_only", scenario["gate_ids"])
+
+    def test_ipd_template_documents_all_non_executable_plan_states(self) -> None:
+        template = self.read_text("skills/writing-plans/templates/implementation-plan.md")
+
+        self.assertIn("plan-draft", template)
+        self.assertIn("plan-unlocked", template)
+        self.assertIn("plan-stale", template)
 
     def test_claude_usage_documents_session_start_prompt(self) -> None:
         usage = self.read_text("docs/claude-code-usage.md")

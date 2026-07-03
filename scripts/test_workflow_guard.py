@@ -14,7 +14,24 @@ import workflow_guard
 import workflow_state
 
 
-def write_doc(path: Path, *, status: str = "draft", source_hash: str | None = None) -> None:
+VALID_EXECUTION_LOCK = """## 执行锁定区
+
+- **Intent Lock:** 只执行 workflow guard 的锁定校验。
+- **Scope Fence:** 包含 IPD 执行入口；不包含 release。
+- **Required Spec IDs:** REQ-001
+- **Required Tests:** `python3 -m unittest scripts/test_workflow_guard.py`
+- **Review Gates:** 检查执行门禁输出。
+- **Rewind Triggers:** 上游文档变更、source_hash 不匹配或验证失败。
+"""
+
+
+def write_doc(
+    path: Path,
+    *,
+    status: str = "draft",
+    source_hash: str | None = None,
+    body: str = "",
+) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     lines = [
         "---",
@@ -28,6 +45,8 @@ def write_doc(path: Path, *, status: str = "draft", source_hash: str | None = No
     if source_hash:
         lines.append(f"source_hash: {source_hash}")
     lines.extend(["---", "", f"# {path.stem}", ""])
+    if body:
+        lines.extend(["", body.rstrip(), ""])
     path.write_text("\n".join(lines), encoding="utf-8")
 
 
@@ -111,6 +130,43 @@ class WorkflowGuardTests(unittest.TestCase):
         self.assertEqual(result["state"], "plan-draft")
         self.assertIn("state 'plan-draft' cannot enter target 'execute'", result["failures"])
 
+    def test_execute_target_blocks_plan_without_execution_lock_section(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature = "workflow-runtime"
+            doc_id = "workflow-runtime-guard"
+            write_approved_upstream(root, feature, doc_id)
+            source_hash = workflow_state.compute_upstream_hash(root, feature=feature, doc_id=doc_id)
+            write_doc(path_for(root, feature, doc_id, "plans", "IPD"), status="approved", source_hash=source_hash)
+
+            result = workflow_guard.check(root, feature=feature, doc_id=doc_id, target="execute")
+
+        self.assertFalse(result["pass"])
+        self.assertIn("IPD execution lock section is missing", result["failures"])
+
+    def test_execute_target_blocks_incomplete_execution_lock_section(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature = "workflow-runtime"
+            doc_id = "workflow-runtime-guard"
+            write_approved_upstream(root, feature, doc_id)
+            source_hash = workflow_state.compute_upstream_hash(root, feature=feature, doc_id=doc_id)
+            write_doc(
+                path_for(root, feature, doc_id, "plans", "IPD"),
+                status="approved",
+                source_hash=source_hash,
+                body="""## 执行锁定区
+
+- **Intent Lock:** 只执行 workflow guard 的锁定校验。
+- **Scope Fence:** 包含 IPD 执行入口；不包含 release。
+""",
+            )
+
+            result = workflow_guard.check(root, feature=feature, doc_id=doc_id, target="execute")
+
+        self.assertFalse(result["pass"])
+        self.assertIn("IPD execution lock is missing fields: Required Spec IDs, Required Tests, Review Gates, Rewind Triggers", result["failures"])
+
     def test_execute_target_passes_current_plan(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -122,6 +178,7 @@ class WorkflowGuardTests(unittest.TestCase):
                 path_for(root, feature, doc_id, "plans", "IPD"),
                 status="approved",
                 source_hash=source_hash,
+                body=VALID_EXECUTION_LOCK,
             )
 
             result = workflow_guard.check(root, feature=feature, doc_id=doc_id, target="execute")
