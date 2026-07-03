@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -13,6 +14,9 @@ import workflow_state
 
 VALID_TARGETS = {"plan", "execute"}
 EXECUTION_LOCK_HEADING = "## 执行锁定区"
+EXECUTION_BRIEF_HEADING = "## 执行简报"
+TASK_OVERVIEW_HEADING = "## 任务总览"
+TASK_HEADING_RE = re.compile(r"^## .+（TASK-\d{3,} / REQ-\d{3,}）$", re.MULTILINE)
 EXECUTION_LOCK_FIELDS = (
     "Intent Lock",
     "Scope Fence",
@@ -67,6 +71,20 @@ def validate_execution_lock(path: Path) -> list[str]:
     return []
 
 
+def validate_execution_sections(path: Path) -> list[str]:
+    if not path.exists():
+        return []
+    text = path.read_text(encoding="utf-8")
+    failures = validate_execution_lock(path)
+    if EXECUTION_BRIEF_HEADING not in text:
+        failures.append("IPD execution brief section is missing")
+    if TASK_OVERVIEW_HEADING not in text:
+        failures.append("IPD task overview section is missing")
+    if not TASK_HEADING_RE.search(text):
+        failures.append("IPD task chapter is missing")
+    return failures
+
+
 def build_next_context(root: Path, state: dict[str, Any], *, target: str, passed: bool) -> dict[str, Any]:
     artifacts = state["artifacts"]
     upstream_paths = [
@@ -109,7 +127,7 @@ def check(root: Path | str, *, feature: str, doc_id: str, target: str) -> dict[s
     failures: list[str] = []
     if target == "execute" and state["state"] == "ready-for-execution":
         ipd_path = root_path / state["artifacts"]["IPD"]["path"]
-        failures.extend(validate_execution_lock(ipd_path))
+        failures.extend(validate_execution_sections(ipd_path))
         passed = passed and not failures
 
     if not passed:

@@ -46,6 +46,13 @@ class ScaffoldFixtureCaseTests(unittest.TestCase):
             self.assertIn("## cache-fixture", case_index)
             self.assertIn("case_id: CASE-CACHE-999", case_index)
 
+            ipd_text = (feature_root / "plans" / "cache-refresh-IPD.md").read_text(encoding="utf-8")
+            self.assertIn("source_hash: sha256:", ipd_text)
+            self.assertIn("## 执行锁定区", ipd_text)
+            self.assertIn("## 执行简报", ipd_text)
+            self.assertIn("## 任务总览", ipd_text)
+            self.assertIn("## 缓存刷新（TASK-001 / REQ-001）", ipd_text)
+
             preflight.check_formal_fixture_case_index(root)
             preflight.check_feature_document_chain_closure(root)
             preflight.check_traceability_closure(root)

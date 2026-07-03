@@ -124,10 +124,10 @@ python3 scripts/workflow_guard.py check --feature <feature-name> --doc-id <doc-i
 执行阶段优先生成短上下文：
 
 ```bash
-python3 scripts/workflow_brief.py --feature <feature-name> --doc-id <doc-id> --target execute --json
+python3 scripts/workflow_brief.py --feature <feature-name> --doc-id <doc-id> --target execute --task TASK-001 --json
 ```
 
-如果 brief 通过，执行者默认只读 IPD，并聚焦 `## 执行简报`、`## 执行锁定区`、`## 任务总览` 和当前任务章节；PRD/TDD/TID/TCD 只在 Rewind Triggers 命中或 guard 失败时回读。
+如果 brief 通过，执行者默认只读 IPD，并聚焦 `## 执行简报`、`## 执行锁定区`、`## 任务总览` 和当前任务章节；PRD/TDD/TID/TCD 只在 Rewind Triggers 命中或 guard 失败时回读。多任务 IPD 必须指定当前 `--task`；未知当前任务时才省略。
 
 ## 任务结构
 

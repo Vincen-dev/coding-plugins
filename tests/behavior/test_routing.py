@@ -237,6 +237,21 @@ class RoutingBehaviorTests(unittest.TestCase):
         self.assertNotIn("execution-contract.md", template)
         self.assertNotIn("execution-contract.md", skill)
 
+    def test_formal_fixture_ipds_use_execution_brief_contract(self) -> None:
+        fixture_root = ROOT / "tests" / "fixtures" / "formal-feature-chain"
+        ipd_paths = sorted(fixture_root.glob("docs/coding-plugins/features/*/plans/*-IPD.md"))
+
+        self.assertTrue(ipd_paths, "formal fixture must include IPD documents")
+        for path in ipd_paths:
+            relative = path.relative_to(ROOT)
+            text = path.read_text(encoding="utf-8")
+            with self.subTest(path=str(relative)):
+                self.assertIn("source_hash: sha256:", text)
+                self.assertIn("## 执行锁定区", text)
+                self.assertIn("## 执行简报", text)
+                self.assertIn("## 任务总览", text)
+                self.assertIsNotNone(re.search(r"^## .+（TASK-\d{3,} / REQ-\d{3,}）$", text, re.MULTILINE))
+
     def test_claude_usage_documents_session_start_prompt(self) -> None:
         usage = self.read_text("docs/claude-code-usage.md")
         reference = self.read_text("skills/using-coding-plugins/references/claude-tools.md")

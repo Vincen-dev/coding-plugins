@@ -8,6 +8,8 @@ import re
 from datetime import date
 from pathlib import Path
 
+import workflow_state
+
 
 SLUG_RE = re.compile(r"^[A-Za-z0-9_.-]+$")
 
@@ -254,12 +256,17 @@ def scaffold_fixture_case(
         ),
     )
 
+    source_hash = workflow_state.compute_upstream_hash(root, feature=feature, doc_id=doc_id)
+    if source_hash is None:
+        raise RuntimeError(f"could not compute source_hash for {feature}/{doc_id}")
+
     write(
         root / ipd_path,
         (
             "---\n"
             f"title: {title} Implementation Procedure Document\n"
             f"{common_frontmatter}"
+            f"source_hash: {source_hash}\n"
             "related_specs:\n"
             f"  - {prd_path}\n"
             "related_technical:\n"
@@ -272,6 +279,18 @@ def scaffold_fixture_case(
             f"  - {ted_path}\n"
             "---\n"
             f"# {title} 任务执行文档（IPD）\n\n"
+            "## 执行锁定区\n\n"
+            f"- **Intent Lock:** 只执行 {title} fixture 链路校验。\n"
+            "- **Scope Fence:** 包含 fixture 文档链路；不包含发布、缓存刷新或仓库集成。\n"
+            "- **Required Spec IDs:** REQ-001\n"
+            "- **Required Tests:** `python3 scripts/preflight.py`\n"
+            "- **Review Gates:** 检查 IPD source_hash、执行简报和 TASK-001 追踪。\n"
+            "- **Rewind Triggers:** 上游 PRD/TDD/TID/TCD 变更、source_hash 不匹配或 fixture 校验失败。\n\n"
+            "## 执行简报\n\n"
+            "- **执行来源:** 只按本 IPD 的任务章节执行。\n"
+            "- **上下文预算:** 优先读取执行简报、执行锁定区、任务总览和当前任务章节。\n"
+            "- **可跳过内容:** PRD/TDD/TID/TCD 已由 `source_hash` 锁定，除非触发 Rewind Triggers 或 guard 失败，否则不重复读取完整上游文档。\n"
+            "- **新计划策略:** 每次新计划新建 IPD，不向旧 IPD 追加任务。\n\n"
             "## 任务总览\n\n"
             "| 任务 | 标题 | 覆盖规格 | 验证方式 | TED 记录 |\n"
             "| --- | --- | --- | --- | --- |\n"

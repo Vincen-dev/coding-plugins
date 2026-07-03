@@ -3,6 +3,7 @@ title: Creek Upload Status Implementation Procedure Document
 status: approved
 feature: creek-wrapper-fixture
 doc_id: creek-upload-status
+source_hash: sha256:d1ef15a657583dabd04a810bed7ffb6d472bb733dec1c637809cd7ad4d0b2b16
 created: 2026-07-02
 updated: 2026-07-02
 related_specs:
@@ -31,6 +32,22 @@ related_evidence:
 ## 目标
 
 执行 wrapper 上传状态查询契约的测试和证据记录。
+
+## 执行锁定区
+
+- **Intent Lock:** 只执行 Creek wrapper 上传状态契约 fixture 校验。
+- **Scope Fence:** 包含 fixture 文档链路和契约校验；不包含真实 SDK、蓝牙或发布流程。
+- **Required Spec IDs:** REQ-001
+- **Required Tests:** `python3 -m unittest scripts.test_preflight.PreflightTests.test_golden_feature_fixture_covers_multiple_realistic_scenarios`
+- **Review Gates:** 检查 source_hash、执行简报和 TASK-001 到 TED 的追踪。
+- **Rewind Triggers:** 上游 PRD/TDD/TID/TCD 变更、source_hash 不匹配或 fixture 校验失败。
+
+## 执行简报
+
+- **执行来源:** 只按本 IPD 的任务章节执行。
+- **上下文预算:** 优先读取执行简报、执行锁定区、任务总览和当前任务章节。
+- **可跳过内容:** PRD/TDD/TID/TCD 已由 `source_hash` 锁定，除非触发 Rewind Triggers 或 guard 失败，否则不重复读取完整上游文档。
+- **新计划策略:** 每次新计划新建 IPD，不向旧 IPD 追加任务。
 
 ## 任务总览
 

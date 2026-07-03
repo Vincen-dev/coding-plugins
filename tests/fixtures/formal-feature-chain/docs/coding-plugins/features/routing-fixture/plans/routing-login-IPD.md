@@ -3,6 +3,7 @@ title: Routing Login Implementation Procedure Document
 status: approved
 feature: routing-fixture
 doc_id: routing-login
+source_hash: sha256:8446a5ff9e12be379482e9ca145ffe5d8b80ffe8e19defbf03096dd97e71dc07
 created: 2026-07-02
 updated: 2026-07-02
 related_specs:
@@ -37,6 +38,22 @@ related_evidence:
 - 推荐方式：`subagent-driven-development`。
 - 降级方式：`executing-plans`。
 - 执行约束：运行 fixture 校验后，将结果写入 TED。
+
+## 执行锁定区
+
+- **Intent Lock:** 只执行 routing-login 正式链路闭包 fixture 校验。
+- **Scope Fence:** 包含 fixture 文档链路和闭包校验；不包含真实登录路由实现。
+- **Required Spec IDs:** REQ-001
+- **Required Tests:** `python3 -m unittest scripts.test_preflight.PreflightTests.test_golden_feature_fixture_satisfies_formal_document_chain`
+- **Review Gates:** 检查 source_hash、执行简报和 TASK-001 到 TED 的追踪。
+- **Rewind Triggers:** 上游 PRD/TDD/TID/TCD 变更、source_hash 不匹配或 fixture 校验失败。
+
+## 执行简报
+
+- **执行来源:** 只按本 IPD 的任务章节执行。
+- **上下文预算:** 优先读取执行简报、执行锁定区、任务总览和当前任务章节。
+- **可跳过内容:** PRD/TDD/TID/TCD 已由 `source_hash` 锁定，除非触发 Rewind Triggers 或 guard 失败，否则不重复读取完整上游文档。
+- **新计划策略:** 每次新计划新建 IPD，不向旧 IPD 追加任务。
 
 ## 上游约束摘要
 

@@ -20,7 +20,14 @@ def extract_task_headings(text: str) -> list[str]:
     return headings
 
 
-def build_brief(root: Path | str, *, feature: str, doc_id: str, target: str = "execute") -> dict[str, Any]:
+def build_brief(
+    root: Path | str,
+    *,
+    feature: str,
+    doc_id: str,
+    target: str = "execute",
+    task: str | None = None,
+) -> dict[str, Any]:
     root_path = Path(root)
     guard = workflow_guard.check(root_path, feature=feature, doc_id=doc_id, target=target)
     next_context = guard["next_context"]
@@ -32,18 +39,28 @@ def build_brief(root: Path | str, *, feature: str, doc_id: str, target: str = "e
         if ipd_path.exists():
             task_headings = extract_task_headings(ipd_path.read_text(encoding="utf-8"))
 
+    failures = list(guard["failures"])
+    focus_sections = list(next_context["focus_sections"])
+    if task:
+        task_headings = [heading for heading in task_headings if task in heading]
+        if task_headings:
+            focus_sections.extend(f"## {heading}" for heading in task_headings)
+        else:
+            failures.append(f"requested task {task} was not found")
+
     return {
-        "pass": guard["pass"],
+        "pass": guard["pass"] and not failures,
         "feature": feature,
         "doc_id": doc_id,
         "target": target,
+        "current_task": task,
         "state": guard["state"],
         "reason": guard["reason"],
         "next_skill": guard["next_skill"],
-        "failures": guard["failures"],
+        "failures": failures,
         "must_read": must_read,
         "may_skip": next_context["may_skip"],
-        "focus_sections": next_context["focus_sections"],
+        "focus_sections": focus_sections,
         "task_headings": task_headings,
         "execution_source": next_context["execution_source"],
         "new_plan_policy": "create-new-ipd",
@@ -78,13 +95,14 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--feature", required=True)
     parser.add_argument("--doc-id", required=True)
     parser.add_argument("--target", choices=sorted(workflow_guard.VALID_TARGETS), default="execute")
+    parser.add_argument("--task", help="Optional TASK-001 style task id to focus the execution brief.")
     parser.add_argument("--json", action="store_true")
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
-    payload = build_brief(Path(args.root), feature=args.feature, doc_id=args.doc_id, target=args.target)
+    payload = build_brief(Path(args.root), feature=args.feature, doc_id=args.doc_id, target=args.target, task=args.task)
     if args.json:
         print(json.dumps(payload, ensure_ascii=False, indent=2))
     else:

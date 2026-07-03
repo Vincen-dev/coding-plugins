@@ -24,6 +24,25 @@ VALID_EXECUTION_LOCK = """## 执行锁定区
 - **Rewind Triggers:** 上游文档变更、source_hash 不匹配或验证失败。
 """
 
+VALID_EXECUTION_BRIEF = """## 执行简报
+
+- **执行来源:** 只按本 IPD 的任务章节执行。
+- **上下文预算:** 优先读取执行简报、执行锁定区、任务总览和当前任务章节。
+- **可跳过内容:** PRD/TDD/TID/TCD 已由 source_hash 锁定。
+- **新计划策略:** 每次新计划新建 IPD，不向旧 IPD 追加任务。
+"""
+
+VALID_TASKS = """## 任务总览
+
+| 任务 | 标题 | 覆盖规格 | 验证方式 | TED 记录 |
+| --- | --- | --- | --- | --- |
+| TASK-001 | 校验 workflow guard | REQ-001 | `python3 -m unittest scripts/test_workflow_guard.py` | `docs/coding-plugins/features/workflow-runtime/evidences/workflow-runtime-guard-TED.md` |
+
+## 校验 workflow guard（TASK-001 / REQ-001）
+"""
+
+VALID_EXECUTION_BODY = VALID_EXECUTION_LOCK + "\n" + VALID_EXECUTION_BRIEF + "\n" + VALID_TASKS
+
 
 def write_doc(
     path: Path,
@@ -167,6 +186,53 @@ class WorkflowGuardTests(unittest.TestCase):
         self.assertFalse(result["pass"])
         self.assertIn("IPD execution lock is missing fields: Required Spec IDs, Required Tests, Review Gates, Rewind Triggers", result["failures"])
 
+    def test_execute_target_blocks_plan_without_execution_brief(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature = "workflow-runtime"
+            doc_id = "workflow-runtime-guard"
+            write_approved_upstream(root, feature, doc_id)
+            source_hash = workflow_state.compute_upstream_hash(root, feature=feature, doc_id=doc_id)
+            write_doc(
+                path_for(root, feature, doc_id, "plans", "IPD"),
+                status="approved",
+                source_hash=source_hash,
+                body=VALID_EXECUTION_LOCK + "\n" + VALID_TASKS,
+            )
+
+            result = workflow_guard.check(root, feature=feature, doc_id=doc_id, target="execute")
+
+        self.assertFalse(result["pass"])
+        self.assertIn("IPD execution brief section is missing", result["failures"])
+
+    def test_execute_target_blocks_plan_without_task_chapter(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature = "workflow-runtime"
+            doc_id = "workflow-runtime-guard"
+            write_approved_upstream(root, feature, doc_id)
+            source_hash = workflow_state.compute_upstream_hash(root, feature=feature, doc_id=doc_id)
+            write_doc(
+                path_for(root, feature, doc_id, "plans", "IPD"),
+                status="approved",
+                source_hash=source_hash,
+                body=VALID_EXECUTION_LOCK
+                + "\n"
+                + VALID_EXECUTION_BRIEF
+                + """
+## 任务总览
+
+| 任务 | 标题 | 覆盖规格 | 验证方式 | TED 记录 |
+| --- | --- | --- | --- | --- |
+| TASK-001 | 校验 workflow guard | REQ-001 | `python3 -m unittest scripts/test_workflow_guard.py` | `docs/coding-plugins/features/workflow-runtime/evidences/workflow-runtime-guard-TED.md` |
+""",
+            )
+
+            result = workflow_guard.check(root, feature=feature, doc_id=doc_id, target="execute")
+
+        self.assertFalse(result["pass"])
+        self.assertIn("IPD task chapter is missing", result["failures"])
+
     def test_execute_target_passes_current_plan(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -178,7 +244,7 @@ class WorkflowGuardTests(unittest.TestCase):
                 path_for(root, feature, doc_id, "plans", "IPD"),
                 status="approved",
                 source_hash=source_hash,
-                body=VALID_EXECUTION_LOCK,
+                body=VALID_EXECUTION_BODY,
             )
 
             result = workflow_guard.check(root, feature=feature, doc_id=doc_id, target="execute")
