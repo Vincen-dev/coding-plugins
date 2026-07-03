@@ -582,7 +582,7 @@ spec-driven-development -> writing-requirements -> writing-technicals -> writing
 
 - 每个任务派发一个新的实现子代理。
 - 子代理不能自己读取完整 IPD，主代理应提供完整任务文本和必要上下文。
-- 主代理优先用 `scripts/subagent_prompt_builder.py --task TASK-001` 生成实现和评审提示词，保留 prompt hash；手工模板只作为降级方式。
+- 主代理优先用 `scripts/subagent_prompt_builder.py --task TASK-001` 生成实现和评审提示词，保留 prompt hash；评审提示词必须传真实实现报告，代码质量评审还必须传真实 `base/head` SHA；手工模板只作为降级方式。
 - 每个任务后先做规格符合性评审。
 - 规格通过后再做代码质量评审。
 - 两个评审都通过后才进入下个任务。
@@ -631,7 +631,7 @@ TDD 证据可以声明 `测试类型`：`behavior`、`contract`、`architecture`
 
 `subagent-driven-development` 内置两个专门评审模板：
 
-- `scripts/subagent_prompt_builder.py`：推荐生成入口，按 IPD 当前任务章节、`workflow_brief.py` 上下文预算和 `source_hash` 填充提示词。
+- `scripts/subagent_prompt_builder.py`：推荐生成入口，按 IPD 当前任务章节、`workflow_brief.py` 上下文预算和 `source_hash` 填充提示词；review prompt 缺少实现报告或 git 范围时会失败。
 - `spec-reviewer-prompt.md`：检查实现是否符合任务规格。
 - `code-quality-reviewer-prompt.md`：检查实现是否构建良好、测试充分、可维护。
 

@@ -23,6 +23,7 @@ REPO_ROOT = SCRIPT_DIR.parent
 SUBAGENT_SKILL_DIR = REPO_ROOT / "skills" / "subagent-driven-development"
 CODE_REVIEWER_TEMPLATE = REPO_ROOT / "skills" / "requesting-code-review" / "code-reviewer.md"
 TASK_HEADING_RE = re.compile(r"^## (?P<title>.*?\b(?P<task>TASK-\d+)\b.*?)\s*$", re.MULTILINE)
+SECTION_HEADING_RE = re.compile(r"^## (?!#).*$", re.MULTILINE)
 
 
 def sha256_text(text: str) -> str:
@@ -52,15 +53,30 @@ def read_after_fence(path: Path) -> str:
 
 def extract_task_section(ipd_text: str, task: str) -> tuple[str, str]:
     matches = list(TASK_HEADING_RE.finditer(ipd_text))
-    for index, match in enumerate(matches):
+    for match in matches:
         if match.group("task") != task:
             continue
         start = match.start()
-        end = matches[index + 1].start() if index + 1 < len(matches) else len(ipd_text)
+        next_section = SECTION_HEADING_RE.search(ipd_text, match.end())
+        end = next_section.start() if next_section else len(ipd_text)
         section = ipd_text[start:end].strip()
         title = match.group("title").strip()
         return title, section
     raise PromptBuildError(f"requested task {task} was not found in IPD")
+
+
+def review_input_failures(args: argparse.Namespace) -> list[str]:
+    failures: list[str] = []
+    if args.kind not in {"spec-reviewer", "code-quality-reviewer"}:
+        return failures
+    if args.implementer_report == "[待实现子代理回报后填入]":
+        failures.append("--implementer-report is required for review prompts")
+    if args.kind == "code-quality-reviewer":
+        if args.base_sha == "[commit before task]":
+            failures.append("--base-sha is required for code-quality-reviewer prompts")
+        if args.head_sha == "[current commit]":
+            failures.append("--head-sha is required for code-quality-reviewer prompts")
+    return failures
 
 
 def compact_task_name(title: str, task: str) -> str:
@@ -231,6 +247,11 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    input_failures = review_input_failures(args)
+    if input_failures:
+        print("ERROR: " + "; ".join(input_failures))
+        return 1
+
     try:
         payload = build_prompts(
             Path(args.root),

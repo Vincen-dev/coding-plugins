@@ -6,6 +6,8 @@ from __future__ import annotations
 import sys
 import tempfile
 import unittest
+from contextlib import redirect_stdout
+from io import StringIO
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -91,6 +93,26 @@ class SubagentPromptBuilderTests(unittest.TestCase):
         self.assertNotIn("# workflow-runtime-guard-PRD", implementer)
         self.assertNotIn("# workflow-runtime-guard-TDD", implementer)
 
+    def test_task_section_stops_before_completion_check(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature, doc_id = self.write_ready_ipd(
+                root,
+                extra_task_body="""
+## 完成检查
+
+- [ ] 每个 MUST Spec ID 都映射到任务或明确豁免。
+- [ ] 已运行相关 validator、测试或 preflight。
+""",
+            )
+
+            result = subagent_prompt_builder.build_prompts(root, feature=feature, doc_id=doc_id, task="TASK-001")
+
+        implementer = result["prompts"]["implementer"]
+        self.assertIn("确认子代理 prompt builder 能从 IPD 当前任务章节生成稳定提示词", implementer)
+        self.assertNotIn("## 完成检查", implementer)
+        self.assertNotIn("每个 MUST Spec ID 都映射到任务或明确豁免", implementer)
+
     def test_build_review_prompts_include_reports_and_git_range(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -116,6 +138,64 @@ class SubagentPromptBuilderTests(unittest.TestCase):
         self.assertIn("abc1234", quality_review)
         self.assertIn("def5678", quality_review)
         self.assertIn("git diff abc1234..def5678", quality_review)
+
+    def test_review_prompt_cli_requires_real_review_inputs(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature, doc_id = self.write_ready_ipd(root)
+            stdout = StringIO()
+
+            with redirect_stdout(stdout):
+                exit_code = subagent_prompt_builder.main(
+                    [
+                        "--root",
+                        str(root),
+                        "--feature",
+                        feature,
+                        "--doc-id",
+                        doc_id,
+                        "--task",
+                        "TASK-001",
+                        "--kind",
+                        "code-quality-reviewer",
+                    ]
+                )
+
+        self.assertEqual(exit_code, 1)
+        self.assertIn("--implementer-report", stdout.getvalue())
+        self.assertIn("--base-sha", stdout.getvalue())
+        self.assertIn("--head-sha", stdout.getvalue())
+
+    def test_review_prompt_cli_accepts_real_review_inputs(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature, doc_id = self.write_ready_ipd(root)
+            stdout = StringIO()
+
+            with redirect_stdout(stdout):
+                exit_code = subagent_prompt_builder.main(
+                    [
+                        "--root",
+                        str(root),
+                        "--feature",
+                        feature,
+                        "--doc-id",
+                        doc_id,
+                        "--task",
+                        "TASK-001",
+                        "--kind",
+                        "code-quality-reviewer",
+                        "--implementer-report",
+                        "Status: DONE",
+                        "--base-sha",
+                        "abc1234",
+                        "--head-sha",
+                        "def5678",
+                    ]
+                )
+
+        self.assertEqual(exit_code, 0)
+        self.assertIn("git diff abc1234..def5678", stdout.getvalue())
 
     def test_missing_task_fails_before_prompt_generation(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
