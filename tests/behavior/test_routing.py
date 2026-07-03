@@ -250,6 +250,41 @@ class RoutingBehaviorTests(unittest.TestCase):
         self.assertEqual(covered_gates, known_gate_ids)
         self.assertEqual(covered_cases, known_case_ids)
 
+    def test_agent_pressure_results_capture_real_subagent_runs(self) -> None:
+        contract = self.read_json("docs/coding-plugins/scenario-routing.json")
+        results_path = ROOT / contract["agent_pressure_results"]
+        results = json.loads(results_path.read_text(encoding="utf-8"))
+        scenarios = {scenario["id"] for scenario in contract["scenarios"]}
+        feedback = self.read_json(contract["self_test_feedback"])
+        feedback_scenarios = {case["expected_scenario_id"] for case in feedback["cases"]}
+
+        self.assertEqual(results["schema_version"], 1)
+        self.assertRegex(results["run_id"], r"^\d{4}-\d{2}-\d{2}-agent-pressure-\d{3}$")
+        self.assertGreaterEqual(len(results["cases"]), 6)
+        self.assertEqual(len({case["id"] for case in results["cases"]}), len(results["cases"]))
+
+        covered_scenarios: set[str] = set()
+        for case in results["cases"]:
+            with self.subTest(case=case["id"]):
+                self.assertRegex(case["agent_id"], r"^[0-9a-f-]{36}$")
+                self.assertIn(case["scenario_id"], scenarios)
+                self.assertIn(case["scenario_id"], feedback_scenarios)
+                self.assertTrue(case["pressure_prompt"])
+                self.assertTrue(case["passed"], case["summary"])
+                self.assertTrue(case["observed_behaviors"])
+                self.assertTrue(case["residual_risks"])
+                covered_scenarios.add(case["scenario_id"])
+
+        for required in (
+            "idea_brainstorming",
+            "existing_ipd_execution",
+            "bug_or_ci_failure",
+            "code_review_or_feedback",
+            "direct_commit",
+            "parallel_tasks",
+        ):
+            self.assertIn(required, covered_scenarios)
+
     def test_plan_scenario_does_not_claim_ted_as_direct_artifact(self) -> None:
         contract = self.read_json("docs/coding-plugins/scenario-routing.json")
         scenario = next(item for item in contract["scenarios"] if item["id"] == "test_cases_to_plan")
