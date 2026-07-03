@@ -1733,6 +1733,7 @@ def build_validation_commands(
         [python, "-m", "unittest", "scripts/test_workflow_mode.py"],
         [python, "-m", "unittest", "scripts/test_workflow_guard.py"],
         [python, "-m", "unittest", "scripts/test_workflow_brief.py"],
+        [python, "-m", "unittest", "scripts/test_subagent_prompt_builder.py"],
         [python, "-m", "unittest", "scripts/test_agent_pressure_harness.py"],
         [python, "-m", "unittest", "scripts/test_agent_pressure_ingest.py"],
         [python, "-m", "unittest", "scripts/test_remote_audit.py"],

@@ -25,7 +25,7 @@ Codex 侧包含 SessionStart hook，新建、恢复或清空会话时会注入 `
 7. **writing-test-cases** - 基于需求文档、TDD/TID 编写测试用例文档，保存到 `docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md`。
 8. **writing-plans** - 基于已批准需求、TDD/TID 和测试用例写 IPD 任务执行文档。任务拆到 2 到 5 分钟粒度，并建立 Spec ID -> TASK -> 验证 -> TED 的执行落点。
 9. **using-git-worktrees** - 执行前使用。创建隔离 worktree 和新分支，避免污染当前工作区。
-10. **subagent-driven-development / executing-plans** - 根据 IPD 任务执行文档执行。优先子代理驱动；没有子代理时内联执行。
+10. **subagent-driven-development / executing-plans** - 根据 IPD 任务执行文档执行。优先子代理驱动；没有子代理时内联执行。子代理提示词优先由 `scripts/subagent_prompt_builder.py` 从当前 IPD 任务章节生成。
 11. **test-driven-development** - 实现时强制 RED-GREEN-REFACTOR：先从规格写失败测试，再最小实现，再重构，并把 TDD Evidence 写入 `docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md`。
 12. **requesting-code-review** - 任务之间或合并前评审，按严重级别报告问题。
 13. **receiving-code-review** - 收到评审后先验证反馈，再决定是否修改。
@@ -62,7 +62,7 @@ Codex 侧包含 SessionStart hook，新建、恢复或清空会话时会注入 `
 - `git-commit`：中文 Conventional Commit，检查作者身份，在 footer 添加本人 `Authored-by` 署名，禁止 AI 作者。
 - `using-git-worktrees`：并行开发分支和隔离工作区。
 - `finishing-a-development-branch`：分支收尾和集成决策。
-- `subagent-driven-development`：每任务子代理实现，两阶段评审。
+- `subagent-driven-development`：每任务子代理实现，两阶段评审；`subagent_prompt_builder.py` 固化实现、规格评审和代码质量评审提示词。
 
 **元技能**
 

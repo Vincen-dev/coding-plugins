@@ -68,6 +68,7 @@ description: 开始任何任务时使用；建立 Coding Plugins 技能选择、
 - 当用户说“继续”“恢复”“开始实现”“执行 IPD”，且能识别 `feature` 和 `doc_id` 时，先运行 `python3 scripts/workflow_state.py inspect --feature <feature> --doc-id <doc-id> --json`。输出必须说明当前状态、判断原因、缺失产物、是否 stale、推荐下一个 skill。
 - 执行 IPD 前必须运行 `python3 scripts/workflow_guard.py check --feature <feature> --doc-id <doc-id> --target execute --json`；未通过时按 `next_skill` 回退，不得继续实现。
 - `workflow_guard.py` 通过后，运行 `python3 scripts/workflow_brief.py --feature <feature> --doc-id <doc-id> --target execute --task TASK-001 --json` 生成短上下文；默认只读 IPD 的 `## 执行简报`、`## 执行锁定区`、`## 任务总览` 和当前任务章节，除非 Rewind Triggers 命中，不重复读取完整 PRD/TDD/TID/TCD。未知当前任务时可以省略 `--task`，但多任务 IPD 应优先指定。
+- 进入 `subagent-driven-development` 时，优先运行 `python3 scripts/subagent_prompt_builder.py --feature <feature> --doc-id <doc-id> --task TASK-001 --kind implementer` 生成实现子代理提示词；评审阶段用同一脚本生成 `spec-reviewer` 和 `code-quality-reviewer` 提示词，避免手工漏粘 IPD 锁定区、当前任务或 prompt hash。
 - 如果 `workflow_state.py` 输出 `plan-draft`、`plan-unlocked` 或 `plan-stale`，不得进入实现；先路由到 `writing-plans` 批准 IPD、补齐 `source_hash`，或刷新执行锁定区。
 - 需要声称完成、修复或通过前，必须使用 `verification-before-completion`。
 - 需要提交时必须使用 `git-commit`；提交前仍要检查 diff、作者身份和敏感文件。
