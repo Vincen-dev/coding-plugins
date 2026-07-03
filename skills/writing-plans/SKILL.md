@@ -110,6 +110,14 @@ python3 scripts/workflow_state.py inspect --feature <feature-name> --doc-id <doc
 
 如果输出 `state: plan-stale`，不得继续执行，先回到 `writing-plans` 刷新 IPD。
 
+进入实现前运行执行门禁：
+
+```bash
+python3 scripts/workflow_guard.py check --feature <feature-name> --doc-id <doc-id> --target execute --json
+```
+
+只有 `pass: true` 才能进入 `using-git-worktrees` 和执行技能。
+
 ## 任务结构
 
 每个任务使用固定章节，避免把多个行为塞进一个大表：
