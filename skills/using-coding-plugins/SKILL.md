@@ -38,6 +38,16 @@ description: 开始任何任务时使用；建立 Coding Plugins 技能选择、
 
 ### 开发任务
 
+进入开发链路前，如果任务范围不确定或可能过重，先用 `python3 scripts/workflow_mode.py --intent "<用户意图>" --files "<逗号分隔路径>" --task-count <数量> --json` 推断 workflow mode。显式用户指令优先于推断结果。
+
+| Workflow mode | 含义 | 默认处理 |
+| --- | --- | --- |
+| `analysis-only` | 只分析、解释、读取或 review，不改代码 | 不创建正式文档 |
+| `docs-only` | 文档、索引、说明或配置类轻量改动 | 直接编辑并验证文档/配置完整性 |
+| `tdd-only` | 小型明确行为变更，≤2 任务且 ≤2 文件 | 走 `test-driven-development`，必要时写 inline spec |
+| `full-chain` | 新功能、API/schema/状态机/验收标准或契约不清 | 走完整 PRD -> TDD/TID -> TCD -> IPD -> TED |
+| `maintenance-chain` | 迁移、升级、重构、安全、性能且影响兼容或验证口径 | 写 maintenance PRD，再走完整链路 |
+
 | 任务情况 | 使用技能 |
 | --- | --- |
 | 功能构想、产品方向或方案边界还未收敛，用户尚未确认进入正式文档链路 | `brainstorming` |
