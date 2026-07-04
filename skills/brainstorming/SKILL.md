@@ -32,7 +32,7 @@ description: Use when users want idea exploration, solution comparison, product 
 ## Hard Gates
 
 - 不写代码、不搭脚手架、不调用实现技能。
-- 不创建 README、PRD、TDD、TID、TCD、IPD 或 TED。
+- 不创建 README、PRD、TSD、TVD、TED 或 VED。
 - 不维护正式 `document-metadata`、`related_docs`、README 或 `docs/coding-plugins/INDEX.md`。
 - 不把探索性判断包装成 approved 需求。
 - 用户没有确认进入落地前，不得转入 `writing-requirements`、`writing-technicals`、`writing-test-cases` 或 `writing-plans`。
@@ -59,7 +59,7 @@ description: Use when users want idea exploration, solution comparison, product 
 - 风险和开放问题。
 - 是否建议进入 `spec-driven-development`。
 
-如果用户明确要求沉淀临时讨论记录，只能创建非正式 notes，并说明它不是 PRD、TDD、TCD、IPD 或 TED，不进入正式文档索引。
+如果用户明确要求沉淀临时讨论记录，只能创建非正式 notes，并说明它不是 PRD、TSD、TVD、TED 或 VED，不进入正式文档索引。
 
 ## Handoff to SDD
 

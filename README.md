@@ -25,7 +25,7 @@
 
 中文 AI 编码工作流插件：把“先想清楚要做什么”和“代码真正按计划落地”连成一条可验证链路。
 
-Coding Plugins 支持 Codex、Claude Code、Gemini CLI、GitHub Copilot CLI，以及 OpenCode / Trae / Qoder / Cursor 等可加载本地 `skills/` 的客户端。它提供一组中文 skills、提示词模板、脚本和文档契约，用来约束 AI 编码代理：先收敛需求，再写规格和 IPD 任务执行文档，再小步实现、测试、评审、提交和收尾。
+Coding Plugins 支持 Codex、Claude Code、Gemini CLI、GitHub Copilot CLI，以及 OpenCode / Trae / Qoder / Cursor 等可加载本地 `skills/` 的客户端。它提供一组中文 skills、提示词模板、脚本和文档契约，用来约束 AI 编码代理：先收敛需求，再写规格和 TED 任务执行文档，再小步实现、测试、评审、提交和收尾。
 
 ## 为什么需要它
 
@@ -40,7 +40,7 @@ Coding Plugins 用一组机器可检查的约束把这些风险收住：
 ```text
 brainstorming
   -> requirements / technicals / test-cases
-  -> IPD execution plan
+  -> TED execution plan
   -> workflow state + guard + brief
   -> TDD implementation
   -> spec review + code review
@@ -51,8 +51,8 @@ brainstorming
 
 | 设计原则 | 说明 |
 | --- | --- |
-| Spec First | 需求、技术设计、测试用例和 IPD 未准备好时，不急着实现 |
-| IPD Contract | 执行阶段以当前任务章节、执行锁定区和 `source_hash` 为准 |
+| Spec First | 需求、技术设计、测试用例和 TED 未准备好时，不急着实现 |
+| TED Contract | 执行阶段以当前任务章节、执行锁定区和 `source_hash` 为准 |
 | Guarded Execution | `workflow-state.ts`、`workflow-guard.ts`、`workflow-brief.ts` 负责状态、新鲜度和短上下文 |
 | TDD Discipline | 生产代码前先写失败测试，完成后记录 TDD Evidence 或例外 |
 | Review Gate | 子代理实现后做规格符合性和代码质量评审 |
@@ -118,11 +118,11 @@ brainstorming
         |
         v
 spec-driven-development
-  编排 README / PRD / TDD / TID / TCD / IPD / TED
+  编排 README / PRD / TSD / TVD / TED / VED
         |
         v
 writing-requirements -> writing-technicals -> writing-test-cases -> writing-plans
-  需求、技术设计、测试用例和 IPD 任务执行文档落盘
+  需求、技术设计、测试用例和 TED 任务执行文档落盘
         |
         v
 workflow-state.ts + workflow-guard.ts + workflow-brief.ts
@@ -151,9 +151,9 @@ git-commit -> finishing-a-development-branch
 
 关键约束：
 
-- IPD 未批准、缺 `source_hash` 或 stale 时，不进入执行。
-- 执行阶段默认只读当前 IPD 任务章节、执行锁定区和必要短上下文。
-- 子代理不得自己吞完整计划和上游 PRD/TDD/TID/TCD。
+- TED 未批准、缺 `source_hash` 或 stale 时，不进入执行。
+- 执行阶段默认只读当前 TED 任务章节、执行锁定区和必要短上下文。
+- 子代理不得自己吞完整计划和上游 PRD/TSD/TVD。
 - 评审提示词必须使用真实实现报告，代码质量评审必须使用真实 `base/head` SHA。
 - 没有新鲜测试、构建、preflight 或人工验收证据，不能声明完成。
 
@@ -183,12 +183,12 @@ git-commit -> finishing-a-development-branch
 | 3 | `spec-driven-development` | 编排 | 决定需要哪些正式规格、技术、测试、计划和证据产物 |
 | 4 | `document-metadata` | 文档关系 | 维护 frontmatter、README、INDEX 和 `related_docs` 链路 |
 | 5 | `writing-requirements` | 需求 | 编写 PRD、API contract、schema、state machine、acceptance 或 maintenance 规格 |
-| 6 | `writing-technicals` | 技术 | 编写 TDD 技术设计和 TID 技术实现 |
-| 7 | `writing-test-cases` | 测试设计 | 编写 TCD 测试用例文档 |
-| 8 | `writing-plans` | 执行计划 | 编写 IPD 任务执行文档和执行锁定区 |
+| 6 | `writing-technicals` | 技术 | 编写 TSD 技术方案文档 |
+| 7 | `writing-test-cases` | 测试设计 | 编写 TVD 测试用例文档 |
+| 8 | `writing-plans` | 执行计划 | 编写 TED 任务执行文档和执行锁定区 |
 | 9 | `using-git-worktrees` | 隔离 | 创建或确认隔离工作区 |
 | 10 | `subagent-driven-development` | 执行 | 每任务子代理实现，两阶段评审 |
-| 11 | `executing-plans` | 执行 | 无子代理时按 IPD 检查点内联执行 |
+| 11 | `executing-plans` | 执行 | 无子代理时按 TED 检查点内联执行 |
 | 12 | `test-driven-development` | 实现 | RED-GREEN-REFACTOR 和 TDD Evidence |
 | 13 | `systematic-debugging` | 调试 | 根因定位、假设验证、防御式修复 |
 | 14 | `dispatching-parallel-agents` | 并行 | 拆分多个独立任务或调查方向 |
@@ -223,10 +223,10 @@ git-commit -> finishing-a-development-branch
 使用 coding-plugins:using-coding-plugins 开始。我要实现 <功能>。
 ```
 
-已有 IPD：
+已有 TED：
 
 ```text
-继续执行 <feature>/<doc-id> 的 IPD，从 TASK-001 开始。
+继续执行 <feature>/<doc-id> 的 TED，从 TASK-001 开始。
 ```
 
 小修：
@@ -275,11 +275,10 @@ docs/coding-plugins/
     └── <feature-name>/
         ├── README.md
         ├── requirements/<doc-id>-PRD.md
-        ├── technicals/<doc-id>-TDD.md
-        ├── technicals/<doc-id>-TID.md
-        ├── test-cases/<doc-id>-TCD.md
-        ├── plans/<doc-id>-IPD.md
-        └── evidences/<doc-id>-TED.md
+        ├── technicals/<doc-id>-TSD.md
+        ├── test-cases/<doc-id>-TVD.md
+        ├── plans/<doc-id>-TED.md
+        └── evidences/<doc-id>-VED.md
 ```
 
 实际 feature 根目录是 `docs/coding-plugins/features/<feature-name>/`。
@@ -325,7 +324,7 @@ npm run preflight
 
 普通 prompt 依赖本次会话的临时记忆。Coding Plugins 把流程拆成可复用 skills、模板、脚本和文档契约，并用 preflight、workflow guard、TDD evidence、agent pressure fixture 等机制做回归。
 
-### 一定要写完整 PRD/TDD/TID/TCD/IPD 吗？
+### 一定要写完整 PRD/TSD/TVD/TED/VED 吗？
 
 不一定。小型明确变更可以走 `test-driven-development` 或 workflow mode 的轻量路径。影响外部行为、数据、安全、发布或长期维护的变更，才应该进入完整链路。
 
@@ -333,9 +332,9 @@ npm run preflight
 
 会增加调度成本，但通过 `workflow-brief.ts`、`subagent-prompt-builder.ts`、按 `--kind` 过滤 JSON 输出、prompt hash 和执行锁定区，可以减少重复上下文。复杂任务中，子代理成本换来的是更低跑偏率和更强评审隔离。
 
-### 为什么要保留 IPD？
+### 为什么要保留 TED？
 
-IPD 是执行阶段的合约。它把 Spec ID、任务、文件范围、验证命令、TDD Evidence 和完成检查放在同一份文档里，让代理知道每一步该改什么、怎么证明完成、什么时候必须回退。
+TED 是执行阶段的合约。它把 Spec ID、任务、文件范围、验证命令、TDD Evidence 和完成检查放在同一份文档里，让代理知道每一步该改什么、怎么证明完成、什么时候必须回退。
 
 ### 能和项目已有文档体系共存吗？
 

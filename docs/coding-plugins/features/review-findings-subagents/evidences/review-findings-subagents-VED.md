@@ -1,5 +1,5 @@
 ---
-title: Review Findings Subagents TED
+title: Review Findings Subagents VED
 status: approved
 feature: review-findings-subagents
 created: 2026-07-04
@@ -7,7 +7,7 @@ updated: 2026-07-04
 related_docs: []
 external_references: []
 ---
-# Review Findings Subagents TED
+# Review Findings Subagents VED
 
 ## TDD 证据
 

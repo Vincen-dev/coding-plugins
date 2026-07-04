@@ -27,8 +27,8 @@ description: Use when writing or updating Coding Plugins PRD requirement documen
 
 不使用本技能：
 
-- 已经有已批准 PRD，且只需要 TDD/TID：使用 `writing-technicals`。
-- 已经有 TDD/TID 和 TCD，需要拆任务：使用 `writing-plans`。
+- 已经有已批准 PRD，且只需要 TSD 技术方案文档：使用 `writing-technicals`。
+- 已经有 TSD 技术方案文档和 TVD，需要拆任务：使用 `writing-plans`。
 - 只需要测试用例文档：使用 `writing-test-cases`。
 - 只记录实际 RED/GREEN/REFACTOR：使用 `test-driven-development` 的 evidence。
 
@@ -78,14 +78,14 @@ npm run preflight -- --write-index
 | 功能需求、契约字段、schema、状态迁移 | 代码文件修改清单 |
 | 错误和边界条件 | RED/GREEN/REFACTOR 实际证据 |
 | 验收标准和验证方式类型 | 逐条测试用例步骤 |
-| Traceability Matrix 种子 | 实现任务拆分、IPD 任务编号 |
+| Traceability Matrix 种子 | 实现任务拆分、TED 任务编号 |
 
 ## 自审
 
 - 每个 MUST 需求是否有稳定 Spec ID。
 - 每个需求点是否有独立 `## 标题（REQ-001）` 章节。
 - 每个 MUST 需求是否有验证方式。
-- 是否没有把技术设计或技术实现写进需求文档。
+- 是否没有把技术方案写进需求文档。
 - 是否没有把测试用例步骤写进需求文档。
-- 是否已链接相关需求、技术设计、计划、证据或代码路径。
+- 是否已链接相关需求、技术方案、计划、证据或代码路径。
 - 是否运行 `validate-spec.ts` 并修复失败项。

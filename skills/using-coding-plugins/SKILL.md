@@ -31,8 +31,8 @@ description: 开始任何任务时使用；建立 Coding Plugins 技能选择、
 | 提交、commit、`/commit`，或完成阶段用户选择提交 | `git-commit` |
 | 创建、修改、优化 skill 或插件工作流 | `writing-skills` |
 | 编写需求文档、需求规格、API 契约、schema、状态机、验收或维护规格 | `writing-requirements` |
-| 编写 TDD 技术设计、TID 技术实现、架构方案、ADR 或 implementation design | `writing-technicals` |
-| 编写测试用例文档、测试设计、TCD 测试用例章节 | `writing-test-cases` |
+| 编写 TSD 技术方案文档、架构方案、ADR 或 implementation design | `writing-technicals` |
+| 编写测试用例文档、测试设计、TVD 测试用例章节 | `writing-test-cases` |
 | 需要隔离当前工作区、创建 worktree 或避免污染主分支 | `using-git-worktrees` |
 | 多个独立任务、多个失败点、可并行调查或实现 | `dispatching-parallel-agents` |
 
@@ -45,7 +45,7 @@ description: 开始任何任务时使用；建立 Coding Plugins 技能选择、
 | `analysis-only` | 只分析、解释、读取或 review，不改代码 | 不创建正式文档 |
 | `docs-only` | 文档、索引、说明或配置类轻量改动 | 直接编辑并验证文档/配置完整性 |
 | `tdd-only` | 小型明确行为变更，≤2 任务且 ≤2 文件 | 走 `test-driven-development`，必要时写 inline spec |
-| `full-chain` | 新功能、API/schema/状态机/验收标准或契约不清 | 走完整 PRD -> TDD/TID -> TCD -> IPD -> TED |
+| `full-chain` | 新功能、API/schema/状态机/验收标准或契约不清 | 走完整 PRD -> TSD -> TVD -> TED -> VED |
 | `maintenance-chain` | 迁移、升级、重构、安全、性能且影响兼容或验证口径 | 写 maintenance PRD，再走完整链路 |
 
 | 任务情况 | 使用技能 |
@@ -53,10 +53,10 @@ description: 开始任何任务时使用；建立 Coding Plugins 技能选择、
 | 功能构想、产品方向或方案边界还未收敛，用户尚未确认进入正式文档链路 | `brainstorming` |
 | 新需求、行为变更、接口契约、schema、状态机或验收标准不清，且已经确认需要正式落地 | `spec-driven-development` 编排，进入 `writing-requirements` |
 | 维护、重构、依赖升级、迁移、安全或性能改造会影响外部行为、兼容性或验证口径 | `spec-driven-development` 编排，进入 `writing-requirements` 写 maintenance 需求文档 |
-| 已有批准 PRD，需要 TDD/TID 技术文档 | `writing-technicals` |
-| 已有批准 PRD 和 TDD/TID，需要 TCD 测试设计 | `writing-test-cases` |
-| 已有批准 PRD、TDD/TID 和 TCD，需要 IPD 任务执行文档 | `writing-plans` |
-| 已有 IPD 任务执行文档，需要执行 | 先 `using-git-worktrees`，再 `subagent-driven-development` 或 `executing-plans` |
+| 已有批准 PRD，需要 TSD 技术方案文档 | `writing-technicals` |
+| 已有批准 PRD 和 TSD，需要 TVD 测试设计 | `writing-test-cases` |
+| 已有批准 PRD、TSD 和 TVD，需要 TED 任务执行文档 | `writing-plans` |
+| 已有 TED 任务执行文档，需要执行 | 先 `using-git-worktrees`，再 `subagent-driven-development` 或 `executing-plans` |
 | 小型明确变更，验收标准清楚且可测试 | `test-driven-development`，必要时在计划或回复中写 inline spec |
 | bug、CI 失败、测试失败、构建失败、异常行为、原因不明或回归难复现 | `systematic-debugging`，需要修复时转 `test-driven-development` |
 | 纯内部重构且行为不变，但仍可测试 | `test-driven-development` |
@@ -64,16 +64,16 @@ description: 开始任何任务时使用；建立 Coding Plugins 技能选择、
 ### 组合规则
 
 - 用户点名技能时，优先读取该技能；若明显不适用，说明原因并转入更合适技能。
-- 任何技能需要读取或维护 `docs/coding-plugins/features/<feature-name>/` 下的 README、PRD、TDD/TID、TCD、IPD 或 TED 关系时，先使用 `document-metadata` 确认 frontmatter 和 `related_docs` 关系。
-- 当用户说“继续”“恢复”“开始实现”“执行 IPD”，且能识别 `feature` 和 `doc_id` 时，先运行 `coding-plugins workflow-state inspect --feature <feature> --doc-id <doc-id> --json`。输出必须说明当前状态、判断原因、缺失产物、是否 stale、推荐下一个 skill。
-- 执行 IPD 前必须运行 `coding-plugins workflow-guard check --feature <feature> --doc-id <doc-id> --target execute --json`；未通过时按 `next_skill` 回退，不得继续实现。
-- `workflow-guard.ts` 通过后，运行 `coding-plugins workflow-brief --feature <feature> --doc-id <doc-id> --target execute --task TASK-001 --json` 生成短上下文；默认只读 IPD 的 `## 执行简报`、`## 执行锁定区`、`## 任务总览` 和当前任务章节，除非 Rewind Triggers 命中，不重复读取完整 PRD/TDD/TID/TCD。未知当前任务时可以省略 `--task`，但多任务 IPD 应优先指定。
-- 进入 `subagent-driven-development` 时，优先运行 `coding-plugins subagent-prompt-builder --feature <feature> --doc-id <doc-id> --task TASK-001 --kind implementer` 生成实现子代理提示词；评审阶段用同一脚本生成 `spec-reviewer` 和 `code-quality-reviewer` 提示词，避免手工漏粘 IPD 锁定区、当前任务或 prompt hash。
-- 如果 `workflow-state.ts` 输出 `plan-draft`、`plan-unlocked` 或 `plan-stale`，不得进入实现；先路由到 `writing-plans` 批准 IPD、补齐 `source_hash`，或刷新执行锁定区。
+- 任何技能需要读取或维护 `docs/coding-plugins/features/<feature-name>/` 下的 README、PRD、TSD、TVD、TED 或 VED 关系时，先使用 `document-metadata` 确认 frontmatter 和 `related_docs` 关系。
+- 当用户说“继续”“恢复”“开始实现”“执行 TED”，且能识别 `feature` 和 `doc_id` 时，先运行 `coding-plugins workflow-state inspect --feature <feature> --doc-id <doc-id> --json`。输出必须说明当前状态、判断原因、缺失产物、是否 stale、推荐下一个 skill。
+- 执行 TED 前必须运行 `coding-plugins workflow-guard check --feature <feature> --doc-id <doc-id> --target execute --json`；未通过时按 `next_skill` 回退，不得继续实现。
+- `workflow-guard.ts` 通过后，运行 `coding-plugins workflow-brief --feature <feature> --doc-id <doc-id> --target execute --task TASK-001 --json` 生成短上下文；默认只读 TED 的 `## 执行简报`、`## 执行锁定区`、`## 任务总览` 和当前任务章节，除非 Rewind Triggers 命中，不重复读取完整 PRD/TSD/TVD。未知当前任务时可以省略 `--task`，但多任务 TED 应优先指定。
+- 进入 `subagent-driven-development` 时，优先运行 `coding-plugins subagent-prompt-builder --feature <feature> --doc-id <doc-id> --task TASK-001 --kind implementer` 生成实现子代理提示词；评审阶段用同一脚本生成 `spec-reviewer` 和 `code-quality-reviewer` 提示词，避免手工漏粘 TED 锁定区、当前任务或 prompt hash。
+- 如果 `workflow-state.ts` 输出 `plan-draft`、`plan-unlocked` 或 `plan-stale`，不得进入实现；先路由到 `writing-plans` 批准 TED、补齐 `source_hash`，或刷新执行锁定区。
 - 需要声称完成、修复或通过前，必须使用 `verification-before-completion`。
 - 需要提交时必须使用 `git-commit`；提交前仍要检查 diff、作者身份和敏感文件。
-- 需要从需求进入执行任务时，先用 `writing-requirements` 写 PRD，再用 `writing-technicals` 写 TDD/TID，再用 `writing-test-cases` 写 TCD，最后用 `writing-plans` 编写 IPD 任务执行文档。
-- `brainstorming` 只做 SDD 前的构思收敛；用户确认进入落地后，才转入 `spec-driven-development`，并且不得在 brainstorming 阶段创建 README、PRD、TDD/TID、TCD、IPD 或 TED。
+- 需要从需求进入执行任务时，先用 `writing-requirements` 写 PRD，再用 `writing-technicals` 写 TSD 技术方案文档，再用 `writing-test-cases` 写 TVD，最后用 `writing-plans` 编写 TED 任务执行文档。
+- `brainstorming` 只做 SDD 前的构思收敛；用户确认进入落地后，才转入 `spec-driven-development`，并且不得在 brainstorming 阶段创建 README、PRD、TSD、TVD、TED 或 VED。
 - 任务可并行拆分时，先用 `dispatching-parallel-agents` 拆分，再让每个子任务进入对应技能。
 - 直接验证、直接提交或只创建 worktree 的请求，完成该动作后即可汇报；只有用户要求收尾或开发链路结束时，才进入 `finishing-a-development-branch`。
 
@@ -93,7 +93,7 @@ description: 开始任何任务时使用；建立 Coding Plugins 技能选择、
 
 ## 恢复状态输出
 
-恢复旧任务或准备执行 IPD 时，输出固定字段：
+恢复旧任务或准备执行 TED 时，输出固定字段：
 
 ```text
 当前检测状态：
@@ -119,11 +119,11 @@ coding-plugins decision-points --json
 | 决策点 | 名称 | 默认位置 |
 | --- | --- | --- |
 | DP-0 | 进入正式链路确认 | brainstorming/analysis 转入正式 SDD 前 |
-| DP-1 | 需求批准 | PRD 完成后、TDD/TID 前 |
-| DP-2 | 技术方案批准 | TDD/TID 完成后、TCD 前 |
-| DP-3 | 测试用例批准 | TCD 完成后、IPD 前 |
-| DP-4 | 执行计划批准 | IPD 完成后、实现前 |
-| DP-5 | TDD 例外或调试升级 | RED 受阻、连续修复失败或偏离 IPD 时 |
+| DP-1 | 需求批准 | PRD 完成后、TSD 前 |
+| DP-2 | 技术方案批准 | TSD 完成后、TVD 前 |
+| DP-3 | 测试用例批准 | TVD 完成后、TED 前 |
+| DP-4 | 执行计划批准 | TED 完成后、实现前 |
+| DP-5 | TDD 例外或调试升级 | RED 受阻、连续修复失败或偏离 TED 时 |
 | DP-6 | 完成验证确认 | 声称完成、修复或提交前 |
 | DP-7 | 提交和分支收尾确认 | commit、PR、merge、worktree 清理前 |
 

@@ -18,11 +18,10 @@ tags:
   - <检索标签>
 related_docs:
   - docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md
-  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md
-  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md
-  - docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md
-  - docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md
-  - docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md
+  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TSD.md
+  - docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TVD.md
+  - docs/coding-plugins/features/<feature-name>/plans/<doc-id>-TED.md
+  - docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-VED.md
 related_code:
   - <代码路径>
 external_references:
@@ -46,19 +45,18 @@ tags:
 related_code:
   - <代码路径>
 related_docs:
-  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md
-  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md
-  - docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md
-  - docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md
-  - docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md
+  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TSD.md
+  - docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TVD.md
+  - docs/coding-plugins/features/<feature-name>/plans/<doc-id>-TED.md
+  - docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-VED.md
 ---
 ```
 
-## Technical design frontmatter
+## Technical solution frontmatter
 
 ```yaml
 ---
-title: <功能名称>技术设计
+title: <功能名称>技术方案
 status: draft
 lifecycle_status: draft
 feature: <feature-name>
@@ -69,41 +67,17 @@ implemented_commits: []
 validated_by: <验证命令或人工验证记录>
 related_docs:
   - docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md
-  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md
-  - docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md
-  - docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md
-  - docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md
+  - docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TVD.md
+  - docs/coding-plugins/features/<feature-name>/plans/<doc-id>-TED.md
+  - docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-VED.md
 ---
 ```
 
-## Technical implementation frontmatter
+## TED frontmatter
 
 ```yaml
 ---
-title: <功能名称>技术实现
-status: draft
-lifecycle_status: draft
-implementation_mode: code
-feature: <feature-name>
-doc_id: <doc-id>
-created: YYYY-MM-DD
-updated: YYYY-MM-DD
-implemented_commits: []
-validated_by: <验证命令或人工验证记录>
-related_docs:
-  - docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md
-  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md
-  - docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md
-  - docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md
-  - docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md
----
-```
-
-## IPD frontmatter
-
-```yaml
----
-title: <功能名称> Implementation Procedure Document
+title: <功能名称> Task Execution Document
 status: draft
 feature: <feature-name>
 doc_id: <doc-id>
@@ -111,10 +85,9 @@ created: YYYY-MM-DD
 updated: YYYY-MM-DD
 related_docs:
   - docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md
-  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md
-  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md
-  - docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md
-  - docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md
+  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TSD.md
+  - docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TVD.md
+  - docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-VED.md
 ---
 ```
 
@@ -130,10 +103,9 @@ created: YYYY-MM-DD
 updated: YYYY-MM-DD
 related_docs:
   - docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md
-  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md
-  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md
-  - docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md
-  - docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md
+  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TSD.md
+  - docs/coding-plugins/features/<feature-name>/plans/<doc-id>-TED.md
+  - docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-VED.md
 ---
 ```
 
@@ -149,10 +121,9 @@ created: YYYY-MM-DD
 updated: YYYY-MM-DD
 related_docs:
   - docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md
-  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md
-  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md
-  - docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md
-  - docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md
+  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TSD.md
+  - docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TVD.md
+  - docs/coding-plugins/features/<feature-name>/plans/<doc-id>-TED.md
 ---
 ```
 
@@ -167,7 +138,7 @@ doc_id: <doc-id>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 validation_mode: historical
-archive_of: docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md
+archive_of: docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-VED.md
 archived_at: YYYY-MM-DD
 ---
 ```
@@ -182,18 +153,18 @@ archived_at: YYYY-MM-DD
 | 状态 | 草稿 |
 | Feature | <feature-name> |
 | Doc ID | <doc-id> |
-| 文档类型 | <PRD / TDD / TID / TCD / IPD / TED> |
+| 文档类型 | <PRD / TSD / TVD / TED / VED> |
 | 关系源 | frontmatter `related_docs` 和 `docs/coding-plugins/INDEX.md` |
 | 阅读重点 | <本文正文最重要的章节，例如需求点、设计决策、实现点、测试用例、执行任务或验证证据> |
 | 同步状态 | 已按上游文档变更完成同步评审 |
 ```
 
-中文 `文档信息` 只服务人工阅读，不维护 PRD/TDD/TID/TCD/IPD/TED 路径清单。路径关系和状态判断以 frontmatter 与 `docs/coding-plugins/INDEX.md` 为准。
+中文 `文档信息` 只服务人工阅读，不维护 PRD/TSD/TVD/TED/VED 路径清单。路径关系和状态判断以 frontmatter 与 `docs/coding-plugins/INDEX.md` 为准。
 
 ## 同步更新规则
 
 ```text
-PRD -> TDD -> TID -> TCD -> IPD -> TED
+PRD -> TSD -> TVD -> TED -> VED
 ```
 
 上游文档的 `updated` 晚于下游文档时，下游文档必须同步更新或完成无影响评审，并把自身 `updated` 调整为不早于上游文档。preflight 会按该规则拒绝过期链路。

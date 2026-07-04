@@ -2,26 +2,25 @@
   "schema_version": 2,
   "artifact_chain": [
     "PRD",
-    "TDD",
-    "TID",
-    "TCD",
-    "IPD",
-    "TED"
+    "TSD",
+    "TVD",
+    "TED",
+    "VED"
   ],
   "case_index": "tests/fixtures/formal-feature-chain/CASE-INDEX.md",
   "self_test_feedback": "tests/fixtures/formal-feature-chain/self-test-feedback.json",
   "agent_pressure_results": "tests/fixtures/formal-feature-chain/agent-pressure-results.json",
   "gate_catalog": {
-    "no_formal_artifacts_during_brainstorming": "brainstorming 阶段不得创建 README、PRD、TDD、TID、TCD、IPD 或 TED。",
+    "no_formal_artifacts_during_brainstorming": "brainstorming 阶段不得创建 README、PRD、TSD、TVD、TED 或 VED。",
     "user_confirmation_before_sdd": "用户确认进入正式落地后才进入 spec-driven-development。",
-    "prd_approved_before_technicals": "PRD approved 后才允许写 TDD/TID。",
-    "technicals_approved_before_tcd": "TDD/TID approved 后才允许写 TCD。",
-    "tcd_approved_before_ipd": "TCD approved 后才允许写 IPD。",
+    "prd_approved_before_technicals": "PRD approved 后才允许写 TSD。",
+    "technicals_approved_before_tvd": "TSD approved 后才允许写 TVD。",
+    "tvd_approved_before_ted": "TVD approved 后才允许写 TED。",
     "approved_prd_required": "已有 PRD 到 technicals 的场景必须先存在 approved PRD。",
-    "approved_technicals_required": "已有 technicals 到 TCD 的场景必须先存在 approved TDD/TID。",
-    "approved_tcd_required": "已有 TCD 到 IPD 的场景必须先存在 approved TCD。",
-    "ted_target_only": "writing-plans 只能指定 TED 目标，不能把 TED 当成立即产物。",
-    "worktree_decision_before_execution": "执行 IPD 前必须先确认或创建隔离工作区。",
+    "approved_technicals_required": "已有 technicals 到 TVD 的场景必须先存在 approved TSD。",
+    "approved_tvd_required": "已有 TVD 到 TED 的场景必须先存在 approved TVD。",
+    "ved_target_only": "writing-plans 只能指定 VED 目标，不能把 VED 当成立即产物。",
+    "worktree_decision_before_execution": "执行 TED 前必须先确认或创建隔离工作区。",
     "red_before_green": "实现前必须先有 RED 失败测试或明确 TDD 例外。",
     "verification_before_completion": "声明完成前必须运行验证并记录证据。",
     "reproduce_before_fix": "bug 修复前必须先稳定复现或定位根因。",
@@ -70,10 +69,9 @@
       "artifacts": [
         "README",
         "PRD",
-        "TDD",
-        "TID",
-        "TCD",
-        "IPD"
+        "TSD",
+        "TVD",
+        "TED"
       ],
       "case_ids": [
         "CASE-ROUTING-001",
@@ -81,8 +79,8 @@
       ],
       "gate_ids": [
         "prd_approved_before_technicals",
-        "technicals_approved_before_tcd",
-        "tcd_approved_before_ipd"
+        "technicals_approved_before_tvd",
+        "tvd_approved_before_ted"
       ],
       "decision_points": [
         "DP-0",
@@ -95,14 +93,13 @@
     {
       "id": "approved_prd_to_technicals",
       "doc_heading": "已有 PRD 到技术文档",
-      "trigger": "已有批准 PRD，需要技术设计和技术实现文档",
+      "trigger": "已有批准 PRD，需要技术方案文档",
       "skills": [
         "document-metadata",
         "writing-technicals"
       ],
       "artifacts": [
-        "TDD",
-        "TID"
+        "TSD"
       ],
       "case_ids": [
         "CASE-ROUTING-001",
@@ -120,13 +117,13 @@
     {
       "id": "technicals_to_test_cases",
       "doc_heading": "技术文档到测试用例",
-      "trigger": "已有批准 PRD、TDD 和 TID，需要测试用例设计",
+      "trigger": "已有批准 PRD、TSD，需要测试用例设计",
       "skills": [
         "document-metadata",
         "writing-test-cases"
       ],
       "artifacts": [
-        "TCD"
+        "TVD"
       ],
       "case_ids": [
         "CASE-CREEK-001",
@@ -142,22 +139,22 @@
     },
     {
       "id": "test_cases_to_plan",
-      "doc_heading": "测试用例到 IPD",
-      "trigger": "已有批准 PRD、TDD、TID 和 TCD，需要 IPD 任务执行文档",
+      "doc_heading": "测试用例到 TED",
+      "trigger": "已有批准 PRD、TSD 和 TVD，需要 TED 任务执行文档",
       "skills": [
         "document-metadata",
         "writing-plans"
       ],
       "artifacts": [
-        "IPD"
+        "TED"
       ],
       "case_ids": [
         "CASE-ROUTING-001",
         "CASE-CACHE-001"
       ],
       "gate_ids": [
-        "approved_tcd_required",
-        "ted_target_only"
+        "approved_tvd_required",
+        "ved_target_only"
       ],
       "decision_points": [
         "DP-3",
@@ -165,9 +162,9 @@
       ]
     },
     {
-      "id": "existing_ipd_execution",
-      "doc_heading": "已有 IPD 执行",
-      "trigger": "已有 IPD 任务执行文档，需要隔离工作区并执行任务",
+      "id": "existing_ted_execution",
+      "doc_heading": "已有 TED 执行",
+      "trigger": "已有 TED 任务执行文档，需要隔离工作区并执行任务",
       "skills": [
         "using-git-worktrees",
         "subagent-driven-development",
@@ -176,7 +173,7 @@
         "verification-before-completion"
       ],
       "artifacts": [
-        "TED"
+        "VED"
       ],
       "case_ids": [
         "CASE-ROUTING-001",
@@ -204,7 +201,7 @@
         "verification-before-completion"
       ],
       "artifacts": [
-        "TED"
+        "VED"
       ],
       "case_ids": [
         "CASE-BUG-001"
@@ -251,7 +248,7 @@
         "verification-before-completion"
       ],
       "artifacts": [
-        "TED"
+        "VED"
       ],
       "case_ids": [
         "CASE-WORKFLOW-001",

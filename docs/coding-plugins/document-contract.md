@@ -1,6 +1,6 @@
 # Coding Plugins 文档契约
 
-本文定义 `docs/coding-plugins/features/<feature-name>/` 下需求文档、技术设计、测试用例、IPD 任务执行文档、README、Evidence 和生成索引的职责边界。同一 feature 下允许多条文档链路，使用 `<doc-id>-PRD/TDD/TID/TCD/IPD/TED.md` 区分。
+本文定义 `docs/coding-plugins/features/<feature-name>/` 下需求文档、技术方案、测试用例、TED 任务执行文档、README、Evidence 和生成索引的职责边界。同一 feature 下允许多条文档链路，默认使用 `<doc-id>-PRD/TSD/TVD/TED/VED.md` 区分。
 
 操作型规则由 `skills/document-metadata/SKILL.md` 维护；通用 frontmatter 模板使用 `skills/document-metadata/templates/document-metadata.md`。
 
@@ -9,7 +9,7 @@
 | 层级 | 来源文件 | 负责内容 | 不负责内容 |
 | --- | --- | --- | --- |
 | Metadata | 每个文档开头的 frontmatter | 状态、Feature、Doc ID、标签、生命周期、关联文档、日期 | 正式需求、设计细节、执行步骤 |
-| 正式正文 | spec、technical、test-cases、IPD、evidence 的正文 | 需求契约、技术方案、测试用例、任务拆分、验证证据 | 生成式索引和重复的产物链路表 |
+| 正式正文 | spec、technical、test-cases、TED、evidence 的正文 | 需求契约、技术方案、测试用例、任务拆分、验证证据 | 生成式索引和重复的产物链路表 |
 | README | feature root `README.md` | 人工摘要、轻量例外追踪、检索关键词 | 手写 `产物链路` 或 `文档链路` |
 | INDEX | `docs/coding-plugins/INDEX.md` | 生成式检索视图 | 手工维护的正式内容 |
 
@@ -18,7 +18,7 @@
 active evidence 固定使用：
 
 ```text
-docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md
+docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-VED.md
 ```
 
 历史证据归档到：
@@ -31,17 +31,17 @@ docs/coding-plugins/features/<feature-name>/evidences/archive/<date>-<summary>.m
 
 ## 跨仓库引用
 
-`related_docs` 只保存当前仓库内 `docs/coding-plugins/...` 路径。跨仓库或绝对路径引用写入 `external_references`。旧文档中的 `related_specs`、`related_technical`、`related_test_cases`、`related_plans` 和 `related_evidence` 仅作为兼容输入读取，迁移后应合并为 `related_docs`：
+`related_docs` 只保存当前仓库内 `docs/coding-plugins/...` 路径。跨仓库或绝对路径引用写入 `external_references`：
 
 ```yaml
 external_references:
   - /Users/vincen/workspace/evobeing_creek_wrapper/docs/sdk-wrapper/Evobeing-Creek-Wrapper对接说明.md
 ```
 
-默认 `npm run preflight` 不检查外部路径，避免 CI 或其他机器因为本地路径差异失败。需要本机完整审计时运行：
+默认 `npm run preflight` 会检查仓库内 feature 文档声明的本地外部路径；URL 引用不会做联网检查。需要同步生成索引时运行：
 
 ```bash
-npm run preflight
+npm run preflight -- --write-index
 ```
 
 ## 契约迁移
@@ -53,7 +53,7 @@ npm run document-contract-migration:ts -- --dry-run
 npm run document-contract-migration:ts --
 ```
 
-迁移脚本会把状态别名归一化，把 legacy `related_*` 路径合并为 `related_docs`，把 `related_specs` 中的裸 Spec ID 移到 `related_spec_ids`，并为 evidence 补齐基础 metadata。脚本不生成复杂技术设计或 IPD 任务执行文档。
+迁移脚本会把旧 metadata 关系合并为 `related_docs`，把旧规格关系中的裸 Spec ID 移到 `related_spec_ids`，并为 evidence 补齐基础 metadata。脚本不生成复杂技术方案文档或 TED 任务执行文档。
 
 ## Metadata 优先
 
@@ -61,14 +61,14 @@ npm run document-contract-migration:ts --
 
 1. 先使用 `document-metadata` 技能确认读取顺序。
 2. 先确认 `feature`、`doc_id`、`status`、`updated`。
-3. 再读取同一 `doc_id` 链路的 `related_docs`；旧 `related_*` 字段只作为兼容输入。
-4. 最后进入正文中的需求、设计、IPD 任务执行或证据。
+3. 再读取同一 `doc_id` 链路的 `related_docs`。
+4. 最后进入正文中的需求、设计、TED 任务执行或证据。
 
 当 frontmatter 和正文摘要冲突时，以 frontmatter 为准，并修正文档。
 
 ## 正文边界
 
-正文可以引用执行所需来源，例如 Plan 的 `技术设计来源`、Technical 的规格映射证据路径、Evidence 的命令记录。这些属于正式内容。
+正文可以引用执行所需来源，例如 Plan 的 `技术方案来源`、Technical 的规格映射证据路径、Evidence 的命令记录。这些属于正式内容。
 
 正文不维护索引型链路表。README 中禁止出现 `## 产物链路` 或 `## 文档链路`。需要检索完整链路时，运行：
 

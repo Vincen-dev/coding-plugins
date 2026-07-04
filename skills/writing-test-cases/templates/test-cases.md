@@ -7,10 +7,9 @@ created: YYYY-MM-DD
 updated: YYYY-MM-DD
 related_docs:
   - docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md
-  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md
-  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md
-  - docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md
-  - docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md
+  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TSD.md
+  - docs/coding-plugins/features/<feature-name>/plans/<doc-id>-TED.md
+  - docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-VED.md
 ---
 
 # <功能名称>测试用例
@@ -20,7 +19,7 @@ related_docs:
 - **本文结论:** <说明测试设计覆盖哪些 MUST 规格、自动化边界和人工验收边界。>
 - **当前状态:** 草稿，等待测试设计确认。
 - **先读重点:** 先看测试策略摘要、测试用例总览，再按 `## 标题（TC-001 / REQ-001）` 阅读每个测试用例。
-- **下游同步:** TCD 更新后必须同步同一 `doc_id` 的 IPD 和 TED，至少更新 `updated` 表示已评审。
+- **下游同步:** TVD 更新后必须同步同一 `doc_id` 的 TED 和 VED，至少更新 `updated` 表示已评审。
 
 ## 文档信息
 
@@ -29,7 +28,7 @@ related_docs:
 | 状态 | 草稿 |
 | Feature | <feature-name> |
 | Doc ID | <doc-id> |
-| 文档类型 | TCD |
+| 文档类型 | TVD |
 | 关系源 | frontmatter `related_docs` 和 `docs/coding-plugins/INDEX.md` |
 | 阅读重点 | 测试策略摘要、测试用例总览、测试用例章节、豁免说明 |
 
@@ -41,7 +40,7 @@ related_docs:
 
 | 测试用例 | 标题 | 覆盖规格 | 测试类型 | 执行方式 | 证据目标 |
 | --- | --- | --- | --- | --- | --- |
-| TC-001 | <测试名称> | REQ-001 | behavior | 自动化 / 人工验收 | TED |
+| TC-001 | <测试名称> | REQ-001 | behavior | 自动化 / 人工验收 | VED |
 
 ## <测试名称>（TC-001 / REQ-001）
 
@@ -71,8 +70,8 @@ related_docs:
 
 ### 证据目标
 
-- TED 记录：`docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md`
-- 执行阶段：IPD 中对应 TASK-001 负责产生 RED/GREEN/REFACTOR 或 TDD 例外记录。
+- VED 记录：`docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-VED.md`
+- 执行阶段：TED 中对应 TASK-001 负责产生 RED/GREEN/REFACTOR 或 TDD 例外记录。
 
 ## 边界和错误用例
 
@@ -89,5 +88,5 @@ related_docs:
 ## 执行提示
 
 - 实现阶段使用 `test-driven-development`。
-- 实际 RED/GREEN/REFACTOR 输出写入 TED，不写入本文档。
-- 如果 IPD 改变测试顺序，必须回看本文档，确认 Spec ID 覆盖没有丢失。
+- 实际 RED/GREEN/REFACTOR 输出写入 VED，不写入本文档。
+- 如果 TED 改变测试顺序，必须回看本文档，确认 Spec ID 覆盖没有丢失。

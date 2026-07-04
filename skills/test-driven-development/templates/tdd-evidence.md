@@ -7,10 +7,9 @@ created: YYYY-MM-DD
 updated: YYYY-MM-DD
 related_docs:
   - docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md
-  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md
-  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md
-  - docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md
-  - docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md
+  - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TSD.md
+  - docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TVD.md
+  - docs/coding-plugins/features/<feature-name>/plans/<doc-id>-TED.md
 ---
 
 # <能力> TDD 证据
@@ -20,7 +19,7 @@ related_docs:
 - **本文结论:** <说明本轮验证的最终结果、通过范围和剩余风险。>
 - **当前状态:** 草稿，等待真实 RED/GREEN/REFACTOR 输出。
 - **先读重点:** 先看最新任务的 TDD 证据，再看最终验证和风险。
-- **上游来源:** 证据必须能追溯到同一 `doc_id` 的 PRD、TDD、TID、TCD 和 IPD。
+- **上游来源:** 证据必须能追溯到同一 `doc_id` 的 PRD、TSD、TVD 和 TED。
 
 ## 文档信息
 
@@ -29,7 +28,7 @@ related_docs:
 | 状态 | 草稿 |
 | Feature | <feature-name> |
 | Doc ID | <doc-id> |
-| 文档类型 | TED |
+| 文档类型 | VED |
 | 关系源 | frontmatter `related_docs` 和 `docs/coding-plugins/INDEX.md` |
 | 阅读重点 | 最新任务的 TDD 证据、最终验证、风险 |
 

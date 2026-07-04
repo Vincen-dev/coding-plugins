@@ -1,3 +1,3 @@
 interface:
   display_name: "编写技术文档"
-  short_description: "把批准规格转成 TDD 技术设计和 TID 技术实现"
+  short_description: "把批准规格转成单一 TSD 技术方案文档"
