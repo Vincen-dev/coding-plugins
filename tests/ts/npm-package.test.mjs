@@ -160,6 +160,40 @@ test("published docs describe runtime and release distribution boundaries", () =
   assert.ok(!releaseWorkflow.includes("npm publish"), "release workflow must stay aligned with the documented non-npm-publish boundary");
 });
 
+test("published docs include a team release checklist instead of local-only release memory", () => {
+  const install = readFileSync(resolve(repoRoot, "INSTALL.md"), "utf8");
+  for (const expected of [
+    "团队发布 checklist",
+    "release branch 或 PR",
+    "npm run security-audit:ts -- --root . --strict-release --format json",
+    "npm run preflight -- --write-index",
+    "git tag -a v<version>",
+    "npm run remote-audit:ts -- --owner Vincen-dev --repo coding-plugins --tag v<version> --expected-pusher Vincen-dev",
+    "codex plugin add coding-plugins@personal",
+    "coding-plugins doctor --root . --codex-home ~/.codex --format json",
+  ]) {
+    assert.ok(install.includes(expected), `INSTALL.md release checklist must include: ${expected}`);
+  }
+});
+
+test("agent pressure fixture includes long-session, stale TED, and platform-unavailable command evidence", () => {
+  const manifest = JSON.parse(readFileSync(resolve(repoRoot, "tests/fixtures/formal-feature-chain/agent-pressure-results.json"), "utf8"));
+  assert.ok(manifest.case_count >= 27);
+  const cases = manifest.case_files.map((file) =>
+    JSON.parse(readFileSync(resolve(repoRoot, "tests/fixtures/formal-feature-chain", manifest.cases_dir, file), "utf8")),
+  );
+  for (const behavior of [
+    "kept_task_scope_after_long_session_pressure",
+    "rejected_stale_ted_after_upstream_change",
+    "reported_platform_installation_summary_with_unavailable_codex",
+  ]) {
+    const caseData = cases.find((item) => item.observed_behaviors.includes(behavior));
+    assert.ok(caseData, `missing agent pressure behavior: ${behavior}`);
+    assert.ok(caseData.execution_evidence.some((evidence) => evidence.proves === behavior));
+    assert.equal(caseData.transcript.source, "command_log");
+  }
+});
+
 test("repository enables Dependabot for npm packages and GitHub Actions", () => {
   const dependabot = readFileSync(resolve(repoRoot, ".github/dependabot.yml"), "utf8");
   assert.match(dependabot, /^version:\s*2$/m);

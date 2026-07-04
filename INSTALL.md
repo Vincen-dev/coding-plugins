@@ -259,6 +259,45 @@ npm run agent-pressure-ingest:ts -- --input raw-agent-pressure.json --output tes
 
 ## 发布前检查
 
+### 团队发布 checklist
+
+发布默认从 release branch 或 PR 开始；只有紧急修复或仓库维护者明确确认时，才直接在 `main` 上完成提交和 tag。每次发布都按下面顺序记录证据，避免只依赖本地记忆：
+
+1. 确认版本号和 release notes：
+
+   ```bash
+   npm run bump-version:ts -- <version>
+   ```
+
+2. 在 release branch 或 PR 上完成预检和严格发布审计：
+
+   ```bash
+   npm run preflight -- --write-index
+   npm run preflight
+   npm run security-audit:ts -- --root . --strict-release --format json
+   ```
+
+3. 合并或确认 `main` 已包含发布提交后创建 tag：
+
+   ```bash
+   npm run prepare-release:ts -- --notes-out /tmp/coding-plugins-release-notes.md
+   git tag -a v<version> -m "coding-plugins <version>"
+   git push origin v<version>
+   ```
+
+4. GitHub Release workflow 完成后审计远程状态：
+
+   ```bash
+   npm run remote-audit:ts -- --owner Vincen-dev --repo coding-plugins --tag v<version> --expected-pusher Vincen-dev
+   ```
+
+5. 刷新本机 Codex personal 插件缓存，并确认 active 版本：
+
+   ```bash
+   codex plugin add coding-plugins@personal
+   coding-plugins doctor --root . --codex-home ~/.codex --format json
+   ```
+
 提升版本时运行：
 
 ```bash
