@@ -13,6 +13,12 @@ related_docs:
 ---
 # Routing Login VED
 
+## 阅读摘要
+
+- **本文结论:** 本 VED fixture 记录同一 `doc_id` 的 RED/GREEN/REFACTOR 或最终验证证据。
+- **当前状态:** approved。
+- **先读重点:** 先看 TDD 证据和最终验证。
+- **上游来源:** 证据通过 frontmatter `related_docs` 追溯到 PRD、TSD、TVD 和 TED。
 ## 文档信息
 
 | 字段 | 内容 |

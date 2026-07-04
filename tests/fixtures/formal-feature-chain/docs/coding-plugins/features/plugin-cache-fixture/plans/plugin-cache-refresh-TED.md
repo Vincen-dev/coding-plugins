@@ -3,7 +3,7 @@ title: Plugin Cache Refresh Task Execution Document
 status: approved
 feature: plugin-cache-fixture
 doc_id: plugin-cache-refresh
-source_hash: sha256:120bf6dd633a9c40d9db875d94540da8556e0379dd9bd15b70a7343572060175
+source_hash: sha256:964a8dcb4b387266f20890e453022a52e17e65ae53593a24d46bc5f58b39c99f
 created: 2026-07-02
 updated: 2026-07-02
 related_docs:
@@ -14,6 +14,12 @@ related_docs:
 ---
 # Plugin Cache Refresh 任务执行文档（TED）
 
+## 阅读摘要
+
+- **本文结论:** 本 TED fixture 只执行同一 `doc_id` 的链路校验任务。
+- **当前状态:** approved。
+- **先读重点:** 先看执行锁定区、执行简报和任务总览。
+- **证据目标:** TASK-001 的执行证据写入同一 `doc_id` 的 VED。
 ## 文档信息
 
 | 字段 | 内容 |
@@ -48,7 +54,7 @@ related_docs:
 
 | 任务 | 标题 | 覆盖规格 | 验证方式 | VED 记录 |
 | --- | --- | --- | --- | --- |
-| TASK-001 | 验证 personal cache 版本 | REQ-001 | config fixture 校验 | `docs/coding-plugins/features/plugin-cache-fixture/evidences/plugin-cache-refresh-VED.md` |
+| TASK-001 | 验证 personal cache 版本 | REQ-001 | config fixture 校验 | 同一 `doc_id` 的 VED |
 
 ## 验证 personal cache 版本（TASK-001 / REQ-001）
 
@@ -88,7 +94,7 @@ related_docs:
   - 命令：`npm run preflight`
   - 预期：PASS。
 - [ ] **步骤 6：记录 VED 证据**
-  - 写入：`docs/coding-plugins/features/plugin-cache-fixture/evidences/plugin-cache-refresh-VED.md`
+  - 写入：同一 `doc_id` 的 VED
 
 ### 验证方式
 

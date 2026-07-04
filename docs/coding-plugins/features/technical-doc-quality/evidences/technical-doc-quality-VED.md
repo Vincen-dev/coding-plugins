@@ -81,3 +81,27 @@ external_references: []
 - **GREEN 命令:** `node --test tests/ts/skill-document-contract.test.mjs`
 - **REFACTOR 命令:** `NPM_CONFIG_CACHE=/private/tmp/codex-npm-cache npm run preflight`
 - **最终验证:** `NPM_CONFIG_CACHE=/private/tmp/codex-npm-cache npm run preflight` PASS，包含 `tests/ts/skill-document-contract.test.mjs` PASS。
+
+## TDD 证据
+
+- **规格/缺陷/验收:** 明确验收：runtime 文档链路状态必须复用 `src/lib/document-metadata.ts` 的 artifact registry 和 frontmatter parser；preflight 必须自动发现 `tests/ts/*.test.mjs`，避免新增门禁测试漏跑。
+- **测试类型:** `architecture`
+- **RED 测试:** `tests/ts/workflow-state.test.mjs`；`tests/ts/preflight-cli.test.mjs` 中的 `TypeScript preflight discovers TypeScript test files instead of hard-coding the suite`
+- **RED 命令:** `node --test tests/ts/workflow-state.test.mjs`；`node --test tests/ts/preflight-cli.test.mjs`
+- **RED 失败:** `workflow-state` 测试发现源码仍声明本地 `splitFrontmatter` / frontmatter line parser；preflight 测试发现源码仍硬编码具体测试文件数组。
+- **GREEN 变更:** `src/lib/workflow-state.ts` 改为通过 `artifactFile` 和 `parseFrontmatter` 复用 `document-metadata`；`src/cli/preflight.ts` 新增 `collectTypeScriptTestFiles()` 自动扫描 `tests/ts/*.test.mjs`。
+- **GREEN 命令:** `node --test tests/ts/workflow-state.test.mjs`；`node --test tests/ts/preflight-cli.test.mjs`；`node --test tests/ts/scaffold-fixture-case.test.mjs`
+- **REFACTOR 命令:** `NPM_CONFIG_CACHE=/private/tmp/codex-npm-cache npm run preflight`
+- **最终验证:** `NPM_CONFIG_CACHE=/private/tmp/codex-npm-cache npm run preflight` PASS；`git diff --check` PASS。
+
+## TDD 证据
+
+- **规格/缺陷/验收:** 明确验收：formal feature-chain fixtures 也必须遵守 metadata-first 和可读性规则，正文需要 `## 阅读摘要`，且不得重复完整 `docs/coding-plugins/features/...` 文档路径。
+- **测试类型:** `contract`
+- **RED 测试:** `tests/ts/formal-fixture-document-quality.test.mjs`
+- **RED 命令:** `node --test tests/ts/formal-fixture-document-quality.test.mjs`
+- **RED 失败:** 新测试列出 4 条 fixture 链路中的 VED/TSD/TVD/TED 缺少阅读摘要，PRD/TSD/TVD/TED 正文重复完整 VED 路径。
+- **GREEN 变更:** 为 formal fixture 的 TSD/TVD/TED/VED 补充阅读摘要，把正文中的完整 VED 路径改为“同一 `doc_id` 的 VED”，并按上游变更重算 4 份 TED 的 `source_hash`。
+- **GREEN 命令:** `node --test tests/ts/formal-fixture-document-quality.test.mjs`；`node --test tests/ts/scenario-routing-contract.test.mjs`；`node --test tests/ts/scaffold-fixture-case.test.mjs`
+- **REFACTOR 命令:** `node --test tests/ts/agent-pressure-harness.test.mjs`
+- **最终验证:** `NPM_CONFIG_CACHE=/private/tmp/codex-npm-cache npm run preflight` PASS；`git diff --check` PASS。

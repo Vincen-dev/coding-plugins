@@ -3,7 +3,7 @@ title: Metadata Sync Task Execution Document
 status: approved
 feature: metadata-sync-fixture
 doc_id: metadata-sync
-source_hash: sha256:9c9279e20439de0736bb329782faceb8b3440b51e5e80b5ea66c40475fc698fb
+source_hash: sha256:cb391503e8e712f593a5b0ce41465f84d46af89316d3b64629b7d17f94bbbe49
 created: 2026-07-02
 updated: 2026-07-02
 related_docs:
@@ -14,6 +14,12 @@ related_docs:
 ---
 # Metadata Sync 任务执行文档（TED）
 
+## 阅读摘要
+
+- **本文结论:** 本 TED fixture 只执行同一 `doc_id` 的链路校验任务。
+- **当前状态:** approved。
+- **先读重点:** 先看执行锁定区、执行简报和任务总览。
+- **证据目标:** TASK-001 的执行证据写入同一 `doc_id` 的 VED。
 ## 文档信息
 
 | 字段 | 内容 |
@@ -48,7 +54,7 @@ related_docs:
 
 | 任务 | 标题 | 覆盖规格 | 验证方式 | VED 记录 |
 | --- | --- | --- | --- | --- |
-| TASK-001 | 校验 metadata 同步 freshness | REQ-001 | contract fixture 校验 | `docs/coding-plugins/features/metadata-sync-fixture/evidences/metadata-sync-VED.md` |
+| TASK-001 | 校验 metadata 同步 freshness | REQ-001 | contract fixture 校验 | 同一 `doc_id` 的 VED |
 
 ## 校验 metadata 同步 freshness（TASK-001 / REQ-001）
 
@@ -88,7 +94,7 @@ related_docs:
   - 命令：`npm run preflight`
   - 预期：PASS。
 - [ ] **步骤 6：记录 VED 证据**
-  - 写入：`docs/coding-plugins/features/metadata-sync-fixture/evidences/metadata-sync-VED.md`
+  - 写入：同一 `doc_id` 的 VED
 
 ### 验证方式
 

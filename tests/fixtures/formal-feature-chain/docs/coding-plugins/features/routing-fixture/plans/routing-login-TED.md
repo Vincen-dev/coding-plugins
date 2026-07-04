@@ -3,7 +3,7 @@ title: Routing Login Task Execution Document
 status: approved
 feature: routing-fixture
 doc_id: routing-login
-source_hash: sha256:aaa0ccb98ebe46944c01f68080372b2eff2950714c3819b269d5914273841219
+source_hash: sha256:b399699c498770679041311ab353a75f5f480104451a391f1d30d5bd76c5b032
 created: 2026-07-02
 updated: 2026-07-02
 related_docs:
@@ -14,6 +14,12 @@ related_docs:
 ---
 # Routing Login 任务执行文档（TED）
 
+## 阅读摘要
+
+- **本文结论:** 本 TED fixture 只执行同一 `doc_id` 的链路校验任务。
+- **当前状态:** approved。
+- **先读重点:** 先看执行锁定区、执行简报和任务总览。
+- **证据目标:** TASK-001 的执行证据写入同一 `doc_id` 的 VED。
 ## 文档信息
 
 | 字段 | 内容 |
@@ -60,7 +66,7 @@ related_docs:
 
 | 任务 | 标题 | 覆盖规格 | 验证方式 | VED 记录 |
 | --- | --- | --- | --- | --- |
-| TASK-001 | 校验正式链路闭包 | REQ-001 | `npm run preflight` | `docs/coding-plugins/features/routing-fixture/evidences/routing-login-VED.md` |
+| TASK-001 | 校验正式链路闭包 | REQ-001 | `npm run preflight` | 同一 `doc_id` 的 VED |
 
 ## 校验正式链路闭包（TASK-001 / REQ-001）
 
@@ -100,7 +106,7 @@ related_docs:
   - 命令：`npm run preflight`
   - 预期：PASS。
 - [ ] **步骤 6：记录 VED 证据**
-  - 写入：`docs/coding-plugins/features/routing-fixture/evidences/routing-login-VED.md`
+  - 写入：同一 `doc_id` 的 VED
   - 字段：规格/缺陷/验收、测试类型、RED 测试、RED 命令、RED 失败、GREEN 变更、GREEN 命令、REFACTOR 命令、最终验证。
 
 ### 验证方式
@@ -111,7 +117,7 @@ related_docs:
 
 ### VED 记录要求
 
-- 证据文件：`docs/coding-plugins/features/routing-fixture/evidences/routing-login-VED.md`
+- 证据文件：同一 `doc_id` 的 VED
 - 证据章节：`## TDD 证据`
 - 无法自动测试时：必须写 `### TDD 例外记录`。
 

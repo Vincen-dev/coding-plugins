@@ -56,8 +56,19 @@ test("TypeScript preflight runs scenario routing contract checks", () => {
     encoding: "utf8",
   });
   assert.equal(source.status, 0, source.stderr);
-  assert.ok(source.stdout.includes("tests/ts/scenario-routing-contract.test.mjs"));
-  assert.ok(source.stdout.includes("tests/ts/file-naming.test.mjs"));
+  assert.ok(source.stdout.includes("collectTypeScriptTestFiles"));
+  assert.ok(source.stdout.includes('entry.name.endsWith(".test.mjs")'));
+});
+
+test("TypeScript preflight discovers TypeScript test files instead of hard-coding the suite", () => {
+  const source = spawnSync("node", ["-e", "process.stdout.write(require('node:fs').readFileSync(process.argv[1], 'utf8'))", join(repoRoot, "src/cli/preflight.ts")], {
+    cwd: repoRoot,
+    encoding: "utf8",
+  });
+  assert.equal(source.status, 0, source.stderr);
+  assert.ok(source.stdout.includes("collectTypeScriptTestFiles"));
+  assert.equal(source.stdout.includes('"tests/ts/scenario-routing-contract.test.mjs"'), false);
+  assert.equal(source.stdout.includes('"tests/ts/scaffold-feature-docs.test.mjs"'), false);
 });
 
 test("TypeScript preflight fails missing local external references", () => {

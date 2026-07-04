@@ -149,26 +149,17 @@ function runStaticChecks(): void {
 function runValidationCommands(): void {
   runCommand("npm", ["run", "typecheck"]);
 
-  const tests = [
-    "tests/ts/agent-pressure-harness.test.mjs",
-    "tests/ts/document-contract-migration.test.mjs",
-    "tests/ts/document-metadata.test.mjs",
-    "tests/ts/docs-index.test.mjs",
-    "tests/ts/manifest-checks.test.mjs",
-    "tests/ts/npm-package.test.mjs",
-    "tests/ts/no-python-source.test.mjs",
-    "tests/ts/preflight-cli.test.mjs",
-    "tests/ts/scenario-routing-contract.test.mjs",
-    "tests/ts/scaffold-feature-docs.test.mjs",
-    "tests/ts/scaffold-fixture-case.test.mjs",
-    "tests/ts/skill-document-contract.test.mjs",
-    "tests/ts/file-naming.test.mjs",
-    "tests/ts/skill-script-ownership.test.mjs",
-  ];
-  for (const testFile of tests) {
+  for (const testFile of collectTypeScriptTestFiles()) {
     runCommand("node", ["--test", testFile]);
   }
   runCommand("bash", ["tests/hooks/test-session-start.sh"]);
+}
+
+function collectTypeScriptTestFiles(): string[] {
+  return readdirSync(join(root, "tests/ts"), { withFileTypes: true })
+    .filter((entry) => entry.isFile() && entry.name.endsWith(".test.mjs"))
+    .map((entry) => `tests/ts/${entry.name}`)
+    .sort();
 }
 
 try {

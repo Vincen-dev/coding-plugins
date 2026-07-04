@@ -13,6 +13,12 @@ related_docs:
 ---
 # Plugin Cache Refresh TVD
 
+## 阅读摘要
+
+- **本文结论:** 本测试用例 fixture 覆盖同一 `doc_id` 的核心 contract 校验。
+- **当前状态:** approved。
+- **先读重点:** 先看测试策略摘要和测试用例总览，再看 TC-001 的断言。
+- **证据目标:** 执行结果写入同一 `doc_id` 的 VED。
 ## 文档信息
 
 | 字段 | 内容 |
@@ -64,4 +70,4 @@ related_docs:
 
 ### 证据目标
 
-- VED 记录：`docs/coding-plugins/features/plugin-cache-fixture/evidences/plugin-cache-refresh-VED.md`
+- VED 记录：同一 `doc_id` 的 VED

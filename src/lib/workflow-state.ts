@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { join, relative } from "node:path";
 
-import { DOCUMENT_ARTIFACTS, artifactForSuffix } from "./document-metadata.ts";
+import { DOCUMENT_ARTIFACTS, artifactFile, parseFrontmatter as parseDocumentFrontmatter } from "./document-metadata.ts";
 
 const REQUIRED_ARTIFACTS = ["PRD", "TSD", "TVD", "TED", "VED"] as const;
 const UPSTREAM_ARTIFACTS = ["PRD", "TSD", "TVD"] as const;
@@ -35,47 +35,15 @@ function toPosix(path: string): string {
 }
 
 export function artifactPath(root: string, options: { feature: string; docId: string; suffix: string }): string {
-  const artifact = artifactForSuffix(options.suffix);
-  return join(
-    root,
-    "docs",
-    "coding-plugins",
-    "features",
-    options.feature,
-    artifact.directory,
-    `${options.docId}-${options.suffix}.md`,
-  );
-}
-
-export function splitFrontmatter(text: string): [string[], string] {
-  if (!text.startsWith("---\n")) {
-    return [[], text];
-  }
-  const end = text.indexOf("\n---", 4);
-  if (end === -1) {
-    return [[], text];
-  }
-  return [text.slice(4, end).split(/\r?\n/), text.slice(end + "\n---".length).replace(/^\n/, "")];
+  const featureRoot = join(root, "docs", "coding-plugins", "features", options.feature);
+  return artifactFile(featureRoot, options.suffix, options.docId);
 }
 
 export function parseFrontmatter(path: string): Record<string, string> {
   if (!existsSync(path)) {
     return {};
   }
-  const [lines] = splitFrontmatter(readFileSync(path, "utf8"));
-  const metadata: Record<string, string> = {};
-  for (const line of lines) {
-    if (!line || line.startsWith(" ") || !line.includes(":")) {
-      continue;
-    }
-    const index = line.indexOf(":");
-    const key = line.slice(0, index).trim();
-    const value = line.slice(index + 1).trim().replace(/^["']|["']$/g, "");
-    if (value) {
-      metadata[key] = value;
-    }
-  }
-  return metadata;
+  return parseDocumentFrontmatter(readFileSync(path, "utf8"));
 }
 
 export function computeUpstreamHash(root: string, options: { feature: string; docId: string }): string | null {

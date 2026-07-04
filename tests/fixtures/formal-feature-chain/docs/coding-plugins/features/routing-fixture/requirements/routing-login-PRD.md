@@ -104,4 +104,4 @@ related_docs:
 
 | 规格 ID | 验证类型 | 验证证据 | 状态 |
 | --- | --- | --- | --- |
-| REQ-001 | contract | `docs/coding-plugins/features/routing-fixture/evidences/routing-login-VED.md` | 已覆盖 |
+| REQ-001 | contract | 同一 `doc_id` 的 VED | 已覆盖 |

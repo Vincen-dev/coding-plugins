@@ -3,7 +3,7 @@ title: Creek Upload Status Task Execution Document
 status: approved
 feature: creek-wrapper-fixture
 doc_id: creek-upload-status
-source_hash: sha256:d2f59e7362bcba5f95ded803cc21782ebe74199b061797bb1535a4dda959a21b
+source_hash: sha256:f44741db7eb60e91de25ad573533c2732b356d925938595d561a836f444d22a9
 created: 2026-07-02
 updated: 2026-07-02
 related_docs:
@@ -14,6 +14,12 @@ related_docs:
 ---
 # Creek Upload Status 任务执行文档（TED）
 
+## 阅读摘要
+
+- **本文结论:** 本 TED fixture 只执行同一 `doc_id` 的链路校验任务。
+- **当前状态:** approved。
+- **先读重点:** 先看执行锁定区、执行简报和任务总览。
+- **证据目标:** TASK-001 的执行证据写入同一 `doc_id` 的 VED。
 ## 文档信息
 
 | 字段 | 内容 |
@@ -48,7 +54,7 @@ related_docs:
 
 | 任务 | 标题 | 覆盖规格 | 验证方式 | VED 记录 |
 | --- | --- | --- | --- | --- |
-| TASK-001 | 校验上传状态契约 | REQ-001 | contract fixture 校验 | `docs/coding-plugins/features/creek-wrapper-fixture/evidences/creek-upload-status-VED.md` |
+| TASK-001 | 校验上传状态契约 | REQ-001 | contract fixture 校验 | 同一 `doc_id` 的 VED |
 
 ## 校验上传状态契约（TASK-001 / REQ-001）
 
@@ -87,7 +93,7 @@ related_docs:
   - 命令：`npm run preflight`
   - 预期：PASS。
 - [ ] **步骤 6：记录 VED 证据**
-  - 写入：`docs/coding-plugins/features/creek-wrapper-fixture/evidences/creek-upload-status-VED.md`
+  - 写入：同一 `doc_id` 的 VED
 
 ### 验证方式
 

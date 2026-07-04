@@ -17,6 +17,12 @@ validated_by:
 ---
 # Metadata Sync TSD
 
+## 阅读摘要
+
+- **本文结论:** 本技术方案 fixture 用于验证同一 `doc_id` 的需求、技术、测试、执行和证据链路可以被工具读取。
+- **当前状态:** approved。
+- **先读重点:** 先看规格缺口审查、关键决策和规格到设计映射。
+- **下游同步:** TVD、TED 和 VED 均以同一 `doc_id` 追踪。
 ## 文档信息
 
 | 字段 | 内容 |
@@ -43,7 +49,7 @@ validated_by:
 
 | 规格 ID | 规格摘要 | 技术落点 | 关键决策 ID | 影响文件/符号 | 验证命令 | 证据 |
 | --- | --- | --- | --- | --- | --- | --- |
-| REQ-001 | 下游文档同步评审 | `src/cli/preflight.ts::check_document_sync_freshness` | TD-001 | `src/lib/document-metadata.ts` | `npm run preflight` | `docs/coding-plugins/features/metadata-sync-fixture/evidences/metadata-sync-VED.md` |
+| REQ-001 | 下游文档同步评审 | `src/cli/preflight.ts::check_document_sync_freshness` | TD-001 | `src/lib/document-metadata.ts` | `npm run preflight` | 同一 `doc_id` 的 VED |
 
 ## 无需技术设计的规格
 
