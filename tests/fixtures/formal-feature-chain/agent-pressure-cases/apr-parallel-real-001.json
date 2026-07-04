@@ -13,7 +13,7 @@
   "scenario_passed": true,
   "command_log": [
     {
-      "command": "node -e "JSON.parse(require('node:fs').readFileSync('tests/fixtures/formal-feature-chain/agent-pressure-results.json', 'utf8'))"",
+      "command": "node -e \"JSON.parse(require('node:fs').readFileSync('tests/fixtures/formal-feature-chain/agent-pressure-results.json', 'utf8'))\"",
       "cwd": "/Users/vincen/workspace/plugins/coding-plugins",
       "exit_code": 0,
       "stdout_sha256": "sha256:c293227050b5055130ca2768b007fcbdbcd9f100bcdbf3fb558b9a3d6168c081",
@@ -38,7 +38,7 @@
   "execution_evidence": [
     {
       "evidence_type": "tool_command_output",
-      "source": "codex_multi_agent:019f28ad-272f-7a31-bcb0-a8b7f7d9f948:node -e "JSON.parse(require('node:fs').readFileSync('tests/fixtures/formal-feature-chain/agent-pressure-results.json', 'utf8'))"",
+      "source": "codex_multi_agent:019f28ad-272f-7a31-bcb0-a8b7f7d9f948:node -e \"JSON.parse(require('node:fs').readFileSync('tests/fixtures/formal-feature-chain/agent-pressure-results.json', 'utf8'))\"",
       "actual_observation": "Exit 0. JSON fixture parsed successfully.",
       "verification_method": "Sub-agent ran a JSON syntax check separately from the routing behavior test.",
       "proves": "split_only_independent_domains"

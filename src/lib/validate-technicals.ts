@@ -26,6 +26,7 @@ const TECHNICAL_LIFECYCLE_REQUIRED_FIELDS = ["lifecycle_status", "implemented_co
 const GENERIC_MAPPING_PATTERNS = ["见本设计的 `影响组件`", "见本设计的", "按本 technical", "见 `## 测试策略`", "对应计划追踪"];
 const HIDDEN_REQUIREMENT_TERMS = ["必须", "不得", "禁止", "MUST", "SHOULD"];
 const HIDDEN_REQUIREMENT_EXCLUDED_SECTIONS = new Set(["规格缺口审查", "规格到设计映射", "无需技术设计的规格", "测试策略"]);
+const TEMPLATE_PLACEHOLDER_RE = /<[^>\n]*(?:[\u4e00-\u9fff]|feature-name|doc-id|path|symbol)[^>\n]*>|YYYY-MM-DD/g;
 
 export interface ValidationResult {
   ok: boolean;
@@ -410,6 +411,41 @@ function staleWarnings(root: string, technicalFile: string, text: string): strin
   return warnings;
 }
 
+function validateNoUnfinishedTemplateContent(root: string, documentFile: string, text: string): string[] {
+  const errors: string[] = [];
+  let inCodeFence = false;
+  text.split(/\r?\n/).forEach((line, index) => {
+    const stripped = line.trim();
+    if (stripped.startsWith("```")) {
+      inCodeFence = !inCodeFence;
+      return;
+    }
+    if (inCodeFence) {
+      return;
+    }
+    const matches = [...line.matchAll(TEMPLATE_PLACEHOLDER_RE)].map((match) => match[0]);
+    if (matches.length > 0) {
+      errors.push(`${relativePath(root, documentFile)} unfinished template content line ${index + 1}: ${matches.join(", ")}`);
+    }
+  });
+  return errors;
+}
+
+function implementationFilesForTechnicalDesign(root: string, technicalFile: string, text: string): string[] {
+  const relatedImplementationFiles = relatedPathsFromMetadata(root, text, "related_technical").filter((path) => documentSuffix(path) === "TID");
+  if (relatedImplementationFiles.length > 0) {
+    return relatedImplementationFiles;
+  }
+
+  const featureContext = featureRootForDocument(root, technicalFile);
+  if (!featureContext) {
+    return [];
+  }
+  const [, featureRoot] = featureContext;
+  const fallback = resolve(featureRoot, "technicals", `${documentDocId(technicalFile)}-TID.md`);
+  return existsSync(fallback) ? [fallback] : [];
+}
+
 export function validateRepository(rootPath: string, options: { strict: boolean; technicalFiles?: string[] }): ValidationResult {
   const root = resolve(rootPath);
   const files = collectTechnicalDesignFiles(root, options.technicalFiles);
@@ -429,6 +465,14 @@ export function validateRepository(rootPath: string, options: { strict: boolean;
     errors.push(...validateMappingTableSchema(root, technicalFile, text));
     errors.push(...validateDecisionIdReferences(root, technicalFile, text));
     errors.push(...validateHiddenRequirements(root, technicalFile, text));
+    errors.push(...validateNoUnfinishedTemplateContent(root, technicalFile, text));
+    for (const implementationFile of implementationFilesForTechnicalDesign(root, technicalFile, text)) {
+      if (!existsSync(implementationFile)) {
+        errors.push(`${relativePath(root, technicalFile)} related implementation file does not exist: ${relativePath(root, implementationFile)}`);
+        continue;
+      }
+      errors.push(...validateNoUnfinishedTemplateContent(root, implementationFile, readFileSync(implementationFile, "utf8")));
+    }
     warnings.push(...genericMappingWarnings(root, technicalFile, text));
     warnings.push(...staleWarnings(root, technicalFile, text));
   }

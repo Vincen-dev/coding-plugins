@@ -8,6 +8,8 @@ const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const routingPath = join(repoRoot, "docs/coding-plugins/scenario-routing.json");
 const caseIndexPath = join(repoRoot, "tests/fixtures/formal-feature-chain/CASE-INDEX.md");
 const selfTestFeedbackPath = join(repoRoot, "tests/fixtures/formal-feature-chain/self-test-feedback.json");
+const agentPressureResultsPath = join(repoRoot, "tests/fixtures/formal-feature-chain/agent-pressure-results.json");
+const agentPressureCasesRoot = join(repoRoot, "tests/fixtures/formal-feature-chain/agent-pressure-cases");
 const usingCodingPluginsPath = join(repoRoot, "skills/using-coding-plugins/SKILL.md");
 
 function readJson(path) {
@@ -20,6 +22,14 @@ function unique(values) {
 
 function scenarioById(routing) {
   return new Map(routing.scenarios.map((scenario) => [scenario.id, scenario]));
+}
+
+function caseIndexEntries() {
+  const caseIndex = readFileSync(caseIndexPath, "utf8");
+  return [...caseIndex.matchAll(/^##\s+(.+?)\n[\s\S]*?- case_id:\s*(CASE-[A-Z0-9-]+)/gm)].map((match) => ({
+    heading: match[1],
+    caseId: match[2],
+  }));
 }
 
 test("scenario routing contract keeps schema and heading invariants", () => {
@@ -60,8 +70,7 @@ test("scenario routing gate ids all exist in gate catalog", () => {
 
 test("scenario routing case ids all exist in CASE-INDEX", () => {
   const routing = readJson(routingPath);
-  const caseIndex = readFileSync(caseIndexPath, "utf8");
-  const knownCaseIds = new Set([...caseIndex.matchAll(/case_id:\s*(CASE-[A-Z0-9-]+)/g)].map((match) => match[1]));
+  const knownCaseIds = new Set(caseIndexEntries().map((entry) => entry.caseId));
 
   assert.ok(knownCaseIds.size > 0, "CASE-INDEX must list case ids");
   for (const scenario of routing.scenarios) {
@@ -69,6 +78,36 @@ test("scenario routing case ids all exist in CASE-INDEX", () => {
     for (const caseId of scenario.case_ids) {
       assert.ok(knownCaseIds.has(caseId), `${scenario.id} references missing case_id ${caseId}`);
     }
+  }
+});
+
+test("CASE-INDEX cases are backed by executable agent pressure evidence", () => {
+  const routing = readJson(routingPath);
+  const manifest = readJson(agentPressureResultsPath);
+  assert.equal(manifest.cases_dir, "agent-pressure-cases");
+  assert.ok(Array.isArray(manifest.case_files), "agent pressure manifest must list split case files");
+
+  const cases = manifest.case_files.map((caseFile) => readJson(join(agentPressureCasesRoot, caseFile)));
+  const casesByScenario = new Map();
+  for (const caseData of cases) {
+    const list = casesByScenario.get(caseData.scenario_id) ?? [];
+    list.push(caseData);
+    casesByScenario.set(caseData.scenario_id, list);
+  }
+
+  for (const entry of caseIndexEntries()) {
+    const scenarioIds = routing.scenarios
+      .filter((scenario) => (scenario.case_ids ?? []).includes(entry.caseId))
+      .map((scenario) => scenario.id);
+    assert.ok(scenarioIds.length > 0, `${entry.caseId} must be referenced by scenario routing`);
+    assert.ok(
+      scenarioIds.some((scenarioId) =>
+        (casesByScenario.get(scenarioId) ?? []).some(
+          (caseData) => caseData.execution_depth === "real_command" && Array.isArray(caseData.command_log) && caseData.command_log.length > 0,
+        ),
+      ),
+      `${entry.caseId} must have real command agent pressure evidence through one of: ${scenarioIds.join(", ")}`,
+    );
   }
 });
 

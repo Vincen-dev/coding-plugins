@@ -176,3 +176,115 @@ test("TypeScript technical validator accepts related_docs as the metadata source
     rmSync(root, { recursive: true, force: true });
   }
 });
+
+test("TypeScript technical validator rejects unfinished template content in TDD and related TID", () => {
+  const root = mkdtempSync(join(tmpdir(), "coding-plugins-technical-quality-"));
+  try {
+    const featureRoot = join(root, "docs/coding-plugins/features/technical-quality");
+    for (const directory of ["requirements", "technicals", "test-cases", "plans", "evidences"]) {
+      mkdirSync(join(featureRoot, directory), { recursive: true });
+    }
+
+    const prdPath = join(featureRoot, "requirements/quality-PRD.md");
+    const tddPath = join(featureRoot, "technicals/quality-TDD.md");
+    const tidPath = join(featureRoot, "technicals/quality-TID.md");
+    const tcdPath = join(featureRoot, "test-cases/quality-TCD.md");
+    const ipdPath = join(featureRoot, "plans/quality-IPD.md");
+    const tedPath = join(featureRoot, "evidences/quality-TED.md");
+
+    writeFileSync(
+      prdPath,
+      "---\n" +
+        "title: Quality PRD\n" +
+        "status: approved\n" +
+        "feature: technical-quality\n" +
+        "doc_id: quality\n" +
+        "created: 2026-07-04\n" +
+        "updated: 2026-07-04\n" +
+        "---\n" +
+        "# Quality PRD\n\n" +
+        "| 需求点 | 标题 | 优先级 |\n" +
+        "| --- | --- | --- |\n" +
+        "| REQ-001 | 技术文档质量门禁 | 应该 |\n",
+      "utf8",
+    );
+
+    for (const path of [tcdPath, ipdPath, tedPath]) {
+      writeFileSync(path, "---\ntitle: Placeholder\nstatus: draft\nfeature: technical-quality\ndoc_id: quality\ncreated: 2026-07-04\nupdated: 2026-07-04\n---\n", "utf8");
+    }
+
+    const relatedDocs =
+      "related_docs:\n" +
+      "  - docs/coding-plugins/features/technical-quality/requirements/quality-PRD.md\n" +
+      "  - docs/coding-plugins/features/technical-quality/technicals/quality-TID.md\n" +
+      "  - docs/coding-plugins/features/technical-quality/test-cases/quality-TCD.md\n" +
+      "  - docs/coding-plugins/features/technical-quality/plans/quality-IPD.md\n" +
+      "  - docs/coding-plugins/features/technical-quality/evidences/quality-TED.md\n";
+
+    writeFileSync(
+      tddPath,
+      "---\n" +
+        "title: Quality TDD\n" +
+        "status: approved\n" +
+        "lifecycle_status: approved\n" +
+        "feature: technical-quality\n" +
+        "doc_id: quality\n" +
+        "created: 2026-07-04\n" +
+        "updated: 2026-07-04\n" +
+        "implemented_commits: []\n" +
+        "validated_by: npm run preflight\n" +
+        relatedDocs +
+        "---\n" +
+        "# Quality TDD\n\n" +
+        "## 阅读摘要\n\n" +
+        "- **本文结论:** <2 到 5 句话说明最终技术方案。>\n\n" +
+        "## 设计摘要\n\n" +
+        "<2 到 5 句话说明整体技术方案。>\n\n" +
+        "## 规格缺口审查\n\n" +
+        "| 检查项 | 结论 |\n" +
+        "| --- | --- |\n" +
+        "| 处理状态 | 通过。 |\n\n" +
+        "## 规格到设计映射\n\n" +
+        "| 规格 ID | 规格摘要 | 技术落点 | 关键决策 ID | 影响文件/符号 | 验证命令 | 证据 |\n" +
+        "| --- | --- | --- | --- | --- | --- | --- |\n" +
+        "| REQ-001 | 文档质量门禁 | `src/lib/validate-technicals.ts::validateRepository` | TD-001 | `src/lib/validate-technicals.ts` | npm run preflight | `docs/coding-plugins/features/technical-quality/evidences/quality-TED.md` |\n\n" +
+        "## 无需技术设计的规格\n\n" +
+        "| 规格 ID | 原因 |\n" +
+        "| --- | --- |\n" +
+        "| 无 | 所有 SHOULD 规格都有技术落点。 |\n\n" +
+        "## 关键决策\n\n" +
+        "| 决策 ID | 决策 | 原因 | 取舍 |\n" +
+        "| --- | --- | --- | --- |\n" +
+        "| TD-001 | 增加 technical 质量门禁 | 防止模板占位进入正式文档 | 需要维护少量校验规则 |\n",
+      "utf8",
+    );
+
+    writeFileSync(
+      tidPath,
+      "---\n" +
+        "title: Quality TID\n" +
+        "status: approved\n" +
+        "lifecycle_status: approved\n" +
+        "implementation_mode: code\n" +
+        "feature: technical-quality\n" +
+        "doc_id: quality\n" +
+        "created: 2026-07-04\n" +
+        "updated: 2026-07-04\n" +
+        "implemented_commits: []\n" +
+        "validated_by: npm run preflight\n" +
+        relatedDocs.replace("technicals/quality-TID.md", "technicals/quality-TDD.md") +
+        "---\n" +
+        "# Quality TID\n\n" +
+        "## 实现摘要\n\n" +
+        "<说明实现边界、主要代码落点和不实现的内容。>\n",
+      "utf8",
+    );
+
+    const result = validateRepository(root, { strict: true, technicalFiles: [tddPath] });
+    assert.equal(result.ok, false);
+    assert.match(result.errors.join("\n"), /unfinished template content/);
+    assert.match(result.errors.join("\n"), /quality-TID\.md/);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});

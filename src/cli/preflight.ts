@@ -172,9 +172,7 @@ try {
   if (args.includes("--write-index")) {
     writeArtifactIndex(root);
   }
-  if (args.includes("--check-external-references")) {
-    checkExternalReferences();
-  }
+  checkExternalReferences();
   runStaticChecks();
   runValidationCommands();
   console.log("Preflight passed.");

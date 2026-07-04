@@ -41,7 +41,7 @@ external_references:
 默认 `npm run preflight` 不检查外部路径，避免 CI 或其他机器因为本地路径差异失败。需要本机完整审计时运行：
 
 ```bash
-npm run preflight -- --check-external-references
+npm run preflight
 ```
 
 ## 契约迁移

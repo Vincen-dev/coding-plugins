@@ -93,3 +93,13 @@ test("TypeScript preflight fails missing local external references", () => {
     rmSync(featureRoot, { recursive: true, force: true });
   }
 });
+
+test("TypeScript preflight runs external reference checks by default", () => {
+  const source = spawnSync("node", ["-e", "process.stdout.write(require('node:fs').readFileSync(process.argv[1], 'utf8'))", join(repoRoot, "src/cli/preflight.ts")], {
+    cwd: repoRoot,
+    encoding: "utf8",
+  });
+  assert.equal(source.status, 0, source.stderr);
+  assert.ok(source.stdout.includes("checkExternalReferences();"), "default preflight must run external reference checks");
+  assert.ok(!source.stdout.includes('args.includes("--check-external-references")'), "external reference checks must not be optional only");
+});

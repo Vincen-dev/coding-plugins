@@ -1,5 +1,13 @@
 # Release Notes
 
+## 1.0.12 - 2026-07-04
+
+- 提升插件版本，避免当前 `main` 继续复用已发布的 `v1.0.11` 版本号。
+- 将 `external_references` 审计纳入默认 preflight，并保留旧参数兼容。
+- 增强 scenario routing 契约测试，要求 CASE-INDEX 案例绑定真实 agent pressure command evidence。
+- 修正 `.agents/skills` 打包入口文档，明确仓库内使用文本 fallback 指向 `../skills`。
+- 修复 agent pressure split case 中无效 JSON 字符串转义。
+
 ## 1.0.11 - 2026-07-02
 
 - 同步 Codex 和 Claude manifest 文案，明确插件包含方案讨论和构思收敛入口，提升 `brainstorming` 可发现性。

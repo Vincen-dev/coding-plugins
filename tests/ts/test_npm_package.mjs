@@ -89,3 +89,41 @@ test("published text files do not document Python entrypoints", () => {
   }
   assert.deepEqual(offenders, []);
 });
+
+test("local skills client docs describe the packaged .agents skills text fallback", () => {
+  const files = packFiles();
+  const agentsSkills = readFileSync(resolve(repoRoot, ".agents/skills"), "utf8").trim();
+  assert.equal(agentsSkills, "../skills");
+  assert.ok(files.includes(".agents/skills"), "npm package must include .agents/skills text fallback");
+
+  const install = readFileSync(resolve(repoRoot, "INSTALL.md"), "utf8");
+  const readme = readFileSync(resolve(repoRoot, "README.md"), "utf8");
+  assert.ok(
+    install.includes("`.agents/skills` 文本入口"),
+    "INSTALL.md must describe the repository packaged .agents/skills text fallback",
+  );
+  assert.ok(
+    readme.includes("`.agents/skills` 文本入口"),
+    "README.md must describe the repository packaged .agents/skills text fallback",
+  );
+  assert.ok(
+    !install.includes("本仓库自身提供 `.agents/skills -> ../skills`"),
+    "INSTALL.md must not describe the packaged text fallback as an actual symlink",
+  );
+});
+
+test("published docs describe runtime and release distribution boundaries", () => {
+  const packageJson = JSON.parse(readFileSync(resolve(repoRoot, "package.json"), "utf8"));
+  const install = readFileSync(resolve(repoRoot, "INSTALL.md"), "utf8");
+  const readme = readFileSync(resolve(repoRoot, "README.md"), "utf8");
+  const releaseWorkflow = readFileSync(resolve(repoRoot, ".github/workflows/release.yml"), "utf8");
+
+  assert.equal(packageJson.engines.node, ">=22.6");
+  assert.ok(install.includes("Node.js >=22.6"), "INSTALL.md must document the Node runtime floor");
+  assert.ok(readme.includes("Node.js >=22.6"), "README.md must document the Node runtime floor");
+  assert.ok(
+    install.includes("不执行 `npm publish`"),
+    "INSTALL.md must state that the current release workflow does not publish to npm",
+  );
+  assert.ok(!releaseWorkflow.includes("npm publish"), "release workflow must stay aligned with the documented non-npm-publish boundary");
+});

@@ -57,7 +57,7 @@ description: Use when reading, creating, updating, migrating, or auditing Coding
 | `validated_by` | 验证记录 | TDD/TID 使用，写命令或人工验证记录 |
 | `related_docs` | 当前仓库文档路径 | 统一写 PRD、TDD、TID、TCD、IPD、TED 等 `docs/coding-plugins/...` 相对路径；工具按文件后缀自动推导类型 |
 | `related_code` | 相关代码路径 | 写仓库内相对路径 |
-| `external_references` | 跨仓库或绝对路径引用 | 默认 preflight 不检查；本机审计用 `--check-external-references` |
+| `external_references` | 跨仓库或绝对路径引用 | feature 文档中的本地引用由 preflight 默认检查；`--check-external-references` 保留为显式兼容命令 |
 
 ## 文档类型要求
 
@@ -89,7 +89,7 @@ npm run preflight
 7. 需要检查跨仓库路径时额外运行：
 
 ```bash
-npm run preflight -- --check-external-references
+npm run preflight
 ```
 
 ## 同步更新机制
