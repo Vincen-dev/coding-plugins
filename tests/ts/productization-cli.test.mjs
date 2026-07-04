@@ -337,6 +337,7 @@ test("doctor audits plugin repository wiring and detects stale Codex cache versi
       "package-lock-version",
       "dist-entrypoints",
       "codex-hook-config",
+      "platform-summary",
       "local-skills-entrypoint",
       "workflow-state-source",
       "cursor-inject-dry-run",
@@ -352,6 +353,14 @@ test("doctor audits plugin repository wiring and detects stale Codex cache versi
     const stale = run(["doctor", "--root", repoRoot, "--codex-home", codexHome, "--format", "json"]);
     assert.equal(stale.status, 1);
     const payload = JSON.parse(stale.stdout);
+    const platformSummary = payload.checks.find((check) => check.name === "platform-summary");
+    assert.equal(platformSummary.ok, false);
+    assert.ok(platformSummary.message.includes("codex=stale"));
+    assert.ok(platformSummary.message.includes("cursor=dry-run-ok"));
+    assert.ok(platformSummary.message.includes("copilot=dry-run-ok"));
+    assert.ok(platformSummary.message.includes("claude=ok"));
+    assert.ok(platformSummary.message.includes("gemini=ok"));
+    assert.ok(platformSummary.message.includes("local-skills=ok"));
     const cacheCheck = payload.checks.find((check) => check.name === "codex-cache-version");
     assert.equal(cacheCheck.ok, false);
     assert.ok(cacheCheck.message.includes(`repository=${packageVersion}`));

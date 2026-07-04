@@ -73,13 +73,23 @@ try {
             checkCodexHookConfigDeclared(resolved);
             return "./hooks/hooks-codex.json";
         }));
-        checks.push(checkLocalSkillsEntrypoint(resolved));
-        checks.push(checkWorkflowStateSource(resolved));
-        checks.push(runCheck("cursor-inject-dry-run", () => installPlatform(resolved, "cursor", { dryRun: true }).files.join(", ")));
-        checks.push(runCheck("copilot-inject-dry-run", () => installPlatform(resolved, "copilot", { dryRun: true }).files.join(", ")));
+        const localSkillsCheck = checkLocalSkillsEntrypoint(resolved);
+        const cursorCheck = runCheck("cursor-inject-dry-run", () => installPlatform(resolved, "cursor", { dryRun: true }).files.join(", "));
+        const copilotCheck = runCheck("copilot-inject-dry-run", () => installPlatform(resolved, "copilot", { dryRun: true }).files.join(", "));
+        let codexCacheCheck = null;
+        let codexEnabledCheck = null;
         if (codexHome) {
-            checks.push(checkCodexCacheVersion(resolve(codexHome), packageJson.version ?? ""));
-            checks.push(checkCodexPluginEnabled(resolve(codexHome), packageJson.version ?? ""));
+            codexCacheCheck = checkCodexCacheVersion(resolve(codexHome), packageJson.version ?? "");
+            codexEnabledCheck = checkCodexPluginEnabled(resolve(codexHome), packageJson.version ?? "");
+        }
+        checks.push(buildPlatformSummary(resolved, { codexCacheCheck, codexEnabledCheck, cursorCheck, copilotCheck, localSkillsCheck }));
+        checks.push(localSkillsCheck);
+        checks.push(checkWorkflowStateSource(resolved));
+        checks.push(cursorCheck);
+        checks.push(copilotCheck);
+        if (codexHome) {
+            checks.push(codexCacheCheck ?? checkCodexCacheVersion(resolve(codexHome), packageJson.version ?? ""));
+            checks.push(codexEnabledCheck ?? checkCodexPluginEnabled(resolve(codexHome), packageJson.version ?? ""));
         }
     }
     const payload = { ok: checks.every((check) => check.ok), root: resolved, checks };
@@ -136,6 +146,39 @@ function checkWorkflowStateSource(root) {
         message: checked.valid
             ? `${STATE_FILE_NAME} active=${checked.feature}/${checked.doc_id}; workflows=${checked.workflows.length}`
             : checked.errors.join("; "),
+    };
+}
+function buildPlatformSummary(root, checks) {
+    const codexStatus = checks.codexCacheCheck || checks.codexEnabledCheck
+        ? checks.codexCacheCheck?.ok && checks.codexEnabledCheck?.ok
+            ? "ok"
+            : checks.codexCacheCheck && !checks.codexCacheCheck.ok
+                ? "stale"
+                : "unavailable"
+        : "not-checked";
+    const claudeStatus = existsSync(join(root, ".claude-plugin/plugin.json")) ? "ok" : "missing";
+    const geminiManifestPath = join(root, "gemini-extension.json");
+    const geminiStatus = existsSync(geminiManifestPath)
+        ? existsSync(join(root, String(JSON.parse(readFileSync(geminiManifestPath, "utf8")).contextFileName ?? "")))
+            ? "ok"
+            : "missing-context"
+        : "missing";
+    const cursorStatus = checks.cursorCheck.ok ? "dry-run-ok" : "dry-run-failed";
+    const copilotStatus = checks.copilotCheck.ok ? "dry-run-ok" : "dry-run-failed";
+    const localSkillsStatus = checks.localSkillsCheck.ok ? "ok" : "missing";
+    const ok = [claudeStatus, geminiStatus, cursorStatus, copilotStatus, localSkillsStatus].every((status) => status === "ok" || status === "dry-run-ok") &&
+        (codexStatus === "ok" || codexStatus === "not-checked");
+    return {
+        name: "platform-summary",
+        ok,
+        message: [
+            `codex=${codexStatus}`,
+            `claude=${claudeStatus}`,
+            `gemini=${geminiStatus}`,
+            `local-skills=${localSkillsStatus}`,
+            `cursor=${cursorStatus}`,
+            `copilot=${copilotStatus}`,
+        ].join("; "),
     };
 }
 function checkCodexCacheVersion(codexHome, repositoryVersion) {
