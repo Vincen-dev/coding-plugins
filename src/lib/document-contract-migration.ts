@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { basename, join } from "node:path";
 
-import { parseFrontmatterBlock, renderFrontmatterBlock, splitFrontmatter } from "./document-metadata.ts";
+import { LEGACY_RELATION_KEYS, parseFrontmatterBlock, RELATED_DOCS_KEY, renderFrontmatterBlock, splitFrontmatter } from "./document-metadata.ts";
 
 const SPEC_ID_RE = /^(?:REQ|API|SCHEMA|STATE|ERR|AC|NFR|MIG|OBS|NON)(?:-[A-Z0-9]+)*-\d{3,}$/;
 const STATUS_ALIASES: Record<string, string> = {
@@ -62,6 +62,7 @@ export function migrateFile(path: string, options: { dryRun?: boolean } = {}): b
     changed = true;
   }
 
+  const firstLegacyRelationIndex = order.findIndex((key) => LEGACY_RELATION_KEYS.includes(key));
   const relatedSpecs = lists.related_specs ?? [];
   if (relatedSpecs.length > 0) {
     const pathValues = relatedSpecs.filter((value) => !SPEC_ID_RE.test(value));
@@ -76,6 +77,22 @@ export function migrateFile(path: string, options: { dryRun?: boolean } = {}): b
       }
       changed = true;
     }
+  }
+  if (LEGACY_RELATION_KEYS.some((key) => key in lists)) {
+    const relatedDocs = new Set(lists[RELATED_DOCS_KEY] ?? []);
+    for (const key of LEGACY_RELATION_KEYS) {
+      for (const value of lists[key] ?? []) {
+        if (!SPEC_ID_RE.test(value)) {
+          relatedDocs.add(value);
+        }
+      }
+      delete lists[key];
+    }
+    lists[RELATED_DOCS_KEY] = [...relatedDocs].sort();
+    order = order.filter((key) => !LEGACY_RELATION_KEYS.includes(key) && key !== RELATED_DOCS_KEY);
+    const insertAt = firstLegacyRelationIndex >= 0 ? firstLegacyRelationIndex : order.length;
+    order.splice(Math.min(insertAt, order.length), 0, RELATED_DOCS_KEY);
+    changed = true;
   }
 
   const migratedBody = migrateBodyStatusAliases(body);

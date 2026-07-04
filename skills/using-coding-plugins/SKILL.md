@@ -23,7 +23,7 @@ description: 开始任何任务时使用；建立 Coding Plugins 技能选择、
 | --- | --- |
 | 解释、搜索、读取、状态查询，不要求改代码 | 普通分析或对应工具 |
 | 方案讨论、头脑风暴、产品方向不清、是否值得做、先分析不落地 | `brainstorming` |
-| 读取、创建、迁移或审计 Coding Plugins 文档 metadata、frontmatter、README/INDEX 或 `related_*` 关系 | `document-metadata` |
+| 读取、创建、迁移或审计 Coding Plugins 文档 metadata、frontmatter、README/INDEX 或 `related_docs` 关系 | `document-metadata` |
 | 代码审查、合并前检查、需要第二视角 | `requesting-code-review` |
 | 收到 review、PR 反馈、别人要求修改 | `receiving-code-review` |
 | 验证是否完成、测试是否通过、能否宣称修好 | `verification-before-completion` |
@@ -64,7 +64,7 @@ description: 开始任何任务时使用；建立 Coding Plugins 技能选择、
 ### 组合规则
 
 - 用户点名技能时，优先读取该技能；若明显不适用，说明原因并转入更合适技能。
-- 任何技能需要读取或维护 `docs/coding-plugins/features/<feature-name>/` 下的 README、PRD、TDD/TID、TCD、IPD 或 TED 关系时，先使用 `document-metadata` 确认 frontmatter 和 `related_*` 关系。
+- 任何技能需要读取或维护 `docs/coding-plugins/features/<feature-name>/` 下的 README、PRD、TDD/TID、TCD、IPD 或 TED 关系时，先使用 `document-metadata` 确认 frontmatter 和 `related_docs` 关系。
 - 当用户说“继续”“恢复”“开始实现”“执行 IPD”，且能识别 `feature` 和 `doc_id` 时，先运行 `coding-plugins workflow-state inspect --feature <feature> --doc-id <doc-id> --json`。输出必须说明当前状态、判断原因、缺失产物、是否 stale、推荐下一个 skill。
 - 执行 IPD 前必须运行 `coding-plugins workflow-guard check --feature <feature> --doc-id <doc-id> --target execute --json`；未通过时按 `next_skill` 回退，不得继续实现。
 - `workflow-guard.ts` 通过后，运行 `coding-plugins workflow-brief --feature <feature> --doc-id <doc-id> --target execute --task TASK-001 --json` 生成短上下文；默认只读 IPD 的 `## 执行简报`、`## 执行锁定区`、`## 任务总览` 和当前任务章节，除非 Rewind Triggers 命中，不重复读取完整 PRD/TDD/TID/TCD。未知当前任务时可以省略 `--task`，但多任务 IPD 应优先指定。

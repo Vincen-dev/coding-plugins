@@ -70,7 +70,7 @@ docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md
 
 ## 文档结构
 
-机器可读 frontmatter 的 key 保持英文稳定；中文展示写入 `## 文档信息`。`related_*` 是文档关系源，正文不要维护手写产物链路表。
+机器可读 frontmatter 的 key 保持英文稳定；中文展示写入 `## 文档信息`。`related_docs` 是文档关系源，正文不要维护手写产物链路表。
 
 ```markdown
 ---
@@ -80,14 +80,11 @@ feature: <feature-name>
 doc_id: <doc-id>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
-related_specs:
+related_docs:
   - docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md
-related_technical:
   - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md
   - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md
-related_test_cases:
   - docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md
-related_evidence:
   - docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md
 source_hash: sha256:<由 src/cli/workflow-state.ts hash 生成>
 ---

@@ -5,14 +5,11 @@ feature: <feature-name>
 doc_id: <doc-id>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
-related_specs:
+related_docs:
   - docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md
-related_technical:
   - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md
   - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md
-related_plans:
   - docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md
-related_evidence:
   - docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md
 ---
 
@@ -33,7 +30,7 @@ related_evidence:
 | Feature | <feature-name> |
 | Doc ID | <doc-id> |
 | 文档类型 | TCD |
-| 关系源 | frontmatter `related_*` 和 `docs/coding-plugins/INDEX.md` |
+| 关系源 | frontmatter `related_docs` 和 `docs/coding-plugins/INDEX.md` |
 | 阅读重点 | 测试策略摘要、测试用例总览、测试用例章节、豁免说明 |
 
 ## 测试策略摘要

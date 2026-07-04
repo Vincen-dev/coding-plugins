@@ -67,4 +67,4 @@ skills/writing-test-cases/templates/test-cases.md
 - 测试层级是否和 TDD 的测试策略一致，测试数据和断言是否覆盖 TID 中的接口、数据结构和迁移约束。
 - 是否没有把实现任务写进测试用例文档。
 - 是否没有把实际执行证据写进测试用例文档。
-- 是否维护 frontmatter 的 `related_specs`、`related_technical`、`related_plans`、`related_evidence`；同一 feature 下存在 TID 时，`related_technical` 必须同时包含 TDD 和 TID。
+- 是否维护 frontmatter 的 `related_docs`；同一 feature 下存在 TID 时，`related_docs` 必须同时包含 TDD 和 TID。

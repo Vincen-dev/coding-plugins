@@ -33,7 +33,7 @@ description: Use when users want idea exploration, solution comparison, product 
 
 - 不写代码、不搭脚手架、不调用实现技能。
 - 不创建 README、PRD、TDD、TID、TCD、IPD 或 TED。
-- 不维护正式 `document-metadata`、`related_*`、README 或 `docs/coding-plugins/INDEX.md`。
+- 不维护正式 `document-metadata`、`related_docs`、README 或 `docs/coding-plugins/INDEX.md`。
 - 不把探索性判断包装成 approved 需求。
 - 用户没有确认进入落地前，不得转入 `writing-requirements`、`writing-technicals`、`writing-test-cases` 或 `writing-plans`。
 

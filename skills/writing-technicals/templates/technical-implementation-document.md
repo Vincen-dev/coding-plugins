@@ -9,15 +9,11 @@ created: YYYY-MM-DD
 updated: YYYY-MM-DD
 implemented_commits: []
 validated_by: "<验证命令或人工验证记录>"
-related_specs:
+related_docs:
   - docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md
-related_technical:
   - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md
-related_test_cases:
   - docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md
-related_plans:
   - docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md
-related_evidence:
   - docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md
 ---
 
@@ -40,7 +36,7 @@ related_evidence:
 | Feature | <feature-name> |
 | Doc ID | <doc-id> |
 | 文档类型 | TID |
-| 关系源 | frontmatter `related_*` 和 `docs/coding-plugins/INDEX.md` |
+| 关系源 | frontmatter `related_docs` 和 `docs/coding-plugins/INDEX.md` |
 | 阅读重点 | 实现摘要、实现点总览、实现点章节、风险和回滚 |
 
 ## 实现摘要

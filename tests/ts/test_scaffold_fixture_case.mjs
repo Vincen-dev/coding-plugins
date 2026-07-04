@@ -47,6 +47,9 @@ test("TypeScript scaffold creates case index and valid document chain", () => {
 
     const ipdText = readFileSync(join(featureRoot, "plans/cache-refresh-IPD.md"), "utf8");
     assert.ok(ipdText.includes("source_hash: sha256:"));
+    assert.ok(ipdText.includes("related_docs:"));
+    assert.equal(ipdText.includes("related_specs:"), false);
+    assert.equal(ipdText.includes("related_technical:"), false);
     assert.ok(ipdText.includes("## 执行锁定区"));
     assert.ok(ipdText.includes("## 执行简报"));
     assert.ok(ipdText.includes("## 任务总览"));

@@ -181,7 +181,7 @@ git-commit -> finishing-a-development-branch
 | 1 | `using-coding-plugins` | 入口 | 判断任务类型，选择正确 skill 和平台工具映射 |
 | 2 | `brainstorming` | 构思 | 方案讨论、价值判断、边界收敛，不创建正式文档 |
 | 3 | `spec-driven-development` | 编排 | 决定需要哪些正式规格、技术、测试、计划和证据产物 |
-| 4 | `document-metadata` | 文档关系 | 维护 frontmatter、README、INDEX 和 `related_*` 链路 |
+| 4 | `document-metadata` | 文档关系 | 维护 frontmatter、README、INDEX 和 `related_docs` 链路 |
 | 5 | `writing-requirements` | 需求 | 编写 PRD、API contract、schema、state machine、acceptance 或 maintenance 规格 |
 | 6 | `writing-technicals` | 技术 | 编写 TDD 技术设计和 TID 技术实现 |
 | 7 | `writing-test-cases` | 测试设计 | 编写 TCD 测试用例文档 |

@@ -513,7 +513,7 @@ docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md
 
 技术文档路径的 `<doc-id>` 应和同一文档链路的 PRD 路径一致。保存或移动技术文档后运行 `npm run preflight -- --write-index`，让 `docs/coding-plugins/INDEX.md` 同步反映最新文件树。technical 模板正文标题和表头默认使用中文，Spec ID、命令、路径和代码标识可保留英文。
 
-当同一 `doc_id` 已存在 PRD、TID、TCD、IPD 或 TED 时，TDD frontmatter 应维护 `related_specs`、`related_technical`、`related_test_cases`、`related_plans` 和 `related_evidence`。TID frontmatter 应反向链接 TDD，并链接同一 `doc_id` 的 PRD、TCD、IPD 和 TED。这些路径用于把需求契约、技术设计、技术实现、测试用例、IPD 任务执行文档和验证证据连成可检索链路。
+当同一 `doc_id` 已存在 PRD、TID、TCD、IPD 或 TED 时，TDD/TID frontmatter 应维护统一的 `related_docs`。工具会根据路径后缀 `-PRD/-TDD/-TID/-TCD/-IPD/-TED` 推导文档类型。这些路径用于把需求契约、技术设计、技术实现、测试用例、IPD 任务执行文档和验证证据连成可检索链路。
 
 文档变更必须沿 metadata 关系向下游同步：`PRD -> TDD -> TID -> TCD -> IPD -> TED`。如果上游文档的 `updated` 晚于下游，说明下游还没有完成同步评审；preflight 会失败。下游正文确实无需变更时，也要更新下游 `updated`，表示已确认不受影响。
 

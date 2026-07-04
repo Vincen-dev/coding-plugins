@@ -2,7 +2,7 @@
 
 复制本模板时，只保留目标文档类型需要的字段。机器可读 key 保持英文；中文展示写在正文 `## 文档信息`。`feature` 表示 `docs/coding-plugins/features/<feature-name>/` 模块目录，`doc_id` 表示该 feature 下的一条具体文档链路。`updated` 表示本文档内容或 metadata 已完成更新，也表示已按上游文档变更完成同步评审。
 
-可执行规则集中在 `src/lib/document-metadata.ts`。新增或调整文档类型、后缀、目录、必填字段、`related_*` 关系或同步链时，先更新该脚本，再同步本模板。
+可执行规则集中在 `src/lib/document-metadata.ts`。新增或调整文档类型、后缀、目录、必填字段、`related_docs` 关系或同步链时，先更新该脚本，再同步本模板。
 
 ## 通用 frontmatter
 
@@ -16,15 +16,12 @@ created: YYYY-MM-DD
 updated: YYYY-MM-DD
 tags:
   - <检索标签>
-related_specs: []
-related_technical:
+related_docs:
+  - docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md
   - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md
   - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md
-related_test_cases:
   - docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md
-related_plans:
   - docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md
-related_evidence:
   - docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md
 related_code:
   - <代码路径>
@@ -48,15 +45,11 @@ tags:
   - <检索标签>
 related_code:
   - <代码路径>
-related_specs: []
-related_technical:
+related_docs:
   - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md
   - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md
-related_test_cases:
   - docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md
-related_plans:
   - docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md
-related_evidence:
   - docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md
 ---
 ```
@@ -74,15 +67,11 @@ created: YYYY-MM-DD
 updated: YYYY-MM-DD
 implemented_commits: []
 validated_by: <验证命令或人工验证记录>
-related_specs:
+related_docs:
   - docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md
-related_technical:
   - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md
-related_plans:
-  - docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md
-related_test_cases:
   - docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md
-related_evidence:
+  - docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md
   - docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md
 ---
 ```
@@ -101,15 +90,11 @@ created: YYYY-MM-DD
 updated: YYYY-MM-DD
 implemented_commits: []
 validated_by: <验证命令或人工验证记录>
-related_specs:
+related_docs:
   - docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md
-related_technical:
   - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md
-related_plans:
-  - docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md
-related_test_cases:
   - docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md
-related_evidence:
+  - docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md
   - docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md
 ---
 ```
@@ -124,14 +109,11 @@ feature: <feature-name>
 doc_id: <doc-id>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
-related_specs:
+related_docs:
   - docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md
-related_technical:
   - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md
   - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md
-related_test_cases:
   - docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md
-related_evidence:
   - docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md
 ---
 ```
@@ -146,14 +128,11 @@ feature: <feature-name>
 doc_id: <doc-id>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
-related_specs:
+related_docs:
   - docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md
-related_technical:
   - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md
   - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md
-related_plans:
   - docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md
-related_evidence:
   - docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md
 ---
 ```
@@ -168,16 +147,12 @@ feature: <feature-name>
 doc_id: <doc-id>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
-related_specs:
+related_docs:
   - docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md
-related_technical:
   - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md
   - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md
-related_test_cases:
   - docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md
-related_plans:
   - docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md
-related_evidence: []
 ---
 ```
 
@@ -208,7 +183,7 @@ archived_at: YYYY-MM-DD
 | Feature | <feature-name> |
 | Doc ID | <doc-id> |
 | 文档类型 | <PRD / TDD / TID / TCD / IPD / TED> |
-| 关系源 | frontmatter `related_*` 和 `docs/coding-plugins/INDEX.md` |
+| 关系源 | frontmatter `related_docs` 和 `docs/coding-plugins/INDEX.md` |
 | 阅读重点 | <本文正文最重要的章节，例如需求点、设计决策、实现点、测试用例、执行任务或验证证据> |
 | 同步状态 | 已按上游文档变更完成同步评审 |
 ```

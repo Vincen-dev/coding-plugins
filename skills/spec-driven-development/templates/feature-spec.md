@@ -10,10 +10,7 @@ tags:
   - <tag>
 related_code:
   - <path>
-related_specs: []
-related_technical: []
-related_plans: []
-related_evidence: []
+related_docs: []
 ---
 
 # <功能名称>规格

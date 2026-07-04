@@ -68,6 +68,13 @@ function frontmatter(title: string, feature: string, docId: string, date: string
   );
 }
 
+function relatedDocs(paths: string[]): string {
+  if (paths.length === 0) {
+    return "related_docs: []\n";
+  }
+  return "related_docs:\n" + paths.map((path) => `  - ${path}\n`).join("");
+}
+
 export function scaffoldFixtureCase(root: string, options: ScaffoldFixtureCaseOptions): string {
   validateSlug("feature", options.feature);
   validateSlug("doc_id", options.docId);
@@ -109,16 +116,7 @@ export function scaffoldFixtureCase(root: string, options: ScaffoldFixtureCaseOp
       options.docId,
       currentDate,
       "type: feature\n" +
-        "related_specs: []\n" +
-        "related_technical:\n" +
-        `  - ${tddPath}\n` +
-        `  - ${tidPath}\n` +
-        "related_test_cases:\n" +
-        `  - ${tcdPath}\n` +
-        "related_plans:\n" +
-        `  - ${ipdPath}\n` +
-        "related_evidence:\n" +
-        `  - ${tedPath}\n`,
+        relatedDocs([tddPath, tidPath, tcdPath, ipdPath, tedPath]),
     ) +
       `# ${options.title} PRD\n\n` +
       "## 需求总览\n\n" +
@@ -138,16 +136,7 @@ export function scaffoldFixtureCase(root: string, options: ScaffoldFixtureCaseOp
       options.docId,
       currentDate,
       "lifecycle_status: approved\n" +
-        "related_specs:\n" +
-        `  - ${prdPath}\n` +
-        "related_technical:\n" +
-        `  - ${tidPath}\n` +
-        "related_test_cases:\n" +
-        `  - ${tcdPath}\n` +
-        "related_plans:\n" +
-        `  - ${ipdPath}\n` +
-        "related_evidence:\n" +
-        `  - ${tedPath}\n`,
+        relatedDocs([prdPath, tidPath, tcdPath, ipdPath, tedPath]),
     ) +
       `# ${options.title} TDD\n\n` +
       "## 规格到设计映射\n\n" +
@@ -164,16 +153,7 @@ export function scaffoldFixtureCase(root: string, options: ScaffoldFixtureCaseOp
       options.docId,
       currentDate,
       "lifecycle_status: approved\n" +
-        "related_specs:\n" +
-        `  - ${prdPath}\n` +
-        "related_technical:\n" +
-        `  - ${tddPath}\n` +
-        "related_test_cases:\n" +
-        `  - ${tcdPath}\n` +
-        "related_plans:\n" +
-        `  - ${ipdPath}\n` +
-        "related_evidence:\n" +
-        `  - ${tedPath}\n`,
+        relatedDocs([prdPath, tddPath, tcdPath, ipdPath, tedPath]),
     ) +
       `# ${options.title} TID\n\n` +
       "## 实现点总览\n\n" +
@@ -189,16 +169,7 @@ export function scaffoldFixtureCase(root: string, options: ScaffoldFixtureCaseOp
       options.feature,
       options.docId,
       currentDate,
-      "related_specs:\n" +
-        `  - ${prdPath}\n` +
-        "related_technical:\n" +
-        `  - ${tddPath}\n` +
-        `  - ${tidPath}\n` +
-        "related_test_cases: []\n" +
-        "related_plans:\n" +
-        `  - ${ipdPath}\n` +
-        "related_evidence:\n" +
-        `  - ${tedPath}\n`,
+      relatedDocs([prdPath, tddPath, tidPath, ipdPath, tedPath]),
     ) +
       `# ${options.title} TCD\n\n` +
       "## 测试用例总览\n\n" +
@@ -220,16 +191,7 @@ export function scaffoldFixtureCase(root: string, options: ScaffoldFixtureCaseOp
       options.docId,
       currentDate,
       `source_hash: ${sourceHash}\n` +
-        "related_specs:\n" +
-        `  - ${prdPath}\n` +
-        "related_technical:\n" +
-        `  - ${tddPath}\n` +
-        `  - ${tidPath}\n` +
-        "related_test_cases:\n" +
-        `  - ${tcdPath}\n` +
-        "related_plans: []\n" +
-        "related_evidence:\n" +
-        `  - ${tedPath}\n`,
+        relatedDocs([prdPath, tddPath, tidPath, tcdPath, tedPath]),
     ) +
       `# ${options.title} 任务执行文档（IPD）\n\n` +
       "## 执行锁定区\n\n" +
@@ -260,16 +222,7 @@ export function scaffoldFixtureCase(root: string, options: ScaffoldFixtureCaseOp
       options.feature,
       options.docId,
       currentDate,
-      "related_specs:\n" +
-        `  - ${prdPath}\n` +
-        "related_technical:\n" +
-        `  - ${tddPath}\n` +
-        `  - ${tidPath}\n` +
-        "related_test_cases:\n" +
-        `  - ${tcdPath}\n` +
-        "related_plans:\n" +
-        `  - ${ipdPath}\n` +
-        "related_evidence: []\n",
+      relatedDocs([prdPath, tddPath, tidPath, tcdPath, ipdPath]),
     ) +
       `# ${options.title} TED\n\n` +
       "## TDD 证据\n\n" +

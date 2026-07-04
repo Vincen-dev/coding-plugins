@@ -138,7 +138,7 @@ docs/coding-plugins/features/auth/evidences/auth-login-TED.md
 
 如果项目已有测试报告或 ADR 约定，优先使用项目约定，但最终报告必须写明实际 evidence 文件路径。
 
-Evidence 文件必须包含 frontmatter metadata。读取或更新 evidence 时，先使用 `document-metadata` 确认 `feature`、`doc_id`、`related_specs`、`related_technical` 和 `related_plans`，再追加正文证据。相关规则见 `docs/coding-plugins/document-contract.md`。
+Evidence 文件必须包含 frontmatter metadata。读取或更新 evidence 时，先使用 `document-metadata` 确认 `feature`、`doc_id` 和 `related_docs`，再追加正文证据。相关规则见 `docs/coding-plugins/document-contract.md`。
 
 一个文件可以记录同一 feature 下多个任务。每个任务使用二级标题，例如：
 

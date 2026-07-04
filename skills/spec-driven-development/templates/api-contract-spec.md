@@ -10,7 +10,7 @@ tags:
   - <tag>
 related_code:
   - <path>
-related_specs: []
+related_docs: []
 ---
 
 # <API 或 SDK 名称>契约规格

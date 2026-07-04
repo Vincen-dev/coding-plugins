@@ -69,11 +69,7 @@ export function renderPrd(feature: string, docId: string, title: string, status:
     "tags:\n" +
     `${tagsText}\n` +
     "related_code: []\n" +
-    "related_specs: []\n" +
-    "related_technical: []\n" +
-    "related_test_cases: []\n" +
-    "related_plans: []\n" +
-    "related_evidence: []\n" +
+    "related_docs: []\n" +
     "---\n\n" +
     `# ${title}需求文档\n\n` +
     "## 文档信息\n\n" +
@@ -83,7 +79,7 @@ export function renderPrd(feature: string, docId: string, title: string, status:
     `| Feature | ${feature} |\n` +
     `| Doc ID | ${docId} |\n` +
     "| 文档类型 | PRD |\n\n" +
-    "关联关系以 frontmatter 的 `related_*` 字段为准；正文只描述需求点、验收和验证口径。\n\n" +
+    "关联关系以 frontmatter 的 `related_docs` 字段为准；正文只描述需求点、验收和验证口径。\n\n" +
     "## 目标\n\n" +
     "请写明要交付的能力、成功状态和可观察结果。\n\n" +
     "## 非目标\n\n" +

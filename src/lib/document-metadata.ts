@@ -6,6 +6,7 @@ export interface DocumentArtifact {
   suffix: string;
   directory: string;
   relationKey: string;
+  legacyRelationKey: string;
   docIdRequired: boolean;
   syncUpstream: string[];
 }
@@ -30,13 +31,16 @@ export const ARCHIVED_EVIDENCE_METADATA_REQUIRED_FIELDS = [
 ];
 export const PLAN_METADATA_REQUIRED_FIELDS = ["title", "status", "feature", "created", "updated"];
 
+export const RELATED_DOCS_KEY = "related_docs";
+export const LEGACY_RELATION_KEYS = ["related_specs", "related_technical", "related_test_cases", "related_plans", "related_evidence"];
+
 export const DOCUMENT_ARTIFACTS: DocumentArtifact[] = [
-  { label: "PRD", suffix: "PRD", directory: "requirements", relationKey: "related_specs", docIdRequired: true, syncUpstream: [] },
-  { label: "TDD", suffix: "TDD", directory: "technicals", relationKey: "related_technical", docIdRequired: true, syncUpstream: ["PRD"] },
-  { label: "TID", suffix: "TID", directory: "technicals", relationKey: "related_technical", docIdRequired: true, syncUpstream: ["PRD", "TDD"] },
-  { label: "TCD", suffix: "TCD", directory: "test-cases", relationKey: "related_test_cases", docIdRequired: true, syncUpstream: ["PRD", "TDD", "TID"] },
-  { label: "IPD", suffix: "IPD", directory: "plans", relationKey: "related_plans", docIdRequired: true, syncUpstream: ["PRD", "TDD", "TID", "TCD"] },
-  { label: "TED", suffix: "TED", directory: "evidences", relationKey: "related_evidence", docIdRequired: true, syncUpstream: ["PRD", "TDD", "TID", "TCD", "IPD"] },
+  { label: "PRD", suffix: "PRD", directory: "requirements", relationKey: RELATED_DOCS_KEY, legacyRelationKey: "related_specs", docIdRequired: true, syncUpstream: [] },
+  { label: "TDD", suffix: "TDD", directory: "technicals", relationKey: RELATED_DOCS_KEY, legacyRelationKey: "related_technical", docIdRequired: true, syncUpstream: ["PRD"] },
+  { label: "TID", suffix: "TID", directory: "technicals", relationKey: RELATED_DOCS_KEY, legacyRelationKey: "related_technical", docIdRequired: true, syncUpstream: ["PRD", "TDD"] },
+  { label: "TCD", suffix: "TCD", directory: "test-cases", relationKey: RELATED_DOCS_KEY, legacyRelationKey: "related_test_cases", docIdRequired: true, syncUpstream: ["PRD", "TDD", "TID"] },
+  { label: "IPD", suffix: "IPD", directory: "plans", relationKey: RELATED_DOCS_KEY, legacyRelationKey: "related_plans", docIdRequired: true, syncUpstream: ["PRD", "TDD", "TID", "TCD"] },
+  { label: "TED", suffix: "TED", directory: "evidences", relationKey: RELATED_DOCS_KEY, legacyRelationKey: "related_evidence", docIdRequired: true, syncUpstream: ["PRD", "TDD", "TID", "TCD", "IPD"] },
 ];
 
 const ARTIFACTS_BY_SUFFIX = new Map(DOCUMENT_ARTIFACTS.map((artifact) => [artifact.suffix, artifact]));

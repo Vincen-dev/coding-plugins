@@ -10,11 +10,7 @@ tags:
   - <检索标签>
 related_code:
   - <代码路径>
-related_specs: []
-related_technical: []
-related_test_cases: []
-related_plans: []
-related_evidence: []
+related_docs: []
 ---
 
 # <功能名称>需求文档
@@ -24,7 +20,7 @@ related_evidence: []
 - **本文结论:** <一句话说明本需求要交付的能力和成功状态。>
 - **当前状态:** 草稿，等待需求确认。
 - **先读重点:** 先看目标、非目标和需求总览，再按 `## 标题（REQ-001）` 章节阅读每个需求点。
-- **下游同步:** PRD 批准后创建同一 `doc_id` 的 TDD、TID、TCD 和 IPD，并回填 frontmatter 的 `related_*`。
+- **下游同步:** PRD 批准后创建同一 `doc_id` 的 TDD、TID、TCD 和 IPD，并回填 frontmatter 的 `related_docs`。
 
 ## 文档信息
 
@@ -35,7 +31,7 @@ related_evidence: []
 | Doc ID | <doc-id> |
 | 文档类型 | PRD |
 
-关联关系以 frontmatter 的 `related_*` 字段为准；正文只描述需求点、验收和验证口径。
+关联关系以 frontmatter 的 `related_docs` 字段为准；正文只描述需求点、验收和验证口径。
 
 ## 目标
 

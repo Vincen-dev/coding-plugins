@@ -10,7 +10,7 @@ tags:
   - <tag>
 related_code:
   - <path>
-related_specs: []
+related_docs: []
 ---
 
 # <状态机名称>规格

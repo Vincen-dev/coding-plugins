@@ -31,7 +31,7 @@ docs/coding-plugins/features/<feature-name>/evidences/archive/<date>-<summary>.m
 
 ## 跨仓库引用
 
-`related_specs`、`related_technical`、`related_test_cases`、`related_plans` 和 `related_evidence` 只保存当前仓库内 `docs/coding-plugins/...` 路径。跨仓库或绝对路径引用写入 `external_references`：
+`related_docs` 只保存当前仓库内 `docs/coding-plugins/...` 路径。跨仓库或绝对路径引用写入 `external_references`。旧文档中的 `related_specs`、`related_technical`、`related_test_cases`、`related_plans` 和 `related_evidence` 仅作为兼容输入读取，迁移后应合并为 `related_docs`：
 
 ```yaml
 external_references:
@@ -53,7 +53,7 @@ npm run document-contract-migration:ts -- --dry-run
 npm run document-contract-migration:ts --
 ```
 
-迁移脚本会把状态别名归一化，把 `related_specs` 中的裸 Spec ID 移到 `related_spec_ids`，并为 evidence 补齐基础 metadata。脚本不生成复杂技术设计或 IPD 任务执行文档。
+迁移脚本会把状态别名归一化，把 legacy `related_*` 路径合并为 `related_docs`，把 `related_specs` 中的裸 Spec ID 移到 `related_spec_ids`，并为 evidence 补齐基础 metadata。脚本不生成复杂技术设计或 IPD 任务执行文档。
 
 ## Metadata 优先
 
@@ -61,7 +61,7 @@ npm run document-contract-migration:ts --
 
 1. 先使用 `document-metadata` 技能确认读取顺序。
 2. 先确认 `feature`、`doc_id`、`status`、`updated`。
-3. 再读取同一 `doc_id` 链路的 `related_specs`、`related_technical`、`related_test_cases`、`related_plans`、`related_evidence`。
+3. 再读取同一 `doc_id` 链路的 `related_docs`；旧 `related_*` 字段只作为兼容输入。
 4. 最后进入正文中的需求、设计、IPD 任务执行或证据。
 
 当 frontmatter 和正文摘要冲突时，以 frontmatter 为准，并修正文档。

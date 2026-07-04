@@ -5,16 +5,12 @@ feature: <feature-name>
 doc_id: <doc-id>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
-related_specs:
+related_docs:
   - docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md
-related_technical:
   - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md
   - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md
-related_test_cases:
   - docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md
-related_plans:
   - docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md
-related_evidence: []
 ---
 
 # <能力> TDD 证据
@@ -34,10 +30,10 @@ related_evidence: []
 | Feature | <feature-name> |
 | Doc ID | <doc-id> |
 | 文档类型 | TED |
-| 关系源 | frontmatter `related_*` 和 `docs/coding-plugins/INDEX.md` |
+| 关系源 | frontmatter `related_docs` 和 `docs/coding-plugins/INDEX.md` |
 | 阅读重点 | 最新任务的 TDD 证据、最终验证、风险 |
 
-关联关系以 frontmatter 的 `related_*` 字段为准；正文只记录真实 RED/GREEN/REFACTOR 输出、TDD 例外和最终验证。
+关联关系以 frontmatter 的 `related_docs` 字段为准；正文只记录真实 RED/GREEN/REFACTOR 输出、TDD 例外和最终验证。
 
 ## 任务 <N>：<任务名称>
 

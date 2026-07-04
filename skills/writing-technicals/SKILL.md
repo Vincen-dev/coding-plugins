@@ -88,7 +88,7 @@ docs/coding-plugins/INDEX.md
 2. 做规格缺口审查：逐项确认未覆盖需求、验收标准不清、外部行为新增、错误边界和兼容要求。
 3. 如果发现缺口，不要在 technical 中顺手补需求；回到 `spec-driven-development` 更新 spec、重新运行规格校验并等待用户确认。
 4. 确认 feature，并检查是否已有 TDD / TID。
-5. 创建或更新 `technicals/<doc-id>-TDD.md`，正文标题默认使用中文，并补齐 `related_specs`、`related_plans`、`related_evidence`；关联关系以 frontmatter 为机器源。
+5. 创建或更新 `technicals/<doc-id>-TDD.md`，正文标题默认使用中文，并补齐 `related_docs`；关联关系以 frontmatter 为机器源。
 6. 创建或更新 `technicals/<doc-id>-TID.md`，并在 TDD 的实现落地章节引用它；如果没有代码实现，TID 必须设置 `implementation_mode: no_code` 并说明“不新增代码实现”的范围边界。
 7. 在规格 metadata 或正文中引用 TDD 路径；metadata key 保持英文，正文使用 `## 文档信息` 展示中文摘要。不要在 README 正文增加手写 `产物链路` 或 `文档链路`，完整链路由 `docs/coding-plugins/INDEX.md` 生成。
 8. 更新 `docs/coding-plugins/INDEX.md`。

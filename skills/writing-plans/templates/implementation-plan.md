@@ -5,14 +5,11 @@ feature: <feature-name>
 doc_id: <doc-id>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
-related_specs:
+related_docs:
   - docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md
-related_technical:
   - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md
   - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md
-related_test_cases:
   - docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md
-related_evidence:
   - docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md
 source_hash: sha256:<由 src/cli/workflow-state.ts hash --feature <feature-name> --doc-id <doc-id> 生成>
 ---
@@ -36,7 +33,7 @@ source_hash: sha256:<由 src/cli/workflow-state.ts hash --feature <feature-name>
 | 文档类型 | IPD |
 | 缩写含义 | Implementation Procedure Document |
 
-关联关系以 frontmatter 的 `related_*` 字段为准；正文只保留执行任务需要的上下文、步骤和验证口径。
+关联关系以 frontmatter 的 `related_docs` 字段为准；正文只保留执行任务需要的上下文、步骤和验证口径。
 
 ## 目标
 

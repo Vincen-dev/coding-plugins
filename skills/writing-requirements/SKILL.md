@@ -44,7 +44,7 @@ description: Use when writing or updating Coding Plugins PRD requirement documen
 | 验收标准不清 | 同一个 PRD | 参考 `templates/acceptance-criteria.md` 补齐验收标准章节 |
 | 维护、重构、升级、迁移、回归风险 | 同一个 PRD | 参考 `templates/maintenance-spec.md` 补齐维护 / 迁移 / 回归约束章节 |
 
-`product-requirements-document.md` 是默认骨架；不同场景模板只作为章节参考，不决定最终文件名。`feature` 表示模块目录，`doc_id` 表示该 feature 下的一条需求链路。默认 `doc_id = <feature-name>`；当一个 feature 模块下存在多个独立需求、流程、契约或维护主题时，为每条链路创建独立 `<doc-id>-PRD.md`，例如 `routing-login-PRD.md` 和 `routing-register-PRD.md`。横跨多个独立 feature 时，拆成多个 feature root，并用 `related_specs` 互链。
+`product-requirements-document.md` 是默认骨架；不同场景模板只作为章节参考，不决定最终文件名。`feature` 表示模块目录，`doc_id` 表示该 feature 下的一条需求链路。默认 `doc_id = <feature-name>`；当一个 feature 模块下存在多个独立需求、流程、契约或维护主题时，为每条链路创建独立 `<doc-id>-PRD.md`，例如 `routing-login-PRD.md` 和 `routing-register-PRD.md`。横跨多个独立 feature 时，拆成多个 feature root，并用 `related_docs` 互链。
 
 ## 编写流程
 
@@ -53,7 +53,7 @@ description: Use when writing or updating Coding Plugins PRD requirement documen
 3. 选择一个或多个需求章节类型；不要为了形式创建不需要的章节。
 4. 确定 `doc_id`：默认等于 `<feature-name>`；如果同一 feature 下已有其他 PRD，选择能表达本需求链路的稳定短名。
 5. 用 `templates/product-requirements-document.md` 写入 `docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md`；场景模板只用于补齐对应章节。
-6. 补齐 frontmatter：`title`、`type`、`status`、`feature`、`doc_id`、`created`、`updated`、`tags`、`related_code`、`related_specs`、`related_technical`、`related_test_cases`、`related_plans`、`related_evidence`。
+6. 补齐 frontmatter：`title`、`type`、`status`、`feature`、`doc_id`、`created`、`updated`、`tags`、`related_code`、`related_docs`。
 7. 写正文 `## 文档信息`，保持中文展示；机器 key 不翻译。
 8. 拆分需求点：每个独立用户流程、契约、schema、状态机、维护约束或验收主题都必须进入 `## 需求总览`，并分配稳定 ID：`REQ/API/SCHEMA/STATE/ERR/AC/NFR/MIG/OBS/NON`。
 9. 为每个需求点创建独立章节，标题格式为 `## 标题（REQ-001）`，章节内按“用户或系统价值、需求描述、行为规则、输入与输出、关联契约、错误和边界、验收标准、验证方式”组织；不适用的小节可以写“不涉及”并说明原因。

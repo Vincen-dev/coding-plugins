@@ -5,11 +5,14 @@ import { featureSpecFiles, featureTechnicalDesignFiles } from "./docs-index.ts";
 import {
   collectFeatureRoots,
   documentDocId,
+  documentSuffix,
   expectedRelatedPathsForDocId,
   featureRootForDocument,
   frontmatterListValues,
+  LEGACY_RELATION_KEYS,
   parseFrontmatter,
   parseFrontmatterBlock,
+  RELATED_DOCS_KEY,
   splitFrontmatter,
 } from "./document-metadata.ts";
 
@@ -123,7 +126,7 @@ function approvedSpecFilesForFeature(featureRoot: string): string[] {
 
 function relatedPathsFromMetadata(root: string, text: string, key: string): string[] {
   const paths: string[] = [];
-  for (const value of frontmatterListValues(text, key)) {
+  for (const value of relatedValuesFromMetadata(text, key)) {
     if (!value.startsWith("docs/coding-plugins/")) {
       continue;
     }
@@ -133,6 +136,45 @@ function relatedPathsFromMetadata(root: string, text: string, key: string): stri
     }
   }
   return paths.sort();
+}
+
+function relatedValuesFromMetadata(text: string, key: string): string[] {
+  const values = new Set(frontmatterListValues(text, key));
+  const relatedDocs = frontmatterListValues(text, RELATED_DOCS_KEY);
+  if (key === RELATED_DOCS_KEY) {
+    for (const legacyKey of LEGACY_RELATION_KEYS) {
+      for (const value of frontmatterListValues(text, legacyKey)) {
+        values.add(value);
+      }
+    }
+  } else {
+    for (const value of relatedDocs) {
+      const suffix = documentSuffix(value);
+      if (suffix && legacyKeyForSuffix(suffix) === key) {
+        values.add(value);
+      }
+    }
+  }
+  return [...values].sort();
+}
+
+function legacyKeyForSuffix(suffix: string): string | undefined {
+  if (suffix === "PRD") {
+    return "related_specs";
+  }
+  if (suffix === "TDD" || suffix === "TID") {
+    return "related_technical";
+  }
+  if (suffix === "TCD") {
+    return "related_test_cases";
+  }
+  if (suffix === "IPD") {
+    return "related_plans";
+  }
+  if (suffix === "TED") {
+    return "related_evidence";
+  }
+  return undefined;
 }
 
 function approvedSpecFilesForTechnical(root: string, technicalFile: string, text: string): string[] {
@@ -220,17 +262,17 @@ function validateRelatedMetadata(root: string, technicalFile: string, text: stri
   const [, featureRoot] = featureContext;
   const docId = documentDocId(technicalFile);
   const expectedByKey = expectedRelatedPathsForDocId(featureRoot, docId, technicalFile);
-  delete expectedByKey.related_technical;
 
   const errors: string[] = [];
   for (const [key, expectedPaths] of Object.entries(expectedByKey)) {
     if (expectedPaths.length === 0) {
       continue;
     }
-    const actualValues = new Set(frontmatterListValues(text, key));
+    const rawValues = relatedValuesFromMetadata(text, key);
+    const actualValues = new Set(rawValues.filter((value) => value.startsWith("docs/coding-plugins/") && existsSync(resolve(root, value))));
     const expectedValues = new Set(expectedPaths.map((path) => relative(root, path)));
     const missingValues = [...expectedValues].filter((value) => !actualValues.has(value)).sort();
-    const missingExisting = [...actualValues]
+    const missingExisting = rawValues
       .filter((value) => value.startsWith("docs/coding-plugins/") && !existsSync(resolve(root, value)))
       .sort();
     if (missingValues.length > 0) {

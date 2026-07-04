@@ -10,6 +10,6 @@ tags:
   - <检索标签>
 related_code:
   - <代码路径>
-related_specs:
-  - <相关规格路径>
+related_docs:
+  - <相关文档路径>
 ---
