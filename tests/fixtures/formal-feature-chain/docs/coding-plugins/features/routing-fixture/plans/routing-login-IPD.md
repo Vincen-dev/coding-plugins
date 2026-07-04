@@ -3,7 +3,7 @@ title: Routing Login Implementation Procedure Document
 status: approved
 feature: routing-fixture
 doc_id: routing-login
-source_hash: sha256:8446a5ff9e12be379482e9ca145ffe5d8b80ffe8e19defbf03096dd97e71dc07
+source_hash: sha256:1425e2be7defede5273f0d280c997051a9a3ac74902e30aecee388f134c550db
 created: 2026-07-02
 updated: 2026-07-02
 related_specs:
@@ -44,7 +44,7 @@ related_evidence:
 - **Intent Lock:** 只执行 routing-login 正式链路闭包 fixture 校验。
 - **Scope Fence:** 包含 fixture 文档链路和闭包校验；不包含真实登录路由实现。
 - **Required Spec IDs:** REQ-001
-- **Required Tests:** `python3 -m unittest scripts.test_preflight.PreflightTests.test_golden_feature_fixture_satisfies_formal_document_chain`
+- **Required Tests:** `npm run preflight`
 - **Review Gates:** 检查 source_hash、执行简报和 TASK-001 到 TED 的追踪。
 - **Rewind Triggers:** 上游 PRD/TDD/TID/TCD 变更、source_hash 不匹配或 fixture 校验失败。
 
@@ -65,7 +65,7 @@ related_evidence:
 
 | 任务 | 标题 | 覆盖规格 | 验证方式 | TED 记录 |
 | --- | --- | --- | --- | --- |
-| TASK-001 | 校验正式链路闭包 | REQ-001 | `python3 -m unittest scripts.test_preflight.PreflightTests.test_golden_feature_fixture_satisfies_formal_document_chain` | `docs/coding-plugins/features/routing-fixture/evidences/routing-login-TED.md` |
+| TASK-001 | 校验正式链路闭包 | REQ-001 | `npm run preflight` | `docs/coding-plugins/features/routing-fixture/evidences/routing-login-TED.md` |
 
 ## 校验正式链路闭包（TASK-001 / REQ-001）
 
@@ -83,26 +83,26 @@ related_evidence:
 
 | 类型 | 路径 | 说明 |
 | --- | --- | --- |
-| 修改 | `scripts/preflight.py` | 正式链路闭包校验逻辑。 |
-| 测试 | `scripts/test_preflight.py` | golden fixture 回归测试。 |
+| 修改 | `src/cli/preflight.ts` | 正式链路闭包校验逻辑。 |
+| 测试 | `tests/ts/test_preflight_cli.mjs` | golden fixture 回归测试。 |
 
 ### 执行步骤
 
 - [ ] **步骤 1：根据规格 ID 写失败测试**
   - 规格 ID：REQ-001
-  - 测试位置：`scripts/test_preflight.py`
+  - 测试位置：`tests/ts/test_preflight_cli.mjs`
   - 预期失败：链路缺失或 metadata 不一致时失败。
 - [ ] **步骤 2：运行测试确认 RED**
-  - 命令：`python3 -m unittest scripts.test_preflight.PreflightTests.test_golden_feature_fixture_satisfies_formal_document_chain`
+  - 命令：`npm run preflight`
   - 预期：fixture 不完整时 FAIL。
 - [ ] **步骤 3：写最小实现**
-  - 修改：`scripts/preflight.py`
+  - 修改：`src/cli/preflight.ts`
   - 边界：只覆盖正式链路闭包校验。
 - [ ] **步骤 4：运行测试确认 GREEN**
-  - 命令：`python3 -m unittest scripts.test_preflight.PreflightTests.test_golden_feature_fixture_satisfies_formal_document_chain`
+  - 命令：`npm run preflight`
   - 预期：PASS。
 - [ ] **步骤 5：重构并重跑相关测试**
-  - 命令：`python3 scripts/preflight.py`
+  - 命令：`npm run preflight`
   - 预期：PASS。
 - [ ] **步骤 6：记录 TED 证据**
   - 写入：`docs/coding-plugins/features/routing-fixture/evidences/routing-login-TED.md`
@@ -112,7 +112,7 @@ related_evidence:
 
 | 覆盖规格 | 测试类型 | 命令或人工验收 | 预期结果 |
 | --- | --- | --- | --- |
-| REQ-001 | contract | `python3 -m unittest scripts.test_preflight.PreflightTests.test_golden_feature_fixture_satisfies_formal_document_chain` | PASS |
+| REQ-001 | contract | `npm run preflight` | PASS |
 
 ### TED 记录要求
 

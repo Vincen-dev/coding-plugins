@@ -24,7 +24,7 @@
 
 - 新增 `formal-feature-chain` 的 `CASE-INDEX.md` 和 invalid fixture 案例库，把真实维护问题沉淀为可读、可回归的测试案例。
 - 增强 traceability closure，要求 PRD 中 `必须` 的 Spec ID 在 TID、TCD、IPD 和 TED 的正式结构中闭环覆盖。
-- 新增 `scripts/scaffold_fixture_case.py`，用于生成 fixture case 骨架，并在 `writing-skills` 中固定“问题 -> CASE -> RED -> 修复 -> preflight”的插件优化流程。
+- 新增 `src/cli/scaffold-fixture-case.ts`，用于生成 fixture case 骨架，并在 `writing-skills` 中固定“问题 -> CASE -> RED -> 修复 -> preflight”的插件优化流程。
 
 ## 1.0.7 - 2026-07-02
 
@@ -83,25 +83,25 @@
 
 - 增强行为级测试，固定新需求、Bug、提交、收尾、插件维护和并行任务的场景链路顺序。
 - 增加 approved 轻量 feature 的 README 例外契约，并由 preflight 校验。
-- 新增 `scripts/remote_audit.py` 手动审计 GitHub Release 和直接 push 协作者权限。
+- 新增 `src/cli/remote-audit.ts` 手动审计 GitHub Release 和直接 push 协作者权限。
 - 补充 Claude Code 会话启动提示，以及 SDD/TDD validator 的真实 fixture 回归样例。
 
 ## 0.6.27 - 2026-06-29
 
-- 拆出 `scripts/manifest_checks.py`，统一承接 manifest 文件、版本、Codex hook 和资源路径校验。
-- 将 `scripts/test_manifest_checks.py` 纳入 preflight 验证链路，防止 manifest 检查职责回流到 `scripts/preflight.py`。
+- 拆出 `scripts/manifest_checks.test.ts`，统一承接 manifest 文件、版本、Codex hook 和资源路径校验。
+- 将 `scripts/test_manifest_checks.test.ts` 纳入 preflight 验证链路，防止 manifest 检查职责回流到 `src/cli/preflight.ts`。
 - 补充 release tag 发布与只有 `Vincen-dev` 直接 push 的治理计划和验证口径。
 
 ## 0.6.26 - 2026-06-29
 
 - 回填 marketplace 规格中已完成验收项的追踪状态和验证证据。
-- 更新 artifact-index 技术设计，明确文档索引职责已迁移到 `scripts/docs_index.py`。
-- 清理过期的 `preflight.py` 膨胀风险描述，改为固定 docs index 模块边界。
+- 更新 artifact-index 技术设计，明确文档索引职责已迁移到 `src/lib/docs-index.ts`。
+- 清理过期的 `preflight.ts` 膨胀风险描述，改为固定 docs index 模块边界。
 
 ## 0.6.25 - 2026-06-29
 
-- 拆出 `scripts/docs_index.py`，统一承接 feature-first 文档索引生成、写入和一致性校验。
-- 将 `scripts/test_docs_index.py` 纳入 preflight 验证链路，防止索引职责回流到 `scripts/preflight.py`。
+- 拆出 `src/lib/docs-index.ts`，统一承接 feature-first 文档索引生成、写入和一致性校验。
+- 将 `scripts/test_docs_index.test.ts` 纳入 preflight 验证链路，防止索引职责回流到 `src/cli/preflight.ts`。
 - 回填 active specs 的完成状态，并记录 preflight 模块拆分的 TDD Evidence。
 
 ## 0.6.24 - 2026-06-29
@@ -118,7 +118,7 @@
 
 ## 0.6.22 - 2026-06-29
 
-- 增加 `scripts/prepare_release.py`，用于校验 release metadata、生成类似 `v0.6.22` 的 tag 名并提取当前版本 release notes。
+- 增加 `src/cli/prepare-release.ts`，用于校验 release metadata、生成类似 `v0.6.22` 的 tag 名并提取当前版本 release notes。
 - 增加 `.github/workflows/release.yml`，在 `v*` tag push 后运行 preflight、校验 tag 与 manifest 版本一致，并创建 GitHub Release。
 - 补齐 `release-management` 的技术设计、实现计划和 TDD Evidence，并让 preflight 校验 release automation 文件。
 
@@ -130,7 +130,7 @@
 
 ## 0.6.20 - 2026-06-29
 
-- 增加生成式 `docs/coding-plugins/INDEX.md`，通过 `python3 scripts/preflight.py --write-index` 根据 feature-first 文件树刷新总索引。
+- 增加生成式 `docs/coding-plugins/INDEX.md`，通过 `npm run preflight -- --write-index` 根据 feature-first 文件树刷新总索引。
 - 增强 preflight，校验当前总索引和生成器输出完全一致，防止人工编辑造成索引漂移。
 - 补齐 `artifact-index` 的技术设计、实现计划和 TDD Evidence，记录 RED/GREEN/REFACTOR 证据。
 
@@ -155,7 +155,7 @@
 ## 0.6.16 - 2026-06-26
 
 - 增强 preflight，校验 skill metadata、manifest 资源、文档路径、Evidence Spec ID、release notes 和版本配置一致性。
-- 增加 `RELEASE-NOTES.md`、`.version-bump.json` 和 `scripts/bump_version.py`，支持可重复的版本提升流程。
+- 增加 `RELEASE-NOTES.md`、`.version-bump.json` 和 `src/cli/bump-version.ts`，支持可重复的版本提升流程。
 - 增加入口路由、显式 skill 请求、Claude 命名空间和 SessionStart hook 输出的行为级测试。
 
 ## 0.6.15 - 2026-06-26

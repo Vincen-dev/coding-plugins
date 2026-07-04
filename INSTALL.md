@@ -152,7 +152,7 @@ using-coding-plugins
 确认客户端能发现 `using-coding-plugins`，并在仓库根目录运行：
 
 ```bash
-python3 scripts/preflight.py
+npm run preflight
 ```
 
 如果只验证 Codex hook：
@@ -180,7 +180,7 @@ bash tests/hooks/test-session-start.sh
 运行：
 
 ```bash
-python3 scripts/preflight.py
+npm run preflight
 ```
 
 preflight 会检查 `.codex-plugin/plugin.json`、`.claude-plugin/plugin.json`、根 `plugin.json`、`gemini-extension.json` 和 `.version-bump.json` 的版本同步。
@@ -202,38 +202,38 @@ docs/coding-plugins/INDEX.md
 新增、移动或删除 feature 文档后运行：
 
 ```bash
-python3 scripts/preflight.py --write-index
-python3 scripts/preflight.py
+npm run preflight -- --write-index
+npm run preflight
 ```
 
 旧项目文档升级到当前 metadata 契约时运行：
 
 ```bash
-python3 scripts/migrate_document_contract.py --dry-run
-python3 scripts/migrate_document_contract.py
+npm run document-contract-migration:ts -- --dry-run
+npm run document-contract-migration:ts --
 ```
 
 本机需要校验跨仓库 `external_references` 时运行：
 
 ```bash
-python3 scripts/preflight.py --check-external-references
+npm run preflight -- --check-external-references
 ```
 
 ## Agent Pressure 维护
 
 ```bash
-python3 scripts/agent_pressure_harness.py --output artifacts/agent-pressure-harness.json
-python3 scripts/agent_pressure_ingest.py --input raw-agent-pressure.json --output tests/fixtures/formal-feature-chain/agent-pressure-results.json --split-cases --fixture-manifest --run-id 2026-07-04-agent-pressure-001 --source-contract docs/coding-plugins/scenario-routing.json --prune-stale
+npm run agent-pressure-harness:ts -- --output artifacts/agent-pressure-harness.json
+npm run agent-pressure-ingest:ts -- --input raw-agent-pressure.json --output tests/fixtures/formal-feature-chain/agent-pressure-results.json --split-cases --fixture-manifest --run-id 2026-07-04-agent-pressure-001 --source-contract docs/coding-plugins/scenario-routing.json --prune-stale
 ```
 
-`scripts/agent_pressure_harness.py` 用于生成 command/workspace 层压力证据；`scripts/agent_pressure_ingest.py` 用于把真实 agent 压力测试输出规范化为 split case fixture。`--fixture-manifest` 会生成正式分片索引，`--prune-stale` 只在确认要同步删除旧分片时使用。
+`src/cli/agent-pressure-harness.ts` 用于生成 command/workspace 层压力证据；`src/cli/agent-pressure-ingest.ts` 用于把真实 agent 压力测试输出规范化为 split case fixture。`--fixture-manifest` 会生成正式分片索引，`--prune-stale` 只在确认要同步删除旧分片时使用。
 
 ## 发布前检查
 
 提升版本时运行：
 
 ```bash
-python3 scripts/bump_version.py <version>
+npm run bump-version:ts -- <version>
 ```
 
 版本同步目标由 [.version-bump.json](.version-bump.json) 维护。提升版本后更新 [RELEASE-NOTES.md](RELEASE-NOTES.md) 中对应版本的变更记录。
@@ -241,8 +241,8 @@ python3 scripts/bump_version.py <version>
 提交、push 或分发前运行：
 
 ```bash
-python3 scripts/preflight.py --write-index
-python3 scripts/preflight.py
+npm run preflight -- --write-index
+npm run preflight
 codex plugin add coding-plugins@personal
 claude plugin validate /absolute/path/to/coding-plugins --strict
 ```
@@ -250,7 +250,7 @@ claude plugin validate /absolute/path/to/coding-plugins --strict
 提交并确认工作区干净后，准备 GitHub Release：
 
 ```bash
-python3 scripts/prepare_release.py --notes-out /tmp/coding-plugins-release-notes.md
+npm run prepare-release:ts -- --notes-out /tmp/coding-plugins-release-notes.md
 git tag -a v<version> -m "coding-plugins <version>"
 git push origin v<version>
 ```
@@ -260,5 +260,5 @@ git push origin v<version>
 发布后手动审计远程状态：
 
 ```bash
-python3 scripts/remote_audit.py --owner Vincen-dev --repo coding-plugins --tag v<version> --expected-pusher Vincen-dev
+npm run remote-audit:ts -- --owner Vincen-dev --repo coding-plugins --tag v<version> --expected-pusher Vincen-dev
 ```

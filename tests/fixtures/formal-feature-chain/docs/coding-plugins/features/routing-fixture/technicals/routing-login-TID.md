@@ -8,7 +8,7 @@ created: 2026-07-02
 updated: 2026-07-02
 implemented_commits: []
 validated_by:
-  - python3 -m unittest scripts.test_preflight.PreflightTests.test_golden_feature_fixture_satisfies_formal_document_chain
+  - npm run preflight
 related_specs:
   - docs/coding-plugins/features/routing-fixture/requirements/routing-login-PRD.md
 related_technical:
@@ -41,7 +41,7 @@ related_evidence:
 
 | 实现点 | 标题 | 覆盖规格 | 关联设计 | 主要落点 |
 | --- | --- | --- | --- | --- |
-| IMPL-001 | 登录路由闭包校验 | REQ-001 | TD-001 | `scripts/preflight.py::check_feature_document_chain_closure` |
+| IMPL-001 | 登录路由闭包校验 | REQ-001 | TD-001 | `src/cli/preflight.ts::check_feature_document_chain_closure` |
 
 ## 登录路由闭包校验（IMPL-001 / REQ-001）
 
@@ -53,8 +53,8 @@ related_evidence:
 
 | 类型 | 路径或符号 | 实现内容 | 关联设计 |
 | --- | --- | --- | --- |
-| 模块 | `scripts/preflight.py` | 正式链路闭包校验 | TD-001 |
-| 测试 | `scripts/test_preflight.py` | golden fixture 回归测试 | TD-001 |
+| 模块 | `src/cli/preflight.ts` | 正式链路闭包校验 | TD-001 |
+| 测试 | `tests/ts/test_preflight_cli.mjs` | golden fixture 回归测试 | TD-001 |
 
 ### 数据和状态
 

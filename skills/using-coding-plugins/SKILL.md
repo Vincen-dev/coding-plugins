@@ -38,7 +38,7 @@ description: 开始任何任务时使用；建立 Coding Plugins 技能选择、
 
 ### 开发任务
 
-进入开发链路前，如果任务范围不确定或可能过重，先用 `python3 scripts/workflow_mode.py --intent "<用户意图>" --files "<逗号分隔路径>" --task-count <数量> --json` 推断 workflow mode。显式用户指令优先于推断结果。
+进入开发链路前，如果任务范围不确定或可能过重，先用 `coding-plugins workflow-mode --intent "<用户意图>" --files "<逗号分隔路径>" --task-count <数量> --json` 推断 workflow mode。显式用户指令优先于推断结果。
 
 | Workflow mode | 含义 | 默认处理 |
 | --- | --- | --- |
@@ -65,11 +65,11 @@ description: 开始任何任务时使用；建立 Coding Plugins 技能选择、
 
 - 用户点名技能时，优先读取该技能；若明显不适用，说明原因并转入更合适技能。
 - 任何技能需要读取或维护 `docs/coding-plugins/features/<feature-name>/` 下的 README、PRD、TDD/TID、TCD、IPD 或 TED 关系时，先使用 `document-metadata` 确认 frontmatter 和 `related_*` 关系。
-- 当用户说“继续”“恢复”“开始实现”“执行 IPD”，且能识别 `feature` 和 `doc_id` 时，先运行 `python3 scripts/workflow_state.py inspect --feature <feature> --doc-id <doc-id> --json`。输出必须说明当前状态、判断原因、缺失产物、是否 stale、推荐下一个 skill。
-- 执行 IPD 前必须运行 `python3 scripts/workflow_guard.py check --feature <feature> --doc-id <doc-id> --target execute --json`；未通过时按 `next_skill` 回退，不得继续实现。
-- `workflow_guard.py` 通过后，运行 `python3 scripts/workflow_brief.py --feature <feature> --doc-id <doc-id> --target execute --task TASK-001 --json` 生成短上下文；默认只读 IPD 的 `## 执行简报`、`## 执行锁定区`、`## 任务总览` 和当前任务章节，除非 Rewind Triggers 命中，不重复读取完整 PRD/TDD/TID/TCD。未知当前任务时可以省略 `--task`，但多任务 IPD 应优先指定。
-- 进入 `subagent-driven-development` 时，优先运行 `python3 scripts/subagent_prompt_builder.py --feature <feature> --doc-id <doc-id> --task TASK-001 --kind implementer` 生成实现子代理提示词；评审阶段用同一脚本生成 `spec-reviewer` 和 `code-quality-reviewer` 提示词，避免手工漏粘 IPD 锁定区、当前任务或 prompt hash。
-- 如果 `workflow_state.py` 输出 `plan-draft`、`plan-unlocked` 或 `plan-stale`，不得进入实现；先路由到 `writing-plans` 批准 IPD、补齐 `source_hash`，或刷新执行锁定区。
+- 当用户说“继续”“恢复”“开始实现”“执行 IPD”，且能识别 `feature` 和 `doc_id` 时，先运行 `coding-plugins workflow-state inspect --feature <feature> --doc-id <doc-id> --json`。输出必须说明当前状态、判断原因、缺失产物、是否 stale、推荐下一个 skill。
+- 执行 IPD 前必须运行 `coding-plugins workflow-guard check --feature <feature> --doc-id <doc-id> --target execute --json`；未通过时按 `next_skill` 回退，不得继续实现。
+- `workflow-guard.ts` 通过后，运行 `coding-plugins workflow-brief --feature <feature> --doc-id <doc-id> --target execute --task TASK-001 --json` 生成短上下文；默认只读 IPD 的 `## 执行简报`、`## 执行锁定区`、`## 任务总览` 和当前任务章节，除非 Rewind Triggers 命中，不重复读取完整 PRD/TDD/TID/TCD。未知当前任务时可以省略 `--task`，但多任务 IPD 应优先指定。
+- 进入 `subagent-driven-development` 时，优先运行 `coding-plugins subagent-prompt-builder --feature <feature> --doc-id <doc-id> --task TASK-001 --kind implementer` 生成实现子代理提示词；评审阶段用同一脚本生成 `spec-reviewer` 和 `code-quality-reviewer` 提示词，避免手工漏粘 IPD 锁定区、当前任务或 prompt hash。
+- 如果 `workflow-state.ts` 输出 `plan-draft`、`plan-unlocked` 或 `plan-stale`，不得进入实现；先路由到 `writing-plans` 批准 IPD、补齐 `source_hash`，或刷新执行锁定区。
 - 需要声称完成、修复或通过前，必须使用 `verification-before-completion`。
 - 需要提交时必须使用 `git-commit`；提交前仍要检查 diff、作者身份和敏感文件。
 - 需要从需求进入执行任务时，先用 `writing-requirements` 写 PRD，再用 `writing-technicals` 写 TDD/TID，再用 `writing-test-cases` 写 TCD，最后用 `writing-plans` 编写 IPD 任务执行文档。
@@ -113,7 +113,7 @@ description: 开始任何任务时使用；建立 Coding Plugins 技能选择、
 工作流中的用户确认点使用 DP-0 到 DP-7 编号。需要展示或校验完整定义时运行：
 
 ```bash
-python3 scripts/decision_points.py --json
+coding-plugins decision-points --json
 ```
 
 | 决策点 | 名称 | 默认位置 |

@@ -37,7 +37,7 @@
       "stdout_excerpt": "using-coding-plugins routes plugin workflow edits to writing-skills; workflow-chain defines writing-skills -> test-driven-development -> quick_validate -> verification-before-completion."
     },
     {
-      "command": "python3 -m unittest scripts/test_agent_pressure_ingest.py",
+      "command": "npm run preflight",
       "cwd": "/Users/vincen/workspace/plugins/coding-plugins",
       "exit_code": 0,
       "stdout_sha256": "sha256:d5a5dfd5a88093d5387442a0541caeea52315075597d865c9ff26debde2b18ec",

@@ -37,7 +37,7 @@
       "stdout_excerpt": "using-coding-plugins routes completion claims to verification-before-completion, commits to git-commit, and branch finishing to finishing-a-development-branch; finishing skill documents push/PR as an explicit option, not an automatic action."
     },
     {
-      "command": "python3 -m unittest scripts/test_agent_pressure_harness.py",
+      "command": "npm run preflight",
       "cwd": "/Users/vincen/workspace/plugins/coding-plugins",
       "exit_code": 0,
       "stdout_sha256": "sha256:e14598e93fa433c847914f388ced114d101cef6f3f0c26c2b5bd692de36eb603",

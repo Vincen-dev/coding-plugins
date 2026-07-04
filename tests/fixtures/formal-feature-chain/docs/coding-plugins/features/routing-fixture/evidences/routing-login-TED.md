@@ -31,9 +31,9 @@ related_evidence: []
 - **规格/缺陷/验收:** REQ-001
 - **测试类型:** `contract`
 - **RED 测试:** `scripts.test_preflight.PreflightTests.test_feature_document_chain_requires_test_cases`
-- **RED 命令:** `python3 -m unittest scripts.test_preflight.PreflightTests.test_feature_document_chain_requires_test_cases`
+- **RED 命令:** `npm run preflight`
 - **RED 失败:** 缺少 TCD 时未抛出 PreflightError。
 - **GREEN 变更:** 正式链路闭包校验纳入 TCD。
-- **GREEN 命令:** `python3 -m unittest scripts.test_preflight.PreflightTests.test_feature_document_chain_requires_test_cases`
-- **REFACTOR 命令:** `python3 -m unittest scripts.test_preflight.PreflightTests.test_golden_feature_fixture_satisfies_formal_document_chain`
+- **GREEN 命令:** `npm run preflight`
+- **REFACTOR 命令:** `npm run preflight`
 - **最终验证:** PASS：golden fixture 文档链路通过集中校验。

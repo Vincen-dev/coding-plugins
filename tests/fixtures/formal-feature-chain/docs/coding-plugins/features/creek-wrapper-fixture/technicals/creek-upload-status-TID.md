@@ -8,7 +8,7 @@ created: 2026-07-02
 updated: 2026-07-02
 implemented_commits: []
 validated_by:
-  - python3 -m unittest scripts.test_preflight.PreflightTests.test_golden_feature_fixture_satisfies_formal_document_chain
+  - npm run preflight
 related_specs:
   - docs/coding-plugins/features/creek-wrapper-fixture/requirements/creek-upload-status-PRD.md
 related_technical:

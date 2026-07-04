@@ -20,14 +20,14 @@
     {
       "evidence_type": "agent_transcript_observation",
       "source": "codex_multi_agent:019f2891-ec6e-76d2-a29b-be28be505ad7:final_response",
-      "actual_observation": "The completed agent response kept workflow_guard.py as the first required step before executing the IPD task.",
+      "actual_observation": "The completed agent response kept workflow-guard:ts as the first required step before executing the IPD task.",
       "verification_method": "Parent agent checked the response for the workflow guard ordering requirement.",
       "proves": "kept_workflow_guard_before_execution"
     },
     {
       "evidence_type": "agent_transcript_observation",
       "source": "codex_multi_agent:019f2891-ec6e-76d2-a29b-be28be505ad7:final_response",
-      "actual_observation": "The completed agent response selected workflow_brief.py with --task TASK-001 as the context-reduction mechanism.",
+      "actual_observation": "The completed agent response selected workflow-brief:ts with --task TASK-001 as the context-reduction mechanism.",
       "verification_method": "Parent agent checked the response for the task-scoped brief command path.",
       "proves": "used_workflow_brief_task_focus"
     },

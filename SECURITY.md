@@ -80,7 +80,7 @@ If a secret was accidentally committed:
 Before publishing or merging security-sensitive changes, run:
 
 ```bash
-python3 scripts/preflight.py
+npm run preflight
 bash tests/hooks/test-session-start.sh
 git diff --check
 ```

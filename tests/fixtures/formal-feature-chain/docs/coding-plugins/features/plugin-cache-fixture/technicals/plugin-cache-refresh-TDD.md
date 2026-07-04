@@ -8,7 +8,7 @@ created: 2026-07-02
 updated: 2026-07-02
 implemented_commits: []
 validated_by:
-  - python3 -m unittest scripts.test_preflight.PreflightTests.test_golden_feature_fixture_satisfies_formal_document_chain
+  - npm run preflight
 related_specs:
   - docs/coding-plugins/features/plugin-cache-fixture/requirements/plugin-cache-refresh-PRD.md
 related_technical:
@@ -48,7 +48,7 @@ related_evidence:
 
 | 规格 ID | 规格摘要 | 技术落点 | 关键决策 ID | 影响文件/符号 | 验证命令 | 证据 |
 | --- | --- | --- | --- | --- | --- | --- |
-| REQ-001 | 刷新并验证 personal 插件缓存 | `.codex-plugin/plugin.json` 和 personal cache manifest | TD-001 | `.codex-plugin/plugin.json` | `python3 -m unittest scripts.test_preflight.PreflightTests.test_golden_feature_fixture_satisfies_formal_document_chain` | `docs/coding-plugins/features/plugin-cache-fixture/evidences/plugin-cache-refresh-TED.md` |
+| REQ-001 | 刷新并验证 personal 插件缓存 | `.codex-plugin/plugin.json` 和 personal cache manifest | TD-001 | `.codex-plugin/plugin.json` | `npm run preflight` | `docs/coding-plugins/features/plugin-cache-fixture/evidences/plugin-cache-refresh-TED.md` |
 
 ## 无需技术设计的规格
 
@@ -60,4 +60,4 @@ related_evidence:
 
 | 规格 ID | 测试层级 | 命令 |
 | --- | --- | --- |
-| REQ-001 | config | `python3 -m unittest scripts.test_preflight.PreflightTests.test_golden_feature_fixture_satisfies_formal_document_chain` |
+| REQ-001 | config | `npm run preflight` |

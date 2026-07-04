@@ -32,9 +32,9 @@ related_evidence: []
 - **规格/缺陷/验收:** REQ-001
 - **测试类型:** `config`
 - **RED 测试:** `scripts.test_preflight.PreflightTests.test_golden_feature_fixture_covers_multiple_realistic_scenarios`
-- **RED 命令:** `python3 -m unittest scripts.test_preflight.PreflightTests.test_golden_feature_fixture_covers_multiple_realistic_scenarios`
+- **RED 命令:** `npm run preflight`
 - **RED 失败:** 缺少 plugin cache 场景时 fixture 覆盖测试失败。
 - **GREEN 变更:** 增加 plugin-cache-fixture 完整文档链路。
-- **GREEN 命令:** `python3 -m unittest scripts.test_preflight.PreflightTests.test_golden_feature_fixture_covers_multiple_realistic_scenarios`
-- **REFACTOR 命令:** `python3 scripts/preflight.py`
+- **GREEN 命令:** `npm run preflight`
+- **REFACTOR 命令:** `npm run preflight`
 - **最终验证:** PASS：多场景 fixture 和完整 preflight 均通过。

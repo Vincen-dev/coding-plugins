@@ -97,7 +97,7 @@ description: Use when implementing any feature or bugfix, before writing impleme
 
 - 症状：flaky、timeout、race condition、回归、卡住。
 - 场景：写计划、修 bug、代码评审、创建技能。
-- 工具或文件类型：pytest、React、OpenAPI、PDF、docx。
+- 工具或文件类型：npm test、React、OpenAPI、PDF、docx。
 - 同义词：hang/freeze/stall，cleanup/teardown。
 
 ## 规则强度

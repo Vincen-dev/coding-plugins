@@ -8,7 +8,7 @@ created: 2026-07-02
 updated: 2026-07-02
 implemented_commits: []
 validated_by:
-  - python3 -m unittest scripts.test_preflight.PreflightTests.test_golden_feature_fixture_satisfies_formal_document_chain
+  - npm run preflight
 related_specs:
   - docs/coding-plugins/features/metadata-sync-fixture/requirements/metadata-sync-PRD.md
 related_technical:
@@ -48,7 +48,7 @@ related_evidence:
 
 | 规格 ID | 规格摘要 | 技术落点 | 关键决策 ID | 影响文件/符号 | 验证命令 | 证据 |
 | --- | --- | --- | --- | --- | --- | --- |
-| REQ-001 | 下游文档同步评审 | `scripts/preflight.py::check_document_sync_freshness` | TD-001 | `scripts/document_metadata.py` | `python3 -m unittest scripts.test_preflight.PreflightTests.test_golden_feature_fixture_satisfies_formal_document_chain` | `docs/coding-plugins/features/metadata-sync-fixture/evidences/metadata-sync-TED.md` |
+| REQ-001 | 下游文档同步评审 | `src/cli/preflight.ts::check_document_sync_freshness` | TD-001 | `src/lib/document-metadata.ts` | `npm run preflight` | `docs/coding-plugins/features/metadata-sync-fixture/evidences/metadata-sync-TED.md` |
 
 ## 无需技术设计的规格
 
@@ -60,4 +60,4 @@ related_evidence:
 
 | 规格 ID | 测试层级 | 命令 |
 | --- | --- | --- |
-| REQ-001 | contract | `python3 -m unittest scripts.test_preflight.PreflightTests.test_golden_feature_fixture_satisfies_formal_document_chain` |
+| REQ-001 | contract | `npm run preflight` |

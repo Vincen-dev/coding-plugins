@@ -3,7 +3,7 @@ title: Metadata Sync Implementation Procedure Document
 status: approved
 feature: metadata-sync-fixture
 doc_id: metadata-sync
-source_hash: sha256:52d99b62c2e1fd9d58bc7c58d41111eaf382b2e9b7b24bfe03d649b273a6418b
+source_hash: sha256:c909938a0bdc9d2267d0a002ff2051b032e45d0cfc4d51aac1fd3573f87d5411
 created: 2026-07-02
 updated: 2026-07-02
 related_specs:
@@ -38,7 +38,7 @@ related_evidence:
 - **Intent Lock:** 只执行 metadata 同步 freshness fixture 校验。
 - **Scope Fence:** 包含 fixture 文档链路和 freshness 规则校验；不包含真实文档迁移或发布流程。
 - **Required Spec IDs:** REQ-001
-- **Required Tests:** `python3 -m unittest scripts.test_preflight.PreflightTests.test_golden_feature_fixture_covers_multiple_realistic_scenarios`
+- **Required Tests:** `npm run preflight`
 - **Review Gates:** 检查 source_hash、执行简报和 TASK-001 到 TED 的追踪。
 - **Rewind Triggers:** 上游 PRD/TDD/TID/TCD 变更、source_hash 不匹配或 fixture 校验失败。
 
@@ -71,26 +71,26 @@ related_evidence:
 
 | 类型 | 路径 | 说明 |
 | --- | --- | --- |
-| 测试 | `scripts/test_preflight.py` | 多场景 fixture 覆盖。 |
+| 测试 | `tests/ts/test_preflight_cli.mjs` | 多场景 fixture 覆盖。 |
 | 文档 | `tests/fixtures/formal-feature-chain` | metadata-sync 案例链路。 |
 
 ### 执行步骤
 
 - [ ] **步骤 1：根据规格 ID 写失败测试**
   - 规格 ID：REQ-001
-  - 测试位置：`scripts/test_preflight.py`
+  - 测试位置：`tests/ts/test_preflight_cli.mjs`
   - 预期失败：缺少 metadata sync 场景时失败。
 - [ ] **步骤 2：运行测试确认 RED**
-  - 命令：`python3 -m unittest scripts.test_preflight.PreflightTests.test_golden_feature_fixture_covers_multiple_realistic_scenarios`
+  - 命令：`npm run preflight`
   - 预期：FAIL。
 - [ ] **步骤 3：写最小实现**
   - 修改：`tests/fixtures/formal-feature-chain`
   - 边界：只补 fixture 文档。
 - [ ] **步骤 4：运行测试确认 GREEN**
-  - 命令：`python3 -m unittest scripts.test_preflight.PreflightTests.test_golden_feature_fixture_covers_multiple_realistic_scenarios`
+  - 命令：`npm run preflight`
   - 预期：PASS。
 - [ ] **步骤 5：重构并重跑相关测试**
-  - 命令：`python3 scripts/preflight.py`
+  - 命令：`npm run preflight`
   - 预期：PASS。
 - [ ] **步骤 6：记录 TED 证据**
   - 写入：`docs/coding-plugins/features/metadata-sync-fixture/evidences/metadata-sync-TED.md`
@@ -99,4 +99,4 @@ related_evidence:
 
 | 覆盖规格 | 测试类型 | 命令或人工验收 | 预期结果 |
 | --- | --- | --- | --- |
-| REQ-001 | contract | `python3 -m unittest scripts.test_preflight.PreflightTests.test_golden_feature_fixture_covers_multiple_realistic_scenarios` | PASS |
+| REQ-001 | contract | `npm run preflight` | PASS |

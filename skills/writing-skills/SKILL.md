@@ -140,10 +140,10 @@ description: Use when [specific triggering conditions]
 
 1. 先用一句话描述问题和风险。
 2. 在 `tests/fixtures/formal-feature-chain/CASE-INDEX.md` 登记案例，写清 `case_id`、`source_type`、`source_reference`、`optimization_target` 和 `covered_risks`。
-3. 优先运行 `python3 scripts/scaffold_fixture_case.py` 生成 fixture 骨架，再按实际场景补正文。
+3. 优先运行 `coding-plugins scaffold-fixture-case` 生成 fixture 骨架，再按实际场景补正文。
 4. 写 RED 测试证明当前插件会漏掉这个问题。
 5. 修 preflight、validator、模板或 skill 规则。
-6. 运行 `python3 scripts/preflight.py`，确认 CASE、文档链路和 validator 都通过。
+6. 运行 `npm run preflight`，确认 CASE、文档链路和 validator 都通过。
 
 固定流程是：问题 -> CASE -> RED -> 修复 -> preflight。只有 CASE 进入索引且有测试守护，真实项目问题才算沉淀为插件能力。
 

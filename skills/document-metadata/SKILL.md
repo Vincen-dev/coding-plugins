@@ -11,7 +11,7 @@ description: Use when reading, creating, updating, migrating, or auditing Coding
 
 **核心原则：**文档之间的关系以 metadata 为准，正文负责需求、设计、IPD 任务执行和证据，不负责维护索引型链路。
 
-**规则中心：**每个文档的 frontmatter 是该文档的 metadata 实例；字段、命名、路径、`related_*` 推导和同步依赖的可执行规则集中在 `scripts/document_metadata.py`。`scripts/docs_index.py`、`scripts/preflight.py` 和 validator 必须复用该模块，不要在各自脚本中重新维护一套文档类型或关系规则。
+**规则中心：**每个文档的 frontmatter 是该文档的 metadata 实例；字段、命名、路径、`related_*` 推导和同步依赖的可执行规则集中在 `src/lib/document-metadata.ts`。`src/lib/docs-index.ts`、`src/cli/preflight.ts` 和 validator 必须复用该模块，不要在各自脚本中重新维护一套文档类型或关系规则。
 
 开始时声明：“我正在使用 document-metadata 技能来读取和维护文档 metadata 关系。”
 
@@ -78,7 +78,7 @@ description: Use when reading, creating, updating, migrating, or auditing Coding
 
 ## 创建或更新流程
 
-1. 用 `templates/document-metadata.md` 选择适合的 frontmatter 字段；如需调整字段、命名或关系规则，先更新 `scripts/document_metadata.py`，再同步模板和说明。
+1. 用 `templates/document-metadata.md` 选择适合的 frontmatter 字段；如需调整字段、命名或关系规则，先更新 `src/lib/document-metadata.ts`，再同步模板和说明。
 2. 保持机器 key 为英文；中文展示写入正文 `## 文档信息`，只写状态、Feature、Doc ID、文档类型、关系源和阅读重点，不写完整路径链路表。
 3. 所有 `related_*` 值使用当前仓库内 `docs/coding-plugins/...` 路径，默认只链接同一 `doc_id` 链路；跨链路依赖用 `related_specs` 明确列出。
 4. README 只写人工摘要、标签和轻量例外追踪；不要维护索引型链路表。
@@ -86,19 +86,19 @@ description: Use when reading, creating, updating, migrating, or auditing Coding
 6. 新增、移动、批准、废弃或拆分文档后运行：
 
 ```bash
-python3 scripts/preflight.py --write-index
-python3 scripts/preflight.py
+npm run preflight -- --write-index
+npm run preflight
 ```
 
 7. 需要检查跨仓库路径时额外运行：
 
 ```bash
-python3 scripts/preflight.py --check-external-references
+npm run preflight -- --check-external-references
 ```
 
 ## 同步更新机制
 
-`scripts/document_metadata.py` 负责提供同步关系图，`scripts/preflight.py` 负责执行门禁。同步方向不是双向平均更新，而是从上游约束传递到下游产物：
+`src/lib/document-metadata.ts` 负责提供同步关系图，`src/cli/preflight.ts` 负责执行门禁。同步方向不是双向平均更新，而是从上游约束传递到下游产物：
 
 ```text
 PRD -> TDD -> TID -> TCD -> IPD -> TED
@@ -120,7 +120,7 @@ PRD -> TDD -> TID -> TCD -> IPD -> TED
 1. 先通过 `related_*` 找到同 feature、同 `doc_id` 的相关文档。
 2. 判断上游变更是否影响下游正文；影响时更新下游正文和 `updated`。
 3. 如果确认不影响下游正文，也必须更新下游 `updated`，表示已完成同步评审。
-4. 运行 `python3 scripts/preflight.py --write-index`。preflight 会拒绝 `updated` 早于上游文档的下游文档。
+4. 运行 `npm run preflight -- --write-index`。preflight 会拒绝 `updated` 早于上游文档的下游文档。
 
 ## 常见错误
 
@@ -132,7 +132,7 @@ PRD -> TDD -> TID -> TCD -> IPD -> TED
 | `feature` 与路径不一致 | 以路径 `features/<feature-name>` 为准修正 metadata |
 | `doc_id` 与文件名前缀不一致 | 以文件名 `<doc-id>-XXX.md` 为准修正 metadata |
 | 中文 `文档信息` 和 frontmatter 不一致 | 以 frontmatter 为准更新中文摘要 |
-| 新增文档后忘记 INDEX | 运行 `python3 scripts/preflight.py --write-index` |
+| 新增文档后忘记 INDEX | 运行 `npm run preflight -- --write-index` |
 | approved PRD 只有 TDD 没有 TID | 创建同一 `doc_id` 的 `<doc-id>-TID.md`，并同步 PRD、TDD、IPD、TED 的 `related_technical` |
 | 改了 PRD 但没有同步 TDD/TID/TCD/IPD/TED | 按同步更新机制评审下游文档，更新正文或至少更新 `updated` |
 
@@ -141,5 +141,5 @@ PRD -> TDD -> TID -> TCD -> IPD -> TED
 - 仓库级职责边界：`docs/coding-plugins/document-contract.md`
 - 总索引：`docs/coding-plugins/INDEX.md`
 - 通用模板：`skills/document-metadata/templates/document-metadata.md`
-- 可执行 metadata 规则：`scripts/document_metadata.py`
-- 发布门禁：`scripts/preflight.py`
+- 可执行 metadata 规则：`src/lib/document-metadata.ts`
+- 发布门禁：`src/cli/preflight.ts`

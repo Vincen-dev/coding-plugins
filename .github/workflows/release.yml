@@ -15,18 +15,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Set up Node
+        uses: actions/setup-node@v4
         with:
-          python-version: "3.11"
+          node-version: "22"
 
       - name: Run preflight checks
-        run: python3 scripts/preflight.py
+        run: npm run preflight
 
       - name: Prepare release notes
         id: release
         run: |
-          python3 scripts/prepare_release.py \
+          npm run prepare-release:ts -- \
             --skip-git-checks \
             --notes-out release-notes.md \
             --github-output "$GITHUB_OUTPUT"

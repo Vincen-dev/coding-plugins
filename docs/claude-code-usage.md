@@ -96,7 +96,7 @@ claude plugin validate . --strict
 同时保留 Codex 侧校验：
 
 ```bash
-PYTHONPATH=/private/tmp/codex-yaml-shim python3 /Users/vincen/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py /Users/vincen/workspace/plugins/coding-plugins
+npm run preflight
 ```
 
 ## 注意事项

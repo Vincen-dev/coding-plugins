@@ -92,8 +92,8 @@ docs/coding-plugins/INDEX.md
 6. 创建或更新 `technicals/<doc-id>-TID.md`，并在 TDD 的实现落地章节引用它；如果没有代码实现，TID 必须设置 `implementation_mode: no_code` 并说明“不新增代码实现”的范围边界。
 7. 在规格 metadata 或正文中引用 TDD 路径；metadata key 保持英文，正文使用 `## 文档信息` 展示中文摘要。不要在 README 正文增加手写 `产物链路` 或 `文档链路`，完整链路由 `docs/coding-plugins/INDEX.md` 生成。
 8. 更新 `docs/coding-plugins/INDEX.md`。
-9. 运行 `python3 skills/writing-technicals/scripts/validate_technicals.py <technical-path>` 做 TDD 单文档校验；发布前和 preflight 使用 strict 质量门禁。
-10. 运行 `python3 scripts/preflight.py` 或至少运行相关 preflight 单测。
+9. 运行 `coding-plugins validate-technicals <technical-path>` 做 TDD 单文档校验；发布前和 preflight 使用 strict 质量门禁。
+10. 运行 `npm run preflight` 或至少运行相关 preflight 单测。
 11. 交接给 `writing-test-cases` 编写 TCD，再交接给 `writing-plans` 编写 IPD；计划必须写技术设计来源、技术实现来源和测试用例来源。
 
 ## 模板

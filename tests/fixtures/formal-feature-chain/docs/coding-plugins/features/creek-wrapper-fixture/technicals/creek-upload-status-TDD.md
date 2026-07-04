@@ -8,7 +8,7 @@ created: 2026-07-02
 updated: 2026-07-02
 implemented_commits: []
 validated_by:
-  - python3 -m unittest scripts.test_preflight.PreflightTests.test_golden_feature_fixture_satisfies_formal_document_chain
+  - npm run preflight
 related_specs:
   - docs/coding-plugins/features/creek-wrapper-fixture/requirements/creek-upload-status-PRD.md
 related_technical:
@@ -48,7 +48,7 @@ related_evidence:
 
 | 规格 ID | 规格摘要 | 技术落点 | 关键决策 ID | 影响文件/符号 | 验证命令 | 证据 |
 | --- | --- | --- | --- | --- | --- | --- |
-| REQ-001 | 查询健康数据上传状态 | `CreekHealthDataSource.getUploadStatus` | TD-001 | `lib/creek_health_data_source.dart` | `python3 -m unittest scripts.test_preflight.PreflightTests.test_golden_feature_fixture_satisfies_formal_document_chain` | `docs/coding-plugins/features/creek-wrapper-fixture/evidences/creek-upload-status-TED.md` |
+| REQ-001 | 查询健康数据上传状态 | `CreekHealthDataSource.getUploadStatus` | TD-001 | `lib/creek_health_data_source.dart` | `npm run preflight` | `docs/coding-plugins/features/creek-wrapper-fixture/evidences/creek-upload-status-TED.md` |
 
 ## 无需技术设计的规格
 
@@ -60,4 +60,4 @@ related_evidence:
 
 | 规格 ID | 测试层级 | 命令 |
 | --- | --- | --- |
-| REQ-001 | contract | `python3 -m unittest scripts.test_preflight.PreflightTests.test_golden_feature_fixture_satisfies_formal_document_chain` |
+| REQ-001 | contract | `npm run preflight` |

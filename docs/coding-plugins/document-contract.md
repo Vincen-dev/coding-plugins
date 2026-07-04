@@ -38,10 +38,10 @@ external_references:
   - /Users/vincen/workspace/evobeing_creek_wrapper/docs/sdk-wrapper/Evobeing-Creek-Wrapper对接说明.md
 ```
 
-默认 `python3 scripts/preflight.py` 不检查外部路径，避免 CI 或其他机器因为本地路径差异失败。需要本机完整审计时运行：
+默认 `npm run preflight` 不检查外部路径，避免 CI 或其他机器因为本地路径差异失败。需要本机完整审计时运行：
 
 ```bash
-python3 scripts/preflight.py --check-external-references
+npm run preflight -- --check-external-references
 ```
 
 ## 契约迁移
@@ -49,8 +49,8 @@ python3 scripts/preflight.py --check-external-references
 旧文档迁移到当前契约时运行：
 
 ```bash
-python3 scripts/migrate_document_contract.py --dry-run
-python3 scripts/migrate_document_contract.py
+npm run document-contract-migration:ts -- --dry-run
+npm run document-contract-migration:ts --
 ```
 
 迁移脚本会把状态别名归一化，把 `related_specs` 中的裸 Spec ID 移到 `related_spec_ids`，并为 evidence 补齐基础 metadata。脚本不生成复杂技术设计或 IPD 任务执行文档。
@@ -73,7 +73,7 @@ python3 scripts/migrate_document_contract.py
 正文不维护索引型链路表。README 中禁止出现 `## 产物链路` 或 `## 文档链路`。需要检索完整链路时，运行：
 
 ```bash
-python3 scripts/preflight.py --write-index
+npm run preflight -- --write-index
 ```
 
 ## 校验入口
@@ -81,8 +81,8 @@ python3 scripts/preflight.py --write-index
 发布、提交或分发前运行：
 
 ```bash
-python3 scripts/preflight.py --write-index
-python3 scripts/preflight.py
+npm run preflight -- --write-index
+npm run preflight
 ```
 
 preflight 会校验 README metadata、Evidence metadata、路径一致性、关联路径存在性和生成索引一致性。

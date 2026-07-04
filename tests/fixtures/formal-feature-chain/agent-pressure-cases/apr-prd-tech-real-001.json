@@ -37,7 +37,7 @@
       "stdout_excerpt": "scenario-routing declares approved_prd_to_technicals with document-metadata and writing-technicals, outputs TDD and TID, and gate approved_prd_required; using-coding-plugins says approved PRD needs TDD/TID before TCD or IPD; workflow-chain says document-metadata -> writing-technicals."
     },
     {
-      "command": "python3 -m unittest tests.behavior.test_routing.RoutingBehaviorTests.test_scenario_routing_contract_matches_available_skills_and_workflow_docs",
+      "command": "npm run preflight",
       "cwd": "/Users/vincen/workspace/plugins/coding-plugins",
       "exit_code": 0,
       "stdout_sha256": "sha256:7f2e4e90fbb98410d64ab1df18d816f5db063dff5a4601e7e698d171bd3c7b85",

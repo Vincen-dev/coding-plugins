@@ -45,12 +45,12 @@ related_evidence: []
 
 - **规格/缺陷/验收:** <REQ-001、bug 复现链接或验收标准>
 - **测试类型:** behavior
-- **RED 测试:** `<tests/path/test_file.py::test_specific_behavior>`
-- **RED 命令:** `<pytest tests/path/test_file.py::test_specific_behavior -v>`
+- **RED 测试:** `<tests/path/example.test.ts::test_specific_behavior>`
+- **RED 命令:** `<node --test tests/path/example.test.ts::test_specific_behavior -v>`
 - **RED 失败:** <失败信息摘要，说明它因缺失行为失败，而不是导入、拼写或环境问题>
 - **GREEN 变更:** <最小实现摘要>
-- **GREEN 命令:** `<pytest tests/path/test_file.py::test_specific_behavior -v>`
-- **REFACTOR 命令:** `<pytest tests/path/test_file.py -v>`
+- **GREEN 命令:** `<node --test tests/path/example.test.ts::test_specific_behavior -v>`
+- **REFACTOR 命令:** `<node --test tests/path/example.test.ts -v>`
 - **最终验证:** <最终相关测试、构建或校验命令和结果>
 
 ## 任务 <N>：<无法自动测试的任务名称>

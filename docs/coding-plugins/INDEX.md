@@ -1,6 +1,6 @@
 # Coding Plugins Feature 索引
 
-本索引用于按 `Feature` 检索 feature-first 文档链路。运行 `python3 scripts/preflight.py --write-index` 可根据 feature root 重新生成本文件。
+本索引用于按 `Feature` 检索 feature-first 文档链路。运行 `npm run preflight -- --write-index` 可根据 feature root 重新生成本文件。
 
 | Feature | Doc ID | 功能根目录 | 需求文档 | 技术设计 | 技术实现 | 测试用例 | 任务执行 | 证据 | 标签 | 更新日期 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |

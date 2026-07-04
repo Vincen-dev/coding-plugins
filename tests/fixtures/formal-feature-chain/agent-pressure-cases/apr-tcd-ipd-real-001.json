@@ -37,7 +37,7 @@
       "stdout_excerpt": "scenario-routing declares test_cases_to_plan with document-metadata -> writing-plans, artifact IPD, gates approved_tcd_required and ted_target_only; writing-plans requires existing TCD and marks TED as target in task overview."
     },
     {
-      "command": "python3 -m unittest tests.behavior.test_routing.RoutingBehaviorTests.test_plan_scenario_does_not_claim_ted_as_direct_artifact",
+      "command": "npm run preflight",
       "cwd": "/Users/vincen/workspace/plugins/coding-plugins",
       "exit_code": 0,
       "stdout_sha256": "sha256:3e95e64f9afe0dce4b12d9ec1374c75ab7e118c81ce0620e893102943876aac5",

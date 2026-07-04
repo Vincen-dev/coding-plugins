@@ -18,6 +18,10 @@
       "field": "version"
     },
     {
+      "path": "package.json",
+      "field": "version"
+    },
+    {
       "path": ".version-bump.json",
       "field": "version"
     }

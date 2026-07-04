@@ -10,7 +10,7 @@ tags:
   - metadata
   - sync
 related_code:
-  - scripts/document_metadata.py
+  - src/lib/document-metadata.ts
 related_specs: []
 related_technical:
   - docs/coding-plugins/features/metadata-sync-fixture/technicals/metadata-sync-TDD.md
@@ -88,7 +88,7 @@ related_evidence:
 
 ### 关联契约
 
-- API / SDK / CLI：`python3 scripts/preflight.py`。
+- API / SDK / CLI：`npm run preflight`。
 - Schema / 数据：frontmatter `updated`。
 - 状态机 / 生命周期：PRD -> TDD -> TID -> TCD -> IPD -> TED。
 - 维护 / 迁移 / 回归：同步检查必须覆盖同一 `doc_id`。

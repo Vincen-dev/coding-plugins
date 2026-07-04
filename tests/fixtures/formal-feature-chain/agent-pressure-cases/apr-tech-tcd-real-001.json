@@ -37,7 +37,7 @@
       "stdout_excerpt": "scenario-routing declares technicals_to_test_cases with document-metadata and writing-test-cases, output TCD, and gate approved_technicals_required; using-coding-plugins says approved PRD plus TDD/TID needs TCD before writing-plans; writing-test-cases is the pre-IPD step."
     },
     {
-      "command": "python3 -m unittest tests.behavior.test_routing.RoutingBehaviorTests.test_scenario_routing_contract_uses_structured_gates_and_case_coverage",
+      "command": "npm run preflight",
       "cwd": "/Users/vincen/workspace/plugins/coding-plugins",
       "exit_code": 0,
       "stdout_sha256": "sha256:7f2e4e90fbb98410d64ab1df18d816f5db063dff5a4601e7e698d171bd3c7b85",

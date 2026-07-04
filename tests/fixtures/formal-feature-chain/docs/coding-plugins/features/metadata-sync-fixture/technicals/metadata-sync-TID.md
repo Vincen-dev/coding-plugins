@@ -8,7 +8,7 @@ created: 2026-07-02
 updated: 2026-07-02
 implemented_commits: []
 validated_by:
-  - python3 -m unittest scripts.test_preflight.PreflightTests.test_golden_feature_fixture_satisfies_formal_document_chain
+  - npm run preflight
 related_specs:
   - docs/coding-plugins/features/metadata-sync-fixture/requirements/metadata-sync-PRD.md
 related_technical:
@@ -53,8 +53,8 @@ related_evidence:
 
 | 类型 | 路径或符号 | 实现内容 | 关联设计 |
 | --- | --- | --- | --- |
-| 模块 | `scripts/preflight.py` | 文档同步 freshness 门禁 | TD-001 |
-| 模块 | `scripts/document_metadata.py` | 同步依赖图 | TD-001 |
+| 模块 | `src/cli/preflight.ts` | 文档同步 freshness 门禁 | TD-001 |
+| 模块 | `src/lib/document-metadata.ts` | 同步依赖图 | TD-001 |
 
 ### 数据和状态
 

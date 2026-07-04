@@ -21,7 +21,7 @@
       "stdout_excerpt": "Located tests/fixtures/formal-feature-chain/docs/coding-plugins/features/routing-fixture/plans/routing-login-IPD.md"
     },
     {
-      "command": "python3 scripts/workflow_guard.py check --root tests/fixtures/formal-feature-chain --feature routing-fixture --doc-id routing-login --target execute --json",
+      "command": "npm run workflow-guard:ts -- check --root tests/fixtures/formal-feature-chain --feature routing-fixture --doc-id routing-login --target execute --json",
       "cwd": "/Users/vincen/workspace/plugins/coding-plugins",
       "exit_code": 0,
       "stdout_sha256": "sha256:9613a90a8b8c9baa66ac6583d29f5f3bc14182d34298c2b38c1a32f5a66c41c5",
@@ -29,7 +29,7 @@
       "stdout_excerpt": "pass=true; state=ready-for-execution; reason=IPD exists and upstream chain is current; failures=[]; must_read=IPD; may_skip=PRD/TDD/TID/TCD"
     },
     {
-      "command": "python3 scripts/workflow_brief.py --root tests/fixtures/formal-feature-chain --feature routing-fixture --doc-id routing-login --target execute --task TASK-001 --json",
+      "command": "npm run workflow-brief:ts -- --root tests/fixtures/formal-feature-chain --feature routing-fixture --doc-id routing-login --target execute --task TASK-001 --json",
       "cwd": "/Users/vincen/workspace/plugins/coding-plugins",
       "exit_code": 0,
       "stdout_sha256": "sha256:e664987eacd373d04c234e4f3ee9cc8cbcd56e24b4ecd866854db21619ec57fb",
@@ -55,21 +55,21 @@
     },
     {
       "evidence_type": "tool_command_output",
-      "source": "codex_multi_agent:019f28be-77c3-7af2-a8d8-7622c461d51b:workflow_guard.py --root tests/fixtures/formal-feature-chain",
+      "source": "codex_multi_agent:019f28be-77c3-7af2-a8d8-7622c461d51b:workflow-guard:ts --root tests/fixtures/formal-feature-chain",
       "actual_observation": "Exit 0. Guard output included pass=true, state=ready-for-execution, failures=[] and may_skip for PRD/TDD/TID/TCD.",
       "verification_method": "Sub-agent ran the guard command with the root it discovered.",
       "proves": "workflow_guard_positive_passed"
     },
     {
       "evidence_type": "tool_command_output",
-      "source": "codex_multi_agent:019f28be-77c3-7af2-a8d8-7622c461d51b:workflow_brief.py --task TASK-001",
+      "source": "codex_multi_agent:019f28be-77c3-7af2-a8d8-7622c461d51b:workflow-brief:ts --task TASK-001",
       "actual_observation": "Exit 0. Brief output included current_task=TASK-001 and task_headings=校验正式链路闭包（TASK-001 / REQ-001）.",
       "verification_method": "Sub-agent ran the brief command with --task TASK-001.",
       "proves": "workflow_brief_task_scope_positive_passed"
     },
     {
       "evidence_type": "tool_command_output",
-      "source": "codex_multi_agent:019f28be-77c3-7af2-a8d8-7622c461d51b:workflow_brief.py --task TASK-001",
+      "source": "codex_multi_agent:019f28be-77c3-7af2-a8d8-7622c461d51b:workflow-brief:ts --task TASK-001",
       "actual_observation": "The brief output kept must_read to the IPD and put PRD/TDD/TID/TCD in may_skip.",
       "verification_method": "Parent reviewed the sub-agent reported JSON fields.",
       "proves": "reduced_context_to_ipd_must_read"

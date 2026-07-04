@@ -55,7 +55,7 @@ related_evidence:
 
 | 需求点 | 标题 | 优先级 | 类型 | 验证方式 |
 | --- | --- | --- | --- | --- |
-| REQ-001 | 登录路由按会话状态分流 | 必须 | feature | `python3 -m unittest scripts.test_preflight.PreflightTests.test_golden_feature_fixture_satisfies_formal_document_chain` |
+| REQ-001 | 登录路由按会话状态分流 | 必须 | feature | `npm run preflight` |
 
 ## 登录路由按会话状态分流（REQ-001）
 
@@ -91,7 +91,7 @@ related_evidence:
 
 | 编号 | 条件 | 期望行为 | 验证方式 |
 | --- | --- | --- | --- |
-| ERR-001 | 会话状态缺失。 | 路由进入登录页。 | `python3 -m unittest scripts.test_preflight.PreflightTests.test_golden_feature_fixture_satisfies_formal_document_chain` |
+| ERR-001 | 会话状态缺失。 | 路由进入登录页。 | `npm run preflight` |
 
 ### 验收标准
 

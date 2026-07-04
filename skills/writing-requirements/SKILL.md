@@ -61,13 +61,13 @@ description: Use when writing or updating Coding Plugins PRD requirement documen
 11. 运行规格校验：
 
 ```bash
-python3 skills/spec-driven-development/scripts/validate_spec.py <SPEC_FILE_PATH>
+coding-plugins validate-spec <SPEC_FILE_PATH>
 ```
 
 12. 新增、移动、批准或废弃需求文档后运行：
 
 ```bash
-python3 scripts/preflight.py --write-index
+npm run preflight -- --write-index
 ```
 
 ## 内容边界
@@ -88,4 +88,4 @@ python3 scripts/preflight.py --write-index
 - 是否没有把技术设计或技术实现写进需求文档。
 - 是否没有把测试用例步骤写进需求文档。
 - 是否已链接相关需求、技术设计、计划、证据或代码路径。
-- 是否运行 `validate_spec.py` 并修复失败项。
+- 是否运行 `validate-spec.ts` 并修复失败项。

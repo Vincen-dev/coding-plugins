@@ -93,7 +93,7 @@ if [ -f go.mod ]; then go mod download; fi
 运行项目测试：
 
 ```bash
-npm test / cargo test / pytest / go test ./...
+npm test / cargo test / npm test / go test ./...
 ```
 
 测试失败时，报告失败并询问是否继续或先调查。测试通过时报告 ready。

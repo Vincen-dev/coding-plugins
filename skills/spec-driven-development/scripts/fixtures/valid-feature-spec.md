@@ -4,8 +4,8 @@
 
 | 需求点 | 标题 | 优先级 | 验证方式 |
 | --- | --- | --- | --- |
-| REQ-001 | 导出配置包含版本 | 必须 | 单元测试 `python3 -m pytest tests/test_export_config.py`。 |
-| REQ-002 | 导出配置包含生成时间 | 应该 | 单元测试 `python3 -m pytest tests/test_export_config.py`。 |
+| REQ-001 | 导出配置包含版本 | 必须 | 单元测试 `node --test tests/export-config.test.ts`。 |
+| REQ-002 | 导出配置包含生成时间 | 应该 | 单元测试 `node --test tests/export-config.test.ts`。 |
 
 ## 导出配置包含版本（REQ-001）
 
@@ -33,12 +33,12 @@
 
 | 编号 | 条件 | 期望行为 | 验证方式 |
 | --- | --- | --- | --- |
-| ERR-001 | 导出配置缺少版本来源。 | 导出函数返回明确错误。 | 单元测试 `python3 -m pytest tests/test_export_config.py`。 |
+| ERR-001 | 导出配置缺少版本来源。 | 导出函数返回明确错误。 | 单元测试 `node --test tests/export-config.test.ts`。 |
 
 ## 追踪矩阵
 
 | 规格 ID | 验证类型 | 验证证据 | 状态 |
 | --- | --- | --- | --- |
-| REQ-001 | 单元测试 | `python3 -m pytest tests/test_export_config.py` | 计划中 |
-| REQ-002 | 单元测试 | `python3 -m pytest tests/test_export_config.py` | 计划中 |
-| ERR-001 | 单元测试 | `python3 -m pytest tests/test_export_config.py` | 计划中 |
+| REQ-001 | 单元测试 | `node --test tests/export-config.test.ts` | 计划中 |
+| REQ-002 | 单元测试 | `node --test tests/export-config.test.ts` | 计划中 |
+| ERR-001 | 单元测试 | `node --test tests/export-config.test.ts` | 计划中 |

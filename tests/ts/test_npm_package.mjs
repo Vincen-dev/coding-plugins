@@ -1,0 +1,88 @@
+import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
+import { readFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import test from "node:test";
+
+const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
+const py = "py";
+const pySuffix = "." + py;
+const pyCommand = py + "thon3";
+
+function packFiles() {
+  const result = spawnSync("npm", ["pack", "--dry-run", "--json"], {
+    cwd: repoRoot,
+    encoding: "utf8",
+  });
+
+  assert.equal(result.status, 0, result.stderr);
+  const payload = JSON.parse(result.stdout);
+  assert.equal(payload.length, 1);
+  return payload[0].files.map((file) => file.path);
+}
+
+test("npm package includes runtime entrypoints and excludes generated caches", () => {
+  const files = packFiles();
+
+  for (const required of [
+    "package.json",
+    "bin/coding-plugins.js",
+    "src/cli/bump-version.ts",
+    "src/cli/prepare-release.ts",
+    ".codex-plugin/plugin.json",
+    ".claude-plugin/plugin.json",
+    "plugin.json",
+    "README.md",
+    "INSTALL.md",
+    "SECURITY.md",
+  ]) {
+    assert.ok(files.includes(required), `missing package file: ${required}`);
+  }
+
+  assert.ok(
+    files.some((path) => path.startsWith("skills/spec-driven-development/")),
+    "expected packaged skills",
+  );
+  assert.ok(
+    files.every((path) => !path.includes("__pycache__") && !path.endsWith(".pyc")),
+    "package must not include generated Python cache files",
+  );
+});
+
+test("npm package and workflows use TypeScript runtime without Python", () => {
+  const files = packFiles();
+  assert.ok(files.every((path) => !path.endsWith(pySuffix)), "npm package must not include Python source files");
+  assert.ok(files.includes("src/cli/preflight.ts"), "npm package must include TypeScript preflight");
+  assert.ok(!files.includes(`scripts/preflight${pySuffix}`), "npm package must not include Python preflight");
+
+  const packageJson = JSON.parse(readFileSync(resolve(repoRoot, "package.json"), "utf8"));
+  assert.equal(packageJson.scripts.preflight, "node src/cli/preflight.ts");
+  assert.ok(!packageJson.files.includes("scripts/"), "npm package files must not include Python scripts directory");
+
+  for (const workflow of [".github/workflows/ci.yml", ".github/workflows/release.yml"]) {
+    const text = readFileSync(resolve(repoRoot, workflow), "utf8");
+    assert.ok(!text.includes(`setup-${py}`), `${workflow} must not set up Python`);
+    assert.ok(!text.includes(`${pyCommand} `), `${workflow} must not run ${pyCommand}`);
+    assert.ok(text.includes("npm run preflight"), `${workflow} must run npm preflight`);
+  }
+
+  const preflight = readFileSync(resolve(repoRoot, "src/cli/preflight.ts"), "utf8");
+  assert.ok(!preflight.includes(`scripts/preflight${pySuffix}`), "TypeScript preflight must not delegate to Python preflight");
+});
+
+test("published text files do not document Python entrypoints", () => {
+  const files = packFiles();
+  const offenders = [];
+  for (const path of files) {
+    if (path === "package.json" || path.endsWith(".png")) {
+      continue;
+    }
+    const fullPath = resolve(repoRoot, path);
+    const text = readFileSync(fullPath, "utf8");
+    if (new RegExp(`${pyCommand}|scripts\\/[A-Za-z0-9_]+\\${pySuffix}|\\${pySuffix}\\b`).test(text)) {
+      offenders.push(path);
+    }
+  }
+  assert.deepEqual(offenders, []);
+});

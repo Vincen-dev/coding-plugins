@@ -14,16 +14,15 @@ fail() {
 }
 
 assert_manifest_hooks() {
-    if python3 - "$REPO_ROOT" <<'PY'
-import json
-import sys
-from pathlib import Path
-
-root = Path(sys.argv[1])
-manifest = json.loads((root / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8"))
-if manifest.get("hooks") != "./hooks/hooks-codex.json":
-    raise SystemExit("Codex manifest hooks must be ./hooks/hooks-codex.json")
-PY
+    if node - "$REPO_ROOT" <<'NODE'
+const fs = require('node:fs');
+const path = require('node:path');
+const root = process.argv[2];
+const manifest = JSON.parse(fs.readFileSync(path.join(root, '.codex-plugin', 'plugin.json'), 'utf8'));
+if (manifest.hooks !== './hooks/hooks-codex.json') {
+  throw new Error('Codex manifest hooks must be ./hooks/hooks-codex.json');
+}
+NODE
     then
         pass "Codex manifest declares hook config"
     else
@@ -32,25 +31,27 @@ PY
 }
 
 assert_hook_config() {
-    if python3 - "$REPO_ROOT" <<'PY'
-import json
-import sys
-from pathlib import Path
-
-root = Path(sys.argv[1])
-config = json.loads((root / "hooks" / "hooks-codex.json").read_text(encoding="utf-8"))
-session_start = config["hooks"]["SessionStart"]
-entry = session_start[0]
-command = entry["hooks"][0]["command"]
-if entry.get("matcher") != "startup|resume|clear":
-    raise SystemExit("SessionStart matcher must be startup|resume|clear")
-if entry["hooks"][0].get("type") != "command":
-    raise SystemExit("SessionStart hook type must be command")
-if entry["hooks"][0].get("async") is not False:
-    raise SystemExit("SessionStart hook must be synchronous")
-if "${PLUGIN_ROOT}/hooks/run-hook.cmd" not in command or "session-start-codex" not in command:
-    raise SystemExit("SessionStart command must call run-hook.cmd session-start-codex")
-PY
+    if node - "$REPO_ROOT" <<'NODE'
+const fs = require('node:fs');
+const path = require('node:path');
+const root = process.argv[2];
+const config = JSON.parse(fs.readFileSync(path.join(root, 'hooks', 'hooks-codex.json'), 'utf8'));
+const sessionStart = config.hooks.SessionStart;
+const entry = sessionStart[0];
+const command = entry.hooks[0].command;
+if (entry.matcher !== 'startup|resume|clear') {
+  throw new Error('SessionStart matcher must be startup|resume|clear');
+}
+if (entry.hooks[0].type !== 'command') {
+  throw new Error('SessionStart hook type must be command');
+}
+if (entry.hooks[0].async !== false) {
+  throw new Error('SessionStart hook must be synchronous');
+}
+if (!command.includes('${PLUGIN_ROOT}/hooks/run-hook.cmd') || !command.includes('session-start-codex')) {
+  throw new Error('SessionStart command must call run-hook.cmd session-start-codex');
+}
+NODE
     then
         pass "Codex hook config routes SessionStart to wrapper"
     else
@@ -69,41 +70,45 @@ assert_session_start_output() {
         return
     fi
 
-    if HOOK_OUTPUT="$output" python3 - <<'PY'
-import json
-import os
-import sys
-
-payload = json.loads(os.environ["HOOK_OUTPUT"])
-hook_output = payload.get("hookSpecificOutput")
-if not isinstance(hook_output, dict):
-    raise SystemExit("missing hookSpecificOutput")
-if hook_output.get("hookEventName") != "SessionStart":
-    raise SystemExit("hookEventName must be SessionStart")
-context = hook_output.get("additionalContext")
-if not isinstance(context, str) or not context.strip():
-    raise SystemExit("additionalContext must be a non-empty string")
-required = (
-    "coding-plugins:using-coding-plugins",
-    "SDD",
-    "TDD",
-    "docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md",
-    "verification-before-completion",
-    "git-commit",
-    "finishing-a-development-branch",
-)
-for text in required:
-    if text not in context:
-        raise SystemExit(f"additionalContext missing {text}")
-for forbidden in (
-    "using-" + "superpowers",
-    "brain" + "storming",
-    "docs/coding-plugins/evidence/<feature-name>/tdd-evidence.md",
-    "docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md",
-):
-    if forbidden in context:
-        raise SystemExit(f"additionalContext contains removed entry {forbidden}")
-PY
+    if HOOK_OUTPUT="$output" node <<'NODE'
+const payload = JSON.parse(process.env.HOOK_OUTPUT || '{}');
+const hookOutput = payload.hookSpecificOutput;
+if (!hookOutput || typeof hookOutput !== 'object') {
+  throw new Error('missing hookSpecificOutput');
+}
+if (hookOutput.hookEventName !== 'SessionStart') {
+  throw new Error('hookEventName must be SessionStart');
+}
+const context = hookOutput.additionalContext;
+if (typeof context !== 'string' || !context.trim()) {
+  throw new Error('additionalContext must be a non-empty string');
+}
+const required = [
+  'coding-plugins:using-coding-plugins',
+  'SDD',
+  'TDD',
+  'docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md',
+  'verification-before-completion',
+  'git-commit',
+  'finishing-a-development-branch',
+];
+for (const text of required) {
+  if (!context.includes(text)) {
+    throw new Error(`additionalContext missing ${text}`);
+  }
+}
+const forbidden = [
+  'using-' + 'superpowers',
+  'brain' + 'storming',
+  'docs/coding-plugins/evidence/<feature-name>/tdd-evidence.md',
+  'docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md',
+];
+for (const text of forbidden) {
+  if (context.includes(text)) {
+    throw new Error(`additionalContext contains removed entry ${text}`);
+  }
+}
+NODE
     then
         pass "$description"
     else
