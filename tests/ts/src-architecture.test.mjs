@@ -87,3 +87,17 @@ test("build and preflight use the shared runtime lock instead of script-local lo
   assert.equal(existsSync(join(repoRoot, "scripts/build-lock.mjs")), false);
   assert.equal(existsSync(join(repoRoot, "scripts/build-dist.mjs")), false);
 });
+
+test("CLI command metadata comes from a shared registry instead of a hand-written bin map", () => {
+  const registryPath = join(repoRoot, "src/lib/runtime/command-registry.ts");
+  assert.ok(existsSync(registryPath), "command registry must be a shared runtime module");
+
+  const registrySource = readFileSync(registryPath, "utf8");
+  const binSource = readFileSync(join(repoRoot, "bin/coding-plugins.js"), "utf8");
+  const packageJson = JSON.parse(readFileSync(join(repoRoot, "package.json"), "utf8"));
+
+  assert.ok(registrySource.includes("COMMAND_REGISTRY"), "registry must export command metadata");
+  assert.ok(binSource.includes("COMMAND_REGISTRY"), "bin dispatcher must consume the shared registry");
+  assert.equal(binSource.includes("const commands = {"), false, "bin dispatcher must not keep a second command map");
+  assert.equal(packageJson.scripts["command-registry:ts"], "node src/cli/command-registry.ts", "package scripts must expose registry inspection");
+});

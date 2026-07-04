@@ -10,6 +10,7 @@
   },
   "scripts": {
     "build": "node dist/src/cli/release/build-dist.js",
+    "command-registry:ts": "node src/cli/command-registry.ts",
     "test": "npm run preflight",
     "test:ts": "npm run preflight",
     "typecheck": "tsc --noEmit",

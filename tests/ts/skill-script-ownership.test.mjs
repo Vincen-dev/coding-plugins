@@ -41,15 +41,16 @@ test("skill-owned CLI scripts live under their owning skill", () => {
   }
 });
 
-test("package scripts and bin dispatcher point at skill-owned scripts", () => {
+test("package scripts and command registry point at skill-owned scripts", () => {
   const packageJson = JSON.parse(readFileSync(join(repoRoot, "package.json"), "utf8"));
-  const binSource = readFileSync(join(repoRoot, "bin/coding-plugins.js"), "utf8");
+  const registrySource = readFileSync(join(repoRoot, "src/lib/runtime/command-registry.ts"), "utf8");
 
   for (const [command, scriptPath] of Object.entries(skillOwnedScripts)) {
     const npmScript = `${command}:ts`;
     if (packageJson.scripts[npmScript]) {
       assert.equal(packageJson.scripts[npmScript], `node ${scriptPath}`);
     }
-    assert.ok(binSource.includes(`"${command}": "${scriptPath}"`), `bin dispatcher must route ${command}`);
+    assert.ok(registrySource.includes(`name: "${command}"`), `command registry must route ${command}`);
+    assert.ok(registrySource.includes(`script: "${scriptPath}"`), `command registry must point ${command} at its owning skill script`);
   }
 });
