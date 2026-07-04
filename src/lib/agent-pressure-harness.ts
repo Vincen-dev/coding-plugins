@@ -67,7 +67,7 @@ function collectFiles(root: string): string[] {
 }
 
 function findFixtureRoot(root: string, feature: string, docId: string): [string, CommandLog] {
-  const pattern = `docs/coding-plugins/features/${feature}/plans/${docId}-IPD.md`;
+  const pattern = `docs/coding-plugins/features/${feature}/plans/${docId}-TED.md`;
   const testsRoot = join(root, "tests");
   const matches = existsSync(testsRoot)
     ? collectFiles(testsRoot).filter((path) => relative(root, path).replaceAll("\\", "/").endsWith(pattern))
@@ -79,7 +79,7 @@ function findFixtureRoot(root: string, feature: string, docId: string): [string,
     stdoutExcerpt: stdout,
   });
   if (matches.length === 0) {
-    throw new Error(`fixture IPD not found: ${pattern}`);
+    throw new Error(`fixture TED not found: ${pattern}`);
   }
   const relParts = relative(root, matches[0]).split(/[\\/]/);
   const docsIndex = relParts.indexOf("docs");
@@ -118,7 +118,7 @@ export function runIpdScenario(root: string): CasePayload {
       "--json",
     ],
     root,
-    { stdoutExcerpt: "pass=true; state=ready-for-execution; failures=[]; may_skip=PRD/TDD/TID/TCD" },
+    { stdoutExcerpt: "pass=true; state=ready-for-execution; failures=[]; may_skip=PRD/TSD/TVD" },
   );
   const [brief, briefStdout] = runLoggedCommand(
     [
@@ -137,7 +137,7 @@ export function runIpdScenario(root: string): CasePayload {
       "--json",
     ],
     root,
-    { stdoutExcerpt: "pass=true; current_task=TASK-001; task_headings=校验正式链路闭包（TASK-001 / REQ-001）; may_skip=PRD/TDD/TID/TCD" },
+    { stdoutExcerpt: "pass=true; current_task=TASK-001; task_headings=校验正式链路闭包（TASK-001 / REQ-001）; may_skip=PRD/TSD/TVD" },
   );
   const guardPayload = JSON.parse(guardStdout);
   const briefPayload = JSON.parse(briefStdout);
@@ -150,8 +150,8 @@ export function runIpdScenario(root: string): CasePayload {
     briefPayload.must_read.length === 1 &&
     briefPayload.may_skip.some((path: string) => path.endsWith("-PRD.md"));
   return {
-    id: "HARNESS-IPD-001",
-    scenario_id: "existing_ipd_execution",
+    id: "HARNESS-TED-001",
+    scenario_id: "existing_ted_execution",
     execution_depth: "real_command",
     phase: "real_command_positive",
     agent_discipline_passed: passed,
@@ -159,13 +159,13 @@ export function runIpdScenario(root: string): CasePayload {
     expected_failure: false,
     scenario_passed: passed,
     command_log: [locateLog, guard, brief],
-    summary: "Harness located fixture root and verified guard/brief task-focused IPD execution context.",
+    summary: "Harness located fixture root and verified guard/brief task-focused TED execution context.",
     observed_behaviors: [
       "located_fixture_root_without_parent_correction",
       "workflow_guard_positive_passed",
       "workflow_brief_task_scope_positive_passed",
-      "reduced_context_to_ipd_must_read",
-      "kept_upstream_prd_tdd_tid_tcd_in_may_skip",
+      "reduced_context_to_ted_must_read",
+      "kept_upstream_prd_tsd_tvd_in_may_skip",
     ],
   };
 }

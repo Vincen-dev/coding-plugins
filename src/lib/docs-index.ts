@@ -24,8 +24,7 @@ export const ARTIFACT_INDEX_REQUIRED_COLUMNS = [
   "Doc ID",
   "功能根目录",
   "需求文档",
-  "技术设计",
-  "技术实现",
+  "技术方案",
   "测试用例",
   "任务执行",
   "证据",
@@ -88,11 +87,11 @@ export function featureSpecFilesForDocId(featureRoot: string, docId: string): st
 }
 
 export function featureEvidenceFiles(featureRoot: string): string[] {
-  return artifactFiles(featureRoot, "TED");
+  return artifactFiles(featureRoot, "VED");
 }
 
 export function featureEvidenceFilesForDocId(featureRoot: string, docId: string): string[] {
-  return artifactFilesForDocId(featureRoot, "TED", docId);
+  return artifactFilesForDocId(featureRoot, "VED", docId);
 }
 
 export function featureArchivedEvidenceFiles(featureRoot: string): string[] {
@@ -116,35 +115,27 @@ export function featureArchivedEvidenceFiles(featureRoot: string): string[] {
 }
 
 export function featureTechnicalDesignFiles(featureRoot: string): string[] {
-  return artifactFiles(featureRoot, "TDD");
+  return artifactFiles(featureRoot, "TSD");
 }
 
 export function featureTechnicalDesignFilesForDocId(featureRoot: string, docId: string): string[] {
-  return artifactFilesForDocId(featureRoot, "TDD", docId);
-}
-
-export function featureTechnicalImplementationFiles(featureRoot: string): string[] {
-  return artifactFiles(featureRoot, "TID");
-}
-
-export function featureTechnicalImplementationFilesForDocId(featureRoot: string, docId: string): string[] {
-  return artifactFilesForDocId(featureRoot, "TID", docId);
+  return artifactFilesForDocId(featureRoot, "TSD", docId);
 }
 
 export function featurePlanFiles(featureRoot: string): string[] {
-  return artifactFiles(featureRoot, "IPD");
+  return artifactFiles(featureRoot, "TED");
 }
 
 export function featurePlanFilesForDocId(featureRoot: string, docId: string): string[] {
-  return artifactFilesForDocId(featureRoot, "IPD", docId);
+  return artifactFilesForDocId(featureRoot, "TED", docId);
 }
 
 export function featureTestCaseFiles(featureRoot: string): string[] {
-  return artifactFiles(featureRoot, "TCD");
+  return artifactFiles(featureRoot, "TVD");
 }
 
 export function featureTestCaseFilesForDocId(featureRoot: string, docId: string): string[] {
-  return artifactFilesForDocId(featureRoot, "TCD", docId);
+  return artifactFilesForDocId(featureRoot, "TVD", docId);
 }
 
 export function featureTags(featureRoot: string): string {
@@ -160,7 +151,6 @@ export function featureUpdated(featureRoot: string, docId?: string): string {
   let paths = [
     ...featureSpecFiles(featureRoot),
     ...featureTechnicalDesignFiles(featureRoot),
-    ...featureTechnicalImplementationFiles(featureRoot),
     ...featureTestCaseFiles(featureRoot),
     ...featurePlanFiles(featureRoot),
   ];
@@ -179,8 +169,8 @@ export function renderArtifactIndex(root: string): string {
     "",
     "本索引用于按 `Feature` 检索 feature-first 文档链路。运行 `npm run preflight -- --write-index` 可根据 feature root 重新生成本文件。",
     "",
-    "| Feature | Doc ID | 功能根目录 | 需求文档 | 技术设计 | 技术实现 | 测试用例 | 任务执行 | 证据 | 标签 | 更新日期 |",
-    "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+    "| Feature | Doc ID | 功能根目录 | 需求文档 | 技术方案 | 测试用例 | 任务执行 | 证据 | 标签 | 更新日期 |",
+    "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
   ];
 
   for (const featureRoot of collectFeatureRoots(root)) {
@@ -199,7 +189,6 @@ export function renderArtifactIndex(root: string): string {
           `\`${relativeMarkdownPath(root, featureRoot)}\``,
           formatIndexPathCell(root, featureSpecFilesForDocId(featureRoot, docId)),
           formatIndexPathCell(root, featureTechnicalDesignFilesForDocId(featureRoot, docId)),
-          formatIndexPathCell(root, featureTechnicalImplementationFilesForDocId(featureRoot, docId)),
           formatIndexPathCell(root, featureTestCaseFilesForDocId(featureRoot, docId)),
           formatIndexPathCell(root, featurePlanFilesForDocId(featureRoot, docId)),
           formatIndexPathCell(root, featureEvidenceFilesForDocId(featureRoot, docId)),
@@ -215,15 +204,14 @@ export function renderArtifactIndex(root: string): string {
     "规则:",
     "",
     "- `Feature` 必须和 `功能根目录` 路径一致。",
-    "- `Doc ID` 来自文件名去掉 `-PRD`、`-TDD`、`-TID`、`-TCD`、`-IPD` 或 `-TED` 后的前缀，用于区分同一 feature 下多条文档链路。",
+    "- `Doc ID` 来自文件名去掉 `-PRD`、`-TSD`、`-TVD`、`-TED` 或 `-VED` 后的前缀，用于区分同一 feature 下多条文档链路。",
     "- `功能根目录` 指向 `docs/coding-plugins/features/<feature-name>`。",
     "- `需求文档` 指向 `docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md`；没有需求文档时使用 `-`。",
-    "- `技术设计` 指向 `docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TDD.md`；没有技术设计时使用 `-`。",
-    "- `技术实现` 指向 `docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TID.md`；没有技术实现文档时使用 `-`。",
-    "- `测试用例` 指向 `docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TCD.md`；没有测试用例时使用 `-`。",
-    "- `任务执行` 指向 `docs/coding-plugins/features/<feature-name>/plans/<doc-id>-IPD.md`；没有 IPD 任务执行文档时使用 `-`。",
-    "- `证据` 指向 `docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md`；没有证据时使用 `-`。",
-    "- `标签` 来自 feature README frontmatter 的 `tags` 列表；日期来自需求文档、技术设计、测试用例或 IPD 任务执行文档 frontmatter 的最大 `updated` 值。",
+    "- `技术方案` 指向 `docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TSD.md`；没有技术方案时使用 `-`。",
+    "- `测试用例` 指向 `docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TVD.md`；没有测试用例时使用 `-`。",
+    "- `任务执行` 指向 `docs/coding-plugins/features/<feature-name>/plans/<doc-id>-TED.md`；没有 TED 任务执行文档时使用 `-`。",
+    "- `证据` 指向 `docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-VED.md`；没有证据时使用 `-`。",
+    "- `标签` 来自 feature README frontmatter 的 `tags` 列表；日期来自需求文档、技术方案、测试用例或 TED 任务执行文档 frontmatter 的最大 `updated` 值。",
   );
   return `${lines.join("\n")}\n`;
 }
@@ -239,7 +227,6 @@ export function collectIndexDocumentFiles(root: string): string[] {
   for (const featureRoot of collectFeatureRoots(root)) {
     documents.push(...featureSpecFiles(featureRoot));
     documents.push(...featureTechnicalDesignFiles(featureRoot));
-    documents.push(...featureTechnicalImplementationFiles(featureRoot));
     documents.push(...featureTestCaseFiles(featureRoot));
     documents.push(...featurePlanFiles(featureRoot));
     documents.push(...featureEvidenceFiles(featureRoot));

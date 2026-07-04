@@ -17,8 +17,8 @@ const EXECUTION_LOCK_FIELDS = [
   "Review Gates",
   "Rewind Triggers",
 ];
-const UPSTREAM_SUFFIXES = ["PRD", "TDD", "TID", "TCD"] as const;
-const NEW_PLAN_POLICY = "create a new IPD for each new plan; do not append new plan tasks to an existing IPD";
+const UPSTREAM_SUFFIXES = ["PRD", "TSD", "TVD"] as const;
+const NEW_PLAN_POLICY = "create a new TED for each new execution plan; do not append new plan tasks to an existing TED";
 
 interface NextContext {
   must_read: string[];
@@ -79,17 +79,17 @@ export function validateExecutionLock(path: string): string[] {
   }
   const fields = parseExecutionLock(readFileSync(path, "utf8"));
   if (fields === null) {
-    return ["IPD execution lock section is missing"];
+    return ["TED execution lock section is missing"];
   }
 
   const missing = EXECUTION_LOCK_FIELDS.filter((field) => !fields[field]);
   if (missing.length > 0) {
-    return [`IPD execution lock is missing fields: ${missing.join(", ")}`];
+    return [`TED execution lock is missing fields: ${missing.join(", ")}`];
   }
 
   const placeholders = EXECUTION_LOCK_FIELDS.filter((field) => fields[field].includes("<") || fields[field].includes(">"));
   if (placeholders.length > 0) {
-    return [`IPD execution lock has placeholder fields: ${placeholders.join(", ")}`];
+    return [`TED execution lock has placeholder fields: ${placeholders.join(", ")}`];
   }
 
   return [];
@@ -102,13 +102,13 @@ export function validateExecutionSections(path: string): string[] {
   const text = readFileSync(path, "utf8");
   const failures = validateExecutionLock(path);
   if (!text.includes(EXECUTION_BRIEF_HEADING)) {
-    failures.push("IPD execution brief section is missing");
+    failures.push("TED execution brief section is missing");
   }
   if (!text.includes(TASK_OVERVIEW_HEADING)) {
-    failures.push("IPD task overview section is missing");
+    failures.push("TED task overview section is missing");
   }
   if (!TASK_HEADING_RE.test(text)) {
-    failures.push("IPD task chapter is missing");
+    failures.push("TED task chapter is missing");
   }
   return failures;
 }
@@ -121,14 +121,14 @@ export function buildNextContext(
   const upstreamPaths = UPSTREAM_SUFFIXES
     .filter((suffix) => artifacts[suffix].exists)
     .map((suffix) => artifacts[suffix].path);
-  const ipdPath = artifacts.IPD.exists ? artifacts.IPD.path : null;
+  const tedPath = artifacts.TED.exists ? artifacts.TED.path : null;
 
-  if (options.target === "execute" && options.passed && ipdPath) {
+  if (options.target === "execute" && options.passed && tedPath) {
     return {
-      must_read: [ipdPath],
+      must_read: [tedPath],
       may_skip: upstreamPaths,
       focus_sections: ["## 执行简报", "## 执行锁定区", "## 任务总览", "## <任务标题>（TASK-001 / REQ-001）"],
-      execution_source: "IPD task chapters",
+      execution_source: "TED task chapters",
       new_plan_policy: NEW_PLAN_POLICY,
     };
   }
@@ -156,8 +156,8 @@ export function checkWorkflowGuard(
   const failures: string[] = [];
 
   if (options.target === "execute" && state.state === "ready-for-execution") {
-    const ipdPath = join(root, state.artifacts.IPD.path);
-    failures.push(...validateExecutionSections(ipdPath));
+    const tedPath = join(root, state.artifacts.TED.path);
+    failures.push(...validateExecutionSections(tedPath));
     passed = passed && failures.length === 0;
   }
 
@@ -166,10 +166,10 @@ export function checkWorkflowGuard(
       failures.push(`missing artifacts: ${state.missing_artifacts.join(", ")}`);
     }
     if (state.state === "plan-unlocked") {
-      failures.push("IPD source_hash is missing");
+      failures.push("TED source_hash is missing");
     }
     if (state.stale) {
-      failures.push("IPD source_hash is stale");
+      failures.push("TED source_hash is stale");
     }
     if (!allowedStates.has(state.state)) {
       failures.push(`state '${state.state}' cannot enter target '${options.target}'`);

@@ -22,7 +22,7 @@ test("TypeScript agent pressure harness writes command/workspace artifact", () =
     const payload = JSON.parse(readFileSync(output, "utf8"));
     assert.equal(payload.artifact.kind, "agent-pressure-harness");
     assert.equal(payload.cases.length, 4);
-    assert.ok(payload.cases.some((caseData) => caseData.scenario_id === "existing_ipd_execution"));
+    assert.ok(payload.cases.some((caseData) => caseData.scenario_id === "existing_ted_execution"));
     assert.ok(payload.cases.some((caseData) => caseData.scenario_id === "subagent_prompt_execution"));
     for (const caseData of payload.cases) {
       assert.equal(caseData.transcript.source, "command_log");

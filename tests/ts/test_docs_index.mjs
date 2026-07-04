@@ -30,13 +30,13 @@ test("TypeScript docs index renders feature-first artifact rows", () => {
     mkdirSync(join(featureDir, "test-cases"), { recursive: true });
     writeFeatureReadme(featureDir);
     writeFileSync(join(featureDir, "requirements/search-PRD.md"), "---\nupdated: 2026-06-29\n---\n# Feature\n", "utf8");
-    writeFileSync(join(featureDir, "test-cases/search-TCD.md"), "---\nupdated: 2026-06-29\n---\n# Test cases\n", "utf8");
+    writeFileSync(join(featureDir, "test-cases/search-TVD.md"), "---\nupdated: 2026-06-29\n---\n# Test cases\n", "utf8");
 
     const rendered = renderArtifactIndex(root);
 
     assert.ok(rendered.includes("`docs/coding-plugins/features/search`"));
     assert.ok(rendered.includes("`docs/coding-plugins/features/search/requirements/search-PRD.md`"));
-    assert.ok(rendered.includes("`docs/coding-plugins/features/search/test-cases/search-TCD.md`"));
+    assert.ok(rendered.includes("`docs/coding-plugins/features/search/test-cases/search-TVD.md`"));
     assert.ok(rendered.includes("| Feature | Doc ID | 功能根目录 |"));
     assert.ok(rendered.includes("| search | search | `docs/coding-plugins/features/search` |"));
     assert.ok(rendered.includes("| search | 2026-06-29 |"));
@@ -54,15 +54,15 @@ test("TypeScript docs index renders one row per doc id and validates generated i
     writeFeatureReadme(featureDir, "2026-07-01");
     writeFileSync(join(featureDir, "requirements/search-basic-PRD.md"), "---\nupdated: 2026-07-01\n---\n# Basic\n", "utf8");
     writeFileSync(join(featureDir, "requirements/search-advanced-PRD.md"), "---\nupdated: 2026-07-02\n---\n# Advanced\n", "utf8");
-    writeFileSync(join(featureDir, "technicals/search-basic-TDD.md"), "---\nupdated: 2026-07-03\n---\n# Basic TDD\n", "utf8");
+    writeFileSync(join(featureDir, "technicals/search-basic-TSD.md"), "---\nupdated: 2026-07-03\n---\n# Basic TSD\n", "utf8");
 
     const rendered = renderArtifactIndex(root);
 
     assert.ok(
       rendered.includes(
-        "| search | search-basic | `docs/coding-plugins/features/search` | " +
+          "| search | search-basic | `docs/coding-plugins/features/search` | " +
           "`docs/coding-plugins/features/search/requirements/search-basic-PRD.md` | " +
-          "`docs/coding-plugins/features/search/technicals/search-basic-TDD.md` |",
+          "`docs/coding-plugins/features/search/technicals/search-basic-TSD.md` |",
       ),
     );
     assert.ok(

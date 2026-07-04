@@ -2,19 +2,13 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { join, relative } from "node:path";
 
-const ARTIFACTS = [
-  ["PRD", "requirements"],
-  ["TDD", "technicals"],
-  ["TID", "technicals"],
-  ["TCD", "test-cases"],
-  ["IPD", "plans"],
-  ["TED", "evidences"],
-] as const;
+import { DOCUMENT_ARTIFACTS, artifactForSuffix } from "./document-metadata.ts";
 
-const UPSTREAM_ARTIFACTS = ["PRD", "TDD", "TID", "TCD"] as const;
-const ARTIFACT_DIRS = new Map<string, string>(ARTIFACTS);
+const REQUIRED_ARTIFACTS = ["PRD", "TSD", "TVD", "TED", "VED"] as const;
+const UPSTREAM_ARTIFACTS = ["PRD", "TSD", "TVD"] as const;
+const ARTIFACTS = DOCUMENT_ARTIFACTS.map((artifact) => artifact.suffix);
 
-type ArtifactSuffix = (typeof ARTIFACTS)[number][0];
+type ArtifactSuffix = (typeof ARTIFACTS)[number];
 
 interface ArtifactData {
   path: string;
@@ -41,17 +35,14 @@ function toPosix(path: string): string {
 }
 
 export function artifactPath(root: string, options: { feature: string; docId: string; suffix: string }): string {
-  const directory = ARTIFACT_DIRS.get(options.suffix);
-  if (!directory) {
-    throw new Error(`unknown artifact suffix: ${options.suffix}`);
-  }
+  const artifact = artifactForSuffix(options.suffix);
   return join(
     root,
     "docs",
     "coding-plugins",
     "features",
     options.feature,
-    directory,
+    artifact.directory,
     `${options.docId}-${options.suffix}.md`,
   );
 }
@@ -107,7 +98,7 @@ export function computeUpstreamHash(root: string, options: { feature: string; do
 
 export function artifactSummary(root: string, options: { feature: string; docId: string }): Record<ArtifactSuffix, ArtifactData> {
   const summary = {} as Record<ArtifactSuffix, ArtifactData>;
-  for (const [suffix] of ARTIFACTS) {
+  for (const suffix of ARTIFACTS) {
     const path = artifactPath(root, { ...options, suffix });
     const metadata = parseFrontmatter(path);
     const data: ArtifactData = {
@@ -115,7 +106,7 @@ export function artifactSummary(root: string, options: { feature: string; docId:
       exists: existsSync(path),
       status: metadata.status ?? null,
     };
-    if (suffix === "IPD") {
+    if (suffix === "TED") {
       data.source_hash = metadata.source_hash ?? null;
     }
     summary[suffix] = data;
@@ -136,9 +127,9 @@ function update(
 
 export function inspectDocumentChain(root: string, options: { feature: string; docId: string }): WorkflowStateResult {
   const artifacts = artifactSummary(root, options);
-  const missing = ARTIFACTS.filter(([suffix]) => !artifacts[suffix].exists).map(([suffix]) => suffix);
+  const missing = REQUIRED_ARTIFACTS.filter((suffix) => !artifacts[suffix].exists);
   const chainHash = computeUpstreamHash(root, options);
-  const ipdSourceHash = artifacts.IPD.source_hash ?? null;
+  const planSourceHash = artifacts.TED.source_hash ?? null;
 
   const result: WorkflowStateResult = {
     feature: options.feature,
@@ -146,14 +137,14 @@ export function inspectDocumentChain(root: string, options: { feature: string; d
     artifacts,
     missing_artifacts: missing,
     chain_hash: chainHash,
-    plan_source_hash: ipdSourceHash,
+    plan_source_hash: planSourceHash,
     stale: false,
     state: "unknown",
     next_skill: "using-coding-plugins",
     reason: "",
   };
 
-  const allMissing = ARTIFACTS.map(([suffix]) => suffix);
+  const allMissing = [...REQUIRED_ARTIFACTS];
   if (JSON.stringify(missing) === JSON.stringify(allMissing)) {
     return update(result, {
       state: "not-started",
@@ -168,28 +159,28 @@ export function inspectDocumentChain(root: string, options: { feature: string; d
   if (!approved(artifacts, "PRD")) {
     return update(result, { state: "requirements-draft", next_skill: "writing-requirements", reason: "PRD is not approved" });
   }
-  if (missing.includes("TDD") || missing.includes("TID")) {
-    return update(result, { state: "ready-for-technicals", next_skill: "writing-technicals", reason: "TDD or TID is missing" });
+  if (missing.includes("TSD")) {
+    return update(result, { state: "ready-for-technicals", next_skill: "writing-technicals", reason: "TSD is missing" });
   }
-  if (!approved(artifacts, "TDD") || !approved(artifacts, "TID")) {
-    return update(result, { state: "technicals-draft", next_skill: "writing-technicals", reason: "TDD or TID is not approved" });
+  if (!approved(artifacts, "TSD")) {
+    return update(result, { state: "technicals-draft", next_skill: "writing-technicals", reason: "TSD is not approved" });
   }
-  if (missing.includes("TCD")) {
-    return update(result, { state: "ready-for-test-cases", next_skill: "writing-test-cases", reason: "TCD is missing" });
+  if (missing.includes("TVD")) {
+    return update(result, { state: "ready-for-test-cases", next_skill: "writing-test-cases", reason: "TVD is missing" });
   }
-  if (!approved(artifacts, "TCD")) {
-    return update(result, { state: "test-cases-draft", next_skill: "writing-test-cases", reason: "TCD is not approved" });
+  if (!approved(artifacts, "TVD")) {
+    return update(result, { state: "test-cases-draft", next_skill: "writing-test-cases", reason: "TVD is not approved" });
   }
-  if (missing.includes("IPD")) {
+  if (missing.includes("TED")) {
     return update(result, { state: "ready-for-plan", next_skill: "writing-plans", reason: "upstream documents are approved" });
   }
-  if (!approved(artifacts, "IPD")) {
-    return update(result, { state: "plan-draft", next_skill: "writing-plans", reason: "IPD is not approved" });
+  if (!approved(artifacts, "TED")) {
+    return update(result, { state: "plan-draft", next_skill: "writing-plans", reason: "TED is not approved" });
   }
-  if (!ipdSourceHash) {
-    return update(result, { state: "plan-unlocked", next_skill: "writing-plans", reason: "IPD source_hash is missing" });
+  if (!planSourceHash) {
+    return update(result, { state: "plan-unlocked", next_skill: "writing-plans", reason: "TED source_hash is missing" });
   }
-  if (ipdSourceHash && chainHash && ipdSourceHash !== chainHash) {
+  if (planSourceHash && chainHash && planSourceHash !== chainHash) {
     return update(result, {
       state: "plan-stale",
       next_skill: "writing-plans",
@@ -201,6 +192,6 @@ export function inspectDocumentChain(root: string, options: { feature: string; d
   return update(result, {
     state: "ready-for-execution",
     next_skill: "using-git-worktrees",
-    reason: "IPD exists and upstream chain is current",
+    reason: "TED exists and upstream chain is current",
   });
 }

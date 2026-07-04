@@ -160,6 +160,7 @@ function runValidationCommands(): void {
     "tests/ts/test_preflight_cli.mjs",
     "tests/ts/test_scenario_routing_contract.mjs",
     "tests/ts/test_scaffold_fixture_case.mjs",
+    "tests/ts/test_skill_document_contract.mjs",
     "tests/ts/test_skill_script_ownership.mjs",
   ];
   for (const testFile of tests) {

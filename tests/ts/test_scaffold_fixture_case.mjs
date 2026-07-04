@@ -32,28 +32,32 @@ test("TypeScript scaffold creates case index and valid document chain", () => {
       "CASE-INDEX.md",
       "docs/coding-plugins/features/cache-fixture/README.md",
       "docs/coding-plugins/features/cache-fixture/requirements/cache-refresh-PRD.md",
-      "docs/coding-plugins/features/cache-fixture/technicals/cache-refresh-TDD.md",
-      "docs/coding-plugins/features/cache-fixture/technicals/cache-refresh-TID.md",
-      "docs/coding-plugins/features/cache-fixture/test-cases/cache-refresh-TCD.md",
-      "docs/coding-plugins/features/cache-fixture/plans/cache-refresh-IPD.md",
-      "docs/coding-plugins/features/cache-fixture/evidences/cache-refresh-TED.md",
+      "docs/coding-plugins/features/cache-fixture/technicals/cache-refresh-TSD.md",
+      "docs/coding-plugins/features/cache-fixture/test-cases/cache-refresh-TVD.md",
+      "docs/coding-plugins/features/cache-fixture/plans/cache-refresh-TED.md",
+      "docs/coding-plugins/features/cache-fixture/evidences/cache-refresh-VED.md",
     ]) {
       assert.equal(existsSync(join(root, path)), true, `missing ${path}`);
     }
+    assert.equal(existsSync(join(root, "docs/coding-plugins/features/cache-fixture/technicals/cache-refresh-TDD.md")), false);
+    assert.equal(existsSync(join(root, "docs/coding-plugins/features/cache-fixture/technicals/cache-refresh-TID.md")), false);
+    assert.equal(existsSync(join(root, "docs/coding-plugins/features/cache-fixture/test-cases/cache-refresh-TCD.md")), false);
+    assert.equal(existsSync(join(root, "docs/coding-plugins/features/cache-fixture/plans/cache-refresh-IPD.md")), false);
+    assert.equal(existsSync(join(root, "docs/coding-plugins/features/cache-fixture/evidences/cache-refresh-TED.md")), false);
 
     const caseIndex = readFileSync(join(root, "CASE-INDEX.md"), "utf8");
     assert.ok(caseIndex.includes("## cache-fixture"));
     assert.ok(caseIndex.includes("case_id: CASE-CACHE-999"));
 
-    const ipdText = readFileSync(join(featureRoot, "plans/cache-refresh-IPD.md"), "utf8");
-    assert.ok(ipdText.includes("source_hash: sha256:"));
-    assert.ok(ipdText.includes("related_docs:"));
-    assert.equal(ipdText.includes("related_specs:"), false);
-    assert.equal(ipdText.includes("related_technical:"), false);
-    assert.ok(ipdText.includes("## 执行锁定区"));
-    assert.ok(ipdText.includes("## 执行简报"));
-    assert.ok(ipdText.includes("## 任务总览"));
-    assert.ok(ipdText.includes("## 缓存刷新（TASK-001 / REQ-001）"));
+    const tedText = readFileSync(join(featureRoot, "plans/cache-refresh-TED.md"), "utf8");
+    assert.ok(tedText.includes("source_hash: sha256:"));
+    assert.ok(tedText.includes("related_docs:"));
+    assert.equal(tedText.includes("related_specs:"), false);
+    assert.equal(tedText.includes("related_technical:"), false);
+    assert.ok(tedText.includes("## 执行锁定区"));
+    assert.ok(tedText.includes("## 执行简报"));
+    assert.ok(tedText.includes("## 任务总览"));
+    assert.ok(tedText.includes("## 缓存刷新（TASK-001 / REQ-001）"));
 
     const state = inspectDocumentChain(root, { feature: "cache-fixture", docId: "cache-refresh" });
     assert.equal(state.state, "ready-for-execution");

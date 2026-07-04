@@ -1,9 +1,10 @@
 import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { basename, join } from "node:path";
 
-import { LEGACY_RELATION_KEYS, parseFrontmatterBlock, RELATED_DOCS_KEY, renderFrontmatterBlock, splitFrontmatter } from "./document-metadata.ts";
+import { parseFrontmatterBlock, RELATED_DOCS_KEY, renderFrontmatterBlock, splitFrontmatter } from "./document-metadata.ts";
 
 const SPEC_ID_RE = /^(?:REQ|API|SCHEMA|STATE|ERR|AC|NFR|MIG|OBS|NON)(?:-[A-Z0-9]+)*-\d{3,}$/;
+const LEGACY_RELATION_KEYS = ["related_specs", "related_technical", "related_test_cases", "related_plans", "related_evidence"];
 const STATUS_ALIASES: Record<string, string> = {
   已实现: "covered",
   完成: "covered",

@@ -81,11 +81,10 @@ export function scaffoldFixtureCase(root: string, options: ScaffoldFixtureCaseOp
   const currentDate = options.currentDate ?? new Date().toISOString().slice(0, 10);
 
   const prdPath = docsPath(options.feature, "requirements", `${options.docId}-PRD.md`);
-  const tddPath = docsPath(options.feature, "technicals", `${options.docId}-TDD.md`);
-  const tidPath = docsPath(options.feature, "technicals", `${options.docId}-TID.md`);
-  const tcdPath = docsPath(options.feature, "test-cases", `${options.docId}-TCD.md`);
-  const ipdPath = docsPath(options.feature, "plans", `${options.docId}-IPD.md`);
-  const tedPath = docsPath(options.feature, "evidences", `${options.docId}-TED.md`);
+  const tsdPath = docsPath(options.feature, "technicals", `${options.docId}-TSD.md`);
+  const tvdPath = docsPath(options.feature, "test-cases", `${options.docId}-TVD.md`);
+  const tedPath = docsPath(options.feature, "plans", `${options.docId}-TED.md`);
+  const vedPath = docsPath(options.feature, "evidences", `${options.docId}-VED.md`);
   const featureRoot = join(root, "docs/coding-plugins/features", options.feature);
 
   appendCaseIndex(root, options);
@@ -116,7 +115,7 @@ export function scaffoldFixtureCase(root: string, options: ScaffoldFixtureCaseOp
       options.docId,
       currentDate,
       "type: feature\n" +
-        relatedDocs([tddPath, tidPath, tcdPath, ipdPath, tedPath]),
+        relatedDocs([tsdPath, tvdPath, tedPath, vedPath]),
     ) +
       `# ${options.title} PRD\n\n` +
       "## 需求总览\n\n" +
@@ -129,16 +128,16 @@ export function scaffoldFixtureCase(root: string, options: ScaffoldFixtureCaseOp
   );
 
   write(
-    join(root, tddPath),
+    join(root, tsdPath),
     frontmatter(
-      `${options.title} TDD`,
+      `${options.title} TSD`,
       options.feature,
       options.docId,
       currentDate,
       "lifecycle_status: approved\n" +
-        relatedDocs([prdPath, tidPath, tcdPath, ipdPath, tedPath]),
+        relatedDocs([prdPath, tvdPath, tedPath, vedPath]),
     ) +
-      `# ${options.title} TDD\n\n` +
+      `# ${options.title} TSD\n\n` +
       "## 规格到设计映射\n\n" +
       "| 规格 ID | 技术落点 | 设计决策 | 测试策略 |\n" +
       "| --- | --- | --- | --- |\n" +
@@ -146,36 +145,19 @@ export function scaffoldFixtureCase(root: string, options: ScaffoldFixtureCaseOp
   );
 
   write(
-    join(root, tidPath),
+    join(root, tvdPath),
     frontmatter(
-      `${options.title} TID`,
+      `${options.title} TVD`,
       options.feature,
       options.docId,
       currentDate,
-      "lifecycle_status: approved\n" +
-        relatedDocs([prdPath, tddPath, tcdPath, ipdPath, tedPath]),
+      relatedDocs([prdPath, tsdPath, tedPath, vedPath]),
     ) +
-      `# ${options.title} TID\n\n` +
-      "## 实现点总览\n\n" +
-      "| 实现点 | 标题 | 覆盖规格 | 关联设计 | 主要落点 |\n" +
-      "| --- | --- | --- | --- | --- |\n" +
-      `| IMPL-001 | ${options.title} | REQ-001 | TD-001 | \`tests/fixtures\` |\n`,
-  );
-
-  write(
-    join(root, tcdPath),
-    frontmatter(
-      `${options.title} TCD`,
-      options.feature,
-      options.docId,
-      currentDate,
-      relatedDocs([prdPath, tddPath, tidPath, ipdPath, tedPath]),
-    ) +
-      `# ${options.title} TCD\n\n` +
+      `# ${options.title} TVD\n\n` +
       "## 测试用例总览\n\n" +
       "| 测试用例 | 标题 | 覆盖规格 | 测试类型 | 执行方式 | 证据目标 |\n" +
       "| --- | --- | --- | --- | --- | --- |\n" +
-      `| TC-001 | ${options.title} | REQ-001 | contract | 自动化 | TED |\n`,
+      `| TC-001 | ${options.title} | REQ-001 | contract | 自动化 | VED |\n`,
   );
 
   const sourceHash = computeUpstreamHash(root, { feature: options.feature, docId: options.docId });
@@ -184,47 +166,47 @@ export function scaffoldFixtureCase(root: string, options: ScaffoldFixtureCaseOp
   }
 
   write(
-    join(root, ipdPath),
+    join(root, tedPath),
     frontmatter(
-      `${options.title} Implementation Procedure Document`,
+      `${options.title} Task Execution Document`,
       options.feature,
       options.docId,
       currentDate,
       `source_hash: ${sourceHash}\n` +
-        relatedDocs([prdPath, tddPath, tidPath, tcdPath, tedPath]),
+        relatedDocs([prdPath, tsdPath, tvdPath, vedPath]),
     ) +
-      `# ${options.title} 任务执行文档（IPD）\n\n` +
+      `# ${options.title} 任务执行文档（TED）\n\n` +
       "## 执行锁定区\n\n" +
       `- **Intent Lock:** 只执行 ${options.title} fixture 链路校验。\n` +
       "- **Scope Fence:** 包含 fixture 文档链路；不包含发布、缓存刷新或仓库集成。\n" +
       "- **Required Spec IDs:** REQ-001\n" +
       "- **Required Tests:** `npm run preflight`\n" +
-      "- **Review Gates:** 检查 IPD source_hash、执行简报和 TASK-001 追踪。\n" +
-      "- **Rewind Triggers:** 上游 PRD/TDD/TID/TCD 变更、source_hash 不匹配或 fixture 校验失败。\n\n" +
+      "- **Review Gates:** 检查 TED source_hash、执行简报和 TASK-001 追踪。\n" +
+      "- **Rewind Triggers:** 上游 PRD/TSD/TVD 变更、source_hash 不匹配或 fixture 校验失败。\n\n" +
       "## 执行简报\n\n" +
-      "- **执行来源:** 只按本 IPD 的任务章节执行。\n" +
+      "- **执行来源:** 只按本 TED 的任务章节执行。\n" +
       "- **上下文预算:** 优先读取执行简报、执行锁定区、任务总览和当前任务章节。\n" +
-      "- **可跳过内容:** PRD/TDD/TID/TCD 已由 `source_hash` 锁定，除非触发 Rewind Triggers 或 guard 失败，否则不重复读取完整上游文档。\n" +
-      "- **新计划策略:** 每次新计划新建 IPD，不向旧 IPD 追加任务。\n\n" +
+      "- **可跳过内容:** PRD/TSD/TVD 已由 `source_hash` 锁定，除非触发 Rewind Triggers 或 guard 失败，否则不重复读取完整上游文档。\n" +
+      "- **新计划策略:** 每次新计划新建 TED，不向旧 TED 追加任务。\n\n" +
       "## 任务总览\n\n" +
-      "| 任务 | 标题 | 覆盖规格 | 验证方式 | TED 记录 |\n" +
+      "| 任务 | 标题 | 覆盖规格 | 验证方式 | VED 记录 |\n" +
       "| --- | --- | --- | --- | --- |\n" +
-      `| TASK-001 | ${options.title} | REQ-001 | preflight fixture 校验 | \`${tedPath}\` |\n\n` +
+      `| TASK-001 | ${options.title} | REQ-001 | preflight fixture 校验 | \`${vedPath}\` |\n\n` +
       `## ${options.title}（TASK-001 / REQ-001）\n\n` +
       "### 执行步骤\n\n" +
       "- [ ] 运行 fixture 校验。\n",
   );
 
   write(
-    join(root, tedPath),
+    join(root, vedPath),
     frontmatter(
-      `${options.title} TED`,
+      `${options.title} VED`,
       options.feature,
       options.docId,
       currentDate,
-      relatedDocs([prdPath, tddPath, tidPath, tcdPath, ipdPath]),
+      relatedDocs([prdPath, tsdPath, tvdPath, tedPath]),
     ) +
-      `# ${options.title} TED\n\n` +
+      `# ${options.title} VED\n\n` +
       "## TDD 证据\n\n" +
       "- **规格/缺陷/验收:** REQ-001\n" +
       "- **测试类型:** `contract`\n" +

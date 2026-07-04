@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
@@ -26,9 +26,8 @@ test("TypeScript document metadata frontmatter helpers preserve list parsing", (
     "---\n" +
     "title: Demo PRD\n" +
     "status: active\n" +
-    "related_specs:\n" +
+    "related_docs:\n" +
     "  - docs/coding-plugins/features/demo/requirements/demo-PRD.md\n" +
-    "related_technical: []\n" +
     "---\n" +
     "# Body\n";
 
@@ -38,40 +37,42 @@ test("TypeScript document metadata frontmatter helpers preserve list parsing", (
   assert.equal(body, "# Body\n");
   assert.equal(frontmatter.scalars.title, "Demo PRD");
   assert.equal(frontmatter.scalars.status, "active");
-  assert.deepEqual(frontmatter.lists.related_specs, ["docs/coding-plugins/features/demo/requirements/demo-PRD.md"]);
-  assert.deepEqual(frontmatter.lists.related_technical, []);
-  assert.deepEqual(frontmatter.order, ["title", "status", "related_specs", "related_technical"]);
+  assert.deepEqual(frontmatter.lists.related_docs, ["docs/coding-plugins/features/demo/requirements/demo-PRD.md"]);
+  assert.deepEqual(frontmatter.order, ["title", "status", "related_docs"]);
   assert.equal(
     renderFrontmatterBlock(frontmatter),
     "---\n" +
       "title: Demo PRD\n" +
       "status: active\n" +
-      "related_specs:\n" +
+      "related_docs:\n" +
       "  - docs/coding-plugins/features/demo/requirements/demo-PRD.md\n" +
-      "related_technical: []\n" +
       "---\n",
   );
   assert.deepEqual(parseFrontmatter(text), { title: "Demo PRD", status: "active" });
-  assert.deepEqual(frontmatterListValues(text, "related_specs"), ["docs/coding-plugins/features/demo/requirements/demo-PRD.md"]);
+  assert.deepEqual(frontmatterListValues(text, "related_docs"), ["docs/coding-plugins/features/demo/requirements/demo-PRD.md"]);
 });
 
 test("TypeScript document artifact registry uses unified related_docs contract", () => {
-  assert.deepEqual(ARTIFACT_SUFFIXES, ["PRD", "TDD", "TID", "TCD", "IPD", "TED"]);
+  assert.deepEqual(ARTIFACT_SUFFIXES, ["PRD", "TSD", "TVD", "TED", "VED"]);
   for (const suffix of ARTIFACT_SUFFIXES) {
     assert.equal(artifactForSuffix(suffix).docIdRequired, true);
   }
-  assert.deepEqual(DOCUMENT_SYNC_DEPENDENCIES.TED, ["PRD", "TDD", "TID", "TCD", "IPD"]);
+  assert.deepEqual(DOCUMENT_SYNC_DEPENDENCIES.TVD, ["PRD", "TSD"]);
+  assert.deepEqual(DOCUMENT_SYNC_DEPENDENCIES.TED, ["PRD", "TSD", "TVD"]);
+  assert.deepEqual(DOCUMENT_SYNC_DEPENDENCIES.VED, ["PRD", "TSD", "TVD", "TED"]);
 
   const patterns = filenamePatternsByDirectory();
   assert.equal(patterns.requirements.test("routing-login-PRD.md"), true);
-  assert.equal(patterns.technicals.test("routing-login-TDD.md"), true);
-  assert.equal(patterns.technicals.test("routing-login-TID.md"), true);
-  assert.equal(patterns["test-cases"].test("routing-login-TCD.md"), true);
-  assert.equal(patterns.plans.test("routing-login-IPD.md"), true);
-  assert.equal(patterns.evidences.test("routing-login-TED.md"), true);
-  assert.equal(patterns.plans.test("routing-login-TED.md"), false);
+  assert.equal(patterns.technicals.test("routing-login-TSD.md"), true);
+  assert.equal(patterns.technicals.test("routing-login-TID.md"), false);
+  assert.equal(patterns["test-cases"].test("routing-login-TVD.md"), true);
+  assert.equal(patterns["test-cases"].test("routing-login-TCD.md"), false);
+  assert.equal(patterns.plans.test("routing-login-TED.md"), true);
+  assert.equal(patterns.plans.test("routing-login-IPD.md"), false);
+  assert.equal(patterns.evidences.test("routing-login-VED.md"), true);
+  assert.equal(patterns.evidences.test("routing-login-TED.md"), false);
   assert.equal(documentDocId("routing-login-PRD.md"), "routing-login");
-  assert.equal(documentDocId("routing-login-TED.md"), "routing-login");
+  assert.equal(documentDocId("routing-login-VED.md"), "routing-login");
 });
 
 test("TypeScript related paths use unified related_docs and exclude source", () => {
@@ -85,16 +86,15 @@ test("TypeScript related paths use unified related_docs and exclude source", () 
       writeFileSync(artifactFile(featureRoot, suffix, "routing-login"), `# ${suffix}\n`, "utf8");
     }
 
-    const source = join(featureRoot, "technicals/routing-login-TDD.md");
+    const source = join(featureRoot, "technicals/routing-login-TSD.md");
     const related = expectedRelatedPathsForDocId(featureRoot, "routing-login", source);
 
     assert.deepEqual(RELATION_KEYS, ["related_docs"]);
     assert.deepEqual(related.related_docs, [
-      join(featureRoot, "evidences/routing-login-TED.md"),
-      join(featureRoot, "plans/routing-login-IPD.md"),
+      join(featureRoot, "evidences/routing-login-VED.md"),
+      join(featureRoot, "plans/routing-login-TED.md"),
       join(featureRoot, "requirements/routing-login-PRD.md"),
-      join(featureRoot, "technicals/routing-login-TID.md"),
-      join(featureRoot, "test-cases/routing-login-TCD.md"),
+      join(featureRoot, "test-cases/routing-login-TVD.md"),
     ]);
   } finally {
     rmSync(root, { recursive: true, force: true });
@@ -110,11 +110,10 @@ test("TypeScript technical validator accepts related_docs as the metadata source
     }
 
     const prdPath = join(featureRoot, "requirements/routing-login-PRD.md");
-    const tddPath = join(featureRoot, "technicals/routing-login-TDD.md");
-    const tidPath = join(featureRoot, "technicals/routing-login-TID.md");
-    const tcdPath = join(featureRoot, "test-cases/routing-login-TCD.md");
-    const ipdPath = join(featureRoot, "plans/routing-login-IPD.md");
-    const tedPath = join(featureRoot, "evidences/routing-login-TED.md");
+    const tsdPath = join(featureRoot, "technicals/routing-login-TSD.md");
+    const tvdPath = join(featureRoot, "test-cases/routing-login-TVD.md");
+    const tedPath = join(featureRoot, "plans/routing-login-TED.md");
+    const vedPath = join(featureRoot, "evidences/routing-login-VED.md");
 
     writeFileSync(
       prdPath,
@@ -133,14 +132,14 @@ test("TypeScript technical validator accepts related_docs as the metadata source
       "utf8",
     );
 
-    for (const path of [tidPath, tcdPath, ipdPath, tedPath]) {
+    for (const path of [tvdPath, tedPath, vedPath]) {
       writeFileSync(path, "---\ntitle: Placeholder\nstatus: draft\nfeature: routing\ndoc_id: routing-login\ncreated: 2026-07-04\nupdated: 2026-07-04\n---\n", "utf8");
     }
 
     writeFileSync(
-      tddPath,
+      tsdPath,
       "---\n" +
-        "title: Routing TDD\n" +
+        "title: Routing TSD\n" +
         "status: approved\n" +
         "lifecycle_status: approved\n" +
         "feature: routing\n" +
@@ -151,12 +150,11 @@ test("TypeScript technical validator accepts related_docs as the metadata source
         "validated_by: npm run preflight\n" +
         "related_docs:\n" +
         "  - docs/coding-plugins/features/routing/requirements/routing-login-PRD.md\n" +
-        "  - docs/coding-plugins/features/routing/technicals/routing-login-TID.md\n" +
-        "  - docs/coding-plugins/features/routing/test-cases/routing-login-TCD.md\n" +
-        "  - docs/coding-plugins/features/routing/plans/routing-login-IPD.md\n" +
-        "  - docs/coding-plugins/features/routing/evidences/routing-login-TED.md\n" +
+        "  - docs/coding-plugins/features/routing/test-cases/routing-login-TVD.md\n" +
+        "  - docs/coding-plugins/features/routing/plans/routing-login-TED.md\n" +
+        "  - docs/coding-plugins/features/routing/evidences/routing-login-VED.md\n" +
         "---\n" +
-        "# Routing TDD\n\n" +
+        "# Routing TSD\n\n" +
         "## 规格到设计映射\n\n" +
         "| 规格 ID | 规格摘要 | 技术落点 | 关键决策 ID | 影响文件/符号 | 验证命令 | 证据 |\n" +
         "| --- | --- | --- | --- | --- | --- | --- |\n\n" +
@@ -170,14 +168,14 @@ test("TypeScript technical validator accepts related_docs as the metadata source
       "utf8",
     );
 
-    const result = validateRepository(root, { strict: true, technicalFiles: [tddPath] });
+    const result = validateRepository(root, { strict: true, technicalFiles: [tsdPath] });
     assert.equal(result.ok, true, result.errors.join("\n"));
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
 });
 
-test("TypeScript technical validator rejects unfinished template content in TDD and related TID", () => {
+test("TypeScript technical validator rejects unfinished template content in TSD", () => {
   const root = mkdtempSync(join(tmpdir(), "coding-plugins-technical-quality-"));
   try {
     const featureRoot = join(root, "docs/coding-plugins/features/technical-quality");
@@ -186,11 +184,10 @@ test("TypeScript technical validator rejects unfinished template content in TDD 
     }
 
     const prdPath = join(featureRoot, "requirements/quality-PRD.md");
-    const tddPath = join(featureRoot, "technicals/quality-TDD.md");
-    const tidPath = join(featureRoot, "technicals/quality-TID.md");
-    const tcdPath = join(featureRoot, "test-cases/quality-TCD.md");
-    const ipdPath = join(featureRoot, "plans/quality-IPD.md");
-    const tedPath = join(featureRoot, "evidences/quality-TED.md");
+    const tsdPath = join(featureRoot, "technicals/quality-TSD.md");
+    const tvdPath = join(featureRoot, "test-cases/quality-TVD.md");
+    const tedPath = join(featureRoot, "plans/quality-TED.md");
+    const vedPath = join(featureRoot, "evidences/quality-VED.md");
 
     writeFileSync(
       prdPath,
@@ -209,22 +206,21 @@ test("TypeScript technical validator rejects unfinished template content in TDD 
       "utf8",
     );
 
-    for (const path of [tcdPath, ipdPath, tedPath]) {
+    for (const path of [tvdPath, tedPath, vedPath]) {
       writeFileSync(path, "---\ntitle: Placeholder\nstatus: draft\nfeature: technical-quality\ndoc_id: quality\ncreated: 2026-07-04\nupdated: 2026-07-04\n---\n", "utf8");
     }
 
     const relatedDocs =
       "related_docs:\n" +
       "  - docs/coding-plugins/features/technical-quality/requirements/quality-PRD.md\n" +
-      "  - docs/coding-plugins/features/technical-quality/technicals/quality-TID.md\n" +
-      "  - docs/coding-plugins/features/technical-quality/test-cases/quality-TCD.md\n" +
-      "  - docs/coding-plugins/features/technical-quality/plans/quality-IPD.md\n" +
-      "  - docs/coding-plugins/features/technical-quality/evidences/quality-TED.md\n";
+      "  - docs/coding-plugins/features/technical-quality/test-cases/quality-TVD.md\n" +
+      "  - docs/coding-plugins/features/technical-quality/plans/quality-TED.md\n" +
+      "  - docs/coding-plugins/features/technical-quality/evidences/quality-VED.md\n";
 
     writeFileSync(
-      tddPath,
+      tsdPath,
       "---\n" +
-        "title: Quality TDD\n" +
+        "title: Quality TSD\n" +
         "status: approved\n" +
         "lifecycle_status: approved\n" +
         "feature: technical-quality\n" +
@@ -235,7 +231,7 @@ test("TypeScript technical validator rejects unfinished template content in TDD 
         "validated_by: npm run preflight\n" +
         relatedDocs +
         "---\n" +
-        "# Quality TDD\n\n" +
+        "# Quality TSD\n\n" +
         "## 阅读摘要\n\n" +
         "- **本文结论:** <2 到 5 句话说明最终技术方案。>\n\n" +
         "## 设计摘要\n\n" +
@@ -247,7 +243,7 @@ test("TypeScript technical validator rejects unfinished template content in TDD 
         "## 规格到设计映射\n\n" +
         "| 规格 ID | 规格摘要 | 技术落点 | 关键决策 ID | 影响文件/符号 | 验证命令 | 证据 |\n" +
         "| --- | --- | --- | --- | --- | --- | --- |\n" +
-        "| REQ-001 | 文档质量门禁 | `src/lib/validate-technicals.ts::validateRepository` | TD-001 | `src/lib/validate-technicals.ts` | npm run preflight | `docs/coding-plugins/features/technical-quality/evidences/quality-TED.md` |\n\n" +
+        "| REQ-001 | 文档质量门禁 | `src/lib/validate-technicals.ts::validateRepository` | TD-001 | `src/lib/validate-technicals.ts` | npm run preflight | `docs/coding-plugins/features/technical-quality/evidences/quality-VED.md` |\n\n" +
         "## 无需技术设计的规格\n\n" +
         "| 规格 ID | 原因 |\n" +
         "| --- | --- |\n" +
@@ -259,32 +255,22 @@ test("TypeScript technical validator rejects unfinished template content in TDD 
       "utf8",
     );
 
-    writeFileSync(
-      tidPath,
-      "---\n" +
-        "title: Quality TID\n" +
-        "status: approved\n" +
-        "lifecycle_status: approved\n" +
-        "implementation_mode: code\n" +
-        "feature: technical-quality\n" +
-        "doc_id: quality\n" +
-        "created: 2026-07-04\n" +
-        "updated: 2026-07-04\n" +
-        "implemented_commits: []\n" +
-        "validated_by: npm run preflight\n" +
-        relatedDocs.replace("technicals/quality-TID.md", "technicals/quality-TDD.md") +
-        "---\n" +
-        "# Quality TID\n\n" +
-        "## 实现摘要\n\n" +
-        "<说明实现边界、主要代码落点和不实现的内容。>\n",
-      "utf8",
-    );
-
-    const result = validateRepository(root, { strict: true, technicalFiles: [tddPath] });
+    const result = validateRepository(root, { strict: true, technicalFiles: [tsdPath] });
     assert.equal(result.ok, false);
     assert.match(result.errors.join("\n"), /unfinished template content/);
-    assert.match(result.errors.join("\n"), /quality-TID\.md/);
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
+});
+
+test("technical solution template keeps relations in metadata and avoids table-heavy body", () => {
+  const template = readFileSync("skills/writing-technicals/templates/technical-design-document.md", "utf8");
+  const [, body] = splitFrontmatter(template);
+  const tableCount = body.split(/\r?\n/).filter((line) => line.trim().startsWith("|")).length / 3;
+
+  assert.ok(tableCount <= 2, "TSD template body should reserve tables for dense mapping matrices");
+  assert.equal(body.includes("docs/coding-plugins/features/<feature-name>"), false, "TSD body must not duplicate related document paths");
+  assert.equal(body.includes("## 技术实现文档\n\n`docs/"), false, "TSD body must not hard-code TID path links");
+  assert.equal(/\bTID\b/.test(body), false, "TSD template body must not require a separate TID");
+  assert.ok(body.includes("关联关系只维护在 frontmatter `related_docs` 和 `docs/coding-plugins/INDEX.md`"));
 });

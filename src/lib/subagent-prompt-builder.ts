@@ -69,19 +69,19 @@ function readAfterFence(path: string): string {
   return text.slice(end + marker.length).trim();
 }
 
-export function extractTaskSection(ipdText: string, task: string): [string, string] {
-  const matches = [...ipdText.matchAll(TASK_HEADING_RE)];
+export function extractTaskSection(planText: string, task: string): [string, string] {
+  const matches = [...planText.matchAll(TASK_HEADING_RE)];
   for (const match of matches) {
     if (match.groups?.task !== task) {
       continue;
     }
     const start = match.index ?? 0;
     SECTION_HEADING_RE.lastIndex = (match.index ?? 0) + match[0].length;
-    const nextSection = SECTION_HEADING_RE.exec(ipdText);
-    const end = nextSection?.index ?? ipdText.length;
-    return [match.groups.title.trim(), ipdText.slice(start, end).trim()];
+    const nextSection = SECTION_HEADING_RE.exec(planText);
+    const end = nextSection?.index ?? planText.length;
+    return [match.groups.title.trim(), planText.slice(start, end).trim()];
   }
-  throw new PromptBuildError(`requested task ${task} was not found in IPD`);
+  throw new PromptBuildError(`requested task ${task} was not found in TED`);
 }
 
 export function reviewInputFailures(options: {
@@ -121,12 +121,12 @@ function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-function buildContextBlock(brief: Record<string, any>, options: { ipdPath: string; sourceHash: string; task: string }): string {
+function buildContextBlock(brief: Record<string, any>, options: { tedPath: string; sourceHash: string; task: string }): string {
   const mustRead = (brief.must_read.length ? brief.must_read : ["-"]).map((path: string) => `- ${path}`).join("\n");
   const maySkip = (brief.may_skip.length ? brief.may_skip : ["-"]).map((path: string) => `- ${path}`).join("\n");
   const focusSections = (brief.focus_sections.length ? brief.focus_sections : ["-"]).map((section: string) => `- ${section}`).join("\n");
-  return `IPD path: ${options.ipdPath}
-IPD source_hash: ${options.sourceHash}
+  return `TED path: ${options.tedPath}
+TED source_hash: ${options.sourceHash}
 Brief command: coding-plugins workflow-brief --task ${options.task} --feature ${brief.feature} --doc-id ${brief.doc_id} --target execute --json
 Execution source: ${brief.execution_source}
 New plan policy: ${brief.new_plan_policy}
@@ -140,7 +140,7 @@ ${maySkip}
 Focus sections:
 ${focusSections}
 
-Context rule: 不得自行读取完整 IPD 或上游 PRD/TDD/TID/TCD；只按主代理粘贴的任务全文、执行锁定区摘要和必要上下文执行。若 Rewind Triggers 命中或上下文不足，返回 NEEDS_CONTEXT。`;
+Context rule: 不得自行读取完整 TED 或上游 PRD/TSD/TVD；只按主代理粘贴的任务全文、执行锁定区摘要和必要上下文执行。若 Rewind Triggers 命中或上下文不足，返回 NEEDS_CONTEXT。`;
 }
 
 function buildImplementerPrompt(options: { task: string; taskName: string; taskSection: string; context: string; workdir: string }): string {
@@ -304,20 +304,20 @@ export function buildPrompts(
     throw new PromptBuildError(`workflow brief did not pass: ${failures}`);
   }
   if (brief.must_read.length === 0) {
-    throw new PromptBuildError("workflow brief did not identify an IPD path");
+    throw new PromptBuildError("workflow brief did not identify a TED path");
   }
 
-  const ipdRel = brief.must_read[0];
-  const ipdPath = resolve(root, ipdRel);
-  const ipdText = readFileSync(ipdPath, "utf8");
-  const [taskTitle, taskSection] = extractTaskSection(ipdText, options.task);
+  const tedRel = brief.must_read[0];
+  const tedPath = resolve(root, tedRel);
+  const tedText = readFileSync(tedPath, "utf8");
+  const [taskTitle, taskSection] = extractTaskSection(tedText, options.task);
   const taskName = compactTaskName(taskTitle, options.task);
-  const sourceHash = parseFrontmatter(ipdPath).source_hash;
+  const sourceHash = parseFrontmatter(tedPath).source_hash;
   if (!sourceHash) {
-    throw new PromptBuildError("IPD source_hash is missing");
+    throw new PromptBuildError("TED source_hash is missing");
   }
 
-  const context = buildContextBlock(brief, { ipdPath: ipdRel, sourceHash, task: options.task });
+  const context = buildContextBlock(brief, { tedPath: tedRel, sourceHash, task: options.task });
   const resolvedWorkdir = options.workdir ?? root;
   const generatedKinds = kindsToGenerate(kind);
   const prompts: Record<string, string> = {};
@@ -356,7 +356,7 @@ export function buildPrompts(
     task_id: options.task,
     task_title: taskTitle,
     task_name: taskName,
-    ipd_path: ipdRel,
+    ted_path: tedRel,
     source_hash: sourceHash,
     brief,
     generated_kinds: generatedKinds,
@@ -367,7 +367,7 @@ export function buildPrompts(
       must_read_count: brief.must_read.length,
       may_skip_count: brief.may_skip.length,
       source_hash: sourceHash,
-      boundary: "current IPD task section plus workflow brief; upstream docs stay in may_skip unless rewind triggers fire",
+      boundary: "current TED task section plus workflow brief; upstream docs stay in may_skip unless rewind triggers fire",
     },
     prompt_budget: promptBudget,
     cost_strategy: Object.fromEntries(Object.entries(promptBudget).map(([name, budget]) => [name, costStrategyEntry(name, budget as Record<string, any>, taskSection)])),

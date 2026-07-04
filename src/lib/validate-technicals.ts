@@ -9,7 +9,6 @@ import {
   expectedRelatedPathsForDocId,
   featureRootForDocument,
   frontmatterListValues,
-  LEGACY_RELATION_KEYS,
   parseFrontmatter,
   parseFrontmatterBlock,
   RELATED_DOCS_KEY,
@@ -18,14 +17,17 @@ import {
 
 const SPEC_ID_RE = /\b(?:REQ|API|SCHEMA|STATE|ERR|AC|NFR|MIG|OBS|NON)(?:-[A-Z0-9]+)*-\d{3,}\b/g;
 const TD_ID_RE = /\bTD-\d{3,}\b/g;
-const TECHNICAL_DESIGN_REQUIRED_SECTIONS = ["规格到设计映射", "无需技术设计的规格"];
+const TECHNICAL_REQUIRED_SECTION_ALIASES = [
+  ["规格到方案映射", "规格到设计映射"],
+  ["无需技术方案的规格", "无需技术设计的规格"],
+];
 const TECHNICAL_MAPPING_HEADERS = ["规格 ID", "规格摘要", "技术落点", "关键决策 ID", "影响文件/符号", "验证命令", "证据"];
 const TECHNICAL_DECISION_HEADERS = ["决策 ID", "决策", "原因", "取舍"];
 const TECHNICAL_LIFECYCLE_STATUSES = new Set(["draft", "approved", "implemented", "stale", "superseded"]);
 const TECHNICAL_LIFECYCLE_REQUIRED_FIELDS = ["lifecycle_status", "implemented_commits", "validated_by"];
 const GENERIC_MAPPING_PATTERNS = ["见本设计的 `影响组件`", "见本设计的", "按本 technical", "见 `## 测试策略`", "对应计划追踪"];
 const HIDDEN_REQUIREMENT_TERMS = ["必须", "不得", "禁止", "MUST", "SHOULD"];
-const HIDDEN_REQUIREMENT_EXCLUDED_SECTIONS = new Set(["规格缺口审查", "规格到设计映射", "无需技术设计的规格", "测试策略"]);
+const HIDDEN_REQUIREMENT_EXCLUDED_SECTIONS = new Set(["规格缺口审查", "规格到方案映射", "规格到设计映射", "无需技术方案的规格", "无需技术设计的规格", "测试策略"]);
 const TEMPLATE_PLACEHOLDER_RE = /<[^>\n]*(?:[\u4e00-\u9fff]|feature-name|doc-id|path|symbol)[^>\n]*>|YYYY-MM-DD/g;
 
 export interface ValidationResult {
@@ -57,6 +59,16 @@ function markdownSection(text: string, heading: string): string | undefined {
     return text.slice(match.index);
   }
   return text.slice(match.index, match.index + match[0].length + nextMatch.index);
+}
+
+function markdownSectionByAliases(text: string, headings: string[]): string | undefined {
+  for (const heading of headings) {
+    const section = markdownSection(text, heading);
+    if (section) {
+      return section;
+    }
+  }
+  return undefined;
 }
 
 function markdownSections(text: string): [string, string][] {
@@ -141,17 +153,10 @@ function relatedPathsFromMetadata(root: string, text: string, key: string): stri
 
 function relatedValuesFromMetadata(text: string, key: string): string[] {
   const values = new Set(frontmatterListValues(text, key));
-  const relatedDocs = frontmatterListValues(text, RELATED_DOCS_KEY);
-  if (key === RELATED_DOCS_KEY) {
-    for (const legacyKey of LEGACY_RELATION_KEYS) {
-      for (const value of frontmatterListValues(text, legacyKey)) {
-        values.add(value);
-      }
-    }
-  } else {
-    for (const value of relatedDocs) {
+  if (key !== RELATED_DOCS_KEY) {
+    for (const value of frontmatterListValues(text, RELATED_DOCS_KEY)) {
       const suffix = documentSuffix(value);
-      if (suffix && legacyKeyForSuffix(suffix) === key) {
+      if (key === "PRD" && suffix === "PRD") {
         values.add(value);
       }
     }
@@ -159,27 +164,8 @@ function relatedValuesFromMetadata(text: string, key: string): string[] {
   return [...values].sort();
 }
 
-function legacyKeyForSuffix(suffix: string): string | undefined {
-  if (suffix === "PRD") {
-    return "related_specs";
-  }
-  if (suffix === "TDD" || suffix === "TID") {
-    return "related_technical";
-  }
-  if (suffix === "TCD") {
-    return "related_test_cases";
-  }
-  if (suffix === "IPD") {
-    return "related_plans";
-  }
-  if (suffix === "TED") {
-    return "related_evidence";
-  }
-  return undefined;
-}
-
 function approvedSpecFilesForTechnical(root: string, technicalFile: string, text: string): string[] {
-  const relatedSpecs = relatedPathsFromMetadata(root, text, "related_specs");
+  const relatedSpecs = relatedPathsFromMetadata(root, text, "PRD");
   if (relatedSpecs.length > 0) {
     return relatedSpecs.filter((specFile) => parseFrontmatter(readFileSync(specFile, "utf8")).status === "approved");
   }
@@ -212,8 +198,8 @@ function requiredSpecIdsFromSpecs(specFiles: string[]): Set<string> {
 
 function technicalDesignCoverageIds(text: string): Set<string> {
   const ids = new Set<string>();
-  for (const heading of TECHNICAL_DESIGN_REQUIRED_SECTIONS) {
-    const section = markdownSection(text, heading);
+  for (const headings of TECHNICAL_REQUIRED_SECTION_ALIASES) {
+    const section = markdownSectionByAliases(text, headings);
     if (section) {
       for (const specId of allMatches(SPEC_ID_RE, section)) {
         ids.add(specId);
@@ -241,7 +227,7 @@ function validateLifecycleMetadata(root: string, technicalFile: string, text: st
 }
 
 function validateRequiredSections(root: string, technicalFile: string, text: string): string[] {
-  const missing = TECHNICAL_DESIGN_REQUIRED_SECTIONS.filter((section) => markdownSection(text, section) === undefined);
+  const missing = TECHNICAL_REQUIRED_SECTION_ALIASES.filter((headings) => markdownSectionByAliases(text, headings) === undefined).map((headings) => headings[0]);
   return missing.length > 0 ? [`${relative(root, technicalFile)} missing required section: ${missing.join(", ")}`] : [];
 }
 
@@ -287,7 +273,7 @@ function validateRelatedMetadata(root: string, technicalFile: string, text: stri
 }
 
 function validateMappingTableSchema(root: string, technicalFile: string, text: string): string[] {
-  const section = markdownSection(text, "规格到设计映射");
+  const section = markdownSectionByAliases(text, ["规格到方案映射", "规格到设计映射"]);
   if (!section) {
     return [];
   }
@@ -323,7 +309,7 @@ function decisionIdsFromDesign(text: string): Set<string> {
 }
 
 function validateDecisionIdReferences(root: string, technicalFile: string, text: string): string[] {
-  const section = markdownSection(text, "规格到设计映射");
+  const section = markdownSectionByAliases(text, ["规格到方案映射", "规格到设计映射"]);
   if (!section) {
     return [];
   }
@@ -374,7 +360,7 @@ function validateHiddenRequirements(root: string, technicalFile: string, text: s
 }
 
 function genericMappingWarnings(root: string, technicalFile: string, text: string): string[] {
-  const section = markdownSection(text, "规格到设计映射");
+  const section = markdownSectionByAliases(text, ["规格到方案映射", "规格到设计映射"]);
   if (!section) {
     return [];
   }
@@ -387,7 +373,7 @@ function genericMappingWarnings(root: string, technicalFile: string, text: strin
     SPEC_ID_RE.lastIndex = 0;
     if (GENERIC_MAPPING_PATTERNS.some((pattern) => line.includes(pattern))) {
       const specIds = allMatches(SPEC_ID_RE, line).join(", ");
-      warnings.push(`${relative(root, technicalFile)} has generic mapping for ${specIds} in 规格到设计映射 line ${index + 1}`);
+      warnings.push(`${relative(root, technicalFile)} has generic mapping for ${specIds} in 规格到方案映射 line ${index + 1}`);
     }
   });
   return warnings;
@@ -431,21 +417,6 @@ function validateNoUnfinishedTemplateContent(root: string, documentFile: string,
   return errors;
 }
 
-function implementationFilesForTechnicalDesign(root: string, technicalFile: string, text: string): string[] {
-  const relatedImplementationFiles = relatedPathsFromMetadata(root, text, "related_technical").filter((path) => documentSuffix(path) === "TID");
-  if (relatedImplementationFiles.length > 0) {
-    return relatedImplementationFiles;
-  }
-
-  const featureContext = featureRootForDocument(root, technicalFile);
-  if (!featureContext) {
-    return [];
-  }
-  const [, featureRoot] = featureContext;
-  const fallback = resolve(featureRoot, "technicals", `${documentDocId(technicalFile)}-TID.md`);
-  return existsSync(fallback) ? [fallback] : [];
-}
-
 export function validateRepository(rootPath: string, options: { strict: boolean; technicalFiles?: string[] }): ValidationResult {
   const root = resolve(rootPath);
   const files = collectTechnicalDesignFiles(root, options.technicalFiles);
@@ -466,13 +437,6 @@ export function validateRepository(rootPath: string, options: { strict: boolean;
     errors.push(...validateDecisionIdReferences(root, technicalFile, text));
     errors.push(...validateHiddenRequirements(root, technicalFile, text));
     errors.push(...validateNoUnfinishedTemplateContent(root, technicalFile, text));
-    for (const implementationFile of implementationFilesForTechnicalDesign(root, technicalFile, text)) {
-      if (!existsSync(implementationFile)) {
-        errors.push(`${relativePath(root, technicalFile)} related implementation file does not exist: ${relativePath(root, implementationFile)}`);
-        continue;
-      }
-      errors.push(...validateNoUnfinishedTemplateContent(root, implementationFile, readFileSync(implementationFile, "utf8")));
-    }
     warnings.push(...genericMappingWarnings(root, technicalFile, text));
     warnings.push(...staleWarnings(root, technicalFile, text));
   }

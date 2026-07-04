@@ -26,7 +26,7 @@ test("TypeScript document contract migration writes aliases and related spec ids
         "  - REQ-DEMO-009\n" +
         "  - docs/coding-plugins/features/demo-app/requirements/demo-app-PRD.md\n" +
         "related_technical:\n" +
-        "  - docs/coding-plugins/features/demo-app/technicals/demo-app-TDD.md\n" +
+        "  - docs/coding-plugins/features/demo-app/technicals/demo-app-TSD.md\n" +
         "---\n" +
         "# Evidence\n",
     );
@@ -38,7 +38,7 @@ test("TypeScript document contract migration writes aliases and related spec ids
     assert.ok(migrated.includes("status: covered"));
     assert.ok(migrated.includes("related_docs:"));
     assert.ok(migrated.includes("docs/coding-plugins/features/demo-app/requirements/demo-app-PRD.md"));
-    assert.ok(migrated.includes("docs/coding-plugins/features/demo-app/technicals/demo-app-TDD.md"));
+    assert.ok(migrated.includes("docs/coding-plugins/features/demo-app/technicals/demo-app-TSD.md"));
     assert.equal(migrated.includes("related_specs:"), false);
     assert.equal(migrated.includes("related_technical:"), false);
     assert.ok(migrated.includes("related_spec_ids:"));

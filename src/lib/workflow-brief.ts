@@ -57,9 +57,9 @@ export function buildBrief(root: string, options: BriefOptions): WorkflowBriefPa
 
   let taskHeadings: string[] = [];
   if (mustRead.length > 0) {
-    const ipdPath = join(root, mustRead[0]);
-    if (existsSync(ipdPath)) {
-      taskHeadings = extractTaskHeadings(readFileSync(ipdPath, "utf8"));
+    const planPath = join(root, mustRead[0]);
+    if (existsSync(planPath)) {
+      taskHeadings = extractTaskHeadings(readFileSync(planPath, "utf8"));
     }
   }
 
@@ -89,7 +89,7 @@ export function buildBrief(root: string, options: BriefOptions): WorkflowBriefPa
     focus_sections: focusSections,
     task_headings: taskHeadings,
     execution_source: nextContext.execution_source,
-    new_plan_policy: "create-new-ipd",
+    new_plan_policy: "create-new-ted",
   };
 }
 
