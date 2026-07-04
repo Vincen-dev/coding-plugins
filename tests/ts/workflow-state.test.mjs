@@ -7,7 +7,7 @@ import test from "node:test";
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 
 test("workflow-state reuses document metadata frontmatter helpers", () => {
-  const source = readFileSync(join(repoRoot, "src/lib/workflow-state.ts"), "utf8");
+  const source = readFileSync(join(repoRoot, "src/lib/workflow/workflow-state.ts"), "utf8");
 
   assert.ok(source.includes("parseFrontmatter as parseDocumentFrontmatter"));
   assert.equal(source.includes("export function splitFrontmatter"), false);

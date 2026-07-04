@@ -1,0 +1,54 @@
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { dirname, join, relative } from "node:path";
+
+export type InstallPlatform = "cursor" | "copilot";
+
+export interface InstallResult {
+  platform: InstallPlatform;
+  root: string;
+  dry_run: boolean;
+  overwritten: boolean;
+  files: string[];
+}
+
+const CONTENT = [
+  "# Coding Plugins",
+  "",
+  "Use `coding-plugins start` before selecting workflow skills.",
+  "",
+  "- Run `coding-plugins state check --root . --json` when a `.coding-plugins.yaml` file exists.",
+  "- Run `coding-plugins validate --root . --format json` before executing formal PRD/TSD/TVD/TED/VED chains.",
+  "- Run `coding-plugins execution-contract generate --root . --feature <feature> --doc-id <doc-id> --write` before TED execution.",
+  "- Do not rely on conversation-only skill routing for formal document work.",
+  "",
+].join("\n");
+
+export function platformFiles(root: string, platform: InstallPlatform): string[] {
+  if (platform === "cursor") {
+    return [join(root, ".cursor/rules/coding-plugins.mdc")];
+  }
+  return [join(root, ".github/copilot-instructions.md")];
+}
+
+export function installPlatform(root: string, platform: InstallPlatform, options: { dryRun?: boolean; force?: boolean } = {}): InstallResult {
+  const files = platformFiles(root, platform);
+  const existing = files.filter((path) => existsSync(path));
+  if (existing.length > 0 && !options.force && !options.dryRun) {
+    throw new Error(`refusing to overwrite existing ${platform} file(s): ${existing.map((path) => relative(root, path)).join(", ")}; pass --force to replace`);
+  }
+  if (!options.dryRun) {
+    for (const path of files) {
+      if (!existsSync(dirname(path))) {
+        mkdirSync(dirname(path), { recursive: true });
+      }
+      writeFileSync(path, CONTENT, "utf8");
+    }
+  }
+  return {
+    platform,
+    root,
+    dry_run: options.dryRun ?? false,
+    overwritten: existing.length > 0 && !options.dryRun,
+    files: files.map((path) => relative(root, path).replaceAll("\\", "/")),
+  };
+}

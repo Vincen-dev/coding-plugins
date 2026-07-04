@@ -6,6 +6,8 @@ import { fileURLToPath } from "node:url";
 import test from "node:test";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
+const preflightEntrypoint = join(repoRoot, "src/cli/preflight.ts");
+const preflightImplementation = join(repoRoot, "src/cli/release/preflight.ts");
 const pySuffix = "." + "py";
 const pyCommand = "py" + "thon3";
 
@@ -18,7 +20,7 @@ function run(script, args) {
 
 function scripts() {
   return {
-    typescript: { command: "node", prefix: [join(repoRoot, "src/cli/preflight.ts")] },
+    typescript: { command: "node", prefix: [preflightEntrypoint] },
   };
 }
 
@@ -32,7 +34,7 @@ test("TypeScript preflight CLI rejects unknown arguments without legacy delegati
 });
 
 test("TypeScript preflight source stays self-contained", () => {
-  const source = spawnSync("node", ["-e", "process.stdout.write(require('node:fs').readFileSync(process.argv[1], 'utf8'))", join(repoRoot, "src/cli/preflight.ts")], {
+  const source = spawnSync("node", ["-e", "process.stdout.write(require('node:fs').readFileSync(process.argv[1], 'utf8'))", preflightImplementation], {
     cwd: repoRoot,
     encoding: "utf8",
   });
@@ -42,7 +44,7 @@ test("TypeScript preflight source stays self-contained", () => {
 });
 
 test("TypeScript preflight runs package typecheck", () => {
-  const source = spawnSync("node", ["-e", "process.stdout.write(require('node:fs').readFileSync(process.argv[1], 'utf8'))", join(repoRoot, "src/cli/preflight.ts")], {
+  const source = spawnSync("node", ["-e", "process.stdout.write(require('node:fs').readFileSync(process.argv[1], 'utf8'))", preflightImplementation], {
     cwd: repoRoot,
     encoding: "utf8",
   });
@@ -51,7 +53,7 @@ test("TypeScript preflight runs package typecheck", () => {
 });
 
 test("TypeScript preflight runs scenario routing contract checks", () => {
-  const source = spawnSync("node", ["-e", "process.stdout.write(require('node:fs').readFileSync(process.argv[1], 'utf8'))", join(repoRoot, "src/cli/preflight.ts")], {
+  const source = spawnSync("node", ["-e", "process.stdout.write(require('node:fs').readFileSync(process.argv[1], 'utf8'))", preflightImplementation], {
     cwd: repoRoot,
     encoding: "utf8",
   });
@@ -61,7 +63,7 @@ test("TypeScript preflight runs scenario routing contract checks", () => {
 });
 
 test("TypeScript preflight discovers TypeScript test files instead of hard-coding the suite", () => {
-  const source = spawnSync("node", ["-e", "process.stdout.write(require('node:fs').readFileSync(process.argv[1], 'utf8'))", join(repoRoot, "src/cli/preflight.ts")], {
+  const source = spawnSync("node", ["-e", "process.stdout.write(require('node:fs').readFileSync(process.argv[1], 'utf8'))", preflightImplementation], {
     cwd: repoRoot,
     encoding: "utf8",
   });
@@ -92,7 +94,7 @@ test("TypeScript preflight fails missing local external references", () => {
       "utf8",
     );
 
-    const result = spawnSync("node", [join(repoRoot, "src/cli/preflight.ts"), "--check-external-references"], {
+    const result = spawnSync("node", [preflightEntrypoint, "--check-external-references"], {
       cwd: repoRoot,
       encoding: "utf8",
       env: { ...process.env, NPM_CONFIG_CACHE: "/private/tmp/codex-npm-cache" },
@@ -107,7 +109,7 @@ test("TypeScript preflight fails missing local external references", () => {
 });
 
 test("TypeScript preflight runs external reference checks by default", () => {
-  const source = spawnSync("node", ["-e", "process.stdout.write(require('node:fs').readFileSync(process.argv[1], 'utf8'))", join(repoRoot, "src/cli/preflight.ts")], {
+  const source = spawnSync("node", ["-e", "process.stdout.write(require('node:fs').readFileSync(process.argv[1], 'utf8'))", preflightImplementation], {
     cwd: repoRoot,
     encoding: "utf8",
   });
