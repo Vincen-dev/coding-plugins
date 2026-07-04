@@ -266,6 +266,11 @@ function parseStateFileYamlV2(text: string): CodingPluginsStateFile | null {
   if (!/^schema_version:\s*2\s*$/m.test(text) || !/^workflows:\s*$/m.test(text)) {
     return null;
   }
+  for (const [index, line] of text.split(/\r?\n/).entries()) {
+    if (/\t|:\s*[|>]\s*$|(?:^|\s)[&*][A-Za-z0-9_-]+/.test(line)) {
+      throw new Error(`Unsupported .coding-plugins.yaml syntax at line ${index + 1}; regenerate the file with coding-plugins state init/check/transition.`);
+    }
+  }
   const active = { feature: "", doc_id: "" };
   const workflows: CodingPluginsState[] = [];
   let section: "root" | "active" | "workflows" = "root";
@@ -282,9 +287,16 @@ function parseStateFileYamlV2(text: string): CodingPluginsStateFile | null {
     }
     currentTransition = null;
   };
+  const workflowKeys = new Set(["schema_version", "workflow", "feature", "doc_id", "state", "updated_at", "artifacts_hash", "transitions"]);
+  const transitionKeys = new Set(["from", "to", "at", "reason"]);
 
-  for (const rawLine of text.split(/\r?\n/)) {
+  for (const [index, rawLine] of text.split(/\r?\n/).entries()) {
     if (!rawLine.trim()) {
+      continue;
+    }
+    const unsupportedKey = (key: string): Error =>
+      new Error(`Unsupported .coding-plugins.yaml key at line ${index + 1}: ${key}; regenerate the file with coding-plugins state init/check/transition.`);
+    if (section === "root" && /^schema_version:\s*2\s*$/.test(rawLine)) {
       continue;
     }
     if (rawLine === "active:") {
@@ -301,8 +313,64 @@ function parseStateFileYamlV2(text: string): CodingPluginsStateFile | null {
       const [key, value] = parseKeyValue(rawLine.trim());
       if (key === "feature" || key === "doc_id") {
         active[key] = value;
+      } else {
+        throw unsupportedKey(key);
       }
       continue;
+    }
+    if (section !== "workflows") {
+      const [key] = parseKeyValue(rawLine.trim());
+      throw unsupportedKey(key);
+    }
+    if (section === "workflows" && rawLine.startsWith("  ") && !rawLine.startsWith("  - ") && !current) {
+      const [key] = parseKeyValue(rawLine.trim());
+      throw unsupportedKey(key);
+    }
+    if (section === "workflows" && !rawLine.startsWith("  ")) {
+      const [key] = parseKeyValue(rawLine.trim());
+      throw unsupportedKey(key);
+    }
+    if (inTransitions && rawLine.startsWith("      ") && !rawLine.startsWith("      - ") && !rawLine.startsWith("        ")) {
+      const [key] = parseKeyValue(rawLine.trim());
+      throw unsupportedKey(key);
+    }
+    if (!inTransitions && rawLine.startsWith("      ")) {
+      const [key] = parseKeyValue(rawLine.trim());
+      throw unsupportedKey(key);
+    }
+    if (rawLine.startsWith("        ") && !currentTransition) {
+      const [key] = parseKeyValue(rawLine.trim());
+      throw unsupportedKey(key);
+    }
+    if (rawLine.startsWith("          ")) {
+      const [key] = parseKeyValue(rawLine.trim());
+      throw unsupportedKey(key);
+    }
+    if (!rawLine.startsWith("  - ") && !rawLine.startsWith("    ") && !rawLine.startsWith("      ") && !rawLine.startsWith("        ")) {
+      const [key] = parseKeyValue(rawLine.trim());
+      throw unsupportedKey(key);
+    }
+    if (!rawLine.startsWith("  - ") && rawLine.startsWith("  ") && !rawLine.startsWith("    ")) {
+      const [key] = parseKeyValue(rawLine.trim());
+      throw unsupportedKey(key);
+    }
+    if (rawLine.startsWith("    ") && !rawLine.startsWith("      ")) {
+      const [key] = parseKeyValue(rawLine.trim());
+      if (!workflowKeys.has(key)) {
+        throw unsupportedKey(key);
+      }
+    }
+    if (rawLine.startsWith("        ")) {
+      const [key] = parseKeyValue(rawLine.trim());
+      if (!transitionKeys.has(key)) {
+        throw unsupportedKey(key);
+      }
+    }
+    if (inTransitions && rawLine.startsWith("      - ")) {
+      const [key] = parseKeyValue(rawLine.slice(8));
+      if (!transitionKeys.has(key)) {
+        throw unsupportedKey(key);
+      }
     }
     if (section !== "workflows") {
       continue;
@@ -310,8 +378,11 @@ function parseStateFileYamlV2(text: string): CodingPluginsStateFile | null {
     if (rawLine.startsWith("  - ")) {
       pushTransition();
       const [key, value] = parseKeyValue(rawLine.slice(4));
+      if (key !== "schema_version") {
+        throw unsupportedKey(key);
+      }
       current = {
-        schema_version: key === "schema_version" ? Number(value) : 1,
+        schema_version: Number(value),
         workflow: "full-chain",
         feature: "",
         doc_id: "",

@@ -10,6 +10,8 @@ external_references: []
 ---
 # Skill File Naming VED
 
+覆盖 REQ-001。
+
 ## TDD 证据
 
 - **规格/缺陷/验收:** 明确验收：插件 `skills/` supporting files 应使用可搜索的小写 kebab-case 名称；数字序号式命名和 prompt 模板后缀不一致应被统一规范。

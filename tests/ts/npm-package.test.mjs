@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
@@ -69,6 +69,7 @@ test("npm package and workflows use TypeScript runtime without Python", () => {
 
   const packageJson = JSON.parse(readFileSync(resolve(repoRoot, "package.json"), "utf8"));
   assert.equal(packageJson.scripts.preflight, "node src/cli/preflight.ts");
+  assert.ok(!packageJson.scripts.build.includes("scripts/"), "packaged build script must not reference excluded scripts directory");
   assert.ok(!packageJson.files.includes("scripts/"), "npm package files must not include Python scripts directory");
   assert.ok(files.includes(".agents/skills"), "npm package must include local skills client entrypoint");
 
@@ -145,13 +146,13 @@ test("published docs describe runtime and release distribution boundaries", () =
 test("security audit exposes a strict release mode that runs build and preflight", () => {
   const source = readFileSync(resolve(repoRoot, "src/cli/release/security-audit.ts"), "utf8");
   const preflight = readFileSync(resolve(repoRoot, "src/cli/release/preflight.ts"), "utf8");
-  const build = readFileSync(resolve(repoRoot, "scripts/build-dist.mjs"), "utf8");
+  const build = readFileSync(resolve(repoRoot, "src/cli/release/build-dist.ts"), "utf8");
   assert.ok(source.includes("--strict-release"), "security audit must expose --strict-release");
   assert.ok(source.includes('"npm", ["run", "build"]'), "strict release audit must run build");
   assert.ok(source.includes('"npm", ["run", "preflight"]'), "strict release audit must run preflight");
   assert.ok(source.includes("withBuildLock"), "strict release audit must serialize build/preflight operations");
   assert.ok(preflight.includes("withBuildLock"), "preflight must participate in the same build/preflight lock");
-  assert.ok(build.includes("./build-lock.mjs"), "build script must import the shared build/preflight lock helper");
+  assert.ok(build.includes("../../lib/runtime/build-lock.ts"), "build script must import the shared build/preflight lock helper");
   assert.ok(!build.includes("function withBuildLock"), "build script must not duplicate the lock implementation");
 });
 
@@ -203,5 +204,48 @@ test("security audit fails real npm pack output that contains a secret-like toke
     assert.ok(secretCheck.message.includes("dist/index.js"));
   } finally {
     rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("packed npm artifact supports installed runtime commands without repository-only files", () => {
+  const packageRoot = mkdtempSync(join(tmpdir(), "coding-plugins-installed-package-"));
+  const packRoot = mkdtempSync(join(tmpdir(), "coding-plugins-pack-output-"));
+  try {
+    const packed = spawnSync("npm", ["pack", "--json", "--pack-destination", packRoot], {
+      cwd: repoRoot,
+      encoding: "utf8",
+      env: { ...process.env, NPM_CONFIG_CACHE: "/private/tmp/codex-npm-cache", npm_config_cache: "/private/tmp/codex-npm-cache" },
+    });
+    assert.equal(packed.status, 0, packed.stderr);
+    const tarball = join(packRoot, JSON.parse(packed.stdout)[0].filename);
+
+    writeFileSync(join(packageRoot, "package.json"), JSON.stringify({ type: "module", private: true }, null, 2), "utf8");
+    const installed = spawnSync("npm", ["install", "--ignore-scripts", "--no-audit", "--no-fund", tarball], {
+      cwd: packageRoot,
+      encoding: "utf8",
+      env: { ...process.env, NPM_CONFIG_CACHE: "/private/tmp/codex-npm-cache", npm_config_cache: "/private/tmp/codex-npm-cache" },
+    });
+    assert.equal(installed.status, 0, installed.stderr);
+
+    const installedPackage = join(packageRoot, "node_modules/@vincen-dev/coding-plugins");
+    assert.equal(existsSync(join(installedPackage, "tsconfig.build.json")), false, "published package should not rely on repository tsconfig");
+
+    const help = spawnSync("node", [join(installedPackage, "bin/coding-plugins.js"), "--help"], {
+      cwd: packageRoot,
+      encoding: "utf8",
+    });
+    assert.equal(help.status, 0, help.stderr);
+    assert.ok(help.stdout.includes("coding-plugins <command>"));
+
+    const build = spawnSync("npm", ["run", "build"], {
+      cwd: installedPackage,
+      encoding: "utf8",
+      env: { ...process.env, NPM_CONFIG_CACHE: "/private/tmp/codex-npm-cache", npm_config_cache: "/private/tmp/codex-npm-cache" },
+    });
+    assert.equal(build.status, 0, build.stderr);
+    assert.ok(build.stdout.includes("dist is already packaged"));
+  } finally {
+    rmSync(packageRoot, { recursive: true, force: true });
+    rmSync(packRoot, { recursive: true, force: true });
   }
 });

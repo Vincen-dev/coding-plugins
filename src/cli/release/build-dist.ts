@@ -1,15 +1,34 @@
-import { rmSync, writeFileSync } from "node:fs";
+#!/usr/bin/env node
 import { spawnSync } from "node:child_process";
+import { existsSync, rmSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { withBuildLock } from "./build-lock.mjs";
 
-const root = resolve(import.meta.dirname, "..");
+import { withBuildLock } from "../../lib/runtime/build-lock.ts";
+import { findRepositoryRoot } from "../../lib/runtime/repository-root.ts";
+
+const root = findRepositoryRoot(resolve(import.meta.dirname, "../../.."));
 const dist = resolve(root, "dist");
+const buildConfig = resolve(root, "tsconfig.build.json");
+const typeScriptCompiler = resolve(root, "node_modules/typescript/bin/tsc");
+
+function verifyPackagedDist(): void {
+  const required = [resolve(dist, "index.js"), resolve(dist, "index.d.ts")];
+  const missing = required.filter((path) => !existsSync(path));
+  if (missing.length > 0) {
+    throw new Error(`Cannot build from packaged runtime because build tooling is unavailable and dist is incomplete: ${missing.join(", ")}`);
+  }
+  console.log("dist is already packaged; source build tooling is unavailable in this install");
+}
 
 withBuildLock(root, () => {
+  if (!existsSync(buildConfig) || !existsSync(typeScriptCompiler)) {
+    verifyPackagedDist();
+    return;
+  }
+
   rmSync(dist, { recursive: true, force: true });
 
-  const result = spawnSync(process.execPath, [resolve(root, "node_modules/typescript/bin/tsc"), "-p", resolve(root, "tsconfig.build.json")], {
+  const result = spawnSync(process.execPath, [typeScriptCompiler, "-p", buildConfig], {
     cwd: root,
     stdio: "inherit",
   });

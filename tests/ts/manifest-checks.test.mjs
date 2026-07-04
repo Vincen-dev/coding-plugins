@@ -70,7 +70,7 @@ function writeValidFixture(root, version = "1.2.3") {
     types: "./dist/index.d.ts",
     bin: { "coding-plugins": "./bin/coding-plugins.js" },
     scripts: {
-      build: "node scripts/build-dist.mjs",
+      build: "node dist/src/cli/release/build-dist.js",
       "test:ts": "npm run preflight",
       typecheck: "tsc --noEmit",
       preflight: "node src/cli/preflight.ts",

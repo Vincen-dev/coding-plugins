@@ -12,10 +12,14 @@ export interface ParsedDocument {
     task_ids: string[];
     errors: string[];
 }
-export interface DocumentValidationResult {
+export type ParsedDocumentSummary = Omit<ParsedDocument, "sections"> & {
+    section_names: string[];
+    section_hashes: Record<string, string>;
+};
+export interface DocumentValidationResult<TDocument extends ParsedDocument | ParsedDocumentSummary = ParsedDocumentSummary> {
     ok: boolean;
     root: string;
-    documents: ParsedDocument[];
+    documents: TDocument[];
     chains: ParsedDocumentChain[];
     chain_errors: string[];
     errors: string[];
@@ -26,8 +30,19 @@ export interface ParsedDocumentChain {
     ok: boolean;
     artifacts: Record<string, string | null>;
     missing_artifacts: string[];
+    chain_type: "complete" | "incomplete" | "evidence-only";
     errors: string[];
 }
+export interface DocumentValidationOptions {
+    includeSections?: boolean;
+    allowEvidenceOnly?: boolean;
+}
 export declare function parseWorkflowDocument(root: string, path: string): ParsedDocument | null;
-export declare function validateDocumentSchemas(root: string): DocumentValidationResult;
-export declare function validateDocumentChains(root: string, documents: ParsedDocument[]): ParsedDocumentChain[];
+export declare function validateDocumentSchemas(root: string, options: DocumentValidationOptions & {
+    includeSections: true;
+}): DocumentValidationResult<ParsedDocument>;
+export declare function validateDocumentSchemas(root: string, options?: DocumentValidationOptions & {
+    includeSections?: false;
+}): DocumentValidationResult<ParsedDocumentSummary>;
+export declare function validateDocumentSchemas(root: string, options: DocumentValidationOptions): DocumentValidationResult<ParsedDocument | ParsedDocumentSummary>;
+export declare function validateDocumentChains(root: string, documents: ParsedDocument[], options?: Pick<DocumentValidationOptions, "allowEvidenceOnly">): ParsedDocumentChain[];

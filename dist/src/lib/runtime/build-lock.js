@@ -16,6 +16,14 @@ function isStale(lockPath, staleMs) {
     }
     try {
         const owner = JSON.parse(readFileSync(join(lockPath, "owner.json"), "utf8"));
+        if (owner.pid && owner.pid !== process.pid) {
+            try {
+                process.kill(owner.pid, 0);
+            }
+            catch {
+                return true;
+            }
+        }
         return !owner.created_at || Date.now() - owner.created_at > staleMs;
     }
     catch {

@@ -82,9 +82,11 @@ try {
         && activeState.doc_id === state.doc_id
         && activeState.state !== state.state);
     const warnings = stateMismatch
-        ? [`project state '${activeState?.state}' differs from document chain state '${state?.state}' for ${feature}/${docId}; workflow-guard remains authoritative`]
+        ? [`project state '${activeState?.state}' differs from document chain state '${state?.state}' for ${feature}/${docId}; repair the document chain before continuing`]
         : [];
-    const { nextArgs, nextCommand } = buildNextCommand(options, mode, state);
+    const built = buildNextCommand(options, mode, state);
+    const nextArgs = stateMismatch ? [] : built.nextArgs;
+    const nextCommand = stateMismatch ? null : built.nextCommand;
     const payload = {
         entrypoint: "coding-plugins start",
         conversation_judgment_allowed: false,

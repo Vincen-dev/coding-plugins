@@ -188,7 +188,7 @@ export function checkNpmPackageManifest(root) {
     if (String(scripts["preflight"] ?? "") !== "node src/cli/preflight.ts") {
         throw new ManifestCheckError("NPM package must define scripts.preflight for TypeScript preflight.");
     }
-    if (String(scripts["build"] ?? "") !== "node scripts/build-dist.mjs") {
+    if (String(scripts["build"] ?? "") !== "node dist/src/cli/release/build-dist.js") {
         throw new ManifestCheckError("NPM package must define scripts.build for dist/types output.");
     }
     const devDependencies = objectValue(packageManifest.devDependencies);

@@ -10,6 +10,8 @@ external_references: []
 ---
 # Review Findings Subagents VED
 
+覆盖 REQ-001。
+
 ## TDD 证据
 
 - **规格/缺陷/验收:** bug 复现：整体 review 发现 CI 缺 npm 依赖安装、scenario routing 契约未被 preflight 保护、npm 包缺 `.agents/skills`、external reference 检查为 no-op、`.version-bump.json` 仍引用 Python。
@@ -28,6 +30,30 @@ external_references: []
 - **Worker B:** 负责 preflight、scenario routing 和 external references。主线程补充了缺失 external reference 行为测试，避免只靠源码字符串断言。
 - **Observer:** 指出共享 RED 测试会让单 worker 的 GREEN 受其他任务影响，并要求主线程最终复验 `npm pack` 和完整 preflight。
 - **潜在问题:** 子代理容易报告局部 green，但无法证明整体集成；共享测试文件会跨任务耦合；package 行为必须用真实 pack 输出验证；external reference no-op 需要行为测试而非只看日志。
+
+## TDD 证据
+
+- **规格/缺陷/验收:** REQ-001；发布前最终审计发现 evidence-only chain 被误判为 ok、package build script 指向未打包的 `scripts/`、库级 schema API 仍暴露完整 sections、`start` 状态偏移只警告不阻断、state YAML 子集不报错、Cursor/Copilot smoke 缺少真实规则头和适用范围、build lock 仍存在脚本级重复实现。
+- **测试类型:** `contract`
+- **RED 测试:** `tests/ts/productization-cli.test.mjs`、`tests/ts/npm-package.test.mjs`
+- **RED 命令:** `node --test tests/ts/productization-cli.test.mjs`；`node --test tests/ts/npm-package.test.mjs`
+- **RED 失败:** productization 6 failures：`start` mismatch 仍输出 workflow-guard、`validate` 不认识 `--strict-chain` 且 evidence-only 返回 0、unsupported YAML 返回 0、Cursor 文件缺 `alwaysApply`、库 API 仍包含 `sections`；npm package 2 failures：`packageJson.scripts.build` 仍引用 `scripts/`，且缺少 `src/cli/release/build-dist.ts`。
+- **GREEN 变更:** `validateDocumentSchemas()` 增加 `includeSections` 和 `allowEvidenceOnly` 选项，CLI 默认 strict 且仅显式 `--allow-evidence-only` 放行；`start` 在 project state 与 document chain 偏移时停止输出执行命令并路由回文档链修复；`.coding-plugins.yaml` v2 parser 对 block scalar、tab、anchor/alias 明确报错；Cursor 注入写入 `.mdc` frontmatter，Copilot 注入写明全局适用范围；build 入口迁到已打包的 `src/cli/release/build-dist.ts` 并复用 runtime build lock；补齐 3 条历史 VED 的 PRD/TSD/TVD/TED 链路和 TED `source_hash`。
+- **GREEN 命令:** `node --test tests/ts/productization-cli.test.mjs` PASS 22/22；`node --test tests/ts/npm-package.test.mjs` PASS 8/8；`node --test tests/ts/manifest-checks.test.mjs` PASS 5/5；`node --test tests/ts/src-architecture.test.mjs` PASS 4/4。
+- **REFACTOR 命令:** `npm run build`；`rg -n "build-lock\\.mjs|scripts/build-dist|scripts/build-lock|node scripts/build-dist" . -g '!node_modules/**' -g '!.git/**'` 仅剩架构测试中的防回归断言。
+- **最终验证:** `node bin/coding-plugins.js doctor --root . --format json` PASS；`node bin/coding-plugins.js validate --root . --format json` PASS，15 documents / 3 complete chains。
+
+## TDD 证据
+
+- **规格/缺陷/验收:** REQ-001；复审发现发布 tarball 安装后没有真实运行验证、`npm run build` 在 `node_modules` 下会直接执行 `.ts` 入口、库级 `validateDocumentSchemas(root)` 默认仍返回完整 sections、state YAML parser 会静默忽略 workflow record 中的未知 key。
+- **测试类型:** `contract`
+- **RED 测试:** `tests/ts/npm-package.test.mjs`、`tests/ts/productization-cli.test.mjs`
+- **RED 命令:** `node --test tests/ts/npm-package.test.mjs`；`node --test tests/ts/productization-cli.test.mjs`
+- **RED 失败:** npm package 新增 tarball install 测试失败，错误为 `ERR_UNSUPPORTED_NODE_MODULES_TYPE_STRIPPING`，说明 published package 的 `build` 脚本不能指向 `src/...ts`；productization 新增两个失败：unknown YAML key 返回 0、默认 `validateDocumentSchemas(fixtureRoot)` 仍包含 `sections`。
+- **GREEN 变更:** `package.json` 的 `build` 改为运行 `dist/src/cli/release/build-dist.js`；`build-dist` 在源码仓库中执行真实 tsc，在发布包缺少 tsconfig/typescript 时验证 dist 已打包并成功退出；`validateDocumentSchemas()` 默认返回 section summary，只有 `includeSections: true` 返回正文，并补 overload 类型；state YAML v2 parser 对未知 root、active、workflow 和 transition key 报错；build lock 增加 dead PID stale 检测，避免异常退出后等待完整 stale 窗口。
+- **GREEN 命令:** `npm run build` PASS；`node --test tests/ts/npm-package.test.mjs` PASS 9/9；`node --test tests/ts/productization-cli.test.mjs` PASS 23/23；`node --test tests/ts/src-architecture.test.mjs tests/ts/manifest-checks.test.mjs` PASS 9/9。
+- **REFACTOR 命令:** `npm run build` 重新生成 dist。
+- **最终验证:** 待最终发布前完整验证记录。
 
 ## TDD 证据
 
@@ -60,7 +86,7 @@ external_references: []
 - **RED 测试:** `tests/ts/productization-cli.test.mjs`、`tests/ts/npm-package.test.mjs`
 - **RED 命令:** `node --test tests/ts/productization-cli.test.mjs`；`node --test tests/ts/npm-package.test.mjs`
 - **RED 失败:** 4 failures：`state_mismatch` 未输出、validate JSON 缺 `section_names/section_hashes` 且仍带 `sections`、挂起的 fake `codex` 让 doctor 等待 5457ms、`project-state.ts` 缺 `withStateFileLock` 和 `renameSync`；secret pack fixture 测试已通过，证明当前 scanner 行为已能拦截 `sk_live_...`。
-- **GREEN 变更:** `start` 输出 `state_mismatch` 和 warnings；`validate --format json` 默认只输出 section 名称和 sha256，新增 `--include-sections` 调试开关；state 写入使用 per-root lock、临时文件和 `renameSync` 原子替换；doctor 调用 `codex plugin list --json` 增加 timeout 并 fallback 到 `config.toml`；build lock 抽出 `scripts/build-lock.mjs`，`build-dist.mjs` 不再内联复制实现；security audit 增加真实 npm pack secret fixture 测试。
+- **GREEN 变更:** `start` 输出 `state_mismatch` 和 warnings；`validate --format json` 默认只输出 section 名称和 sha256，新增 `--include-sections` 调试开关；state 写入使用 per-root lock、临时文件和 `renameSync` 原子替换；doctor 调用 `codex plugin list --json` 增加 timeout 并 fallback 到 `config.toml`；build/preflight lock 统一收敛到 runtime 共享实现；security audit 增加真实 npm pack secret fixture 测试。
 - **GREEN 命令:** `node --test tests/ts/productization-cli.test.mjs` PASS 19/19；`node --test tests/ts/npm-package.test.mjs` PASS 8/8。
 - **REFACTOR 命令:** `npm run typecheck`；`npm run build`
 - **最终验证:** `npm run preflight` PASS；`npm run security-audit:ts -- --root . --strict-release --format json` PASS；`node bin/coding-plugins.js doctor --root . --codex-home /Users/vincen/.codex --format json` PASS；`git diff --check` PASS；并发 `npm run build` + `npm run preflight` 复验两个进程 exit code 均为 0。

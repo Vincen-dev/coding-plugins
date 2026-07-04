@@ -64,7 +64,7 @@ if (!command || command === "--help" || command === "-h") {
   console.log("  start --intent <text> [--feature <name>] [--doc-id <id>] [--root <path>] [--json]");
   console.log("  state <init|check|transition|audit> [--root <path>] [--json]");
   console.log("  subagent-prompt-builder --feature <name> --doc-id <id> --task <task> [--kind <kind>] --expected-source-hash <sha256> [--root <path>]");
-  console.log("  validate [--root <path>] [--format text|json] [--include-sections]");
+  console.log("  validate [--root <path>] [--format text|json] [--include-sections] [--allow-evidence-only|--strict-chain]");
   console.log("  validate-spec [--format text|json] [--strict] <spec-files...>");
   console.log("  validate-technicals [--root <path>] [--format text|json] [--strict] [technical-files...]");
   console.log("  validate-tdd-evidence [--format text|json] [--strict] <evidence-files...>");

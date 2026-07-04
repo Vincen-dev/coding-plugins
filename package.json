@@ -1,6 +1,6 @@
 {
   "name": "@vincen-dev/coding-plugins",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "Chinese coding workflow plugin for Codex, Claude Code, Gemini CLI and local skills clients.",
   "type": "module",
   "main": "./dist/index.js",
@@ -9,7 +9,7 @@
     "coding-plugins": "./bin/coding-plugins.js"
   },
   "scripts": {
-    "build": "node scripts/build-dist.mjs",
+    "build": "node dist/src/cli/release/build-dist.js",
     "test:ts": "npm run preflight",
     "typecheck": "tsc --noEmit",
     "agent-pressure-harness:ts": "node src/cli/agent-pressure-harness.ts",

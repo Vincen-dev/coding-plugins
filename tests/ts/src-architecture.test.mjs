@@ -26,6 +26,7 @@ const compatibilityFiles = [
 const cliDomainFiles = [
   "src/cli/agents/agent-pressure-harness.ts",
   "src/cli/documents/doctor.ts",
+  "src/cli/release/build-dist.ts",
   "src/cli/platform/inject.ts",
   "src/cli/release/preflight.ts",
   "src/cli/workflow/start.ts",
@@ -73,4 +74,16 @@ test("runtime root discovery is shared instead of duplicated in CLI and agent co
   assert.ok(promptBuilderSource.includes("../runtime/repository-root.ts"));
   assert.equal(preflightSource.includes("function findRepositoryRoot"), false);
   assert.equal(promptBuilderSource.includes("function findRepositoryRoot"), false);
+});
+
+test("build and preflight use the shared runtime lock instead of script-local lock helpers", () => {
+  const buildSource = readFileSync(join(repoRoot, "src/cli/release/build-dist.ts"), "utf8");
+  const preflightSource = readFileSync(join(repoRoot, "src/cli/release/preflight.ts"), "utf8");
+  const packageJson = JSON.parse(readFileSync(join(repoRoot, "package.json"), "utf8"));
+
+  assert.equal(packageJson.scripts.build, "node dist/src/cli/release/build-dist.js");
+  assert.ok(buildSource.includes("../../lib/runtime/build-lock.ts"));
+  assert.ok(preflightSource.includes("../../lib/runtime/build-lock.ts"));
+  assert.equal(existsSync(join(repoRoot, "scripts/build-lock.mjs")), false);
+  assert.equal(existsSync(join(repoRoot, "scripts/build-dist.mjs")), false);
 });

@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join, relative } from "node:path";
 
@@ -27,10 +28,15 @@ export interface ParsedDocument {
   errors: string[];
 }
 
-export interface DocumentValidationResult {
+export type ParsedDocumentSummary = Omit<ParsedDocument, "sections"> & {
+  section_names: string[];
+  section_hashes: Record<string, string>;
+};
+
+export interface DocumentValidationResult<TDocument extends ParsedDocument | ParsedDocumentSummary = ParsedDocumentSummary> {
   ok: boolean;
   root: string;
-  documents: ParsedDocument[];
+  documents: TDocument[];
   chains: ParsedDocumentChain[];
   chain_errors: string[];
   errors: string[];
@@ -42,7 +48,13 @@ export interface ParsedDocumentChain {
   ok: boolean;
   artifacts: Record<string, string | null>;
   missing_artifacts: string[];
+  chain_type: "complete" | "incomplete" | "evidence-only";
   errors: string[];
+}
+
+export interface DocumentValidationOptions {
+  includeSections?: boolean;
+  allowEvidenceOnly?: boolean;
 }
 
 const REQUIRED_FRONTMATTER = ["title", "status", "feature", "doc_id"];
@@ -175,20 +187,35 @@ export function parseWorkflowDocument(root: string, path: string): ParsedDocumen
   };
 }
 
-export function validateDocumentSchemas(root: string): DocumentValidationResult {
+function summarizeDocument(document: ParsedDocument): ParsedDocumentSummary {
+  const { sections, ...rest } = document;
+  return {
+    ...rest,
+    section_names: Object.keys(sections),
+    section_hashes: Object.fromEntries(
+      Object.entries(sections).map(([name, body]) => [name, `sha256:${createHash("sha256").update(body, "utf8").digest("hex")}`]),
+    ),
+  };
+}
+
+export function validateDocumentSchemas(root: string, options: DocumentValidationOptions & { includeSections: true }): DocumentValidationResult<ParsedDocument>;
+export function validateDocumentSchemas(root: string, options?: DocumentValidationOptions & { includeSections?: false }): DocumentValidationResult<ParsedDocumentSummary>;
+export function validateDocumentSchemas(root: string, options: DocumentValidationOptions): DocumentValidationResult<ParsedDocument | ParsedDocumentSummary>;
+export function validateDocumentSchemas(root: string, options: DocumentValidationOptions = {}): DocumentValidationResult<ParsedDocument | ParsedDocumentSummary> {
   const files = collectFeatureRoots(root).flatMap((featureRoot) =>
     DOCUMENT_ARTIFACTS.flatMap((artifact) => collectMarkdownFiles(join(featureRoot, artifact.directory))),
   );
-  const documents = files
+  const parsedDocuments = files
     .map((path) => parseWorkflowDocument(root, path))
     .filter((document): document is ParsedDocument => document !== null);
-  const chains = validateDocumentChains(root, documents);
+  const chains = validateDocumentChains(root, parsedDocuments, options);
   const chainErrors = chains.flatMap((chain) => chain.errors);
-  const errors = [...documents.flatMap((document) => document.errors), ...chainErrors];
+  const errors = [...parsedDocuments.flatMap((document) => document.errors), ...chainErrors];
+  const documents = options.includeSections === true ? parsedDocuments : parsedDocuments.map(summarizeDocument);
   return { ok: errors.length === 0, root, documents, chains, chain_errors: chainErrors, errors };
 }
 
-export function validateDocumentChains(root: string, documents: ParsedDocument[]): ParsedDocumentChain[] {
+export function validateDocumentChains(root: string, documents: ParsedDocument[], options: Pick<DocumentValidationOptions, "allowEvidenceOnly"> = {}): ParsedDocumentChain[] {
   const groups = new Map<string, ParsedDocument[]>();
   for (const document of documents) {
     if (!document.feature || !document.doc_id) {
@@ -210,7 +237,8 @@ export function validateDocumentChains(root: string, documents: ParsedDocument[]
     }
     const missingArtifacts = REQUIRED_ARTIFACTS.filter((suffix) => !artifacts[suffix]);
     const standaloneEvidenceOnly = group.every((document) => document.kind === "VED");
-    if (missingArtifacts.length > 0 && !standaloneEvidenceOnly) {
+    const chainType = missingArtifacts.length === 0 ? "complete" : standaloneEvidenceOnly ? "evidence-only" : "incomplete";
+    if (missingArtifacts.length > 0 && !(standaloneEvidenceOnly && options.allowEvidenceOnly === true)) {
       errors.push(`${first.feature}/${first.doc_id} missing artifacts: ${missingArtifacts.join(", ")}`);
     }
 
@@ -247,6 +275,7 @@ export function validateDocumentChains(root: string, documents: ParsedDocument[]
       ok: errors.length === 0,
       artifacts,
       missing_artifacts: missingArtifacts,
+      chain_type: chainType,
       errors,
     };
   });

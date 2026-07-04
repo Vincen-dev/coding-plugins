@@ -1,7 +1,9 @@
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
-const CONTENT = [
+const SHARED_CONTENT = [
     "# Coding Plugins",
+    "",
+    "These instructions apply to every coding task in this project.",
     "",
     "Use `coding-plugins start` before selecting workflow skills.",
     "",
@@ -11,6 +13,16 @@ const CONTENT = [
     "- Do not rely on conversation-only skill routing for formal document work.",
     "",
 ].join("\n");
+const CURSOR_CONTENT = [
+    "---",
+    "description: Coding Plugins workflow guard",
+    "globs: **/*",
+    "alwaysApply: true",
+    "---",
+    "",
+    SHARED_CONTENT,
+].join("\n");
+const COPILOT_CONTENT = SHARED_CONTENT;
 export function platformFiles(root, platform) {
     if (platform === "cursor") {
         return [join(root, ".cursor/rules/coding-plugins.mdc")];
@@ -28,7 +40,7 @@ export function installPlatform(root, platform, options = {}) {
             if (!existsSync(dirname(path))) {
                 mkdirSync(dirname(path), { recursive: true });
             }
-            writeFileSync(path, CONTENT, "utf8");
+            writeFileSync(path, platform === "cursor" ? CURSOR_CONTENT : COPILOT_CONTENT, "utf8");
         }
     }
     return {

@@ -10,6 +10,7 @@ import test from "node:test";
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const bin = join(repoRoot, "bin/coding-plugins.js");
 const fixtureRoot = join(repoRoot, "tests/fixtures/formal-feature-chain");
+const packageVersion = JSON.parse(readFileSync(join(repoRoot, "package.json"), "utf8")).version;
 
 function run(args, options = {}) {
   return spawnSync("node", [bin, ...args], {
@@ -87,10 +88,8 @@ test("start uses active .coding-plugins.yaml workflow when feature and doc id ar
     assert.equal(payload.state.feature, "alpha");
     assert.equal(payload.state.doc_id, "alpha-login");
     assert.equal(payload.state.state, "not-started");
-    assert.equal(
-      payload.next_command,
-      `coding-plugins workflow-guard check --root ${root} --feature alpha --doc-id alpha-login --target execute`,
-    );
+    assert.equal(payload.next_command, null);
+    assert.equal(payload.next_skill, "spec-driven-development");
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
@@ -106,6 +105,8 @@ test("start reports active project state mismatch against the inspected document
     assert.equal(payload.state.state, "not-started");
     assert.equal(payload.state_mismatch, true);
     assert.ok(payload.warnings.some((warning) => warning.includes("project state")));
+    assert.equal(payload.next_command, null);
+    assert.equal(payload.next_skill, "spec-driven-development");
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
@@ -277,6 +278,9 @@ test("schema validate/list/doctor/inject CLIs support arbitrary project roots", 
     const validationWithSections = json(["validate", "--root", fixtureRoot, "--format", "json", "--include-sections"]);
     assert.ok(validationWithSections.documents.some((document) => document.sections && Object.keys(document.sections).length > 0));
 
+    const strictFixtureValidation = json(["validate", "--root", fixtureRoot, "--format", "json", "--strict-chain"]);
+    assert.equal(strictFixtureValidation.ok, true);
+
     const listed = json(["list", "--root", fixtureRoot, "--format", "json"]);
     assert.ok(listed.features.some((feature) => feature.feature === "routing-fixture" && feature.doc_ids.includes("routing-login")));
 
@@ -292,6 +296,27 @@ test("schema validate/list/doctor/inject CLIs support arbitrary project roots", 
     const injected = json(["inject", "--root", root, "--platform", "copilot", "--format", "json"]);
     assert.equal(injected.platform, "copilot");
     assert.ok(existsSync(join(root, ".github/copilot-instructions.md")));
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("schema validate fails evidence-only chains by default and only allows them when explicitly requested", () => {
+  const root = mkdtempSync(join(tmpdir(), "coding-plugins-evidence-only-chain-"));
+  try {
+    writeWorkflowDoc(root, "alpha", "evidences", "alpha-login", "VED", "## TDD 证据\n\nRED 命令 covers validation evidence.");
+
+    const defaultResult = run(["validate", "--root", root, "--format", "json"]);
+    assert.equal(defaultResult.status, 1);
+    const defaultPayload = JSON.parse(defaultResult.stdout);
+    assert.equal(defaultPayload.ok, false);
+    assert.ok(defaultPayload.chain_errors.some((error) => error.includes("missing artifacts: PRD, TSD, TVD, TED")));
+
+    const evidenceOnly = json(["validate", "--root", root, "--format", "json", "--allow-evidence-only"]);
+    assert.equal(evidenceOnly.ok, true);
+    const chain = evidenceOnly.chains.find((item) => item.feature === "alpha");
+    assert.equal(chain.chain_type, "evidence-only");
+    assert.deepEqual(chain.missing_artifacts, ["PRD", "TSD", "TVD", "TED"]);
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
@@ -324,7 +349,7 @@ test("doctor audits plugin repository wiring and detects stale Codex cache versi
     const payload = JSON.parse(stale.stdout);
     const cacheCheck = payload.checks.find((check) => check.name === "codex-cache-version");
     assert.equal(cacheCheck.ok, false);
-    assert.ok(cacheCheck.message.includes("repository=1.0.13"));
+    assert.ok(cacheCheck.message.includes(`repository=${packageVersion}`));
     assert.ok(cacheCheck.message.includes("cache=1.0.12"));
   } finally {
     rmSync(codexHome, { recursive: true, force: true });
@@ -335,16 +360,16 @@ test("doctor checks active Codex plugin enablement from codex plugin list json",
   const codexHome = mkdtempSync(join(tmpdir(), "coding-plugins-codex-enabled-"));
   const fakeBin = mkdtempSync(join(tmpdir(), "coding-plugins-fake-bin-"));
   try {
-    const manifest = join(codexHome, "plugins/cache/personal/coding-plugins/1.0.13/.codex-plugin");
+    const manifest = join(codexHome, `plugins/cache/personal/coding-plugins/${packageVersion}/.codex-plugin`);
     mkdirSync(manifest, { recursive: true });
-    writeFileSync(join(manifest, "plugin.json"), JSON.stringify({ name: "coding-plugins", version: "1.0.13" }, null, 2), "utf8");
+    writeFileSync(join(manifest, "plugin.json"), JSON.stringify({ name: "coding-plugins", version: packageVersion }, null, 2), "utf8");
     const codex = join(fakeBin, "codex");
     writeFileSync(
       codex,
       [
         "#!/bin/sh",
         "if [ \"$1\" = \"plugin\" ] && [ \"$2\" = \"list\" ] && [ \"$3\" = \"--json\" ]; then",
-        "  printf '%s\\n' '[{\"pluginId\":\"coding-plugins@personal\",\"version\":\"1.0.13\",\"installed\":true,\"enabled\":true}]'",
+        `  printf '%s\\n' '[{"pluginId":"coding-plugins@personal","version":"${packageVersion}","installed":true,"enabled":true}]'`,
         "  exit 0",
         "fi",
         "exit 1",
@@ -370,9 +395,9 @@ test("doctor times out Codex plugin list and falls back to config enabled state"
   const codexHome = mkdtempSync(join(tmpdir(), "coding-plugins-codex-timeout-"));
   const fakeBin = mkdtempSync(join(tmpdir(), "coding-plugins-fake-bin-timeout-"));
   try {
-    const manifest = join(codexHome, "plugins/cache/personal/coding-plugins/1.0.13/.codex-plugin");
+    const manifest = join(codexHome, `plugins/cache/personal/coding-plugins/${packageVersion}/.codex-plugin`);
     mkdirSync(manifest, { recursive: true });
-    writeFileSync(join(manifest, "plugin.json"), JSON.stringify({ name: "coding-plugins", version: "1.0.13" }, null, 2), "utf8");
+    writeFileSync(join(manifest, "plugin.json"), JSON.stringify({ name: "coding-plugins", version: packageVersion }, null, 2), "utf8");
     writeFileSync(join(codexHome, "config.toml"), "[plugins.\"coding-plugins@personal\"]\nenabled = true\n", "utf8");
     const codex = join(fakeBin, "codex");
     writeFileSync(codex, "#!/bin/sh\nsleep 5\n", "utf8");
@@ -398,6 +423,70 @@ test("state source uses a lock and atomic rename when mutating .coding-plugins.y
   assert.ok(source.includes("withStateFileLock"), "state mutations must be serialized with a lock");
   assert.ok(source.includes("renameSync"), "state writes must atomically rename a temp file into place");
   assert.ok(source.includes(".tmp-"), "state writes must use a temporary file before replacement");
+});
+
+test("state check rejects unsupported hand-edited YAML instead of silently falling back", () => {
+  const root = mkdtempSync(join(tmpdir(), "coding-plugins-state-invalid-yaml-"));
+  try {
+    writeFileSync(
+      join(root, ".coding-plugins.yaml"),
+      [
+        "schema_version: 2",
+        "active:",
+        "  feature: alpha",
+        "  doc_id: alpha-login",
+        "workflows:",
+        "  - schema_version: 1",
+        "    workflow: full-chain",
+        "    feature: alpha",
+        "    doc_id: alpha-login",
+        "    state: ready-for-plan",
+        "    updated_at: |",
+        "      2026-07-04T00:00:00.000Z",
+        "    artifacts_hash: sha256:abc",
+        "",
+      ].join("\n"),
+      "utf8",
+    );
+
+    const result = run(["state", "check", "--root", root, "--json"]);
+    assert.equal(result.status, 1);
+    assert.ok(result.stderr.includes("Unsupported .coding-plugins.yaml syntax"));
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("state check rejects unknown YAML keys in workflow records", () => {
+  const root = mkdtempSync(join(tmpdir(), "coding-plugins-state-unknown-yaml-"));
+  try {
+    writeFileSync(
+      join(root, ".coding-plugins.yaml"),
+      [
+        "schema_version: 2",
+        "active:",
+        "  feature: alpha",
+        "  doc_id: alpha-login",
+        "workflows:",
+        "  - schema_version: 1",
+        "    workflow: full-chain",
+        "    feature: alpha",
+        "    doc_id: alpha-login",
+        "    state: ready-for-plan",
+        "    updated_at: 2026-07-04T00:00:00.000Z",
+        "    artifacts_hash: sha256:abc",
+        "    unexpected_key: should-fail",
+        "",
+      ].join("\n"),
+      "utf8",
+    );
+
+    const result = run(["state", "check", "--root", root, "--json"]);
+    assert.equal(result.status, 1);
+    assert.ok(result.stderr.includes("Unsupported .coding-plugins.yaml key"));
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
 });
 
 test("schema validate rejects incomplete PRD/TSD/TVD/TED/VED chains even when individual docs parse", () => {
@@ -488,10 +577,15 @@ test("Cursor/Copilot install commands smoke-test real file writes", () => {
     assert.equal(readFileSync(cursorFile, "utf8"), "existing cursor rules\n");
     const forcedCursor = json(["install-cursor", "--root", root, "--force", "--format", "json"]);
     assert.equal(forcedCursor.overwritten, true);
+    const forcedCursorText = readFileSync(cursorFile, "utf8");
+    assert.ok(forcedCursorText.includes("alwaysApply: true"));
+    assert.ok(forcedCursorText.includes("globs: **/*"));
 
     const copilot = json(["install-copilot", "--root", root, "--format", "json"]);
     assert.equal(copilot.platform, "copilot");
-    assert.ok(existsSync(join(root, ".github/copilot-instructions.md")));
+    const copilotFile = join(root, ".github/copilot-instructions.md");
+    assert.ok(existsSync(copilotFile));
+    assert.ok(readFileSync(copilotFile, "utf8").includes("apply to every coding task"));
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
@@ -513,4 +607,26 @@ test("build emits dist JavaScript and types for package consumers", async () => 
   const packageJson = JSON.parse(readFileSync(join(repoRoot, "package.json"), "utf8"));
   assert.equal(packageJson.main, "./dist/index.js");
   assert.equal(packageJson.types, "./dist/index.d.ts");
+});
+
+test("library schema validation can return section summaries without full markdown bodies", async () => {
+  const result = spawnSync("npm", ["run", "build"], {
+    cwd: repoRoot,
+    encoding: "utf8",
+    env: { ...process.env, NPM_CONFIG_CACHE: "/private/tmp/codex-npm-cache", npm_config_cache: "/private/tmp/codex-npm-cache" },
+  });
+  assert.equal(result.status, 0, result.stderr);
+
+  const module = await import(`${join(repoRoot, "dist/index.js")}?summary=${Date.now()}`);
+  const defaultValidation = module.validateDocumentSchemas(fixtureRoot);
+  assert.equal(defaultValidation.ok, true);
+  assert.ok(defaultValidation.documents.length > 0);
+  assert.ok(defaultValidation.documents.every((document) => !("sections" in document)));
+
+  const validation = module.validateDocumentSchemas(fixtureRoot, { includeSections: false });
+  assert.equal(validation.ok, true);
+  assert.ok(validation.documents.length > 0);
+  assert.ok(validation.documents.every((document) => !("sections" in document)));
+  assert.ok(validation.documents.every((document) => Array.isArray(document.section_names)));
+  assert.ok(validation.documents.every((document) => document.section_hashes && typeof document.section_hashes === "object"));
 });

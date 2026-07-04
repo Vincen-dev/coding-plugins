@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import { createHash } from "node:crypto";
 import { resolve } from "node:path";
 
 import { validateDocumentSchemas } from "../../lib/documents/document-schema.ts";
@@ -16,6 +15,7 @@ try {
   let root = ".";
   let format = "text";
   let includeSections = false;
+  let allowEvidenceOnly = false;
   const args = process.argv.slice(2);
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index];
@@ -27,13 +27,17 @@ try {
       index += 1;
     } else if (arg === "--include-sections") {
       includeSections = true;
+    } else if (arg === "--allow-evidence-only") {
+      allowEvidenceOnly = true;
+    } else if (arg === "--strict-chain") {
+      allowEvidenceOnly = false;
     } else {
       throw new Error(`Unknown argument: ${arg}`);
     }
   }
-  const result = validateDocumentSchemas(resolve(root));
+  const result = validateDocumentSchemas(resolve(root), { includeSections, allowEvidenceOnly });
   if (format === "json") {
-    console.log(JSON.stringify(includeSections ? result : summarizeValidationPayload(result), null, 2));
+    console.log(JSON.stringify(result, null, 2));
   } else {
     console.log(`ok: ${String(result.ok)}`);
     console.log(`documents: ${result.documents.length}`);
@@ -45,20 +49,4 @@ try {
 } catch (error) {
   console.error(error instanceof Error ? error.message : String(error));
   process.exit(1);
-}
-
-function summarizeValidationPayload(result: ReturnType<typeof validateDocumentSchemas>): ReturnType<typeof validateDocumentSchemas> {
-  return {
-    ...result,
-    documents: result.documents.map((document) => {
-      const { sections, ...rest } = document;
-      return {
-        ...rest,
-        section_names: Object.keys(sections),
-        section_hashes: Object.fromEntries(
-          Object.entries(sections).map(([name, body]) => [name, `sha256:${createHash("sha256").update(body, "utf8").digest("hex")}`]),
-        ),
-      };
-    }) as any,
-  };
 }

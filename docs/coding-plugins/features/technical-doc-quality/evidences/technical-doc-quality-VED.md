@@ -10,6 +10,8 @@ external_references: []
 ---
 # Technical Doc Quality VED
 
+覆盖 REQ-001。
+
 ## TDD 证据
 
 - **规格/缺陷/验收:** 明确验收：`writing-technicals` 生成的 TSD 不能保留模板残留文本。

@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join, relative } from "node:path";
 import { ARTIFACT_SUFFIXES, DOCUMENT_ARTIFACTS, collectFeatureRoots, documentDocId, documentSuffix, parseFrontmatter as parseDocumentFrontmatter, splitFrontmatter, } from "./document-metadata.js";
@@ -125,17 +126,26 @@ export function parseWorkflowDocument(root, path) {
         errors,
     };
 }
-export function validateDocumentSchemas(root) {
+function summarizeDocument(document) {
+    const { sections, ...rest } = document;
+    return {
+        ...rest,
+        section_names: Object.keys(sections),
+        section_hashes: Object.fromEntries(Object.entries(sections).map(([name, body]) => [name, `sha256:${createHash("sha256").update(body, "utf8").digest("hex")}`])),
+    };
+}
+export function validateDocumentSchemas(root, options = {}) {
     const files = collectFeatureRoots(root).flatMap((featureRoot) => DOCUMENT_ARTIFACTS.flatMap((artifact) => collectMarkdownFiles(join(featureRoot, artifact.directory))));
-    const documents = files
+    const parsedDocuments = files
         .map((path) => parseWorkflowDocument(root, path))
         .filter((document) => document !== null);
-    const chains = validateDocumentChains(root, documents);
+    const chains = validateDocumentChains(root, parsedDocuments, options);
     const chainErrors = chains.flatMap((chain) => chain.errors);
-    const errors = [...documents.flatMap((document) => document.errors), ...chainErrors];
+    const errors = [...parsedDocuments.flatMap((document) => document.errors), ...chainErrors];
+    const documents = options.includeSections === true ? parsedDocuments : parsedDocuments.map(summarizeDocument);
     return { ok: errors.length === 0, root, documents, chains, chain_errors: chainErrors, errors };
 }
-export function validateDocumentChains(root, documents) {
+export function validateDocumentChains(root, documents, options = {}) {
     const groups = new Map();
     for (const document of documents) {
         if (!document.feature || !document.doc_id) {
@@ -156,7 +166,8 @@ export function validateDocumentChains(root, documents) {
         }
         const missingArtifacts = REQUIRED_ARTIFACTS.filter((suffix) => !artifacts[suffix]);
         const standaloneEvidenceOnly = group.every((document) => document.kind === "VED");
-        if (missingArtifacts.length > 0 && !standaloneEvidenceOnly) {
+        const chainType = missingArtifacts.length === 0 ? "complete" : standaloneEvidenceOnly ? "evidence-only" : "incomplete";
+        if (missingArtifacts.length > 0 && !(standaloneEvidenceOnly && options.allowEvidenceOnly === true)) {
             errors.push(`${first.feature}/${first.doc_id} missing artifacts: ${missingArtifacts.join(", ")}`);
         }
         const ted = group.find((document) => document.kind === "TED");
@@ -191,6 +202,7 @@ export function validateDocumentChains(root, documents) {
             ok: errors.length === 0,
             artifacts,
             missing_artifacts: missingArtifacts,
+            chain_type: chainType,
             errors,
         };
     });
