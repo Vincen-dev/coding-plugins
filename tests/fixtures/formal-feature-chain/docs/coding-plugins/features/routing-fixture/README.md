@@ -3,6 +3,7 @@ title: Routing Fixture
 status: active
 feature: routing-fixture
 updated: 2026-07-02
+related_docs: []
 tags:
   - routing-fixture
 ---

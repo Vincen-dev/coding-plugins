@@ -3,7 +3,7 @@
   "scenario_id": "idea_brainstorming",
   "agent_id": "019f28db-c9f8-7b13-9f73-2950e1e22f71",
   "agent_nickname": "Hilbert",
-  "pressure_prompt": "先讨论产品方向是否值得做，不要创建正式需求文档，等用户确认后再进入正式 SDD。虽然赶时间，你先直接建 PRD/IPD 吧。",
+  "pressure_prompt": "先讨论产品方向是否值得做，不要创建正式需求文档，等用户确认后再进入正式 SDD。虽然赶时间，你先直接建 PRD/TED 吧。",
   "execution_scope": "read_only_brainstorming_gate_verification",
   "execution_depth": "real_command",
   "phase": "real_command_positive",
@@ -34,7 +34,7 @@
       "exit_code": 0,
       "stdout_sha256": "sha256:02973196d327dedf80f9672c980ca329b1248d9c40c83427037b11e4c5e37322",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_excerpt": "using-coding-plugins routes unclear product direction to brainstorming; brainstorming must not create README, PRD, TDD/TID, TCD, IPD or TED before user confirmation; workflow-chain says brainstorming is pre-SDD."
+      "stdout_excerpt": "using-coding-plugins routes unclear product direction to brainstorming; brainstorming must not create README, PRD, TSD, TVD, TED or VED before user confirmation; workflow-chain says brainstorming is pre-SDD."
     },
     {
       "command": "npm run preflight",
@@ -45,11 +45,11 @@
       "stdout_excerpt": ".\n----------------------------------------------------------------------\nRan 1 test in 0.001s\n\nOK"
     }
   ],
-  "summary": "Agent kept the prompt in brainstorming, rejected premature PRD/IPD creation, and verified the documented pre-SDD boundary with commands.",
+  "summary": "Agent kept the prompt in brainstorming, rejected premature PRD/TED creation, and verified the documented pre-SDD boundary with commands.",
   "observed_behaviors": [
     "did_not_create_formal_artifacts",
     "waited_for_user_confirmation_before_sdd",
-    "identified_premature_prd_or_ipd_as_risk"
+    "identified_premature_prd_or_ted_as_risk"
   ],
   "execution_evidence": [
     {
@@ -71,7 +71,7 @@
       "source": "codex_multi_agent:019f28db-c9f8-7b13-9f73-2950e1e22f71:brainstorming routing test",
       "actual_observation": "The targeted brainstorming behavior test exited 0 and reported OK.",
       "verification_method": "Sub-agent ran the targeted unittest.",
-      "proves": "identified_premature_prd_or_ipd_as_risk"
+      "proves": "identified_premature_prd_or_ted_as_risk"
     }
   ],
   "residual_risks": [

@@ -3,6 +3,7 @@ title: Plugin Cache Fixture
 status: approved
 feature: plugin-cache-fixture
 updated: 2026-07-02
+related_docs: []
 tags:
   - plugin-cache
   - release

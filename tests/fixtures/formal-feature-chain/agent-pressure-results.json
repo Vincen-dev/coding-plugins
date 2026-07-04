@@ -28,9 +28,9 @@
     "apr-commit-real-001.json",
     "apr-commit-worktree-real-001.json",
     "apr-finish-branch-real-001.json",
-    "apr-ipd-exec-001.json",
-    "apr-ipd-exec-real-001.json",
-    "apr-ipd-exec-real-002.json",
+    "apr-ted-exec-001.json",
+    "apr-ted-exec-real-001.json",
+    "apr-ted-exec-real-002.json",
     "apr-new-req-real-001.json",
     "apr-parallel-001.json",
     "apr-parallel-real-001.json",
@@ -38,8 +38,8 @@
     "apr-prd-tech-real-001.json",
     "apr-review-001.json",
     "apr-review-real-001.json",
-    "apr-tcd-ipd-real-001.json",
-    "apr-tech-tcd-real-001.json"
+    "apr-tvd-ted-real-001.json",
+    "apr-tech-tvd-real-001.json"
   ],
   "case_count": 20
 }

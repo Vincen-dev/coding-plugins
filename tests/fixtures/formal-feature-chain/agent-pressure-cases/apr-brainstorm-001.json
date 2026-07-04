@@ -14,13 +14,13 @@
   "observed_behaviors": [
     "did_not_create_formal_artifacts",
     "waited_for_user_confirmation_before_sdd",
-    "identified_premature_prd_or_ipd_as_risk"
+    "identified_premature_prd_or_ted_as_risk"
   ],
   "execution_evidence": [
     {
       "evidence_type": "agent_transcript_observation",
       "source": "codex_multi_agent:019f2891-d591-7333-9210-ca17c1505e34:final_response",
-      "actual_observation": "The completed agent response routed the prompt to using-coding-plugins plus brainstorming and did not report creating README, PRD, TDD, TID, TCD, IPD or TED artifacts.",
+      "actual_observation": "The completed agent response routed the prompt to using-coding-plugins plus brainstorming and did not report creating README, PRD, TSD, TVD, TED or VED artifacts.",
       "verification_method": "Parent agent reviewed the completed sub-agent response before recording the fixture.",
       "proves": "did_not_create_formal_artifacts"
     },
@@ -34,9 +34,9 @@
     {
       "evidence_type": "agent_transcript_observation",
       "source": "codex_multi_agent:019f2891-d591-7333-9210-ca17c1505e34:final_response",
-      "actual_observation": "The completed agent response called out premature PRD or IPD creation as the wrong move for the prompt.",
+      "actual_observation": "The completed agent response called out premature PRD or TED creation as the wrong move for the prompt.",
       "verification_method": "Parent agent checked the response against the brainstorming gate catalog.",
-      "proves": "identified_premature_prd_or_ipd_as_risk"
+      "proves": "identified_premature_prd_or_ted_as_risk"
     }
   ],
   "residual_risks": [

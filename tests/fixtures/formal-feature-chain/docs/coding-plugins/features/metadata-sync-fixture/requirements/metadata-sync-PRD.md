@@ -6,21 +6,16 @@ feature: metadata-sync-fixture
 doc_id: metadata-sync
 created: 2026-07-02
 updated: 2026-07-02
+related_docs:
+  - docs/coding-plugins/features/metadata-sync-fixture/evidences/metadata-sync-VED.md
+  - docs/coding-plugins/features/metadata-sync-fixture/plans/metadata-sync-TED.md
+  - docs/coding-plugins/features/metadata-sync-fixture/technicals/metadata-sync-TSD.md
+  - docs/coding-plugins/features/metadata-sync-fixture/test-cases/metadata-sync-TVD.md
 tags:
   - metadata
   - sync
 related_code:
   - src/lib/document-metadata.ts
-related_specs: []
-related_technical:
-  - docs/coding-plugins/features/metadata-sync-fixture/technicals/metadata-sync-TDD.md
-  - docs/coding-plugins/features/metadata-sync-fixture/technicals/metadata-sync-TID.md
-related_test_cases:
-  - docs/coding-plugins/features/metadata-sync-fixture/test-cases/metadata-sync-TCD.md
-related_plans:
-  - docs/coding-plugins/features/metadata-sync-fixture/plans/metadata-sync-IPD.md
-related_evidence:
-  - docs/coding-plugins/features/metadata-sync-fixture/evidences/metadata-sync-TED.md
 ---
 # Metadata Sync PRD
 
@@ -39,7 +34,7 @@ related_evidence:
 | Doc ID | metadata-sync |
 | 文档类型 | PRD |
 
-关联关系以 frontmatter 的 `related_*` 字段为准；正文只描述需求点、验收和验证口径。
+关联关系以 frontmatter 的 `related_docs` 字段为准；正文只描述需求点、验收和验证口径。
 
 ## 目标
 
@@ -55,7 +50,7 @@ related_evidence:
 
 - 当前行为：上游 PRD 改动可能导致下游文档过期。
 - 目标用户或调用方：文档链路维护者和 preflight。
-- 约束：同步关系从 PRD 单向传递到 TED。
+- 约束：同步关系从 PRD 单向传递到 VED。
 
 ## 需求总览
 
@@ -67,17 +62,17 @@ related_evidence:
 
 ### 用户或系统价值
 
-读者能判断下游文档是否已评审过上游变更，避免根据过期 TDD、TCD 或 IPD 执行。
+读者能判断下游文档是否已评审过上游变更，避免根据过期 TSD、TVD 或 TED 执行。
 
 ### 需求描述
 
-当 PRD、TDD、TID、TCD 或 IPD 更新后，下游文档必须更新正文或至少更新 `updated` 表示已完成同步评审。
+当 PRD、TSD、TVD 或 TED 更新后，下游文档必须更新正文或至少更新 `updated` 表示已完成同步评审。
 
 ### 行为规则
 
-- PRD 更新要求 TDD、TID、TCD、IPD 和 TED 同步评审。
-- TDD 更新要求 TID、TCD、IPD 和 TED 同步评审。
-- TCD 更新要求 IPD 和 TED 同步评审。
+- PRD 更新要求 TSD、TVD、TED 和 VED 同步评审。
+- TSD 更新要求 TVD、TED 和 VED 同步评审。
+- TVD 更新要求 TED 和 VED 同步评审。
 
 ### 输入与输出
 
@@ -90,7 +85,7 @@ related_evidence:
 
 - API / SDK / CLI：`npm run preflight`。
 - Schema / 数据：frontmatter `updated`。
-- 状态机 / 生命周期：PRD -> TDD -> TID -> TCD -> IPD -> TED。
+- 状态机 / 生命周期：PRD -> TSD -> TVD -> TED -> VED。
 - 维护 / 迁移 / 回归：同步检查必须覆盖同一 `doc_id`。
 
 ### 错误和边界
@@ -109,10 +104,10 @@ related_evidence:
 
 - 验证类型：contract。
 - 覆盖对象：同一 `doc_id` 的同步关系。
-- 后续沉淀：同步校验证据写入 TED。
+- 后续沉淀：同步校验证据写入 VED。
 
 ## 追踪矩阵
 
 | 规格 ID | 验证类型 | 验证证据 | 状态 |
 | --- | --- | --- | --- |
-| REQ-001 | contract | `docs/coding-plugins/features/metadata-sync-fixture/evidences/metadata-sync-TED.md` | 已覆盖 |
+| REQ-001 | contract | `docs/coding-plugins/features/metadata-sync-fixture/evidences/metadata-sync-VED.md` | 已覆盖 |

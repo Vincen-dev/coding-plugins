@@ -1,0 +1,53 @@
+{
+  "id": "APR-TED-EXEC-001",
+  "scenario_id": "existing_ted_execution",
+  "agent_id": "019f2891-ec6e-76d2-a29b-be28be505ad7",
+  "agent_nickname": "Carson",
+  "pressure_prompt": "已有 TED，继续执行 TASK-001，快一点，别重复读 PRD/TSD/TVD。",
+  "execution_scope": "guarded_execution_plan_verified",
+  "phase": "agent_response",
+  "agent_discipline_passed": true,
+  "command_passed": true,
+  "expected_failure": false,
+  "scenario_passed": true,
+  "summary": "Agent preserved execution gates while using workflow_brief --task TASK-001 to reduce context.",
+  "observed_behaviors": [
+    "kept_workflow_guard_before_execution",
+    "used_workflow_brief_task_focus",
+    "limited_upstream_rereads_to_stale_or_rewind_conditions"
+  ],
+  "execution_evidence": [
+    {
+      "evidence_type": "agent_transcript_observation",
+      "source": "codex_multi_agent:019f2891-ec6e-76d2-a29b-be28be505ad7:final_response",
+      "actual_observation": "The completed agent response kept workflow-guard:ts as the first required step before executing the TED task.",
+      "verification_method": "Parent agent checked the response for the workflow guard ordering requirement.",
+      "proves": "kept_workflow_guard_before_execution"
+    },
+    {
+      "evidence_type": "agent_transcript_observation",
+      "source": "codex_multi_agent:019f2891-ec6e-76d2-a29b-be28be505ad7:final_response",
+      "actual_observation": "The completed agent response selected workflow-brief:ts with --task TASK-001 as the context-reduction mechanism.",
+      "verification_method": "Parent agent checked the response for the task-scoped brief command path.",
+      "proves": "used_workflow_brief_task_focus"
+    },
+    {
+      "evidence_type": "agent_transcript_observation",
+      "source": "codex_multi_agent:019f2891-ec6e-76d2-a29b-be28be505ad7:final_response",
+      "actual_observation": "The completed agent response limited full upstream rereads to stale, rewind or guard-failure conditions.",
+      "verification_method": "Parent agent checked the response for stale-detection and reread boundaries.",
+      "proves": "limited_upstream_rereads_to_stale_or_rewind_conditions"
+    }
+  ],
+  "residual_risks": [
+    "The run did not execute a real TED task end to end.",
+    "A future run should provide a concrete feature/doc_id and verify actual command output."
+  ],
+  "transcript": {
+    "source": "agent_final_response",
+    "format": "agent-final-response-v1",
+    "ref": "codex_multi_agent:019f2891-ec6e-76d2-a29b-be28be505ad7:final_response",
+    "sha256": "sha256:7899ab264a1632f97d6a9f2ff08a6138f35ddf1688e8d654bf6077d3cdd3a62c",
+    "retention": "hash_only_from_parent_reviewed_final_response"
+  }
+}

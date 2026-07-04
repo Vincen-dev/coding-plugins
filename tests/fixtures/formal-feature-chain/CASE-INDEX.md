@@ -7,11 +7,11 @@
 - case_id: CASE-ROUTING-001
 - source_type: workflow_regression
 - source_reference: Codex session routing and login state document chain
-- optimization_target: 验证行为类需求从 PRD 到 TID、TCD、IPD、TED 的闭环。
+- optimization_target: 验证行为类需求从 PRD 到 TSD、TVD、TED、VED 的闭环。
 - covered_risks:
-  - PRD 写了登录分流需求，但下游实现点没有承接。
+  - PRD 写了登录分流需求，但 TSD 技术方案文档没有承接。
   - 测试用例只描述操作，没有绑定需求编号。
-  - TED 证据无法说明最终验证覆盖了哪个需求。
+  - VED 证据无法说明最终验证覆盖了哪个需求。
 
 ## creek-wrapper-fixture
 
@@ -20,9 +20,9 @@
 - source_reference: evobeing_creek_wrapper upload status contract
 - optimization_target: 验证 SDK wrapper API 契约、状态枚举和证据归档的闭环。
 - covered_risks:
-  - API 契约只停留在 PRD 正文，TID 没有实现点。
-  - TCD 未覆盖状态枚举和边界输入。
-  - TED 无法证明 contract 验证覆盖了必须需求。
+  - API 契约只停留在 PRD 正文，TSD 技术方案文档没有实现点。
+  - TVD 未覆盖状态枚举和边界输入。
+  - VED 无法证明 contract 验证覆盖了必须需求。
 
 ## plugin-cache-fixture
 
@@ -32,19 +32,19 @@
 - optimization_target: 验证插件发布、安装缓存刷新和仓库实现一致性的文档闭环。
 - covered_risks:
   - 仓库实现已更新，但安装缓存仍使用旧链路。
-  - IPD 只复述技术方案，没有形成可执行任务。
-  - TED 没有记录缓存刷新验证结果。
+  - TED 只复述技术方案，没有形成可执行任务。
+  - VED 没有记录缓存刷新验证结果。
 
 ## workflow-state-fixture
 
 - case_id: CASE-STATE-001
 - source_type: workflow_contract
 - source_reference: spec-superflow state and contract freshness analysis
-- optimization_target: 验证已有 IPD 执行前能检测 feature/doc_id 当前阶段、上游文档 hash 和 plan stale 状态。
+- optimization_target: 验证已有 TED 执行前能检测 feature/doc_id 当前阶段、上游文档 hash 和 plan stale 状态。
 - covered_risks:
-  - 代理恢复旧任务时只凭聊天记忆继续执行，没有检查 PRD/TDD/TID/TCD/IPD 是否齐全。
-  - 上游需求、技术或测试用例变更后，IPD 仍被当成可执行计划。
-  - IPD 没有明确 Intent Lock、Scope Fence、Required Tests 和 Rewind Triggers，导致实现阶段 scope drift。
+  - 代理恢复旧任务时只凭聊天记忆继续执行，没有检查 PRD/TSD/TVD/TED 是否齐全。
+  - 上游需求、技术或测试用例变更后，TED 仍被当成可执行计划。
+  - TED 没有明确 Intent Lock、Scope Fence、Required Tests 和 Rewind Triggers，导致实现阶段 scope drift。
 
 ## metadata-sync-fixture
 
@@ -62,12 +62,14 @@
 - case_id: CASE-TECHNICAL-QUALITY-001
 - source_type: quality_regression
 - source_reference: writing-technicals generated document readability and unfinished template content
-- optimization_target: 验证 TDD/TID 不只满足结构闭包，还要拒绝未替换模板占位和不可交接的空泛内容。
-- executable_regression: `tests/ts/test_document_metadata.mjs` 中的 technical quality validator case。
+- optimization_target: 验证 TSD 技术方案文档不只满足结构闭包，还要拒绝未替换模板占位、表格滥用、正文重复文档关系和不可交接的空泛内容。
+- executable_regression: `tests/ts/test_document_metadata.mjs` 中的 technical quality validator/template cases。
 - covered_risks:
-  - TDD/TID 保留 `<...>`、`YYYY-MM-DD` 或模板说明，却仍通过 preflight。
-  - TDD 看似有映射表，但阅读摘要和设计摘要不能支持评审。
-  - TID 存在文件但没有真实实现边界，导致 IPD 和 TCD 只能继续复述空泛方案。
+  - TSD 保留 `<...>`、`YYYY-MM-DD` 或模板说明，却仍通过 preflight。
+  - TSD 看似有映射表，但阅读摘要和设计摘要不能支持评审。
+  - TSD 没有真实实现边界，导致 TED 和 TVD 只能继续复述空泛方案。
+  - TSD 模板正文充满普通信息表格，读者只能机械填表而无法快速理解方案。
+  - TSD 正文重复维护 PRD/TVD/TED/VED 路径，和 frontmatter `related_docs`、INDEX 的机器关系源冲突。
 
 ## brainstorming-fixture
 
@@ -76,7 +78,7 @@
 - source_reference: pre-SDD idea exploration and solution comparison
 - optimization_target: 验证方案讨论、产品方向不清或是否值得做的入口先进入 brainstorming，而不是直接创建正式 PRD 链路。
 - covered_risks:
-  - 用户只要求方案讨论，插件却过早创建 README、PRD、TDD、TCD、IPD 或 TED。
+  - 用户只要求方案讨论，插件却过早创建 README、PRD、TSD、TVD、TED 或 VED。
   - brainstorming 产物被误当成 approved 需求，绕过 SDD 和用户确认。
   - 方案比较没有明确目标、非目标、推荐路径和进入 SDD 的门禁。
 
@@ -107,11 +109,11 @@
 - case_id: CASE-BUG-001
 - source_type: workflow_regression
 - source_reference: systematic debugging before TDD bugfix
-- optimization_target: 验证 bug、CI 失败和异常行为必须先稳定复现或定位根因，再进入 TDD 修复和 TED 证据。
+- optimization_target: 验证 bug、CI 失败和异常行为必须先稳定复现或定位根因，再进入 TDD 修复和 VED 证据。
 - covered_risks:
   - 代理看到错误后直接改代码，没有复现、根因或失败测试。
   - 修复完成只报告“已解决”，没有 verification-before-completion 证据。
-  - TED 证据无法区分 bug 复现、RED 失败和最终验证。
+  - VED 证据无法区分 bug 复现、RED 失败和最终验证。
 
 ## review-feedback-fixture
 

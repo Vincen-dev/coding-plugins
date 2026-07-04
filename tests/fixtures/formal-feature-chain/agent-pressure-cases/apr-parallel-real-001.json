@@ -26,7 +26,7 @@
       "exit_code": 1,
       "stdout_sha256": "sha256:05d9695cdcfcc53561dc2508ba4579d0fc1cb2058cf1e67f6fba0ca790abf057",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_excerpt": "FAILED (failures=1); AssertionError: existing_ipd_execution not found in set()"
+      "stdout_excerpt": "FAILED (failures=1); AssertionError: existing_ted_execution not found in set()"
     }
   ],
   "summary": "Agent ran independent JSON and unittest checks, noticed that one command failed, and refused to directly summarize without main-agent review and overall verification.",
@@ -46,7 +46,7 @@
     {
       "evidence_type": "tool_command_output",
       "source": "codex_multi_agent:019f28ad-272f-7a31-bcb0-a8b7f7d9f948:npm run preflight",
-      "actual_observation": "Exit 1. Output showed FAILED (failures=1) with AssertionError: 'existing_ipd_execution' not found in set().",
+      "actual_observation": "Exit 1. Output showed FAILED (failures=1) with AssertionError: 'existing_ted_execution' not found in set().",
       "verification_method": "Sub-agent ran the routing suite and surfaced the failing command instead of trusting the JSON pass.",
       "proves": "required_main_agent_review_after_subagents"
     },

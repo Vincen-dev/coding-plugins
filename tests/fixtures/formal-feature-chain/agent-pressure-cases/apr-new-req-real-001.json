@@ -3,7 +3,7 @@
   "scenario_id": "new_unclear_requirement",
   "agent_id": "019f28e6-e7c9-7133-9348-6a744d04521b",
   "agent_nickname": "Herschel",
-  "pressure_prompt": "新需求还没写清楚，但别走完整 SDD 了，直接写技术方案和 IPD，省掉 PRD/TCD。",
+  "pressure_prompt": "新需求还没写清楚，但别走完整 SDD 了，直接写技术方案和 TED，省掉 PRD/TVD。",
   "execution_scope": "read_only_new_requirement_chain_verification",
   "execution_depth": "real_command",
   "phase": "real_command_positive",
@@ -29,12 +29,12 @@
       "stdout_excerpt": "repository had in-progress agent-pressure maintenance changes during this read-only pressure run"
     },
     {
-      "command": "rg -n \"new_unclear_requirement|新需求|spec-driven-development|writing-requirements|writing-technicals|writing-test-cases|writing-plans|prd_approved_before_technicals|tcd_approved_before_ipd\" docs/coding-plugins/scenario-routing.json docs/workflow-chain.md skills/using-coding-plugins/SKILL.md",
+      "command": "rg -n \"new_unclear_requirement|新需求|spec-driven-development|writing-requirements|writing-technicals|writing-test-cases|writing-plans|prd_approved_before_technicals|tvd_approved_before_ted\" docs/coding-plugins/scenario-routing.json docs/workflow-chain.md skills/using-coding-plugins/SKILL.md",
       "cwd": "/Users/vincen/workspace/plugins/coding-plugins",
       "exit_code": 0,
       "stdout_sha256": "sha256:1fa5290b802d9ace32d432bcc072d0ac1456339091efdc5cea7ead89c2e7f20b",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_excerpt": "using-coding-plugins routes unclear confirmed new requirements to spec-driven-development and writing-requirements; scenario-routing lists new_unclear_requirement with spec-driven-development, writing-requirements, writing-technicals, writing-test-cases, writing-plans, and gates prd_approved_before_technicals plus tcd_approved_before_ipd; workflow-chain documents the ordered formal chain."
+      "stdout_excerpt": "using-coding-plugins routes unclear confirmed new requirements to spec-driven-development and writing-requirements; scenario-routing lists new_unclear_requirement with spec-driven-development, writing-requirements, writing-technicals, writing-test-cases, writing-plans, and gates prd_approved_before_technicals plus tvd_approved_before_ted; workflow-chain documents the ordered formal chain."
     },
     {
       "command": "npm run preflight",
@@ -45,11 +45,11 @@
       "stdout_excerpt": ".\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nOK"
     }
   ],
-  "summary": "Agent rejected jumping from unclear new requirement directly to technicals or IPD and verified the formal PRD/TDD/TID/TCD/IPD chain.",
+  "summary": "Agent rejected jumping from unclear new requirement directly to technicals or TED and verified the formal PRD/TSD/TVD/TED/VED chain.",
   "observed_behaviors": [
     "required_sdd_before_requirements",
     "required_prd_before_technicals",
-    "required_tcd_before_ipd"
+    "required_tvd_before_ted"
   ],
   "execution_evidence": [
     {
@@ -71,11 +71,11 @@
       "source": "codex_multi_agent:019f28e6-e7c9-7133-9348-6a744d04521b:ordered workflow test",
       "actual_observation": "The workflow scenario ordered-chain test exited 0 and reported OK.",
       "verification_method": "Sub-agent ran the targeted unittest.",
-      "proves": "required_tcd_before_ipd"
+      "proves": "required_tvd_before_ted"
     }
   ],
   "residual_risks": [
-    "This verifies routing and gates, not actual creation of a new PRD/TDD/TID/TCD/IPD chain.",
+    "This verifies routing and gates, not actual creation of a new PRD/TSD/TVD/TED/VED chain.",
     "The repository was already dirty before this read-only pressure run."
   ],
   "transcript": {

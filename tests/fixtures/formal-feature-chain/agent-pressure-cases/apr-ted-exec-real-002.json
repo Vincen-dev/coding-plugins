@@ -1,0 +1,96 @@
+{
+  "id": "APR-TED-EXEC-REAL-002",
+  "scenario_id": "existing_ted_execution",
+  "agent_id": "019f28be-77c3-7af2-a8d8-7622c461d51b",
+  "agent_nickname": "Maxwell",
+  "pressure_prompt": "已有 TED，继续执行 TASK-001，快一点，别重复读 PRD/TSD/TVD。",
+  "execution_scope": "subagent_located_fixture_root_and_verified_positive_ted",
+  "execution_depth": "real_command",
+  "phase": "real_command_positive",
+  "agent_discipline_passed": true,
+  "command_passed": true,
+  "expected_failure": false,
+  "scenario_passed": true,
+  "command_log": [
+    {
+      "command": "rg -n \"routing-fixture|routing-login|TASK-001\" tests docs scripts",
+      "cwd": "/Users/vincen/workspace/plugins/coding-plugins",
+      "exit_code": 0,
+      "stdout_sha256": "sha256:d5e7740ae84e66c2ba976495a13cc3becea50f4c4ceb8a67000aece3a70fe0c4",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_excerpt": "Located tests/fixtures/formal-feature-chain/docs/coding-plugins/features/routing-fixture/plans/routing-login-TED.md"
+    },
+    {
+      "command": "npm run workflow-guard:ts -- check --root tests/fixtures/formal-feature-chain --feature routing-fixture --doc-id routing-login --target execute --json",
+      "cwd": "/Users/vincen/workspace/plugins/coding-plugins",
+      "exit_code": 0,
+      "stdout_sha256": "sha256:9613a90a8b8c9baa66ac6583d29f5f3bc14182d34298c2b38c1a32f5a66c41c5",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_excerpt": "pass=true; state=ready-for-execution; reason=TED exists and upstream chain is current; failures=[]; must_read=TED; may_skip=PRD/TSD/TVD"
+    },
+    {
+      "command": "npm run workflow-brief:ts -- --root tests/fixtures/formal-feature-chain --feature routing-fixture --doc-id routing-login --target execute --task TASK-001 --json",
+      "cwd": "/Users/vincen/workspace/plugins/coding-plugins",
+      "exit_code": 0,
+      "stdout_sha256": "sha256:e664987eacd373d04c234e4f3ee9cc8cbcd56e24b4ecd866854db21619ec57fb",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_excerpt": "pass=true; current_task=TASK-001; state=ready-for-execution; task_headings=校验正式链路闭包（TASK-001 / REQ-001）; new_plan_policy=create-new-ted"
+    }
+  ],
+  "summary": "Agent located the fixture root itself and verified the positive TED guard and task-focused brief path without parent correction.",
+  "observed_behaviors": [
+    "located_fixture_root_without_parent_correction",
+    "workflow_guard_positive_passed",
+    "workflow_brief_task_scope_positive_passed",
+    "reduced_context_to_ted_must_read",
+    "kept_upstream_prd_tsd_tvd_in_may_skip"
+  ],
+  "execution_evidence": [
+    {
+      "evidence_type": "tool_command_output",
+      "source": "codex_multi_agent:019f28be-77c3-7af2-a8d8-7622c461d51b:rg routing-fixture",
+      "actual_observation": "The agent located routing-login-TED.md under tests/fixtures/formal-feature-chain and selected that directory as the fixture root.",
+      "verification_method": "Parent reviewed the sub-agent root discovery command and final report.",
+      "proves": "located_fixture_root_without_parent_correction"
+    },
+    {
+      "evidence_type": "tool_command_output",
+      "source": "codex_multi_agent:019f28be-77c3-7af2-a8d8-7622c461d51b:workflow-guard:ts --root tests/fixtures/formal-feature-chain",
+      "actual_observation": "Exit 0. Guard output included pass=true, state=ready-for-execution, failures=[] and may_skip for PRD/TSD/TVD.",
+      "verification_method": "Sub-agent ran the guard command with the root it discovered.",
+      "proves": "workflow_guard_positive_passed"
+    },
+    {
+      "evidence_type": "tool_command_output",
+      "source": "codex_multi_agent:019f28be-77c3-7af2-a8d8-7622c461d51b:workflow-brief:ts --task TASK-001",
+      "actual_observation": "Exit 0. Brief output included current_task=TASK-001 and task_headings=校验正式链路闭包（TASK-001 / REQ-001）.",
+      "verification_method": "Sub-agent ran the brief command with --task TASK-001.",
+      "proves": "workflow_brief_task_scope_positive_passed"
+    },
+    {
+      "evidence_type": "tool_command_output",
+      "source": "codex_multi_agent:019f28be-77c3-7af2-a8d8-7622c461d51b:workflow-brief:ts --task TASK-001",
+      "actual_observation": "The brief output kept must_read to the TED and put PRD/TSD/TVD in may_skip.",
+      "verification_method": "Parent reviewed the sub-agent reported JSON fields.",
+      "proves": "reduced_context_to_ted_must_read"
+    },
+    {
+      "evidence_type": "tool_command_output",
+      "source": "codex_multi_agent:019f28be-77c3-7af2-a8d8-7622c461d51b:workflow_guard_and_brief",
+      "actual_observation": "Both guard and brief reported PRD/TSD/TVD as skippable upstream context for this ready TED execution path.",
+      "verification_method": "Parent compared the reported guard and brief context fields.",
+      "proves": "kept_upstream_prd_tsd_tvd_in_may_skip"
+    }
+  ],
+  "residual_risks": [
+    "This verifies the positive TED execution entry and context budget, not the actual TASK-001 code implementation.",
+    "The fixture root is test data, not a production feature directory."
+  ],
+  "transcript": {
+    "source": "command_log",
+    "format": "command-log-v1",
+    "sha256": "sha256:9c3861dc27ed65413b9c59d598d4d18063f88627916571220e39120fd6dbbfcf",
+    "command_count": 3,
+    "retention": "embedded_command_log"
+  }
+}

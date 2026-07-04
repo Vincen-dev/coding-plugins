@@ -6,21 +6,16 @@ feature: creek-wrapper-fixture
 doc_id: creek-upload-status
 created: 2026-07-02
 updated: 2026-07-02
+related_docs:
+  - docs/coding-plugins/features/creek-wrapper-fixture/evidences/creek-upload-status-VED.md
+  - docs/coding-plugins/features/creek-wrapper-fixture/plans/creek-upload-status-TED.md
+  - docs/coding-plugins/features/creek-wrapper-fixture/technicals/creek-upload-status-TSD.md
+  - docs/coding-plugins/features/creek-wrapper-fixture/test-cases/creek-upload-status-TVD.md
 tags:
   - creek
   - sdk-wrapper
 related_code:
   - lib/creek_health_data_source.dart
-related_specs: []
-related_technical:
-  - docs/coding-plugins/features/creek-wrapper-fixture/technicals/creek-upload-status-TDD.md
-  - docs/coding-plugins/features/creek-wrapper-fixture/technicals/creek-upload-status-TID.md
-related_test_cases:
-  - docs/coding-plugins/features/creek-wrapper-fixture/test-cases/creek-upload-status-TCD.md
-related_plans:
-  - docs/coding-plugins/features/creek-wrapper-fixture/plans/creek-upload-status-IPD.md
-related_evidence:
-  - docs/coding-plugins/features/creek-wrapper-fixture/evidences/creek-upload-status-TED.md
 ---
 # Creek Upload Status PRD
 
@@ -39,7 +34,7 @@ related_evidence:
 | Doc ID | creek-upload-status |
 | 文档类型 | PRD |
 
-关联关系以 frontmatter 的 `related_*` 字段为准；正文只描述需求点、验收和验证口径。
+关联关系以 frontmatter 的 `related_docs` 字段为准；正文只描述需求点、验收和验证口径。
 
 ## 目标
 
@@ -55,7 +50,7 @@ related_evidence:
 
 - 当前行为：fixture 模拟 wrapper 需要暴露上传状态。
 - 目标用户或调用方：业务 App、同步任务和回归测试。
-- 约束：契约必须能被测试用例和 TED 证据追踪。
+- 约束：契约必须能被测试用例和 VED 证据追踪。
 
 ## 需求总览
 
@@ -109,10 +104,10 @@ Wrapper 提供上传状态查询能力，调用方传入数据类型和时间范
 
 - 验证类型：contract。
 - 覆盖对象：API 输入输出和状态枚举。
-- 后续沉淀：测试用例写入 TCD，执行任务写入 IPD，实际证据写入 TED。
+- 后续沉淀：测试用例写入 TVD，执行任务写入 TED，实际证据写入 VED。
 
 ## 追踪矩阵
 
 | 规格 ID | 验证类型 | 验证证据 | 状态 |
 | --- | --- | --- | --- |
-| REQ-001 | contract | `docs/coding-plugins/features/creek-wrapper-fixture/evidences/creek-upload-status-TED.md` | 已覆盖 |
+| REQ-001 | contract | `docs/coding-plugins/features/creek-wrapper-fixture/evidences/creek-upload-status-VED.md` | 已覆盖 |

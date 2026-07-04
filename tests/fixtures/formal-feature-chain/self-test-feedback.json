@@ -32,16 +32,16 @@
     },
     {
       "id": "FB-NEWREQ-002",
-      "user_prompt": "这个接口契约要落地，PRD、技术设计、测试用例和 IPD 都要串起来。",
+      "user_prompt": "这个接口契约要落地，PRD、技术设计、测试用例和 TED 都要串起来。",
       "expected_scenario_id": "new_unclear_requirement",
       "expected_skills": ["writing-test-cases", "writing-plans"],
-      "expected_gate_ids": ["technicals_approved_before_tcd", "tcd_approved_before_ipd"],
+      "expected_gate_ids": ["technicals_approved_before_tvd", "tvd_approved_before_ted"],
       "expected_case_ids": ["CASE-METADATA-001"],
       "feedback_signal": "gate"
     },
     {
       "id": "FB-PRD-TECH-001",
-      "user_prompt": "PRD 已经 approved，现在需要写 TDD 和 TID。",
+      "user_prompt": "PRD 已经 approved，现在需要写 TSD 技术方案文档。",
       "expected_scenario_id": "approved_prd_to_technicals",
       "expected_skills": ["document-metadata", "writing-technicals"],
       "expected_gate_ids": ["approved_prd_required"],
@@ -58,8 +58,8 @@
       "feedback_signal": "artifact"
     },
     {
-      "id": "FB-TECH-TCD-001",
-      "user_prompt": "TDD 和 TID 都完成了，下一步补测试用例设计。",
+      "id": "FB-TECH-TVD-001",
+      "user_prompt": "TSD 技术方案文档完成了，下一步补测试用例设计。",
       "expected_scenario_id": "technicals_to_test_cases",
       "expected_skills": ["document-metadata", "writing-test-cases"],
       "expected_gate_ids": ["approved_technicals_required"],
@@ -67,7 +67,7 @@
       "feedback_signal": "route"
     },
     {
-      "id": "FB-TECH-TCD-002",
+      "id": "FB-TECH-TVD-002",
       "user_prompt": "技术方案已批准，把 metadata 同步场景的测试矩阵补齐。",
       "expected_scenario_id": "technicals_to_test_cases",
       "expected_skills": ["writing-test-cases"],
@@ -76,36 +76,36 @@
       "feedback_signal": "artifact"
     },
     {
-      "id": "FB-TCD-IPD-001",
+      "id": "FB-TVD-TED-001",
       "user_prompt": "测试用例文档已经 approved，开始写任务执行文档。",
       "expected_scenario_id": "test_cases_to_plan",
       "expected_skills": ["document-metadata", "writing-plans"],
-      "expected_gate_ids": ["approved_tcd_required"],
+      "expected_gate_ids": ["approved_tvd_required"],
       "expected_case_ids": ["CASE-ROUTING-001"],
       "feedback_signal": "route"
     },
     {
-      "id": "FB-TCD-IPD-002",
-      "user_prompt": "生成 IPD 时只指定 TED 目标，不要把 TED 当成立即产物。",
+      "id": "FB-TVD-TED-002",
+      "user_prompt": "生成 TED 时只指定 VED 目标，不要把 VED 当成立即产物。",
       "expected_scenario_id": "test_cases_to_plan",
       "expected_skills": ["writing-plans"],
-      "expected_gate_ids": ["ted_target_only"],
+      "expected_gate_ids": ["ved_target_only"],
       "expected_case_ids": ["CASE-CACHE-001"],
       "feedback_signal": "artifact"
     },
     {
-      "id": "FB-IPD-EXEC-001",
-      "user_prompt": "已有 IPD 了，继续执行 TASK-001，先确认隔离工作区。",
-      "expected_scenario_id": "existing_ipd_execution",
+      "id": "FB-TED-EXEC-001",
+      "user_prompt": "已有 TED 了，继续执行 TASK-001，先确认隔离工作区。",
+      "expected_scenario_id": "existing_ted_execution",
       "expected_skills": ["using-git-worktrees", "subagent-driven-development"],
       "expected_gate_ids": ["worktree_decision_before_execution"],
       "expected_case_ids": ["CASE-STATE-001"],
       "feedback_signal": "execution"
     },
     {
-      "id": "FB-IPD-EXEC-002",
-      "user_prompt": "按 IPD 实现任务，但必须先 RED，再 GREEN，完成前跑验证。",
-      "expected_scenario_id": "existing_ipd_execution",
+      "id": "FB-TED-EXEC-002",
+      "user_prompt": "按 TED 实现任务，但必须先 RED，再 GREEN，完成前跑验证。",
+      "expected_scenario_id": "existing_ted_execution",
       "expected_skills": ["test-driven-development", "verification-before-completion"],
       "expected_gate_ids": ["red_before_green", "verification_before_completion"],
       "expected_case_ids": ["CASE-CACHE-001"],

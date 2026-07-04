@@ -6,21 +6,16 @@ feature: plugin-cache-fixture
 doc_id: plugin-cache-refresh
 created: 2026-07-02
 updated: 2026-07-02
+related_docs:
+  - docs/coding-plugins/features/plugin-cache-fixture/evidences/plugin-cache-refresh-VED.md
+  - docs/coding-plugins/features/plugin-cache-fixture/plans/plugin-cache-refresh-TED.md
+  - docs/coding-plugins/features/plugin-cache-fixture/technicals/plugin-cache-refresh-TSD.md
+  - docs/coding-plugins/features/plugin-cache-fixture/test-cases/plugin-cache-refresh-TVD.md
 tags:
   - plugin-cache
   - release
 related_code:
   - .codex-plugin/plugin.json
-related_specs: []
-related_technical:
-  - docs/coding-plugins/features/plugin-cache-fixture/technicals/plugin-cache-refresh-TDD.md
-  - docs/coding-plugins/features/plugin-cache-fixture/technicals/plugin-cache-refresh-TID.md
-related_test_cases:
-  - docs/coding-plugins/features/plugin-cache-fixture/test-cases/plugin-cache-refresh-TCD.md
-related_plans:
-  - docs/coding-plugins/features/plugin-cache-fixture/plans/plugin-cache-refresh-IPD.md
-related_evidence:
-  - docs/coding-plugins/features/plugin-cache-fixture/evidences/plugin-cache-refresh-TED.md
 ---
 # Plugin Cache Refresh PRD
 
@@ -39,7 +34,7 @@ related_evidence:
 | Doc ID | plugin-cache-refresh |
 | 文档类型 | PRD |
 
-关联关系以 frontmatter 的 `related_*` 字段为准；正文只描述需求点、验收和验证口径。
+关联关系以 frontmatter 的 `related_docs` 字段为准；正文只描述需求点、验收和验证口径。
 
 ## 目标
 
@@ -109,10 +104,10 @@ related_evidence:
 
 - 验证类型：config。
 - 覆盖对象：manifest 版本和缓存版本。
-- 后续沉淀：执行命令和结果写入 TED。
+- 后续沉淀：执行命令和结果写入 VED。
 
 ## 追踪矩阵
 
 | 规格 ID | 验证类型 | 验证证据 | 状态 |
 | --- | --- | --- | --- |
-| REQ-001 | config | `docs/coding-plugins/features/plugin-cache-fixture/evidences/plugin-cache-refresh-TED.md` | 已覆盖 |
+| REQ-001 | config | `docs/coding-plugins/features/plugin-cache-fixture/evidences/plugin-cache-refresh-VED.md` | 已覆盖 |
