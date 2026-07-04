@@ -1,5 +1,14 @@
 # Release Notes
 
+## 1.0.18 - 2026-07-05
+
+- 将 CLI 命令入口收敛到共享 command registry，避免 `bin` 和帮助文本维护第二套命令映射。
+- `doctor` 新增跨平台安装状态汇总，覆盖 Codex、Claude、Gemini、本地 skills、Cursor 和 Copilot。
+- 扩展 agent pressure harness 和 fixture，新增长会话压缩、TED stale、平台不可用等真实命令压力样本。
+- 增加团队发布 checklist，明确 release branch/PR、preflight、strict audit、tag、remote audit 和本地插件缓存刷新步骤。
+- 调整 `git-commit` 提交语言策略：用户未明确指定时先沿用历史提交语言，历史缺失或混合时再询问，对话语言只作为最后兜底。
+- 提升插件、npm package、lockfile 和版本提升配置到 `1.0.18`。
+
 ## 1.0.17 - 2026-07-04
 
 - 强化正式 PRD/TSD/TVD/TED/VED 链路入口，要求先运行 `coding-plugins start`，再按 CLI 状态进入对应 skill 和 `workflow-guard`。
