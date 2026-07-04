@@ -14,6 +14,7 @@ function packFiles() {
   const result = spawnSync("npm", ["pack", "--dry-run", "--json"], {
     cwd: repoRoot,
     encoding: "utf8",
+    env: { ...process.env, NPM_CONFIG_CACHE: "/private/tmp/codex-npm-cache", npm_config_cache: "/private/tmp/codex-npm-cache" },
   });
 
   assert.equal(result.status, 0, result.stderr);
@@ -28,8 +29,17 @@ test("npm package includes runtime entrypoints and excludes generated caches", (
   for (const required of [
     "package.json",
     "bin/coding-plugins.js",
+    "dist/index.js",
+    "dist/index.d.ts",
+    "dist/src/cli/start.js",
+    "dist/src/cli/workflow/start.js",
+    "dist/src/cli/doctor.js",
+    "dist/src/cli/documents/doctor.js",
+    "dist/skills/using-coding-plugins/scripts/workflow-mode.js",
     "src/cli/bump-version.ts",
+    "src/cli/release/bump-version.ts",
     "src/cli/prepare-release.ts",
+    "src/cli/release/prepare-release.ts",
     ".codex-plugin/plugin.json",
     ".claude-plugin/plugin.json",
     "plugin.json",
@@ -69,9 +79,12 @@ test("npm package and workflows use TypeScript runtime without Python", () => {
     assert.ok(text.includes("npm run preflight"), `${workflow} must run npm preflight`);
   }
 
-  const preflight = readFileSync(resolve(repoRoot, "src/cli/preflight.ts"), "utf8");
+  const preflight = readFileSync(resolve(repoRoot, "src/cli/release/preflight.ts"), "utf8");
   assert.ok(!preflight.includes(`scripts/preflight${pySuffix}`), "TypeScript preflight must not delegate to Python preflight");
   assert.ok(!preflight.includes("External reference checks are not required"), "preflight must not no-op external reference checks");
+
+  const bin = readFileSync(resolve(repoRoot, "bin/coding-plugins.js"), "utf8");
+  assert.ok(bin.includes('resolve(root, "dist", path.replace(/\\.ts$/, ".js"))'), "bin must prefer compiled dist JavaScript runtime");
 });
 
 test("published text files do not document Python entrypoints", () => {
@@ -126,4 +139,11 @@ test("published docs describe runtime and release distribution boundaries", () =
     "INSTALL.md must state that the current release workflow does not publish to npm",
   );
   assert.ok(!releaseWorkflow.includes("npm publish"), "release workflow must stay aligned with the documented non-npm-publish boundary");
+});
+
+test("security audit exposes a strict release mode that runs build and preflight", () => {
+  const source = readFileSync(resolve(repoRoot, "src/cli/release/security-audit.ts"), "utf8");
+  assert.ok(source.includes("--strict-release"), "security audit must expose --strict-release");
+  assert.ok(source.includes('"npm", ["run", "build"]'), "strict release audit must run build");
+  assert.ok(source.includes('"npm", ["run", "preflight"]'), "strict release audit must run preflight");
 });

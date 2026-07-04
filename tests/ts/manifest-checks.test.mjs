@@ -36,6 +36,7 @@ function writeValidFixture(root, version = "1.2.3") {
   mkdirSync(join(root, "skills"), { recursive: true });
   mkdirSync(join(root, "assets"), { recursive: true });
   mkdirSync(join(root, "bin"), { recursive: true });
+  mkdirSync(join(root, "dist"), { recursive: true });
   mkdirSync(join(root, "src", "cli"), { recursive: true });
   mkdirSync(join(root, "tests", "ts"), { recursive: true });
 
@@ -44,6 +45,8 @@ function writeValidFixture(root, version = "1.2.3") {
   }
   writeFileSync(join(root, "assets/logo.svg"), "<svg></svg>\n", "utf8");
   writeFileSync(join(root, "bin/coding-plugins.js"), "#!/usr/bin/env node\n", "utf8");
+  writeFileSync(join(root, "dist/index.d.ts"), "export {};\n", "utf8");
+  writeFileSync(join(root, "dist/index.js"), "export {};\n", "utf8");
   writeFileSync(join(root, "src/cli/bump-version.ts"), "export {};\n", "utf8");
   writeFileSync(join(root, "src/cli/preflight.ts"), "export {};\n", "utf8");
   writeFileSync(join(root, "src/cli/prepare-release.ts"), "export {};\n", "utf8");
@@ -63,8 +66,11 @@ function writeValidFixture(root, version = "1.2.3") {
     name: "@vincen-dev/coding-plugins",
     version,
     type: "module",
+    main: "./dist/index.js",
+    types: "./dist/index.d.ts",
     bin: { "coding-plugins": "./bin/coding-plugins.js" },
     scripts: {
+      build: "node scripts/build-dist.mjs",
       "test:ts": "npm run preflight",
       typecheck: "tsc --noEmit",
       preflight: "node src/cli/preflight.ts",
@@ -75,6 +81,7 @@ function writeValidFixture(root, version = "1.2.3") {
     },
     files: [
       "bin/",
+      "dist/",
       "src/",
       "skills/",
       "hooks/",

@@ -52,7 +52,8 @@ brainstorming
 | 设计原则 | 说明 |
 | --- | --- |
 | Spec First | 需求、技术设计、测试用例和 TED 未准备好时，不急着实现 |
-| TED Contract | 执行阶段以当前任务章节、执行锁定区和 `source_hash` 为准 |
+| Start Contract | 用户级入口先运行 `coding-plugins start`，再选择 skill，避免纯对话判断 |
+| TED Contract | 执行阶段以当前任务章节、生成的 execution contract 和 `source_hash` 为准 |
 | Guarded Execution | `workflow-state.ts`、`workflow-guard.ts`、`workflow-brief.ts` 负责状态、新鲜度和短上下文 |
 | TDD Discipline | 生产代码前先写失败测试，完成后记录 TDD Evidence 或例外 |
 | Review Gate | 子代理实现后做规格符合性和代码质量评审 |
@@ -86,22 +87,21 @@ brainstorming
 
 ## 推荐使用方式
 
-入口永远从 `using-coding-plugins` 开始。
+入口永远从 `coding-plugins start` 开始。
 
 安装后告诉 Agent：
 
-```text
-使用 coding-plugins:using-coding-plugins 开始
+```bash
+coding-plugins start --intent "我要实现 <功能>" --root .
 ```
 
-或在 Claude Code 中：
+已有正式文档链时：
 
-```text
-/coding-plugins:using-coding-plugins
-/coding-plugins:brainstorming
+```bash
+coding-plugins start --root . --feature <feature> --doc-id <doc-id> --intent "开始执行"
 ```
 
-`using-coding-plugins` 是默认入口；`brainstorming` 是构思入口，适合方案讨论、价值判断和产品方向还不清楚的阶段。入口 skill 会先判断这是咨询、构思、规格、实现、调试、评审、提交还是收尾，再路由到对应 skill。
+`using-coding-plugins` 仍是 skill 层入口，但不再替代用户级 CLI 判断。正式 PRD/TSD/TVD/TED/VED 工作必须先让 `start`、`state`、`validate`、`workflow-guard` 或 `execution-contract` 给出状态和下一命令，再进入对应 skill。
 
 ## 工作流
 
@@ -109,8 +109,8 @@ brainstorming
 你说：“帮我做一个权限控制”
         |
         v
-using-coding-plugins
-  判断任务类型，选择轻量路径或正式 SDD 链路
+coding-plugins start
+  检查 intent、state、schema 和文档链，输出下一命令和 skill
         |
         v
 brainstorming
@@ -125,8 +125,8 @@ writing-requirements -> writing-technicals -> writing-test-cases -> writing-plan
   需求、技术设计、测试用例和 TED 任务执行文档落盘
         |
         v
-workflow-state.ts + workflow-guard.ts + workflow-brief.ts
-  检查状态、source_hash、新鲜度、执行锁定区和当前任务短上下文
+state + validate + workflow-guard + execution-contract
+  检查 .coding-plugins.yaml、schema、source_hash、新鲜度和执行契约
         |
         v
 subagent-driven-development 或 executing-plans
@@ -163,16 +163,23 @@ git-commit -> finishing-a-development-branch
 
 | 能力 | 对应文件或脚本 |
 | --- | --- |
-| 工作流状态和 stale detection | `src/cli/workflow-state.ts` |
-| 执行门禁 | `src/cli/workflow-guard.ts` |
-| 短上下文生成 | `src/cli/workflow-brief.ts` |
+| 统一入口和用户级状态 | `src/cli/workflow/start.ts`, `src/cli/workflow/state.ts` |
+| 工作流状态和 stale detection | `src/cli/workflow/workflow-state.ts`, `src/lib/workflow/workflow-state.ts` |
+| 执行门禁 | `src/cli/workflow/workflow-guard.ts`, `src/lib/workflow/workflow-guard.ts` |
+| 执行契约生成 | `src/cli/workflow/execution-contract.ts`, `src/lib/workflow/execution-contract.ts` |
+| 文档 schema/parser | `src/cli/documents/validate.ts`, `src/lib/documents/document-schema.ts` |
+| 用户级检查和注入 | `src/cli/documents/doctor.ts`, `src/cli/documents/list.ts`, `src/cli/platform/inject.ts` |
+| Cursor/Copilot 安装 | `src/cli/platform/install-cursor.ts`, `src/cli/platform/install-copilot.ts` |
+| 短上下文生成 | `src/cli/workflow/workflow-brief.ts` |
 | 工作流轻重模式判断 | `skills/using-coding-plugins/scripts/workflow-mode.ts` |
 | 子代理提示词生成 | `skills/subagent-driven-development/scripts/subagent-prompt-builder.ts` |
-| 文档 metadata 和索引 | `src/lib/document-metadata.ts`, `src/lib/docs-index.ts` |
-| 真实 agent 压力证据 | `src/cli/agent-pressure-harness.ts`, `src/cli/agent-pressure-ingest.ts` |
-| 发布前检查 | `src/cli/preflight.ts` |
-| 版本同步 | `src/cli/bump-version.ts`, `.version-bump.json` |
-| Release 准备和远程审计 | `src/cli/prepare-release.ts`, `src/cli/remote-audit.ts` |
+| 文档 metadata 和索引 | `src/lib/documents/document-metadata.ts`, `src/lib/documents/docs-index.ts` |
+| 真实 agent 压力证据 | `src/cli/agents/agent-pressure-harness.ts`, `src/cli/agents/agent-pressure-ingest.ts` |
+| 发布前检查 | `src/cli/release/preflight.ts` |
+| 版本同步 | `src/cli/release/bump-version.ts`, `.version-bump.json` |
+| Release 准备和远程审计 | `src/cli/release/prepare-release.ts`, `src/cli/release/remote-audit.ts` |
+
+顶层 `src/cli/*.ts` 和 `src/lib/*.ts` 保留为兼容入口；新增实现应优先放入对应领域目录。
 
 ## 核心 Skills
 
@@ -211,22 +218,23 @@ git-commit -> finishing-a-development-branch
 | Codex App | 先用 CLI 添加 marketplace，再在 App 插件面板启用 |
 | Claude Code | `claude --plugin-dir /absolute/path/to/coding-plugins` |
 | Gemini CLI | `gemini extensions install https://github.com/Vincen-dev/coding-plugins` |
-| GitHub Copilot CLI | 通用 `plugin.json` 已准备；具体安装命令待平台确认 |
+| GitHub Copilot CLI | `coding-plugins install-copilot --root <project>` 写入 `.github/copilot-instructions.md`，默认不覆盖 |
 | OpenCode / Trae / Qoder / Trae CN | clone 仓库，把 `skills/` symlink 或复制到客户端技能目录 |
-| Cursor | 当前按本地 `skills/` symlink/copy 接入 |
+| Cursor | `coding-plugins install-cursor --root <project>` 写入 `.cursor/rules/coding-plugins.mdc`，默认不覆盖 |
 
 ### 使用
 
 新需求：
 
 ```text
-使用 coding-plugins:using-coding-plugins 开始。我要实现 <功能>。
+coding-plugins start --intent "我要实现 <功能>" --root .
 ```
 
 已有 TED：
 
-```text
-继续执行 <feature>/<doc-id> 的 TED，从 TASK-001 开始。
+```bash
+coding-plugins start --root . --feature <feature> --doc-id <doc-id> --intent "继续执行"
+coding-plugins execution-contract generate --root . --feature <feature> --doc-id <doc-id> --write
 ```
 
 小修：
