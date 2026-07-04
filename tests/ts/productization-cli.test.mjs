@@ -11,12 +11,17 @@ const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const bin = join(repoRoot, "bin/coding-plugins.js");
 const fixtureRoot = join(repoRoot, "tests/fixtures/formal-feature-chain");
 const packageVersion = JSON.parse(readFileSync(join(repoRoot, "package.json"), "utf8")).version;
+const npmCacheDir = join(tmpdir(), "codex-npm-cache");
+
+function npmCacheEnv() {
+  return { ...process.env, NPM_CONFIG_CACHE: npmCacheDir, npm_config_cache: npmCacheDir };
+}
 
 function run(args, options = {}) {
   return spawnSync("node", [bin, ...args], {
     cwd: repoRoot,
     encoding: "utf8",
-    env: { ...process.env, NPM_CONFIG_CACHE: "/private/tmp/codex-npm-cache", npm_config_cache: "/private/tmp/codex-npm-cache" },
+    env: npmCacheEnv(),
     ...options,
   });
 }
@@ -595,7 +600,7 @@ test("build emits dist JavaScript and types for package consumers", async () => 
   const result = spawnSync("npm", ["run", "build"], {
     cwd: repoRoot,
     encoding: "utf8",
-    env: { ...process.env, NPM_CONFIG_CACHE: "/private/tmp/codex-npm-cache", npm_config_cache: "/private/tmp/codex-npm-cache" },
+    env: npmCacheEnv(),
   });
   assert.equal(result.status, 0, result.stderr);
   assert.ok(existsSync(join(repoRoot, "dist/index.js")));
@@ -613,7 +618,7 @@ test("library schema validation can return section summaries without full markdo
   const result = spawnSync("npm", ["run", "build"], {
     cwd: repoRoot,
     encoding: "utf8",
-    env: { ...process.env, NPM_CONFIG_CACHE: "/private/tmp/codex-npm-cache", npm_config_cache: "/private/tmp/codex-npm-cache" },
+    env: npmCacheEnv(),
   });
   assert.equal(result.status, 0, result.stderr);
 

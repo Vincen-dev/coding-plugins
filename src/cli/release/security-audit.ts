@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 
 import { withBuildLock } from "../../lib/runtime/build-lock.ts";
@@ -9,6 +10,11 @@ interface Check {
   name: string;
   ok: boolean;
   message: string;
+}
+
+function npmCacheEnv(): NodeJS.ProcessEnv {
+  const npmCacheDir = join(tmpdir(), "codex-npm-cache");
+  return { ...process.env, NPM_CONFIG_CACHE: npmCacheDir, npm_config_cache: npmCacheDir };
 }
 
 function requireValue(argv: string[], index: number, arg: string): string {
@@ -23,7 +29,7 @@ function packFiles(root: string): string[] {
   const result = spawnSync("npm", ["pack", "--dry-run", "--json"], {
     cwd: root,
     encoding: "utf8",
-    env: { ...process.env, NPM_CONFIG_CACHE: "/private/tmp/codex-npm-cache", npm_config_cache: "/private/tmp/codex-npm-cache" },
+    env: npmCacheEnv(),
   });
   if (result.status !== 0) {
     throw new Error(result.stderr || "npm pack --dry-run failed");
@@ -36,7 +42,7 @@ function runCommand(command: string, args: string[], root: string): Check {
   const result = spawnSync(command, args, {
     cwd: root,
     encoding: "utf8",
-    env: { ...process.env, NPM_CONFIG_CACHE: "/private/tmp/codex-npm-cache", npm_config_cache: "/private/tmp/codex-npm-cache" },
+    env: npmCacheEnv(),
   });
   return {
     name: `${command} ${args.join(" ")}`,

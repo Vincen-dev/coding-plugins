@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
@@ -10,6 +11,7 @@ const preflightEntrypoint = join(repoRoot, "src/cli/preflight.ts");
 const preflightImplementation = join(repoRoot, "src/cli/release/preflight.ts");
 const pySuffix = "." + "py";
 const pyCommand = "py" + "thon3";
+const npmCacheDir = join(tmpdir(), "codex-npm-cache");
 
 function run(script, args) {
   return spawnSync(script.command, [...script.prefix, ...args], {
@@ -97,7 +99,7 @@ test("TypeScript preflight fails missing local external references", () => {
     const result = spawnSync("node", [preflightEntrypoint, "--check-external-references"], {
       cwd: repoRoot,
       encoding: "utf8",
-      env: { ...process.env, NPM_CONFIG_CACHE: "/private/tmp/codex-npm-cache" },
+      env: { ...process.env, NPM_CONFIG_CACHE: npmCacheDir, npm_config_cache: npmCacheDir },
     });
 
     assert.equal(result.status, 1);

@@ -1,8 +1,13 @@
 #!/usr/bin/env node
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { withBuildLock } from "../../lib/runtime/build-lock.js";
+function npmCacheEnv() {
+    const npmCacheDir = join(tmpdir(), "codex-npm-cache");
+    return { ...process.env, NPM_CONFIG_CACHE: npmCacheDir, npm_config_cache: npmCacheDir };
+}
 function requireValue(argv, index, arg) {
     const value = argv[index + 1];
     if (!value) {
@@ -14,7 +19,7 @@ function packFiles(root) {
     const result = spawnSync("npm", ["pack", "--dry-run", "--json"], {
         cwd: root,
         encoding: "utf8",
-        env: { ...process.env, NPM_CONFIG_CACHE: "/private/tmp/codex-npm-cache", npm_config_cache: "/private/tmp/codex-npm-cache" },
+        env: npmCacheEnv(),
     });
     if (result.status !== 0) {
         throw new Error(result.stderr || "npm pack --dry-run failed");
@@ -26,7 +31,7 @@ function runCommand(command, args, root) {
     const result = spawnSync(command, args, {
         cwd: root,
         encoding: "utf8",
-        env: { ...process.env, NPM_CONFIG_CACHE: "/private/tmp/codex-npm-cache", npm_config_cache: "/private/tmp/codex-npm-cache" },
+        env: npmCacheEnv(),
     });
     return {
         name: `${command} ${args.join(" ")}`,

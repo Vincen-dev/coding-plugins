@@ -1,6 +1,6 @@
 {
   "name": "coding-plugins",
   "description": "Chinese SDD/TDD coding workflow plugin with disciplined planning, execution, review, and release checks.",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "contextFileName": "GEMINI.md"
 }

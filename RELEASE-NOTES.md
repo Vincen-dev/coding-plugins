@@ -1,5 +1,11 @@
 # Release Notes
 
+## 1.0.16 - 2026-07-04
+
+- 修复发布 workflow 在 GitHub Linux runner 上失败的问题：npm pack/install 测试和 release security audit 不再硬编码 macOS `/private/tmp` 缓存路径，改用跨平台临时目录。
+- 增加回归测试，防止发布相关源码和测试重新写入 `/private/tmp/codex-npm-cache`。
+- 提升插件、npm package、lockfile 和版本提升配置到 `1.0.16`，用于重新发布未完成的 `1.0.15` release。
+
 ## 1.0.15 - 2026-07-04
 
 - 调整 `git-commit` skill：提交信息语言由用户决定，可使用中文或英文；用户未指定语言时必须先询问。

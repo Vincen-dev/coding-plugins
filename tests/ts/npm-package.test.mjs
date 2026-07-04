@@ -10,12 +10,29 @@ const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const py = "py";
 const pySuffix = "." + py;
 const pyCommand = py + "thon3";
+const npmCacheDir = join(tmpdir(), "codex-npm-cache");
+
+function npmCacheEnv() {
+  return { ...process.env, NPM_CONFIG_CACHE: npmCacheDir, npm_config_cache: npmCacheDir };
+}
+
+test("npm package tests and release audit use cross-platform npm cache paths", () => {
+  const forbiddenCachePath = "/private/tmp/" + "codex-npm-cache";
+  const checkedFiles = [
+    "tests/ts/npm-package.test.mjs",
+    "tests/ts/productization-cli.test.mjs",
+    "tests/ts/preflight-cli.test.mjs",
+    "src/cli/release/security-audit.ts",
+  ];
+  const offenders = checkedFiles.filter((file) => readFileSync(resolve(repoRoot, file), "utf8").includes(forbiddenCachePath));
+  assert.deepEqual(offenders, []);
+});
 
 function packFiles() {
   const result = spawnSync("npm", ["pack", "--dry-run", "--json"], {
     cwd: repoRoot,
     encoding: "utf8",
-    env: { ...process.env, NPM_CONFIG_CACHE: "/private/tmp/codex-npm-cache", npm_config_cache: "/private/tmp/codex-npm-cache" },
+    env: npmCacheEnv(),
   });
 
   assert.equal(result.status, 0, result.stderr);
@@ -195,7 +212,7 @@ test("security audit fails real npm pack output that contains a secret-like toke
     const result = spawnSync("node", [resolve(repoRoot, "src/cli/security-audit.ts"), "--root", root, "--format", "json"], {
       cwd: repoRoot,
       encoding: "utf8",
-      env: { ...process.env, NPM_CONFIG_CACHE: "/private/tmp/codex-npm-cache", npm_config_cache: "/private/tmp/codex-npm-cache" },
+      env: npmCacheEnv(),
     });
     assert.equal(result.status, 1);
     const payload = JSON.parse(result.stdout);
@@ -214,7 +231,7 @@ test("packed npm artifact supports installed runtime commands without repository
     const packed = spawnSync("npm", ["pack", "--json", "--pack-destination", packRoot], {
       cwd: repoRoot,
       encoding: "utf8",
-      env: { ...process.env, NPM_CONFIG_CACHE: "/private/tmp/codex-npm-cache", npm_config_cache: "/private/tmp/codex-npm-cache" },
+      env: npmCacheEnv(),
     });
     assert.equal(packed.status, 0, packed.stderr);
     const tarball = join(packRoot, JSON.parse(packed.stdout)[0].filename);
@@ -223,7 +240,7 @@ test("packed npm artifact supports installed runtime commands without repository
     const installed = spawnSync("npm", ["install", "--ignore-scripts", "--no-audit", "--no-fund", tarball], {
       cwd: packageRoot,
       encoding: "utf8",
-      env: { ...process.env, NPM_CONFIG_CACHE: "/private/tmp/codex-npm-cache", npm_config_cache: "/private/tmp/codex-npm-cache" },
+      env: npmCacheEnv(),
     });
     assert.equal(installed.status, 0, installed.stderr);
 
@@ -240,7 +257,7 @@ test("packed npm artifact supports installed runtime commands without repository
     const build = spawnSync("npm", ["run", "build"], {
       cwd: installedPackage,
       encoding: "utf8",
-      env: { ...process.env, NPM_CONFIG_CACHE: "/private/tmp/codex-npm-cache", npm_config_cache: "/private/tmp/codex-npm-cache" },
+      env: npmCacheEnv(),
     });
     assert.equal(build.status, 0, build.stderr);
     assert.ok(build.stdout.includes("dist is already packaged"));
