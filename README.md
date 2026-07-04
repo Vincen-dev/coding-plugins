@@ -57,7 +57,7 @@ brainstorming
 | Guarded Execution | `workflow-state.ts`、`workflow-guard.ts`、`workflow-brief.ts` 负责状态、新鲜度和短上下文 |
 | TDD Discipline | 生产代码前先写失败测试，完成后记录 TDD Evidence 或例外 |
 | Review Gate | 子代理实现后做规格符合性和代码质量评审 |
-| Commit Safety | 中文 Conventional Commit，检查作者身份、敏感文件和 `Authored-by` footer |
+| Commit Safety | 按用户选择语言生成 Conventional Commit，检查作者身份、敏感文件和 `Authored-by` footer |
 | Multi-platform | 同一套 `skills/` 支持多种 AI 编码客户端 |
 
 ## 适用场景
@@ -71,7 +71,7 @@ brainstorming
 | 安全、数据、权限、同步、支付等高风险变更 | 需要可追踪 Spec ID、测试证据和评审记录 |
 | 多代理或多任务执行 | 需要子代理提示词、prompt hash、执行锁定区和主代理复核 |
 | 长期维护的插件或工具链 | 需要 metadata、索引、preflight、release 规则保持一致 |
-| 需要中文提交和严格收尾 | 提交前检查 diff、作者身份、敏感文件和最新验证 |
+| 需要提交和严格收尾 | 提交前确认语言、检查 diff、作者身份、敏感文件和最新验证 |
 
 ### 不推荐直接走完整链路
 
@@ -146,7 +146,7 @@ verification-before-completion
         |
         v
 git-commit -> finishing-a-development-branch
-  中文提交、Authored-by footer、分支收尾
+  用户选择语言、Authored-by footer、分支收尾
 ```
 
 关键约束：
@@ -203,7 +203,7 @@ git-commit -> finishing-a-development-branch
 | 15 | `requesting-code-review` | 评审 | 代码评审请求和严重级别报告 |
 | 16 | `receiving-code-review` | 修复反馈 | 验证评审反馈，再决定是否修改 |
 | 17 | `verification-before-completion` | 验证 | 声明完成前运行并阅读验证输出 |
-| 18 | `git-commit` | 提交 | 中文 Conventional Commit、作者身份和敏感文件检查 |
+| 18 | `git-commit` | 提交 | 用户选择语言的 Conventional Commit、作者身份和敏感文件检查 |
 | 19 | `finishing-a-development-branch` | 收尾 | merge、PR、保留或清理分支 |
 | 20 | `writing-skills` | 插件维护 | 创建、优化和测试技能 |
 

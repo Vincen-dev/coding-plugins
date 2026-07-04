@@ -48,7 +48,7 @@ git status --short
 
 如果提交，我会使用 git-commit 技能：
 - 分析 diff 并按逻辑暂存文件
-- 生成中文 Conventional Commit 信息
+- 按你选择的中文或英文生成 Conventional Commit 信息
 - 在 footer 添加 `Authored-by: <user.name> <user.email>` 署名
 - 检查作者身份，禁止 AI 作者或 AI 生成声明
 ```

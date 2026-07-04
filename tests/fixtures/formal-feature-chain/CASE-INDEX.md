@@ -133,7 +133,8 @@
 - source_reference: direct commit and branch finishing gates
 - optimization_target: 验证直接提交、完成收尾和分支集成必须先检查 diff、作者身份、敏感文件和最新提交。
 - covered_risks:
-  - 完成后没有提交，或提交没有中文 Conventional Commit 和 Authored-by footer。
+  - 完成后没有提交，或提交没有按用户选择语言生成 Conventional Commit 和 Authored-by footer。
+  - 代理把中文或英文写成硬性默认值，没有在用户未指定语言时先询问。
   - 未检查 staged diff 和敏感文件就提交。
   - 分支收尾跳过提交或提交后没有验证最新 commit。
 

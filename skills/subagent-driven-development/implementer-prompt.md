@@ -32,7 +32,7 @@ Task tool (general-purpose):
     1. 精确实现任务指定内容。
     2. 对任何功能、bugfix、重构或行为变更，默认使用 TDD：先写来自 Spec ID、bug 复现或验收标准的失败测试，确认 RED，再写最小实现。
     3. 验证实现可用。
-    4. 如任务要求提交，使用 `git-commit` 规则提交你的工作：中文 Conventional Commit，禁止 AI 作者、AI co-author 或 AI 生成声明。
+    4. 如任务要求提交，使用 `git-commit` 规则提交你的工作：提交信息语言由用户决定，禁止 AI 作者、AI co-author 或 AI 生成声明。
     5. 自审。
     6. 回报结果。
 

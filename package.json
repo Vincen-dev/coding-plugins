@@ -1,6 +1,6 @@
 {
   "name": "@vincen-dev/coding-plugins",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "description": "Chinese coding workflow plugin for Codex, Claude Code, Gemini CLI and local skills clients.",
   "type": "module",
   "main": "./dist/index.js",
