@@ -625,7 +625,7 @@ TDD 证据可以声明 `测试类型`：`behavior`、`contract`、`architecture`
 
 `subagent-driven-development` 内置两个专门评审模板：
 
-- `skills/subagent-driven-development/scripts/subagent-prompt-builder.ts`：推荐生成入口，按 TED 当前任务章节、`workflow-brief.ts` 上下文预算和 `source_hash` 填充提示词；`--kind` 会按需懒生成对应 prompt payload，`--json` 输出 `generated_kinds`、`prompt_budget`、`cost_strategy` 和 `context_compression`，`--kind all --json` 缺少实现报告或 git 范围时会失败。
+- `skills/subagent-driven-development/scripts/subagent-prompt-builder.ts`：推荐生成入口，按 TED 当前任务章节、`workflow-brief.ts` 上下文预算和 `source_hash` 填充提示词；生成 `implementer` 或 `all` prompt 时必须传入主线程读取到的 `--expected-source-hash`，`--kind` 会按需懒生成对应 prompt payload，`--json` 输出 `generated_kinds`、`prompt_budget`、`cost_strategy` 和 `context_compression`，`--kind all --json` 缺少实现报告、git 范围或 expected source hash 时会失败。
 - `spec-reviewer-prompt.md`：检查实现是否符合任务规格。
 - `code-quality-reviewer-prompt.md`：检查实现是否构建良好、测试充分、可维护。
 

@@ -150,6 +150,8 @@ coding-plugins execution-contract generate --root . --feature <feature> --doc-id
 coding-plugins workflow-guard check --root . --feature <feature> --doc-id <doc-id> --target execute
 ```
 
+`validate --format json` 默认只输出 section 名称和 hash；需要调试完整正文时再加 `--include-sections`。
+
 常见请求：
 
 - 方案讨论、价值判断或产品方向还不清楚：`brainstorming`
@@ -196,9 +198,11 @@ bash tests/hooks/test-session-start.sh
 
 ```bash
 npm run preflight
+coding-plugins doctor --root /absolute/path/to/coding-plugins --codex-home ~/.codex --format json
 ```
 
 preflight 会检查 `.codex-plugin/plugin.json`、`.claude-plugin/plugin.json`、根 `plugin.json`、`gemini-extension.json` 和 `.version-bump.json` 的版本同步。
+doctor 会额外检查 npm lockfile、dist 入口、Codex hook、`.agents/skills` 入口、Cursor/Copilot 注入 dry-run、Codex 插件缓存版本，以及 `codex plugin list --json` 中的 installed/enabled/version；无法调用 Codex CLI 时会退回解析 `~/.codex/config.toml` 的 enabled 配置。
 
 ## NPM 发布边界
 

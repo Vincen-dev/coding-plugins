@@ -9,6 +9,7 @@ import { buildPayload as buildSpecPayload } from "../../lib/documents/validate-s
 import { buildPayload as buildTddEvidencePayload } from "../../lib/documents/validate-tdd-evidence.js";
 import { validateRepository as validateTechnicals } from "../../lib/documents/validate-technicals.js";
 import { collectFeatureRoots, frontmatterListValues } from "../../lib/documents/document-metadata.js";
+import { withBuildLock } from "../../lib/runtime/build-lock.js";
 import { findRepositoryRoot } from "../../lib/runtime/repository-root.js";
 const root = findRepositoryRoot(dirname(fileURLToPath(import.meta.url)));
 const args = process.argv.slice(2);
@@ -138,13 +139,15 @@ function collectTypeScriptTestFiles() {
         .sort();
 }
 try {
-    if (args.includes("--write-index")) {
-        writeArtifactIndex(root);
-    }
-    checkExternalReferences();
-    runStaticChecks();
-    runValidationCommands();
-    console.log("Preflight passed.");
+    withBuildLock(root, () => {
+        if (args.includes("--write-index")) {
+            writeArtifactIndex(root);
+        }
+        checkExternalReferences();
+        runStaticChecks();
+        runValidationCommands();
+        console.log("Preflight passed.");
+    });
 }
 catch (error) {
     const message = error instanceof Error ? error.message : String(error);

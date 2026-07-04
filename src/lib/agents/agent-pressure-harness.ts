@@ -250,12 +250,14 @@ export function runSubagentPromptScenario(root: string): CasePayload {
   const [fixtureRoot, locateLog] = findFixtureRoot(root, feature, docId);
   void locateLog;
   const fixtureRootArg = relative(root, fixtureRoot);
+  const tedText = readFileSync(join(fixtureRoot, "docs/coding-plugins/features", feature, "plans", `${docId}-TED.md`), "utf8");
+  const sourceHash = /^source_hash:\s*(\S+)\s*$/m.exec(tedText)?.[1] ?? "";
   const report = "Status: DONE; 修改文件: src/cli/preflight.ts; 测试: node --test scripts/test_preflight.ts";
   const promptCommands: Array<[string, string[]]> = [
-    ["implementer", [process.execPath, "bin/coding-plugins.js", "subagent-prompt-builder", "--root", fixtureRootArg, "--feature", feature, "--doc-id", docId, "--task", "TASK-001", "--kind", "implementer", "--json"]],
+    ["implementer", [process.execPath, "bin/coding-plugins.js", "subagent-prompt-builder", "--root", fixtureRootArg, "--feature", feature, "--doc-id", docId, "--task", "TASK-001", "--kind", "implementer", "--expected-source-hash", sourceHash, "--json"]],
     ["spec-reviewer", [process.execPath, "bin/coding-plugins.js", "subagent-prompt-builder", "--root", fixtureRootArg, "--feature", feature, "--doc-id", docId, "--task", "TASK-001", "--kind", "spec-reviewer", "--implementer-report", report, "--json"]],
     ["code-quality-reviewer", [process.execPath, "bin/coding-plugins.js", "subagent-prompt-builder", "--root", fixtureRootArg, "--feature", feature, "--doc-id", docId, "--task", "TASK-001", "--kind", "code-quality-reviewer", "--implementer-report", report, "--base-sha", "abc1234", "--head-sha", "def5678", "--json"]],
-    ["all", [process.execPath, "bin/coding-plugins.js", "subagent-prompt-builder", "--root", fixtureRootArg, "--feature", feature, "--doc-id", docId, "--task", "TASK-001", "--kind", "all", "--implementer-report", report, "--base-sha", "abc1234", "--head-sha", "def5678", "--json"]],
+    ["all", [process.execPath, "bin/coding-plugins.js", "subagent-prompt-builder", "--root", fixtureRootArg, "--feature", feature, "--doc-id", docId, "--task", "TASK-001", "--kind", "all", "--expected-source-hash", sourceHash, "--implementer-report", report, "--base-sha", "abc1234", "--head-sha", "def5678", "--json"]],
   ];
   const logs: CommandLog[] = [];
   const payloads: Record<string, any> = {};

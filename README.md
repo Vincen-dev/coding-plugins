@@ -169,10 +169,11 @@ git-commit -> finishing-a-development-branch
 | 执行契约生成 | `src/cli/workflow/execution-contract.ts`, `src/lib/workflow/execution-contract.ts` |
 | 文档 schema/parser | `src/cli/documents/validate.ts`, `src/lib/documents/document-schema.ts` |
 | 用户级检查和注入 | `src/cli/documents/doctor.ts`, `src/cli/documents/list.ts`, `src/cli/platform/inject.ts` |
+| 插件版本漂移诊断 | `coding-plugins doctor --root <repo> --codex-home ~/.codex --format json`，检查 cache manifest 和 `codex plugin list --json` 的 installed/enabled/version |
 | Cursor/Copilot 安装 | `src/cli/platform/install-cursor.ts`, `src/cli/platform/install-copilot.ts` |
 | 短上下文生成 | `src/cli/workflow/workflow-brief.ts` |
 | 工作流轻重模式判断 | `skills/using-coding-plugins/scripts/workflow-mode.ts` |
-| 子代理提示词生成 | `skills/subagent-driven-development/scripts/subagent-prompt-builder.ts` |
+| 子代理提示词生成 | `skills/subagent-driven-development/scripts/subagent-prompt-builder.ts`，`implementer/all` 必须传 `--expected-source-hash` 防止 TED 漂移 |
 | 文档 metadata 和索引 | `src/lib/documents/document-metadata.ts`, `src/lib/documents/docs-index.ts` |
 | 真实 agent 压力证据 | `src/cli/agents/agent-pressure-harness.ts`, `src/cli/agents/agent-pressure-ingest.ts` |
 | 发布前检查 | `src/cli/release/preflight.ts` |

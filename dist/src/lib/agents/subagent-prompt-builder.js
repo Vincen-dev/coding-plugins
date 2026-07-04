@@ -84,6 +84,10 @@ export function extractTaskSection(planText, task) {
 }
 export function reviewInputFailures(options) {
     const failures = [];
+    const emitsImplementerPrompt = options.kind === "implementer" || options.kind === "all";
+    if (emitsImplementerPrompt && !options.expectedSourceHash) {
+        failures.push("--expected-source-hash is required for implementer prompts");
+    }
     const emitsReviewPrompts = ["spec-reviewer", "code-quality-reviewer"].includes(options.kind) || (options.kind === "all" && options.json);
     if (!emitsReviewPrompts) {
         return failures;
@@ -272,6 +276,9 @@ export function buildPrompts(root, options) {
     const sourceHash = parseFrontmatter(tedPath).source_hash;
     if (!sourceHash) {
         throw new PromptBuildError("TED source_hash is missing");
+    }
+    if (options.expectedSourceHash && options.expectedSourceHash !== sourceHash) {
+        throw new PromptBuildError(`expected source_hash mismatch: expected ${options.expectedSourceHash}, current ${sourceHash}`);
     }
     const context = buildContextBlock(brief, { tedPath: tedRel, sourceHash, task: options.task });
     const resolvedWorkdir = options.workdir ?? root;

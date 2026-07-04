@@ -78,7 +78,13 @@ try {
         if (!options.to) {
             throw new Error("state transition requires a target state.");
         }
-        print(transitionState(options.root, { to: options.to, from: options.from, reason: options.reason }), options.json);
+        print(transitionState(options.root, {
+            to: options.to,
+            from: options.from,
+            reason: options.reason,
+            feature: options.feature,
+            docId: options.docId,
+        }), options.json);
     }
     else {
         print(auditState(options.root), options.json);

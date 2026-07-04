@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { readFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
+import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
 
@@ -143,7 +144,64 @@ test("published docs describe runtime and release distribution boundaries", () =
 
 test("security audit exposes a strict release mode that runs build and preflight", () => {
   const source = readFileSync(resolve(repoRoot, "src/cli/release/security-audit.ts"), "utf8");
+  const preflight = readFileSync(resolve(repoRoot, "src/cli/release/preflight.ts"), "utf8");
+  const build = readFileSync(resolve(repoRoot, "scripts/build-dist.mjs"), "utf8");
   assert.ok(source.includes("--strict-release"), "security audit must expose --strict-release");
   assert.ok(source.includes('"npm", ["run", "build"]'), "strict release audit must run build");
   assert.ok(source.includes('"npm", ["run", "preflight"]'), "strict release audit must run preflight");
+  assert.ok(source.includes("withBuildLock"), "strict release audit must serialize build/preflight operations");
+  assert.ok(preflight.includes("withBuildLock"), "preflight must participate in the same build/preflight lock");
+  assert.ok(build.includes("./build-lock.mjs"), "build script must import the shared build/preflight lock helper");
+  assert.ok(!build.includes("function withBuildLock"), "build script must not duplicate the lock implementation");
+});
+
+test("security audit scans common package secret formats", () => {
+  const source = readFileSync(resolve(repoRoot, "src/cli/release/security-audit.ts"), "utf8");
+  for (const expected of ["gho_", "ghu_", "ghs_", "ghr_", "xoxb-", "sk_live_", "AIza"]) {
+    assert.ok(source.includes(expected), `security audit secret scanner must include ${expected}`);
+  }
+  assert.ok(source.includes("client_secret"), "security audit must scan generic secret assignments");
+});
+
+test("security audit fails real npm pack output that contains a secret-like token", () => {
+  const root = mkdtempSync(join(tmpdir(), "coding-plugins-secret-pack-"));
+  try {
+    mkdirSync(join(root, "dist"), { recursive: true });
+    mkdirSync(join(root, ".github/workflows"), { recursive: true });
+    writeFileSync(
+      join(root, "package.json"),
+      JSON.stringify(
+        {
+          name: "secret-pack-fixture",
+          version: "1.0.0",
+          type: "module",
+          main: "./dist/index.js",
+          types: "./dist/index.d.ts",
+          files: ["dist/"],
+          engines: { node: ">=22.6" },
+          publishConfig: { access: "public", provenance: true },
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+    writeFileSync(join(root, "dist/index.js"), "export const leaked = \"sk_live_1234567890abcdef\";\n", "utf8");
+    writeFileSync(join(root, "dist/index.d.ts"), "export declare const leaked: string;\n", "utf8");
+    writeFileSync(join(root, ".github/workflows/ci.yml"), "steps:\n  - run: npm ci\n  - run: npm run preflight\n", "utf8");
+    writeFileSync(join(root, ".github/workflows/release.yml"), "steps:\n  - run: npm run preflight\n", "utf8");
+
+    const result = spawnSync("node", [resolve(repoRoot, "src/cli/security-audit.ts"), "--root", root, "--format", "json"], {
+      cwd: repoRoot,
+      encoding: "utf8",
+      env: { ...process.env, NPM_CONFIG_CACHE: "/private/tmp/codex-npm-cache", npm_config_cache: "/private/tmp/codex-npm-cache" },
+    });
+    assert.equal(result.status, 1);
+    const payload = JSON.parse(result.stdout);
+    const secretCheck = payload.checks.find((check) => check.name === "pack-secrets");
+    assert.equal(secretCheck.ok, false);
+    assert.ok(secretCheck.message.includes("dist/index.js"));
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
 });

@@ -2,6 +2,7 @@
 title: Review Findings Subagents VED
 status: approved
 feature: review-findings-subagents
+doc_id: review-findings-subagents
 created: 2026-07-04
 updated: 2026-07-04
 related_docs: []
@@ -39,3 +40,27 @@ external_references: []
 - **GREEN 命令:** `NPM_CONFIG_CACHE=/private/tmp/codex-npm-cache node --test tests/ts/npm-package.test.mjs tests/ts/preflight-cli.test.mjs tests/ts/scenario-routing-contract.test.mjs`
 - **REFACTOR 命令:** `NPM_CONFIG_CACHE=/private/tmp/codex-npm-cache npm run preflight -- --write-index`
 - **最终验证:** `NPM_CONFIG_CACHE=/private/tmp/codex-npm-cache npm run preflight`、`NPM_CONFIG_CACHE=/private/tmp/codex-npm-cache npm pack --dry-run --json`、`NPM_CONFIG_CACHE=/private/tmp/codex-npm-cache npm run prepare-release:ts -- --notes-out /private/tmp/coding-plugins-release-notes.md`、`git diff --check`。
+
+## TDD 证据
+
+- **规格/缺陷/验收:** bug 复现：最终审计发现 `start` 不读取 active workflow state、`.coding-plugins.yaml` 名为 YAML 但写 JSON、schema/parser 仍缺 required sections、strict audit 与 preflight/build 可能并发重写 `dist/`、doctor 只看 cache 不看 Codex enabled、subagent implementer prompt 未强制 expected source hash、secret scan 覆盖偏窄，且大 JSON CLI 输出会被 `process.exit()` 截断。
+- **测试类型:** `contract`
+- **RED 测试:** `tests/ts/productization-cli.test.mjs`、`tests/ts/npm-package.test.mjs`
+- **RED 命令:** `node --test tests/ts/productization-cli.test.mjs`；`node --test tests/ts/npm-package.test.mjs`
+- **RED 失败:** 6 failures：`.coding-plugins.yaml` 输出为 JSON、`start` 缺省参数时 `state` 为 null、`subagent-prompt-builder` 未传 `--expected-source-hash` 仍返回 0、缺 required sections 的 PRD/TSD/TVD 未失败、security-audit 缺 build/preflight lock 和常见 secret prefix；随后用 spawnSync 复现 `validate --format json` 在 48760 字符处被截断。
+- **GREEN 变更:** state v2 改为真实 YAML 并兼容旧 JSON/legacy YAML；`start` 自动读取 active `.coding-plugins.yaml`；schema parser 输出 heading sections 并按 PRD/TSD/TVD/TED/VED 校验 required sections；新增 build/preflight 文件锁并支持同进程树可重入；doctor 优先读取 `codex plugin list --json` 校验 installed/enabled/version，失败时 fallback 到 `config.toml`；implementer/all prompt 必须传 `--expected-source-hash`；secret scanner 扩展 GitHub、Slack、Stripe、Google key 和 generic secret assignment；大 JSON CLI 改为设置 `process.exitCode` 自然退出。
+- **GREEN 命令:** `node --test tests/ts/productization-cli.test.mjs`；`node --test tests/ts/npm-package.test.mjs`
+- **REFACTOR 命令:** `npm run typecheck`；`npm run build`
+- **最终验证:** `node --test tests/ts/productization-cli.test.mjs` PASS 16/16；`node --test tests/ts/npm-package.test.mjs` PASS 7/7；spawnSync 运行 `node bin/coding-plugins.js validate --root tests/fixtures/formal-feature-chain --format json` 可完整 `JSON.parse`。
+
+## TDD 证据
+
+- **规格/缺陷/验收:** bug 复现：最终剩余审计发现 validate JSON 默认输出完整 section 正文、state 文件缺少锁和原子写、`start` 未显式报告 project state 与文档链状态不一致、`doctor` 外部 Codex CLI 无 timeout、security audit secret scan 缺真实 pack fixture 行为测试、build lock 逻辑在 build 脚本中重复。
+- **测试类型:** `contract`
+- **RED 测试:** `tests/ts/productization-cli.test.mjs`、`tests/ts/npm-package.test.mjs`
+- **RED 命令:** `node --test tests/ts/productization-cli.test.mjs`；`node --test tests/ts/npm-package.test.mjs`
+- **RED 失败:** 4 failures：`state_mismatch` 未输出、validate JSON 缺 `section_names/section_hashes` 且仍带 `sections`、挂起的 fake `codex` 让 doctor 等待 5457ms、`project-state.ts` 缺 `withStateFileLock` 和 `renameSync`；secret pack fixture 测试已通过，证明当前 scanner 行为已能拦截 `sk_live_...`。
+- **GREEN 变更:** `start` 输出 `state_mismatch` 和 warnings；`validate --format json` 默认只输出 section 名称和 sha256，新增 `--include-sections` 调试开关；state 写入使用 per-root lock、临时文件和 `renameSync` 原子替换；doctor 调用 `codex plugin list --json` 增加 timeout 并 fallback 到 `config.toml`；build lock 抽出 `scripts/build-lock.mjs`，`build-dist.mjs` 不再内联复制实现；security audit 增加真实 npm pack secret fixture 测试。
+- **GREEN 命令:** `node --test tests/ts/productization-cli.test.mjs` PASS 19/19；`node --test tests/ts/npm-package.test.mjs` PASS 8/8。
+- **REFACTOR 命令:** `npm run typecheck`；`npm run build`
+- **最终验证:** `npm run preflight` PASS；`npm run security-audit:ts -- --root . --strict-release --format json` PASS；`node bin/coding-plugins.js doctor --root . --codex-home /Users/vincen/.codex --format json` PASS；`git diff --check` PASS；并发 `npm run build` + `npm run preflight` 复验两个进程 exit code 均为 0。

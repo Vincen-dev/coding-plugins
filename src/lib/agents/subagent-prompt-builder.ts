@@ -96,8 +96,13 @@ export function reviewInputFailures(options: {
   implementerReport: string;
   baseSha: string;
   headSha: string;
+  expectedSourceHash?: string;
 }): string[] {
   const failures: string[] = [];
+  const emitsImplementerPrompt = options.kind === "implementer" || options.kind === "all";
+  if (emitsImplementerPrompt && !options.expectedSourceHash) {
+    failures.push("--expected-source-hash is required for implementer prompts");
+  }
   const emitsReviewPrompts = ["spec-reviewer", "code-quality-reviewer"].includes(options.kind) || (options.kind === "all" && options.json);
   if (!emitsReviewPrompts) {
     return failures;
@@ -298,6 +303,7 @@ export function buildPrompts(
     implementerReport?: string;
     baseSha?: string;
     headSha?: string;
+    expectedSourceHash?: string;
   },
 ): Record<string, any> {
   const kind = options.kind ?? "all";
@@ -321,6 +327,9 @@ export function buildPrompts(
   const sourceHash = parseFrontmatter(tedPath).source_hash;
   if (!sourceHash) {
     throw new PromptBuildError("TED source_hash is missing");
+  }
+  if (options.expectedSourceHash && options.expectedSourceHash !== sourceHash) {
+    throw new PromptBuildError(`expected source_hash mismatch: expected ${options.expectedSourceHash}, current ${sourceHash}`);
   }
 
   const context = buildContextBlock(brief, { tedPath: tedRel, sourceHash, task: options.task });

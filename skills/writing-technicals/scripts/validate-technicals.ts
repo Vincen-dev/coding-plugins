@@ -60,7 +60,7 @@ try {
   } else {
     console.log(formatTextResult(result));
   }
-  process.exit(result.ok ? 0 : 1);
+  process.exitCode = result.ok ? 0 : 1;
 } catch (error) {
   const message = error instanceof Error ? error.message : String(error);
   console.error(message);

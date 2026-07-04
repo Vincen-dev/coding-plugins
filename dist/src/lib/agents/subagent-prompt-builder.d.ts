@@ -9,6 +9,7 @@ export declare function reviewInputFailures(options: {
     implementerReport: string;
     baseSha: string;
     headSha: string;
+    expectedSourceHash?: string;
 }): string[];
 export declare function compactTaskName(title: string, task: string): string;
 export declare function recommendModelTier(kind: string, options: {
@@ -24,5 +25,6 @@ export declare function buildPrompts(root: string, options: {
     implementerReport?: string;
     baseSha?: string;
     headSha?: string;
+    expectedSourceHash?: string;
 }): Record<string, any>;
 export declare function outputPayloadForKind(payload: Record<string, any>, kind: string): Record<string, any>;

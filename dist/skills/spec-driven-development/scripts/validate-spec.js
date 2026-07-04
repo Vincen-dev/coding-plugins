@@ -50,7 +50,7 @@ try {
     else {
         console.log(formatTextResults(payload.results));
     }
-    process.exit(payload.ok ? 0 : 1);
+    process.exitCode = payload.ok ? 0 : 1;
 }
 catch (error) {
     const message = error instanceof Error ? error.message : String(error);

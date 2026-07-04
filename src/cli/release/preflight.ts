@@ -17,6 +17,7 @@ import { buildPayload as buildSpecPayload } from "../../lib/documents/validate-s
 import { buildPayload as buildTddEvidencePayload } from "../../lib/documents/validate-tdd-evidence.ts";
 import { validateRepository as validateTechnicals } from "../../lib/documents/validate-technicals.ts";
 import { collectFeatureRoots, frontmatterListValues } from "../../lib/documents/document-metadata.ts";
+import { withBuildLock } from "../../lib/runtime/build-lock.ts";
 import { findRepositoryRoot } from "../../lib/runtime/repository-root.ts";
 
 const root = findRepositoryRoot(dirname(fileURLToPath(import.meta.url)));
@@ -164,13 +165,15 @@ function collectTypeScriptTestFiles(): string[] {
 }
 
 try {
-  if (args.includes("--write-index")) {
-    writeArtifactIndex(root);
-  }
-  checkExternalReferences();
-  runStaticChecks();
-  runValidationCommands();
-  console.log("Preflight passed.");
+  withBuildLock(root, () => {
+    if (args.includes("--write-index")) {
+      writeArtifactIndex(root);
+    }
+    checkExternalReferences();
+    runStaticChecks();
+    runValidationCommands();
+    console.log("Preflight passed.");
+  });
 } catch (error) {
   const message = error instanceof Error ? error.message : String(error);
   console.error(`Preflight failed: ${message}`);

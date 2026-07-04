@@ -6,6 +6,7 @@ export interface ParsedDocument {
     status: string;
     frontmatter: Record<string, string>;
     headings: string[];
+    sections: Record<string, string>;
     spec_ids: string[];
     test_ids: string[];
     task_ids: string[];

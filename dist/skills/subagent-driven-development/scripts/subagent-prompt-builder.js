@@ -48,6 +48,10 @@ function parseArgs(argv) {
             options.headSha = requireValue(argv, index, arg);
             index += 1;
         }
+        else if (arg === "--expected-source-hash") {
+            options.expectedSourceHash = requireValue(argv, index, arg);
+            index += 1;
+        }
         else if (arg === "--json") {
             options.json = true;
         }
@@ -82,6 +86,7 @@ try {
         implementerReport: options.implementerReport,
         baseSha: options.baseSha,
         headSha: options.headSha,
+        expectedSourceHash: options.expectedSourceHash,
     });
     if (inputFailures.length > 0) {
         console.log(`ERROR: ${inputFailures.join("; ")}`);
@@ -96,6 +101,7 @@ try {
         implementerReport: options.implementerReport,
         baseSha: options.baseSha,
         headSha: options.headSha,
+        expectedSourceHash: options.expectedSourceHash,
     });
     if (options.json) {
         console.log(JSON.stringify(outputPayloadForKind(payload, options.kind), null, 2));
@@ -112,7 +118,7 @@ try {
     else {
         console.log(payload.prompts[options.kind]);
     }
-    process.exit(0);
+    process.exitCode = 0;
 }
 catch (error) {
     const message = error instanceof Error ? error.message : String(error);
