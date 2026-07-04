@@ -160,6 +160,18 @@ test("published docs describe runtime and release distribution boundaries", () =
   assert.ok(!releaseWorkflow.includes("npm publish"), "release workflow must stay aligned with the documented non-npm-publish boundary");
 });
 
+test("repository enables Dependabot for npm packages and GitHub Actions", () => {
+  const dependabot = readFileSync(resolve(repoRoot, ".github/dependabot.yml"), "utf8");
+  assert.match(dependabot, /^version:\s*2$/m);
+  assert.match(dependabot, /package-ecosystem:\s*"npm"[\s\S]*directory:\s*"\/"[\s\S]*interval:\s*"weekly"/);
+  assert.match(
+    dependabot,
+    /package-ecosystem:\s*"github-actions"[\s\S]*directory:\s*"\/"[\s\S]*interval:\s*"weekly"/,
+  );
+  assert.match(dependabot, /timezone:\s*"Asia\/Shanghai"/);
+  assert.match(dependabot, /open-pull-requests-limit:\s*5/);
+});
+
 test("security audit exposes a strict release mode that runs build and preflight", () => {
   const source = readFileSync(resolve(repoRoot, "src/cli/release/security-audit.ts"), "utf8");
   const preflight = readFileSync(resolve(repoRoot, "src/cli/release/preflight.ts"), "utf8");
