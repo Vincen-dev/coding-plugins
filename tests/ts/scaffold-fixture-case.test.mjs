@@ -5,6 +5,7 @@ import { join } from "node:path";
 import test from "node:test";
 
 import { scaffoldFixtureCase } from "../../src/lib/scaffold-fixture-case.ts";
+import { splitFrontmatter } from "../../src/lib/document-metadata.ts";
 import { inspectDocumentChain } from "../../src/lib/workflow-state.ts";
 
 function scaffold(root, overrides = {}) {
@@ -58,6 +59,9 @@ test("TypeScript scaffold creates case index and valid document chain", () => {
     assert.ok(tedText.includes("## 执行简报"));
     assert.ok(tedText.includes("## 任务总览"));
     assert.ok(tedText.includes("## 缓存刷新（TASK-001 / REQ-001）"));
+    const [, tedBody] = splitFrontmatter(tedText);
+    assert.equal(tedBody.includes("docs/coding-plugins/features/cache-fixture/evidences/cache-refresh-VED.md"), false);
+    assert.ok(tedBody.includes("同一 `doc_id` 的 VED"));
 
     const state = inspectDocumentChain(root, { feature: "cache-fixture", docId: "cache-refresh" });
     assert.equal(state.state, "ready-for-execution");

@@ -113,7 +113,7 @@ related_docs:
 
 ```yaml
 ---
-title: <功能名称> TDD 证据
+title: <功能名称> VED 证据文档
 status: draft
 feature: <feature-name>
 doc_id: <doc-id>

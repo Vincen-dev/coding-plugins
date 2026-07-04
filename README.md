@@ -322,7 +322,7 @@ npm run preflight
 
 ### Coding Plugins 和普通 prompt 有什么区别？
 
-普通 prompt 依赖本次会话的临时记忆。Coding Plugins 把流程拆成可复用 skills、模板、脚本和文档契约，并用 preflight、workflow guard、TDD evidence、agent pressure fixture 等机制做回归。
+普通 prompt 依赖本次会话的临时记忆。Coding Plugins 把流程拆成可复用 skills、模板、脚本和文档契约，并用 preflight、workflow guard、VED 证据文档、agent pressure fixture 等机制做回归。
 
 ### 一定要写完整 PRD/TSD/TVD/TED/VED 吗？
 
@@ -334,7 +334,7 @@ npm run preflight
 
 ### 为什么要保留 TED？
 
-TED 是执行阶段的合约。它把 Spec ID、任务、文件范围、验证命令、TDD Evidence 和完成检查放在同一份文档里，让代理知道每一步该改什么、怎么证明完成、什么时候必须回退。
+TED 是执行阶段的合约。它把 Spec ID、任务、文件范围、验证命令、VED 记录要求和完成检查放在同一份文档里，让代理知道每一步该改什么、怎么证明完成、什么时候必须回退。
 
 ### 能和项目已有文档体系共存吗？
 

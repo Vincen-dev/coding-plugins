@@ -1,6 +1,6 @@
 # Coding Plugins 文档契约
 
-本文定义 `docs/coding-plugins/features/<feature-name>/` 下需求文档、技术方案、测试用例、TED 任务执行文档、README、Evidence 和生成索引的职责边界。同一 feature 下允许多条文档链路，默认使用 `<doc-id>-PRD/TSD/TVD/TED/VED.md` 区分。
+本文定义 `docs/coding-plugins/features/<feature-name>/` 下需求文档、技术方案、测试用例、TED 任务执行文档、README、VED 证据文档和生成索引的职责边界。同一 feature 下允许多条文档链路，默认使用 `<doc-id>-PRD/TSD/TVD/TED/VED.md` 区分。
 
 操作型规则由 `skills/document-metadata/SKILL.md` 维护；通用 frontmatter 模板使用 `skills/document-metadata/templates/document-metadata.md`。
 
@@ -68,9 +68,9 @@ npm run document-contract-migration:ts --
 
 ## 正文边界
 
-正文可以引用执行所需来源，例如 Plan 的 `技术方案来源`、Technical 的规格映射证据路径、Evidence 的命令记录。这些属于正式内容。
+正文可以引用执行所需来源，例如 Spec ID、Test Case ID、Task ID、`doc_id`、命令记录和真实测试输出。这些属于正式内容。
 
-正文不维护索引型链路表。README 中禁止出现 `## 产物链路` 或 `## 文档链路`。需要检索完整链路时，运行：
+正文不维护索引型链路表，也不在任务表、测试用例或证据摘要中重复写完整 `docs/coding-plugins/features/...` 路径。文档间关系写入 frontmatter `related_docs`；检索入口由 `docs/coding-plugins/INDEX.md` 生成。README 中禁止出现 `## 产物链路` 或 `## 文档链路`。需要检索完整链路时，运行：
 
 ```bash
 npm run preflight -- --write-index

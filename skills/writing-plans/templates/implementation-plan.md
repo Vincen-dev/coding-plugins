@@ -73,7 +73,7 @@ source_hash: sha256:<由 src/cli/workflow-state.ts hash --feature <feature-name>
 
 | 任务 | 标题 | 覆盖规格 | 验证方式 | VED 记录 |
 | --- | --- | --- | --- | --- |
-| TASK-001 | <任务标题> | REQ-001 | <测试命令或人工验收> | `docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-VED.md` |
+| TASK-001 | <任务标题> | REQ-001 | <测试命令或人工验收> | 同一 `doc_id` 的 VED |
 
 ## <任务标题>（TASK-001 / REQ-001）
 
@@ -89,11 +89,9 @@ source_hash: sha256:<由 src/cli/workflow-state.ts hash --feature <feature-name>
 
 ### 修改范围
 
-| 类型 | 路径 | 说明 |
-| --- | --- | --- |
-| 创建 | `<exact/path/to/new_file>` | <创建原因和职责> |
-| 修改 | `<exact/path/to/existing_file>` | <修改内容和边界> |
-| 测试 | `<tests/exact/path/to/test_file>` | <覆盖行为或契约> |
+- 创建：`<exact/path/to/new_file>`，<创建原因和职责。>
+- 修改：`<exact/path/to/existing_file>`，<修改内容和边界。>
+- 测试：`<tests/exact/path/to/test_file>`，<覆盖行为或契约。>
 
 ### 执行步骤
 
@@ -114,18 +112,19 @@ source_hash: sha256:<由 src/cli/workflow-state.ts hash --feature <feature-name>
   - 命令：`<相关测试或 preflight 命令>`
   - 预期：PASS。
 - [ ] **步骤 6：记录 VED 证据**
-  - 写入：`docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-VED.md`
+  - 写入：同一 `doc_id` 的 VED 证据文档。
   - 字段：规格/缺陷/验收、测试类型、RED 测试、RED 命令、RED 失败、GREEN 变更、GREEN 命令、REFACTOR 命令、最终验证。
 
 ### 验证方式
 
-| 覆盖规格 | 测试类型 | 命令或人工验收 | 预期结果 |
-| --- | --- | --- | --- |
-| REQ-001 | behavior | `<测试命令>` | PASS |
+- 覆盖规格：REQ-001
+- 测试类型：behavior / contract / architecture / source-scan / config
+- 命令或人工验收：`<测试命令或人工验收步骤>`
+- 预期结果：PASS，且输出能证明目标行为或契约成立。
 
 ### VED 记录要求
 
-- 证据文件：`docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-VED.md`
+- 证据文件：同一 `doc_id` 的 VED 证据文档。
 - 证据章节：`## 任务 1：<任务标题>`
 - 无法自动测试时：必须写 `### TDD 例外记录`，包含原因、用户批准、替代验证和风险。
 

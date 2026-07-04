@@ -159,6 +159,7 @@ function runValidationCommands(): void {
     "tests/ts/no-python-source.test.mjs",
     "tests/ts/preflight-cli.test.mjs",
     "tests/ts/scenario-routing-contract.test.mjs",
+    "tests/ts/scaffold-feature-docs.test.mjs",
     "tests/ts/scaffold-fixture-case.test.mjs",
     "tests/ts/skill-document-contract.test.mjs",
     "tests/ts/file-naming.test.mjs",

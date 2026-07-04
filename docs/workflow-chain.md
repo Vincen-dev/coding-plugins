@@ -545,7 +545,7 @@ docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TVD.md
 docs/coding-plugins/features/<feature-name>/plans/<doc-id>-TED.md
 ```
 
-TED 路径的 `<doc-id>` 应和需求、技术方案、测试用例路径一致，例如 `features/routing/requirements/routing-login-PRD.md` 对应 `features/routing/technicals/routing-login-TSD.md`、`features/routing/test-cases/routing-login-TVD.md` 和 `features/routing/plans/routing-login-TED.md`。
+TED 路径的 `<doc-id>` 应和需求、技术方案、测试用例路径一致。正文引用同一 `doc_id` 的 PRD、TSD、TVD 和 VED 即可；完整路径关系由 frontmatter `related_docs` 和 `docs/coding-plugins/INDEX.md` 维护。
 
 TED 正文应包含：
 
@@ -592,13 +592,13 @@ spec-driven-development -> writing-requirements -> writing-technicals -> writing
 没有先失败的测试，就不能写生产代码。
 ```
 
-TDD 阶段的交付证据不是“我遵守了 TDD”，而是写入固定路径的标准化 `TDD 证据`：
+TDD 阶段的交付证据不是“我遵守了 TDD”，而是写入同一 `doc_id` 的标准化 VED 证据文档：
 
 ```text
 docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-VED.md
 ```
 
-`<doc-id>` 应和需求、技术、测试用例、计划路径保持一致。
+`<doc-id>` 应和需求、技术、测试用例、计划路径保持一致；正文中按任务记录 TDD 证据或 TDD 例外，完整链路仍由 metadata 和 INDEX 提供。
 
 - `规格/缺陷/验收`：测试来源，优先引用需求文档和测试用例文档。
 - `RED 测试` / `RED 命令` / `RED 失败`：先失败证据。

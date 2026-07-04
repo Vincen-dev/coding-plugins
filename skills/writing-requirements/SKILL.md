@@ -13,6 +13,8 @@ description: Use when writing or updating Coding Plugins PRD requirement documen
 
 **结构原则：**PRD 正文按需求点阅读。先写轻量 `## 需求总览` 表用于检索和 validator 提取稳定 Spec ID，再为每个需求点创建独立章节，标题格式固定为 `## 标题（REQ-001）`。不要使用 `## REQ-001：标题`，避免正文阅读被编号主导。
 
+**可读性原则：**PRD 首先是需求交接材料，不是表格填空。表格只用于 `需求总览`、错误边界和追踪矩阵这类高密度索引；目标、非目标、背景、输入输出、验收标准和验证方式优先使用短段落或清单。
+
 开始时声明：“我正在使用 writing-requirements 技能来编写需求文档。”
 
 ## 何时使用
@@ -79,6 +81,13 @@ npm run preflight -- --write-index
 | 错误和边界条件 | RED/GREEN/REFACTOR 实际证据 |
 | 验收标准和验证方式类型 | 逐条测试用例步骤 |
 | Traceability Matrix 种子 | 实现任务拆分、TED 任务编号 |
+
+## 写作质量
+
+- `## 阅读摘要` 必须用真实结论写清交付能力、状态、先读重点和下游同步，不得保留泛泛占位。
+- 每个需求点章节先解释价值和行为，再列约束；不要让读者先读字段矩阵才能理解目标。
+- 验收标准写成“场景、前置条件、操作、期望结果”的短块；表格只在同类条目很多且需要横向比较时使用。
+- 不要在正文维护 PRD/TSD/TVD/TED/VED 路径清单；关联关系只写在 frontmatter `related_docs` 和 `docs/coding-plugins/INDEX.md`。
 
 ## 自审
 

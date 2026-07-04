@@ -266,11 +266,57 @@ test("TypeScript technical validator rejects unfinished template content in TSD"
 test("technical solution template keeps relations in metadata and avoids table-heavy body", () => {
   const template = readFileSync("skills/writing-technicals/templates/technical-design-document.md", "utf8");
   const [, body] = splitFrontmatter(template);
-  const tableCount = body.split(/\r?\n/).filter((line) => line.trim().startsWith("|")).length / 3;
+  const tableCount = body.split(/\r?\n/).filter((line) => /^\|\s*:?-{3,}/.test(line.trim())).length;
 
   assert.ok(tableCount <= 2, "TSD template body should reserve tables for dense mapping matrices");
   assert.equal(body.includes("docs/coding-plugins/features/<feature-name>"), false, "TSD body must not duplicate related document paths");
   assert.equal(body.includes("## 技术实现文档\n\n`docs/"), false, "TSD body must not hard-code TID path links");
   assert.equal(/\bTID\b/.test(body), false, "TSD template body must not require a separate TID");
   assert.ok(body.includes("关联关系只维护在 frontmatter `related_docs` 和 `docs/coding-plugins/INDEX.md`"));
+});
+
+test("artifact templates stay narrative-first and avoid path-heavy bodies", () => {
+  const templates = [
+    {
+      name: "PRD",
+      path: "skills/writing-requirements/templates/product-requirements-document.md",
+      maxTables: 4,
+      requiredSections: ["## 阅读摘要", "## 目标", "## 需求总览", "## 追踪矩阵"],
+    },
+    {
+      name: "TVD",
+      path: "skills/writing-test-cases/templates/test-cases.md",
+      maxTables: 3,
+      requiredSections: ["## 阅读摘要", "## 测试策略摘要", "## 测试用例总览", "## 不需要测试用例的规格"],
+    },
+    {
+      name: "TED",
+      path: "skills/writing-plans/templates/implementation-plan.md",
+      maxTables: 2,
+      requiredSections: ["## 阅读摘要", "## 执行锁定区", "## 执行简报", "## 任务总览"],
+    },
+    {
+      name: "VED",
+      path: "skills/test-driven-development/templates/tdd-evidence.md",
+      maxTables: 1,
+      requiredSections: ["## 阅读摘要", "## 任务 <N>：<任务名称>", "### TDD 证据", "### TDD 例外记录"],
+    },
+  ];
+
+  for (const templateInfo of templates) {
+    const template = readFileSync(templateInfo.path, "utf8");
+    const [, body] = splitFrontmatter(template);
+    const tableCount = body.split(/\r?\n/).filter((line) => /^\|\s*:?-{3,}/.test(line.trim())).length;
+
+    assert.ok(tableCount <= templateInfo.maxTables, `${templateInfo.name} template should keep tables for compact matrices only`);
+    assert.equal(
+      body.includes("docs/coding-plugins/features/<feature-name>"),
+      false,
+      `${templateInfo.name} body must not duplicate feature document paths from frontmatter`,
+    );
+    assert.ok(body.includes("## 阅读摘要"), `${templateInfo.name} template must start with a scannable reading summary`);
+    for (const section of templateInfo.requiredSections) {
+      assert.ok(body.includes(section), `${templateInfo.name} template missing section ${section}`);
+    }
+  }
 });

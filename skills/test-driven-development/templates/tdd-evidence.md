@@ -1,5 +1,5 @@
 ---
-title: <能力> TDD 证据
+title: <能力> VED 证据文档
 status: draft
 feature: <feature-name>
 doc_id: <doc-id>
@@ -12,13 +12,13 @@ related_docs:
   - docs/coding-plugins/features/<feature-name>/plans/<doc-id>-TED.md
 ---
 
-# <能力> TDD 证据
+# <能力> VED 证据文档
 
 ## 阅读摘要
 
 - **本文结论:** <说明本轮验证的最终结果、通过范围和剩余风险。>
 - **当前状态:** 草稿，等待真实 RED/GREEN/REFACTOR 输出。
-- **先读重点:** 先看最新任务的 TDD 证据，再看最终验证和风险。
+- **先读重点:** 先看最新任务的执行证据，再看最终验证和风险。
 - **上游来源:** 证据必须能追溯到同一 `doc_id` 的 PRD、TSD、TVD 和 TED。
 
 ## 文档信息
@@ -30,7 +30,7 @@ related_docs:
 | Doc ID | <doc-id> |
 | 文档类型 | VED |
 | 关系源 | frontmatter `related_docs` 和 `docs/coding-plugins/INDEX.md` |
-| 阅读重点 | 最新任务的 TDD 证据、最终验证、风险 |
+| 阅读重点 | 最新任务的执行证据、最终验证、风险 |
 
 关联关系以 frontmatter 的 `related_docs` 字段为准；正文只记录真实 RED/GREEN/REFACTOR 输出、TDD 例外和最终验证。
 

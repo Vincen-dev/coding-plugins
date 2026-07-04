@@ -191,7 +191,7 @@ export function scaffoldFixtureCase(root: string, options: ScaffoldFixtureCaseOp
       "## 任务总览\n\n" +
       "| 任务 | 标题 | 覆盖规格 | 验证方式 | VED 记录 |\n" +
       "| --- | --- | --- | --- | --- |\n" +
-      `| TASK-001 | ${options.title} | REQ-001 | preflight fixture 校验 | \`${vedPath}\` |\n\n` +
+      `| TASK-001 | ${options.title} | REQ-001 | preflight fixture 校验 | 同一 \`doc_id\` 的 VED |\n\n` +
       `## ${options.title}（TASK-001 / REQ-001）\n\n` +
       "### 执行步骤\n\n" +
       "- [ ] 运行 fixture 校验。\n",
