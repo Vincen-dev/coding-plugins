@@ -27,6 +27,6 @@
     }
   ],
   "releaseNotes": "RELEASE-NOTES.md",
-  "releasePrepare": "python3 scripts/prepare_release.py --notes-out /tmp/coding-plugins-release-notes.md",
-  "preflight": "python3 scripts/preflight.py"
+  "releasePrepare": "npm run prepare-release:ts -- --notes-out /tmp/coding-plugins-release-notes.md",
+  "preflight": "npm run preflight"
 }

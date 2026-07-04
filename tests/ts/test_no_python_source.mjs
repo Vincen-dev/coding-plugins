@@ -12,6 +12,7 @@ const pyTest = py + "test";
 const disallowed = new RegExp(`${pyCommand}|setup-${py}|${py} -|${pyTest}|scripts\\/[A-Za-z0-9_\\/-]+\\${pySuffix}|\\${pySuffix}\\b`);
 const scannedRoots = [
   ".github",
+  ".version-bump.json",
   "bin",
   "docs",
   "hooks",

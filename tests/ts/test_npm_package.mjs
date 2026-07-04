@@ -59,16 +59,19 @@ test("npm package and workflows use TypeScript runtime without Python", () => {
   const packageJson = JSON.parse(readFileSync(resolve(repoRoot, "package.json"), "utf8"));
   assert.equal(packageJson.scripts.preflight, "node src/cli/preflight.ts");
   assert.ok(!packageJson.files.includes("scripts/"), "npm package files must not include Python scripts directory");
+  assert.ok(files.includes(".agents/skills"), "npm package must include local skills client entrypoint");
 
   for (const workflow of [".github/workflows/ci.yml", ".github/workflows/release.yml"]) {
     const text = readFileSync(resolve(repoRoot, workflow), "utf8");
     assert.ok(!text.includes(`setup-${py}`), `${workflow} must not set up Python`);
     assert.ok(!text.includes(`${pyCommand} `), `${workflow} must not run ${pyCommand}`);
+    assert.match(text, /npm ci\b/, `${workflow} must install npm dependencies before preflight`);
     assert.ok(text.includes("npm run preflight"), `${workflow} must run npm preflight`);
   }
 
   const preflight = readFileSync(resolve(repoRoot, "src/cli/preflight.ts"), "utf8");
   assert.ok(!preflight.includes(`scripts/preflight${pySuffix}`), "TypeScript preflight must not delegate to Python preflight");
+  assert.ok(!preflight.includes("External reference checks are not required"), "preflight must not no-op external reference checks");
 });
 
 test("published text files do not document Python entrypoints", () => {

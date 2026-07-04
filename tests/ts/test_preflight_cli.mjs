@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
+import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
@@ -47,4 +48,48 @@ test("TypeScript preflight runs package typecheck", () => {
   });
   assert.equal(source.status, 0, source.stderr);
   assert.ok(source.stdout.includes('"npm", ["run", "typecheck"]'));
+});
+
+test("TypeScript preflight runs scenario routing contract checks", () => {
+  const source = spawnSync("node", ["-e", "process.stdout.write(require('node:fs').readFileSync(process.argv[1], 'utf8'))", join(repoRoot, "src/cli/preflight.ts")], {
+    cwd: repoRoot,
+    encoding: "utf8",
+  });
+  assert.equal(source.status, 0, source.stderr);
+  assert.ok(source.stdout.includes("tests/ts/test_scenario_routing_contract.mjs"));
+});
+
+test("TypeScript preflight fails missing local external references", () => {
+  const featureRoot = join(repoRoot, "docs/coding-plugins/features/preflight-external-reference-test");
+  try {
+    mkdirSync(featureRoot, { recursive: true });
+    writeFileSync(
+      join(featureRoot, "README.md"),
+      [
+        "---",
+        "title: External Reference Test",
+        "status: draft",
+        "feature: preflight-external-reference-test",
+        "updated: 2026-07-04",
+        "external_references:",
+        "  - missing-local-file.md",
+        "---",
+        "# External Reference Test",
+        "",
+      ].join("\n"),
+      "utf8",
+    );
+
+    const result = spawnSync("node", [join(repoRoot, "src/cli/preflight.ts"), "--check-external-references"], {
+      cwd: repoRoot,
+      encoding: "utf8",
+      env: { ...process.env, NPM_CONFIG_CACHE: "/private/tmp/codex-npm-cache" },
+    });
+
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /External reference checks failed/);
+    assert.match(result.stderr, /missing-local-file\.md/);
+  } finally {
+    rmSync(featureRoot, { recursive: true, force: true });
+  }
 });
