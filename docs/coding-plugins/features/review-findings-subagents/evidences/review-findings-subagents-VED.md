@@ -81,6 +81,18 @@ external_references: []
 
 ## TDD 证据
 
+- **规格/缺陷/验收:** REQ-001；整体项目复审发现命令入口由 `bin` 手写 map 维护、doctor 缺跨平台汇总、agent pressure 缺长会话压缩 / TED stale / 平台不可用真实命令样本、release 流程仍偏个人本地记忆。
+- **测试类型:** `contract`
+- **RED 测试:** `tests/ts/src-architecture.test.mjs`、`tests/ts/productization-cli.test.mjs`、`tests/ts/agent-pressure-harness.test.mjs`、`tests/ts/npm-package.test.mjs`
+- **RED 命令:** `node --test tests/ts/src-architecture.test.mjs`；`node --test tests/ts/productization-cli.test.mjs`；`node --test tests/ts/agent-pressure-harness.test.mjs`；`node --test --test-name-pattern "published docs include a team release checklist" tests/ts/npm-package.test.mjs`
+- **RED 失败:** command registry 模块缺失；doctor 缺 `platform-summary`；agent-pressure harness 仍只有 4 条 case 且缺指定 observed behaviors；INSTALL 缺“团队发布 checklist”。随后 package 测试又复现 `ERR_UNSUPPORTED_NODE_MODULES_TYPE_STRIPPING`，证明 bin 不能在发布包中直接 import `src/*.ts`。
+- **GREEN 变更:** 新增 `src/lib/runtime/command-registry.ts` 和 `src/cli/command-registry.ts`，bin/help/dispatch 改为读共享 registry 且发布包内优先加载 `dist` registry；doctor 新增 `platform-summary` 汇总 Codex/Claude/Gemini/local skills/Cursor/Copilot；agent pressure harness 新增长会话压缩、上游变更导致 TED stale、Codex 不可用三类真实命令样本，并让 ingest 接受 `real_command_negative`；INSTALL 增加团队 release checklist；fixture 合并到 27 条 case 并补齐 execution evidence。
+- **GREEN 命令:** `node --test tests/ts/src-architecture.test.mjs` PASS 5/5；`node --test tests/ts/productization-cli.test.mjs` PASS 24/24；`node --test tests/ts/agent-pressure-harness.test.mjs` PASS 1/1；`node --test tests/ts/npm-package.test.mjs` PASS 13/13。
+- **REFACTOR 命令:** `node src/cli/agent-pressure-harness.ts --root . --json --output /tmp/coding-plugins-agent-pressure-harness.json`；`node src/cli/agent-pressure-ingest.ts --input /tmp/coding-plugins-agent-pressure-combined.json --output tests/fixtures/formal-feature-chain/agent-pressure-results.json --split-cases --cases-dir agent-pressure-cases --fixture-manifest --run-id 2026-07-04-agent-pressure-002 --source-contract docs/coding-plugins/scenario-routing.json`。
+- **最终验证:** `npm test` PASS，preflight 完整通过；`node bin/coding-plugins.js doctor --root . --codex-home /Users/vincen/.codex --format json` PASS，`platform-summary` 为 `codex=ok; claude=ok; gemini=ok; local-skills=ok; cursor=dry-run-ok; copilot=dry-run-ok`；`git diff --check` PASS。
+
+## TDD 证据
+
 - **规格/缺陷/验收:** bug 复现：最终剩余审计发现 validate JSON 默认输出完整 section 正文、state 文件缺少锁和原子写、`start` 未显式报告 project state 与文档链状态不一致、`doctor` 外部 Codex CLI 无 timeout、security audit secret scan 缺真实 pack fixture 行为测试、build lock 逻辑在 build 脚本中重复。
 - **测试类型:** `contract`
 - **RED 测试:** `tests/ts/productization-cli.test.mjs`、`tests/ts/npm-package.test.mjs`
