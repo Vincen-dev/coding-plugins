@@ -66,14 +66,14 @@ related_docs:
 
 | 类型 | 路径 | 说明 |
 | --- | --- | --- |
-| 测试 | `tests/ts/test_preflight_cli.mjs` | 多场景 fixture 覆盖。 |
+| 测试 | `tests/ts/preflight-cli.test.mjs` | 多场景 fixture 覆盖。 |
 | 文档 | `tests/fixtures/formal-feature-chain` | metadata-sync 案例链路。 |
 
 ### 执行步骤
 
 - [ ] **步骤 1：根据规格 ID 写失败测试**
   - 规格 ID：REQ-001
-  - 测试位置：`tests/ts/test_preflight_cli.mjs`
+  - 测试位置：`tests/ts/preflight-cli.test.mjs`
   - 预期失败：缺少 metadata sync 场景时失败。
 - [ ] **步骤 2：运行测试确认 RED**
   - 命令：`npm run preflight`

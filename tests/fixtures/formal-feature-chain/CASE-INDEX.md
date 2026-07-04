@@ -63,7 +63,7 @@
 - source_type: quality_regression
 - source_reference: writing-technicals generated document readability and unfinished template content
 - optimization_target: 验证 TSD 技术方案文档不只满足结构闭包，还要拒绝未替换模板占位、表格滥用、正文重复文档关系和不可交接的空泛内容。
-- executable_regression: `tests/ts/test_document_metadata.mjs` 中的 technical quality validator/template cases。
+- executable_regression: `tests/ts/document-metadata.test.mjs` 中的 technical quality validator/template cases。
 - covered_risks:
   - TSD 保留 `<...>`、`YYYY-MM-DD` 或模板说明，却仍通过 preflight。
   - TSD 看似有映射表，但阅读摘要和设计摘要不能支持评审。

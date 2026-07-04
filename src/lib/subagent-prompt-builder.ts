@@ -16,7 +16,7 @@ export class PromptBuildError extends Error {
 const LIB_DIR = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(LIB_DIR, "../..");
 const SUBAGENT_SKILL_DIR = resolve(REPO_ROOT, "skills/subagent-driven-development");
-const CODE_REVIEWER_TEMPLATE = resolve(REPO_ROOT, "skills/requesting-code-review/code-reviewer.md");
+const CODE_REVIEWER_TEMPLATE = resolve(REPO_ROOT, "skills/requesting-code-review/code-reviewer-prompt.md");
 const TASK_HEADING_RE = /^## (?<title>.*?\b(?<task>TASK-\d+)\b.*?)\s*$/gm;
 const SECTION_HEADING_RE = /^## (?!#).*$/gm;
 const PROMPT_KINDS = ["implementer", "spec-reviewer", "code-quality-reviewer"] as const;

@@ -56,7 +56,8 @@ test("TypeScript preflight runs scenario routing contract checks", () => {
     encoding: "utf8",
   });
   assert.equal(source.status, 0, source.stderr);
-  assert.ok(source.stdout.includes("tests/ts/test_scenario_routing_contract.mjs"));
+  assert.ok(source.stdout.includes("tests/ts/scenario-routing-contract.test.mjs"));
+  assert.ok(source.stdout.includes("tests/ts/file-naming.test.mjs"));
 });
 
 test("TypeScript preflight fails missing local external references", () => {

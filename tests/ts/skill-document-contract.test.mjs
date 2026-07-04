@@ -33,7 +33,7 @@ const disallowedPatterns = [
 const allowedMigrationFiles = new Set([
   "docs/coding-plugins/document-contract-migration.md",
   "src/lib/document-contract-migration.ts",
-  "tests/ts/test_document_contract_migration.mjs",
+  "tests/ts/document-contract-migration.test.mjs",
 ]);
 
 function walk(dir) {

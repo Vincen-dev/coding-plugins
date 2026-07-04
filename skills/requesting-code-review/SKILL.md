@@ -32,7 +32,7 @@ BASE_SHA=$(git rev-parse HEAD~1)
 HEAD_SHA=$(git rev-parse HEAD)
 ```
 
-2. 派发代码评审子代理，使用 `code-reviewer.md` 模板。
+2. 派发代码评审子代理，使用 `code-reviewer-prompt.md` 模板。
 
 占位符：
 
@@ -81,4 +81,4 @@ HEAD_SHA=$(git rev-parse HEAD)
 - 展示代码或测试证据。
 - 请求澄清。
 
-模板见 `requesting-code-review/code-reviewer.md`。
+模板见 `requesting-code-review/code-reviewer-prompt.md`。

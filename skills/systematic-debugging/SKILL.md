@@ -138,3 +138,8 @@ description: 遇到任何 bug、测试失败或非预期行为时，在提出修
 - `root-cause-tracing.md`：从症状向上追数据来源。
 - `defense-in-depth.md`：在根因修复外添加防线。
 - `condition-based-waiting.md`：异步测试和等待不要靠固定 sleep。
+- `concept-check.md`：检查是否理解系统化调试概念。
+- `pressure-scenario-flaky-ci.md`：CI 偶发失败压力场景。
+- `pressure-scenario-signing-chain.md`：发布签名链路压力场景。
+- `pressure-scenario-repeated-patches.md`：多次补丁失败后的架构质疑压力场景。
+- `skill-creation-log.md`：记录该 skill 的创建背景。

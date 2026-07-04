@@ -1,6 +1,6 @@
 # 仓库规则测试示例
 
-原版文件名保留为 `CLAUDE_MD_TESTING.md`，用于说明如何测试仓库级指令或代理规则。对 Codex 项目，同样思路可应用到 `AGENTS.md`、项目 README 或其他本地规则文件。
+此示例用于说明如何测试仓库级指令或代理规则。对 Claude Code 项目通常测试 `CLAUDE.md`；对 Codex 项目，同样思路可应用到 `AGENTS.md`、项目 README 或其他本地规则文件。
 
 ## 目标
 

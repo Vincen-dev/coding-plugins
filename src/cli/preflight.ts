@@ -150,18 +150,19 @@ function runValidationCommands(): void {
   runCommand("npm", ["run", "typecheck"]);
 
   const tests = [
-    "tests/ts/test_agent_pressure_harness.mjs",
-    "tests/ts/test_document_contract_migration.mjs",
-    "tests/ts/test_document_metadata.mjs",
-    "tests/ts/test_docs_index.mjs",
-    "tests/ts/test_manifest_checks.mjs",
-    "tests/ts/test_npm_package.mjs",
-    "tests/ts/test_no_python_source.mjs",
-    "tests/ts/test_preflight_cli.mjs",
-    "tests/ts/test_scenario_routing_contract.mjs",
-    "tests/ts/test_scaffold_fixture_case.mjs",
-    "tests/ts/test_skill_document_contract.mjs",
-    "tests/ts/test_skill_script_ownership.mjs",
+    "tests/ts/agent-pressure-harness.test.mjs",
+    "tests/ts/document-contract-migration.test.mjs",
+    "tests/ts/document-metadata.test.mjs",
+    "tests/ts/docs-index.test.mjs",
+    "tests/ts/manifest-checks.test.mjs",
+    "tests/ts/npm-package.test.mjs",
+    "tests/ts/no-python-source.test.mjs",
+    "tests/ts/preflight-cli.test.mjs",
+    "tests/ts/scenario-routing-contract.test.mjs",
+    "tests/ts/scaffold-fixture-case.test.mjs",
+    "tests/ts/skill-document-contract.test.mjs",
+    "tests/ts/file-naming.test.mjs",
+    "tests/ts/skill-script-ownership.test.mjs",
   ];
   for (const testFile of tests) {
     runCommand("node", ["--test", testFile]);

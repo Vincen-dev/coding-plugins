@@ -79,13 +79,13 @@ related_docs:
 | 类型 | 路径 | 说明 |
 | --- | --- | --- |
 | 修改 | `src/cli/preflight.ts` | 正式链路闭包校验逻辑。 |
-| 测试 | `tests/ts/test_preflight_cli.mjs` | golden fixture 回归测试。 |
+| 测试 | `tests/ts/preflight-cli.test.mjs` | golden fixture 回归测试。 |
 
 ### 执行步骤
 
 - [ ] **步骤 1：根据规格 ID 写失败测试**
   - 规格 ID：REQ-001
-  - 测试位置：`tests/ts/test_preflight_cli.mjs`
+  - 测试位置：`tests/ts/preflight-cli.test.mjs`
   - 预期失败：链路缺失或 metadata 不一致时失败。
 - [ ] **步骤 2：运行测试确认 RED**
   - 命令：`npm run preflight`

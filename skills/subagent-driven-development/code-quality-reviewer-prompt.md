@@ -8,7 +8,7 @@
 
 ```text
 Task tool (general-purpose):
-  使用 requesting-code-review/code-reviewer.md 模板
+  使用 requesting-code-review/code-reviewer-prompt.md 模板
 
   DESCRIPTION: [task summary, from implementer's report]
   PLAN_OR_REQUIREMENTS: 任务 N from [plan-file]

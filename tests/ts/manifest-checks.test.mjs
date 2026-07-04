@@ -47,9 +47,9 @@ function writeValidFixture(root, version = "1.2.3") {
   writeFileSync(join(root, "src/cli/bump-version.ts"), "export {};\n", "utf8");
   writeFileSync(join(root, "src/cli/preflight.ts"), "export {};\n", "utf8");
   writeFileSync(join(root, "src/cli/prepare-release.ts"), "export {};\n", "utf8");
-  writeFileSync(join(root, "tests/ts/test_no_python_source.mjs"), "import test from 'node:test';\n", "utf8");
-  writeFileSync(join(root, "tests/ts/test_preflight_cli.mjs"), "import test from 'node:test';\n", "utf8");
-  writeFileSync(join(root, "tests/ts/test_npm_package.mjs"), "import test from 'node:test';\n", "utf8");
+  writeFileSync(join(root, "tests/ts/no-python-source.test.mjs"), "import test from 'node:test';\n", "utf8");
+  writeFileSync(join(root, "tests/ts/preflight-cli.test.mjs"), "import test from 'node:test';\n", "utf8");
+  writeFileSync(join(root, "tests/ts/npm-package.test.mjs"), "import test from 'node:test';\n", "utf8");
 
   writeJson(join(root, "plugin.json"), { version, skills: "skills/" });
   writeJson(join(root, "gemini-extension.json"), { version, contextFileName: "GEMINI.md" });

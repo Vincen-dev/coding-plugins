@@ -218,7 +218,7 @@ export function runParallelScenario(root: string): CasePayload {
     [
       "node",
       "--test",
-      "tests/ts/test_agent_pressure_harness.mjs",
+      "tests/ts/agent-pressure-harness.test.mjs",
     ],
     root,
     { stdoutExcerpt: "split pressure manifest and case files validated successfully" },

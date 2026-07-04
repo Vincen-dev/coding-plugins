@@ -5,6 +5,7 @@
 | Feature | Doc ID | 功能根目录 | 需求文档 | 技术方案 | 测试用例 | 任务执行 | 证据 | 标签 | 更新日期 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | review-findings-subagents | review-findings-subagents | `docs/coding-plugins/features/review-findings-subagents` | - | - | - | - | `docs/coding-plugins/features/review-findings-subagents/evidences/review-findings-subagents-VED.md` | - | - |
+| skill-file-naming | skill-file-naming | `docs/coding-plugins/features/skill-file-naming` | - | - | - | - | `docs/coding-plugins/features/skill-file-naming/evidences/skill-file-naming-VED.md` | - | - |
 | technical-doc-quality | technical-doc-quality | `docs/coding-plugins/features/technical-doc-quality` | - | - | - | - | `docs/coding-plugins/features/technical-doc-quality/evidences/technical-doc-quality-VED.md` | - | - |
 
 规则:
