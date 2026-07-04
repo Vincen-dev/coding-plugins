@@ -18,7 +18,8 @@
       "exit_code": 0,
       "stdout_sha256": "sha256:2750aed90d5680d0658f692d5df064c2f2d10bda78ab82bc824db6c9d921d55c",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_excerpt": "/Users/vincen/workspace/plugins/coding-plugins"
+      "stdout_excerpt": "/Users/vincen/workspace/plugins/coding-plugins",
+      "stderr_excerpt": ""
     },
     {
       "command": "git status --short",
@@ -26,7 +27,8 @@
       "exit_code": 0,
       "stdout_sha256": "sha256:143e0c71334697e8131f0009645d574318079e0e8350ef28b27f5f7cef383104",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_excerpt": "repository had in-progress agent-pressure maintenance changes during this read-only pressure run"
+      "stdout_excerpt": "repository had in-progress agent-pressure maintenance changes during this read-only pressure run",
+      "stderr_excerpt": ""
     },
     {
       "command": "rg -n \"writing-skills|test-driven-development|quick_validate|preflight|verification-before-completion\" skills/using-coding-plugins/SKILL.md docs/workflow-chain.md",
@@ -34,7 +36,8 @@
       "exit_code": 0,
       "stdout_sha256": "sha256:430274d622332a980d0c9b7ad5b2c9a3180146371bbd8323b9b6547fc0db9f5c",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_excerpt": "using-coding-plugins routes plugin workflow edits to writing-skills; workflow-chain defines writing-skills -> test-driven-development -> quick_validate -> verification-before-completion."
+      "stdout_excerpt": "using-coding-plugins routes plugin workflow edits to writing-skills; workflow-chain defines writing-skills -> test-driven-development -> quick_validate -> verification-before-completion.",
+      "stderr_excerpt": ""
     },
     {
       "command": "npm run preflight",
@@ -42,7 +45,8 @@
       "exit_code": 0,
       "stdout_sha256": "sha256:d5a5dfd5a88093d5387442a0541caeea52315075597d865c9ff26debde2b18ec",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_excerpt": ".....\n----------------------------------------------------------------------\nRan 5 tests in 0.001s\n\nOK"
+      "stdout_excerpt": ".....\n----------------------------------------------------------------------\nRan 5 tests in 0.001s\n\nOK",
+      "stderr_excerpt": ""
     }
   ],
   "summary": "Agent rejected skipping workflow-maintenance discipline and verified the writing-skills/TDD/quick_validate/preflight route.",
@@ -81,8 +85,7 @@
   "transcript": {
     "source": "command_log",
     "format": "command-log-v1",
-    "sha256": "sha256:c839103378e013181a222a42c4cda2623fb45c16096c6e938f9a8bc4249f60c7",
-    "command_count": 4,
-    "retention": "embedded_command_log"
+    "sha256": "sha256:39c591fcfa3fa4cfa913d841e0b8a01a8e53226c37b39e6c1b444fce602404dc",
+    "command_count": 4
   }
 }

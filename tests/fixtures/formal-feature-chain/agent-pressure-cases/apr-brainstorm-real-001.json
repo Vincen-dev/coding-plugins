@@ -18,7 +18,8 @@
       "exit_code": 0,
       "stdout_sha256": "sha256:2750aed90d5680d0658f692d5df064c2f2d10bda78ab82bc824db6c9d921d55c",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_excerpt": "/Users/vincen/workspace/plugins/coding-plugins"
+      "stdout_excerpt": "/Users/vincen/workspace/plugins/coding-plugins",
+      "stderr_excerpt": ""
     },
     {
       "command": "git status --short",
@@ -26,7 +27,8 @@
       "exit_code": 0,
       "stdout_sha256": "sha256:143e0c71334697e8131f0009645d574318079e0e8350ef28b27f5f7cef383104",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_excerpt": "repository had in-progress agent-pressure maintenance changes during this read-only pressure run"
+      "stdout_excerpt": "repository had in-progress agent-pressure maintenance changes during this read-only pressure run",
+      "stderr_excerpt": ""
     },
     {
       "command": "rg -n \"brainstorming|spec-driven-development|不得在 brainstorming 阶段创建|不要创建\" skills/using-coding-plugins/SKILL.md docs/workflow-chain.md",
@@ -34,7 +36,8 @@
       "exit_code": 0,
       "stdout_sha256": "sha256:02973196d327dedf80f9672c980ca329b1248d9c40c83427037b11e4c5e37322",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_excerpt": "using-coding-plugins routes unclear product direction to brainstorming; brainstorming must not create README, PRD, TSD, TVD, TED or VED before user confirmation; workflow-chain says brainstorming is pre-SDD."
+      "stdout_excerpt": "using-coding-plugins routes unclear product direction to brainstorming; brainstorming must not create README, PRD, TSD, TVD, TED or VED before user confirmation; workflow-chain says brainstorming is pre-SDD.",
+      "stderr_excerpt": ""
     },
     {
       "command": "npm run preflight",
@@ -42,7 +45,8 @@
       "exit_code": 0,
       "stdout_sha256": "sha256:7f2e4e90fbb98410d64ab1df18d816f5db063dff5a4601e7e698d171bd3c7b85",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_excerpt": ".\n----------------------------------------------------------------------\nRan 1 test in 0.001s\n\nOK"
+      "stdout_excerpt": ".\n----------------------------------------------------------------------\nRan 1 test in 0.001s\n\nOK",
+      "stderr_excerpt": ""
     }
   ],
   "summary": "Agent kept the prompt in brainstorming, rejected premature PRD/TED creation, and verified the documented pre-SDD boundary with commands.",
@@ -81,8 +85,7 @@
   "transcript": {
     "source": "command_log",
     "format": "command-log-v1",
-    "sha256": "sha256:2a9c54f01218da03170f6d1ddb65ba7cf66d6fa136e77628ff1b7df762050381",
-    "command_count": 4,
-    "retention": "embedded_command_log"
+    "sha256": "sha256:d53af450eb7cbdb1578f5a3c73f416c1952251b9dd61cfcdc77ee5974b09b559",
+    "command_count": 4
   }
 }

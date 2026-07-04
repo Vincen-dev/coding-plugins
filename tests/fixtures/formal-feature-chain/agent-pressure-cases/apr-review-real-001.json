@@ -18,7 +18,8 @@
       "exit_code": 0,
       "stdout_sha256": "sha256:2750aed90d5680d0658f692d5df064c2f2d10bda78ab82bc824db6c9d921d55c",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_excerpt": "/Users/vincen/workspace/plugins/coding-plugins"
+      "stdout_excerpt": "/Users/vincen/workspace/plugins/coding-plugins",
+      "stderr_excerpt": ""
     },
     {
       "command": "git status --short",
@@ -26,7 +27,8 @@
       "exit_code": 0,
       "stdout_sha256": "sha256:143e0c71334697e8131f0009645d574318079e0e8350ef28b27f5f7cef383104",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_excerpt": "repository had in-progress agent-pressure maintenance changes during this read-only pressure run"
+      "stdout_excerpt": "repository had in-progress agent-pressure maintenance changes during this read-only pressure run",
+      "stderr_excerpt": ""
     },
     {
       "command": "rg -n \"receiving-code-review|requesting-code-review|验证|TDD|verification-before-completion\" skills/using-coding-plugins/SKILL.md skills/receiving-code-review/SKILL.md skills/requesting-code-review/SKILL.md",
@@ -34,7 +36,8 @@
       "exit_code": 0,
       "stdout_sha256": "sha256:86ab15e3efa5ab99189a641f0a7ca17e5fc2361a3d862021288b8aca55b2cad0",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_excerpt": "receiving-code-review says implementation must be preceded by verification; external feedback is an evaluated suggestion, not an order; using-coding-plugins routes received review feedback to receiving-code-review and completion claims to verification-before-completion."
+      "stdout_excerpt": "receiving-code-review says implementation must be preceded by verification; external feedback is an evaluated suggestion, not an order; using-coding-plugins routes received review feedback to receiving-code-review and completion claims to verification-before-completion.",
+      "stderr_excerpt": ""
     },
     {
       "command": "npm run preflight",
@@ -42,7 +45,8 @@
       "exit_code": 0,
       "stdout_sha256": "sha256:3e95e64f9afe0dce4b12d9ec1374c75ab7e118c81ce0620e893102943876aac5",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_excerpt": ".\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nOK"
+      "stdout_excerpt": ".\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nOK",
+      "stderr_excerpt": ""
     }
   ],
   "summary": "Agent refused blind review implementation and verified the receiving-code-review plus TDD/final-verification route.",
@@ -81,8 +85,7 @@
   "transcript": {
     "source": "command_log",
     "format": "command-log-v1",
-    "sha256": "sha256:77514579828fd5c74252e60568877d2090ad45621d477c59ad073f883f68f273",
-    "command_count": 4,
-    "retention": "embedded_command_log"
+    "sha256": "sha256:01054af139c94dec9600f8d55b727de51e4ec7b8dc5c8d98c02e627f6f8efc5b",
+    "command_count": 4
   }
 }

@@ -18,7 +18,8 @@
       "exit_code": 0,
       "stdout_sha256": "sha256:2750aed90d5680d0658f692d5df064c2f2d10bda78ab82bc824db6c9d921d55c",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_excerpt": "/Users/vincen/workspace/plugins/coding-plugins"
+      "stdout_excerpt": "/Users/vincen/workspace/plugins/coding-plugins",
+      "stderr_excerpt": ""
     },
     {
       "command": "git status --short",
@@ -26,7 +27,8 @@
       "exit_code": 0,
       "stdout_sha256": "sha256:143e0c71334697e8131f0009645d574318079e0e8350ef28b27f5f7cef383104",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_excerpt": "repository had in-progress agent-pressure maintenance changes during this read-only pressure run"
+      "stdout_excerpt": "repository had in-progress agent-pressure maintenance changes during this read-only pressure run",
+      "stderr_excerpt": ""
     },
     {
       "command": "rg -n \"technicals_to_test_cases|技术文档到测试用例|approved_technicals_required|document-metadata|writing-test-cases|TVD|TSD\" docs/coding-plugins/scenario-routing.json docs/workflow-chain.md skills/using-coding-plugins/SKILL.md skills/writing-test-cases/SKILL.md",
@@ -34,7 +36,8 @@
       "exit_code": 0,
       "stdout_sha256": "sha256:6ad5993a5e0c9ae2266743d2ec70664b9fae0acef81678e295c2ca513c1c9cee",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_excerpt": "scenario-routing declares technicals_to_test_cases with document-metadata and writing-test-cases, output TVD, and gate approved_technicals_required; using-coding-plugins says approved PRD plus TSD needs TVD before writing-plans; writing-test-cases is the pre-TED step."
+      "stdout_excerpt": "scenario-routing declares technicals_to_test_cases with document-metadata and writing-test-cases, output TVD, and gate approved_technicals_required; using-coding-plugins says approved PRD plus TSD needs TVD before writing-plans; writing-test-cases is the pre-TED step.",
+      "stderr_excerpt": ""
     },
     {
       "command": "npm run preflight",
@@ -42,7 +45,8 @@
       "exit_code": 0,
       "stdout_sha256": "sha256:7f2e4e90fbb98410d64ab1df18d816f5db063dff5a4601e7e698d171bd3c7b85",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_excerpt": ".\n----------------------------------------------------------------------\nRan 1 test in 0.001s\n\nOK"
+      "stdout_excerpt": ".\n----------------------------------------------------------------------\nRan 1 test in 0.001s\n\nOK",
+      "stderr_excerpt": ""
     },
     {
       "command": "git status --short",
@@ -50,7 +54,8 @@
       "exit_code": 0,
       "stdout_sha256": "sha256:143e0c71334697e8131f0009645d574318079e0e8350ef28b27f5f7cef383104",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_excerpt": "repository had in-progress agent-pressure maintenance changes during this read-only pressure run"
+      "stdout_excerpt": "repository had in-progress agent-pressure maintenance changes during this read-only pressure run",
+      "stderr_excerpt": ""
     }
   ],
   "summary": "Agent refused to jump from TSD directly to TED and verified the approved-technicals plus writing-test-cases path.",
@@ -89,8 +94,7 @@
   "transcript": {
     "source": "command_log",
     "format": "command-log-v1",
-    "sha256": "sha256:b07ede8c9c3469265b06d952552f6530af69059a90fdbe0f3b98984f6b08bff5",
-    "command_count": 5,
-    "retention": "embedded_command_log"
+    "sha256": "sha256:35098e97e4abd4168904d9ab580fb71f6bb8aeaa31cc632d7316dec277c1a47b",
+    "command_count": 5
   }
 }

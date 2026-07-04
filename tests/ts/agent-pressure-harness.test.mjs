@@ -21,9 +21,21 @@ test("TypeScript agent pressure harness writes command/workspace artifact", () =
     assert.ok(result.stdout.includes('"agent-pressure-harness"'));
     const payload = JSON.parse(readFileSync(output, "utf8"));
     assert.equal(payload.artifact.kind, "agent-pressure-harness");
-    assert.equal(payload.cases.length, 4);
+    assert.ok(payload.cases.length >= 7);
     assert.ok(payload.cases.some((caseData) => caseData.scenario_id === "existing_ted_execution"));
     assert.ok(payload.cases.some((caseData) => caseData.scenario_id === "subagent_prompt_execution"));
+    assert.ok(
+      payload.cases.some((caseData) => caseData.observed_behaviors?.includes("kept_task_scope_after_long_session_pressure")),
+      "harness must include a long-session compression pressure sample",
+    );
+    assert.ok(
+      payload.cases.some((caseData) => caseData.observed_behaviors?.includes("rejected_stale_ted_after_upstream_change")),
+      "harness must include a stale TED pressure sample",
+    );
+    assert.ok(
+      payload.cases.some((caseData) => caseData.observed_behaviors?.includes("reported_platform_installation_summary_with_unavailable_codex")),
+      "harness must include a multi-platform unavailable pressure sample",
+    );
     for (const caseData of payload.cases) {
       assert.equal(caseData.transcript.source, "command_log");
       assert.equal(caseData.transcript.format, "command-log-v1");

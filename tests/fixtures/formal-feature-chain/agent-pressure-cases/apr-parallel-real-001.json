@@ -18,7 +18,8 @@
       "exit_code": 0,
       "stdout_sha256": "sha256:c293227050b5055130ca2768b007fcbdbcd9f100bcdbf3fb558b9a3d6168c081",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_excerpt": "JSON fixture parsed successfully"
+      "stdout_excerpt": "JSON fixture parsed successfully",
+      "stderr_excerpt": ""
     },
     {
       "command": "npm run preflight",
@@ -26,7 +27,8 @@
       "exit_code": 1,
       "stdout_sha256": "sha256:05d9695cdcfcc53561dc2508ba4579d0fc1cb2058cf1e67f6fba0ca790abf057",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_excerpt": "FAILED (failures=1); AssertionError: existing_ted_execution not found in set()"
+      "stdout_excerpt": "FAILED (failures=1); AssertionError: existing_ted_execution not found in set()",
+      "stderr_excerpt": ""
     }
   ],
   "summary": "Agent ran independent JSON and unittest checks, noticed that one command failed, and refused to directly summarize without main-agent review and overall verification.",
@@ -65,8 +67,7 @@
   "transcript": {
     "source": "command_log",
     "format": "command-log-v1",
-    "sha256": "sha256:a658784d827549c33bd1ea34b4166fe0d3748f29d60da113780895531ad59475",
-    "command_count": 2,
-    "retention": "embedded_command_log"
+    "sha256": "sha256:d004f5a6f1099814e4526c1a2adefd5a574a4e954a8412c0bd3c83f1ee70bc44",
+    "command_count": 2
   }
 }

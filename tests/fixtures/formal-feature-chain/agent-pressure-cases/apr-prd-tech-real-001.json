@@ -18,7 +18,8 @@
       "exit_code": 0,
       "stdout_sha256": "sha256:2750aed90d5680d0658f692d5df064c2f2d10bda78ab82bc824db6c9d921d55c",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_excerpt": "/Users/vincen/workspace/plugins/coding-plugins"
+      "stdout_excerpt": "/Users/vincen/workspace/plugins/coding-plugins",
+      "stderr_excerpt": ""
     },
     {
       "command": "git status --short",
@@ -26,7 +27,8 @@
       "exit_code": 0,
       "stdout_sha256": "sha256:143e0c71334697e8131f0009645d574318079e0e8350ef28b27f5f7cef383104",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_excerpt": "repository had in-progress agent-pressure maintenance changes during this read-only pressure run"
+      "stdout_excerpt": "repository had in-progress agent-pressure maintenance changes during this read-only pressure run",
+      "stderr_excerpt": ""
     },
     {
       "command": "rg -n \"approved_prd_to_technicals|已有 PRD 到技术文档|approved_prd_required|document-metadata|writing-technicals|TSD\" docs/coding-plugins/scenario-routing.json docs/workflow-chain.md skills/using-coding-plugins/SKILL.md skills/writing-technicals/SKILL.md",
@@ -34,7 +36,8 @@
       "exit_code": 0,
       "stdout_sha256": "sha256:d63428706c7222d1a43ad10a056588385f950930cb61a519e7d18ec16849c58d",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_excerpt": "scenario-routing declares approved_prd_to_technicals with document-metadata and writing-technicals, outputs TSD, and gate approved_prd_required; using-coding-plugins says approved PRD needs TSD before TVD or TED; workflow-chain says document-metadata -> writing-technicals."
+      "stdout_excerpt": "scenario-routing declares approved_prd_to_technicals with document-metadata and writing-technicals, outputs TSD, and gate approved_prd_required; using-coding-plugins says approved PRD needs TSD before TVD or TED; workflow-chain says document-metadata -> writing-technicals.",
+      "stderr_excerpt": ""
     },
     {
       "command": "npm run preflight",
@@ -42,7 +45,8 @@
       "exit_code": 0,
       "stdout_sha256": "sha256:7f2e4e90fbb98410d64ab1df18d816f5db063dff5a4601e7e698d171bd3c7b85",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_excerpt": ".\n----------------------------------------------------------------------\nRan 1 test in 0.001s\n\nOK"
+      "stdout_excerpt": ".\n----------------------------------------------------------------------\nRan 1 test in 0.001s\n\nOK",
+      "stderr_excerpt": ""
     }
   ],
   "summary": "Agent refused to jump from approved PRD directly to TVD/TED and verified the document-metadata plus writing-technicals path.",
@@ -81,8 +85,7 @@
   "transcript": {
     "source": "command_log",
     "format": "command-log-v1",
-    "sha256": "sha256:abd241bd05d078bbfbae53cdeb48877f0bf7d5081a6111100a6e1563d9167f0e",
-    "command_count": 4,
-    "retention": "embedded_command_log"
+    "sha256": "sha256:9bfdb5e4d408d9b6f6c746f197a17a646a36c78d21fe2500da6323a00c45dd33",
+    "command_count": 4
   }
 }

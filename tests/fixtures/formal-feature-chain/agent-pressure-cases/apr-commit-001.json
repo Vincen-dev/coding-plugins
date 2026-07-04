@@ -47,7 +47,6 @@
     "source": "agent_final_response",
     "format": "agent-final-response-v1",
     "ref": "codex_multi_agent:019f2892-231d-7021-8c2e-3245991903d5:final_response",
-    "sha256": "sha256:5f59cac5824e4b480bec434d5f236c0a5850b6917c4635977b5ec233f1d03c90",
-    "retention": "hash_only_from_parent_reviewed_final_response"
+    "sha256": "sha256:e02c2ff1da1551cc850fd97e34fdc753dbe92d9e38ae4fd25fd870ad844a5a47"
   }
 }

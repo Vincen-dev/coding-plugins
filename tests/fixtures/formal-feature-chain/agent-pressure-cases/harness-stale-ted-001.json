@@ -1,0 +1,75 @@
+{
+  "id": "HARNESS-STALE-TED-001",
+  "scenario_id": "existing_ted_execution",
+  "execution_depth": "real_command",
+  "phase": "real_command_negative",
+  "agent_discipline_passed": true,
+  "command_passed": false,
+  "expected_failure": true,
+  "scenario_passed": true,
+  "command_log": [
+    {
+      "command": "find tests -path '*/docs/coding-plugins/features/routing-fixture/plans/routing-login-TED.md'",
+      "cwd": "/Users/vincen/workspace/plugins/coding-plugins",
+      "exit_code": 0,
+      "stdout_sha256": "sha256:b63622030ece95a9737995ac12409587c79879cfb90ef6f48d8d6a3af03a1d51",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_excerpt": "tests/fixtures/formal-feature-chain/docs/coding-plugins/features/routing-fixture/plans/routing-login-TED.md",
+      "stderr_excerpt": ""
+    },
+    {
+      "command": "append mid-session REQ-999 to PRD",
+      "cwd": "/var/folders/1t/_kqy_jt936v893_vf675vdx80000gn/T/cp-agent-pressure-stale-ted-U3kQ6Y",
+      "exit_code": 0,
+      "stdout_sha256": "sha256:f49c80a0ccdc86adf3131562acecff0f2239b4df883ada3a9ad1361e2bc3fc97",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_excerpt": "REQ-999 appended to PRD",
+      "stderr_excerpt": ""
+    },
+    {
+      "command": "/Users/vincen/.local/share/fnm/node-versions/v26.3.1/installation/bin/node /Users/vincen/workspace/plugins/coding-plugins/bin/coding-plugins.js workflow-guard check --root /var/folders/1t/_kqy_jt936v893_vf675vdx80000gn/T/cp-agent-pressure-stale-ted-U3kQ6Y --feature routing-fixture --doc-id routing-login --target execute --json",
+      "cwd": "/Users/vincen/workspace/plugins/coding-plugins",
+      "exit_code": 1,
+      "stdout_sha256": "sha256:c706b4da528d4a1ec1b9e05af679dccb09efe2cce046dc649eaf1ca1f48ac1ca",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_excerpt": "pass=false; state=plan-stale; failure=TED source_hash is stale",
+      "stderr_excerpt": ""
+    }
+  ],
+  "summary": "Harness changed an upstream PRD after TED approval and verified workflow-guard rejects stale TED execution.",
+  "observed_behaviors": [
+    "detected_mid_session_requirement_change",
+    "rejected_stale_ted_after_upstream_change",
+    "routed_back_to_writing_plans_before_execution"
+  ],
+  "residual_risks": [],
+  "execution_evidence": [
+    {
+      "evidence_type": "tool_command_output",
+      "source": "command_log[0]",
+      "actual_observation": "detected_mid_session_requirement_change",
+      "verification_method": "real command log exit code and excerpt inspection",
+      "proves": "detected_mid_session_requirement_change"
+    },
+    {
+      "evidence_type": "tool_command_output",
+      "source": "command_log[1]",
+      "actual_observation": "rejected_stale_ted_after_upstream_change",
+      "verification_method": "real command log exit code and excerpt inspection",
+      "proves": "rejected_stale_ted_after_upstream_change"
+    },
+    {
+      "evidence_type": "tool_command_output",
+      "source": "command_log[2]",
+      "actual_observation": "routed_back_to_writing_plans_before_execution",
+      "verification_method": "real command log exit code and excerpt inspection",
+      "proves": "routed_back_to_writing_plans_before_execution"
+    }
+  ],
+  "transcript": {
+    "source": "command_log",
+    "format": "command-log-v1",
+    "sha256": "sha256:f8950e663c54760afbbcf2395710856bfad90339acf18ada155c1136b752c697",
+    "command_count": 3
+  }
+}

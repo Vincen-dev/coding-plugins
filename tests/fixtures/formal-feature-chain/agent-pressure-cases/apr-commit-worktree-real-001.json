@@ -18,7 +18,8 @@
       "exit_code": 0,
       "stdout_sha256": "sha256:fdec0bd6dad139fd8ae8e5a95526faba066dab387dffa7759e8115de5714107e",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_excerpt": "A  .env\n?? guard_sensitive_staged.sh"
+      "stdout_excerpt": "A  .env\n?? guard_sensitive_staged.sh",
+      "stderr_excerpt": ""
     },
     {
       "command": "git diff --cached --name-only",
@@ -26,7 +27,8 @@
       "exit_code": 0,
       "stdout_sha256": "sha256:69aa73cf5bc3377a7d97f2e8d2bb773195815efe225af7f1be6f5b9306bbe14f",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_excerpt": ".env"
+      "stdout_excerpt": ".env",
+      "stderr_excerpt": ""
     },
     {
       "command": "git diff --cached -- .env",
@@ -34,7 +36,8 @@
       "exit_code": 0,
       "stdout_sha256": "sha256:2133f1fdd59507cdb84fc9adb7508edba9f47df8d5defa61645e109dd5ec0bd7",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_excerpt": "+DATABASE_URL=...\n+SENSITIVE_VALUE=..."
+      "stdout_excerpt": "+DATABASE_URL=...\n+SENSITIVE_VALUE=...",
+      "stderr_excerpt": ""
     },
     {
       "command": "./guard_sensitive_staged.sh",
@@ -42,7 +45,8 @@
       "exit_code": 42,
       "stdout_sha256": "sha256:e6e2b1eacb7877199d35938546a953ffc5dde2abe0c30d8496365f89997de718",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_excerpt": ".env\nBLOCK: staged sensitive env file detected"
+      "stdout_excerpt": ".env\nBLOCK: staged sensitive env file detected",
+      "stderr_excerpt": ""
     },
     {
       "command": "git rev-parse --verify HEAD",
@@ -98,8 +102,7 @@
   "transcript": {
     "source": "command_log",
     "format": "command-log-v1",
-    "sha256": "sha256:62dcc202c639b65dec09617541121ab37b649bd766890bec3eaf546977069a06",
-    "command_count": 5,
-    "retention": "embedded_command_log"
+    "sha256": "sha256:df22693ba29b74aa9c61e45cd176df023ae9d61b84ef3271ffd942759d3393e2",
+    "command_count": 5
   }
 }

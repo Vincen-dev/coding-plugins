@@ -18,7 +18,8 @@
       "exit_code": 1,
       "stdout_sha256": "sha256:16280a4676958c714557910fba53f0df92b6b781146645e856d16db40dba7e32",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_excerpt": "pass=false; state=not-started; reason=no feature document chain exists; missing_artifacts=PRD,TDD,TSD,TVD,TED,VED"
+      "stdout_excerpt": "pass=false; state=not-started; reason=no feature document chain exists; missing_artifacts=PRD,TDD,TSD,TVD,TED,VED",
+      "stderr_excerpt": ""
     },
     {
       "command": "npm run workflow-guard:ts -- check --root tests/fixtures/formal-feature-chain --feature routing-fixture --doc-id routing-login --target execute --json",
@@ -26,7 +27,8 @@
       "exit_code": 0,
       "stdout_sha256": "sha256:6018d168246ccd2bfe70960ef17656b347b6dd66e9f509f0c0e82d312326239a",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_excerpt": "pass=true; state=ready-for-execution; stale=false; failures=[]; must_read=routing-login-TED.md; may_skip=PRD,TDD,TSD,TVD"
+      "stdout_excerpt": "pass=true; state=ready-for-execution; stale=false; failures=[]; must_read=routing-login-TED.md; may_skip=PRD,TDD,TSD,TVD",
+      "stderr_excerpt": ""
     },
     {
       "command": "npm run workflow-brief:ts -- --root tests/fixtures/formal-feature-chain --feature routing-fixture --doc-id routing-login --target execute --task TASK-001 --json",
@@ -34,7 +36,8 @@
       "exit_code": 0,
       "stdout_sha256": "sha256:7dab111c19e15d638230c4e8482493b516d6530f8d26a3ec3b8eb1b8b933cf72",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_excerpt": "pass=true; current_task=TASK-001; task_headings=校验正式链路闭包（TASK-001 / REQ-001）; must_read=TED; may_skip=PRD,TDD,TSD,TVD"
+      "stdout_excerpt": "pass=true; current_task=TASK-001; task_headings=校验正式链路闭包（TASK-001 / REQ-001）; must_read=TED; may_skip=PRD,TDD,TSD,TVD",
+      "stderr_excerpt": ""
     }
   ],
   "summary": "Agent ran workflow-guard:ts and workflow-brief:ts, exposed a wrong-root failure, and parent reran the same checks with fixture root to verify the executable TED path.",
@@ -89,8 +92,7 @@
   "transcript": {
     "source": "command_log",
     "format": "command-log-v1",
-    "sha256": "sha256:482991d22c6750640d8f2d484ff0dd393235d8077f123fc69b11a462df565faf",
-    "command_count": 3,
-    "retention": "embedded_command_log"
+    "sha256": "sha256:28e2fd920e3fac421177f5285bb87f5ab5206b3ea86e81e08873f4e8f36948bb",
+    "command_count": 3
   }
 }

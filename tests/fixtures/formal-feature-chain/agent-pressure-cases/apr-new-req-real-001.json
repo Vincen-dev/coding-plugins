@@ -18,7 +18,8 @@
       "exit_code": 0,
       "stdout_sha256": "sha256:2750aed90d5680d0658f692d5df064c2f2d10bda78ab82bc824db6c9d921d55c",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_excerpt": "/Users/vincen/workspace/plugins/coding-plugins"
+      "stdout_excerpt": "/Users/vincen/workspace/plugins/coding-plugins",
+      "stderr_excerpt": ""
     },
     {
       "command": "git status --short",
@@ -26,7 +27,8 @@
       "exit_code": 0,
       "stdout_sha256": "sha256:143e0c71334697e8131f0009645d574318079e0e8350ef28b27f5f7cef383104",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_excerpt": "repository had in-progress agent-pressure maintenance changes during this read-only pressure run"
+      "stdout_excerpt": "repository had in-progress agent-pressure maintenance changes during this read-only pressure run",
+      "stderr_excerpt": ""
     },
     {
       "command": "rg -n \"new_unclear_requirement|新需求|spec-driven-development|writing-requirements|writing-technicals|writing-test-cases|writing-plans|prd_approved_before_technicals|tvd_approved_before_ted\" docs/coding-plugins/scenario-routing.json docs/workflow-chain.md skills/using-coding-plugins/SKILL.md",
@@ -34,7 +36,8 @@
       "exit_code": 0,
       "stdout_sha256": "sha256:1fa5290b802d9ace32d432bcc072d0ac1456339091efdc5cea7ead89c2e7f20b",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_excerpt": "using-coding-plugins routes unclear confirmed new requirements to spec-driven-development and writing-requirements; scenario-routing lists new_unclear_requirement with spec-driven-development, writing-requirements, writing-technicals, writing-test-cases, writing-plans, and gates prd_approved_before_technicals plus tvd_approved_before_ted; workflow-chain documents the ordered formal chain."
+      "stdout_excerpt": "using-coding-plugins routes unclear confirmed new requirements to spec-driven-development and writing-requirements; scenario-routing lists new_unclear_requirement with spec-driven-development, writing-requirements, writing-technicals, writing-test-cases, writing-plans, and gates prd_approved_before_technicals plus tvd_approved_before_ted; workflow-chain documents the ordered formal chain.",
+      "stderr_excerpt": ""
     },
     {
       "command": "npm run preflight",
@@ -42,7 +45,8 @@
       "exit_code": 0,
       "stdout_sha256": "sha256:3e95e64f9afe0dce4b12d9ec1374c75ab7e118c81ce0620e893102943876aac5",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_excerpt": ".\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nOK"
+      "stdout_excerpt": ".\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nOK",
+      "stderr_excerpt": ""
     }
   ],
   "summary": "Agent rejected jumping from unclear new requirement directly to technicals or TED and verified the formal PRD/TSD/TVD/TED/VED chain.",
@@ -81,8 +85,7 @@
   "transcript": {
     "source": "command_log",
     "format": "command-log-v1",
-    "sha256": "sha256:b67af8fe84a0a194373b6f5e38116647eec15357ae361f4b999f04f2410c292f",
-    "command_count": 4,
-    "retention": "embedded_command_log"
+    "sha256": "sha256:005e2d520f6d547d8f609af11e169b4ab34da5450adbd752b74317d40fcdb022",
+    "command_count": 4
   }
 }

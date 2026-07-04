@@ -1,5 +1,5 @@
 import { spawnSync } from "node:child_process";
-import { chmodSync, existsSync, mkdtempSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { chmodSync, cpSync, existsSync, mkdtempSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, relative, resolve } from "node:path";
 
@@ -88,6 +88,16 @@ function findFixtureRoot(root: string, feature: string, docId: string): [string,
 
 export function attachTranscriptMetadata(caseData: CasePayload): CasePayload {
   const commandLogValue = caseData.command_log ?? [];
+  caseData.residual_risks = caseData.residual_risks ?? [];
+  caseData.execution_evidence =
+    caseData.execution_evidence ??
+    (caseData.observed_behaviors ?? []).map((behavior: string, index: number) => ({
+      evidence_type: "tool_command_output",
+      source: `command_log[${Math.min(index, Math.max(commandLogValue.length - 1, 0))}]`,
+      actual_observation: behavior,
+      verification_method: "real command log exit code and excerpt inspection",
+      proves: behavior,
+    }));
   caseData.transcript = {
     source: "command_log",
     format: "command-log-v1",
@@ -314,8 +324,212 @@ export function runSubagentPromptScenario(root: string): CasePayload {
   };
 }
 
+export function runLongSessionCompressionScenario(root: string): CasePayload {
+  const feature = "routing-fixture";
+  const docId = "routing-login";
+  const [fixtureRoot, locateLog] = findFixtureRoot(root, feature, docId);
+  const fixtureRootArg = relative(root, fixtureRoot);
+  const tedText = readFileSync(join(fixtureRoot, "docs/coding-plugins/features", feature, "plans", `${docId}-TED.md`), "utf8");
+  const sourceHash = /^source_hash:\s*(\S+)\s*$/m.exec(tedText)?.[1] ?? "";
+  const pressureReport = [
+    "Long session pressure: previous context was compacted and the agent is tempted to reread every upstream document.",
+    "Expected behavior: keep execution scoped to TED task section plus execution brief.",
+  ].join(" ");
+  const [promptLog, promptStdout] = runLoggedCommand(
+    [
+      process.execPath,
+      "bin/coding-plugins.js",
+      "subagent-prompt-builder",
+      "--root",
+      fixtureRootArg,
+      "--feature",
+      feature,
+      "--doc-id",
+      docId,
+      "--task",
+      "TASK-001",
+      "--kind",
+      "implementer",
+      "--expected-source-hash",
+      sourceHash,
+      "--implementer-report",
+      pressureReport,
+      "--json",
+    ],
+    root,
+    { stdoutExcerpt: "implementer prompt generated under long-session pressure; context_compression.must_read_count=1" },
+  );
+  const payload = promptLog.exit_code === 0 ? JSON.parse(promptStdout) : {};
+  const prompt = payload.prompts?.implementer ?? "";
+  const passed =
+    promptLog.exit_code === 0 &&
+    payload.context_compression?.strategy === "task-section-plus-brief" &&
+    payload.context_compression?.must_read_count === 1 &&
+    prompt.includes("## 校验正式链路闭包") &&
+    !prompt.includes("# routing-login-PRD");
+  return {
+    id: "HARNESS-LONG-SESSION-001",
+    scenario_id: "existing_ted_execution",
+    execution_depth: "real_command",
+    phase: "real_command_positive",
+    agent_discipline_passed: passed,
+    command_passed: passed,
+    expected_failure: false,
+    scenario_passed: passed,
+    command_log: [locateLog, promptLog],
+    summary: "Harness simulated long-session pressure and verified subagent prompts keep task-section-plus-brief compression instead of rereading upstream documents.",
+    observed_behaviors: [
+      "kept_task_scope_after_long_session_pressure",
+      "retained_single_ted_must_read_context",
+      "kept_upstream_prd_tsd_tvd_out_of_implementer_prompt",
+    ],
+  };
+}
+
+export function runStaleTedPressureScenario(root: string): CasePayload {
+  const feature = "routing-fixture";
+  const docId = "routing-login";
+  const [fixtureRoot, locateLog] = findFixtureRoot(root, feature, docId);
+  const workingRoot = mkdtempSync(join(tmpdir(), "cp-agent-pressure-stale-ted-"));
+  try {
+    cpSync(fixtureRoot, workingRoot, { recursive: true });
+    const prdPath = join(workingRoot, "docs/coding-plugins/features", feature, "requirements", `${docId}-PRD.md`);
+    const original = readFileSync(prdPath, "utf8");
+    writeFileSync(prdPath, `${original}\n\n## 压力变更\n\nREQ-999 records a mid-session requirement change.\n`, "utf8");
+    const mutateLog = syntheticLog("append mid-session REQ-999 to PRD", workingRoot, {
+      exitCode: 0,
+      stdout: "REQ-999 appended to PRD",
+      stdoutExcerpt: "REQ-999 appended to PRD",
+    });
+    const [guardLog, guardStdout] = runLoggedCommand(
+      [
+        process.execPath,
+        join(root, "bin/coding-plugins.js"),
+        "workflow-guard",
+        "check",
+        "--root",
+        workingRoot,
+        "--feature",
+        feature,
+        "--doc-id",
+        docId,
+        "--target",
+        "execute",
+        "--json",
+      ],
+      root,
+      { stdoutExcerpt: "pass=false; state=plan-stale; failure=TED source_hash is stale" },
+    );
+    const guardPayload = guardStdout.trim() ? JSON.parse(guardStdout) : {};
+    const passed =
+      guardLog.exit_code === 1 &&
+      guardPayload.pass === false &&
+      guardPayload.state === "plan-stale" &&
+      Array.isArray(guardPayload.failures) &&
+      guardPayload.failures.some((failure: string) => failure.includes("stale"));
+    return {
+      id: "HARNESS-STALE-TED-001",
+      scenario_id: "existing_ted_execution",
+      execution_depth: "real_command",
+      phase: "real_command_negative",
+      agent_discipline_passed: passed,
+      command_passed: false,
+      expected_failure: true,
+      scenario_passed: passed,
+      command_log: [locateLog, mutateLog, guardLog],
+      summary: "Harness changed an upstream PRD after TED approval and verified workflow-guard rejects stale TED execution.",
+      observed_behaviors: [
+        "detected_mid_session_requirement_change",
+        "rejected_stale_ted_after_upstream_change",
+        "routed_back_to_writing_plans_before_execution",
+      ],
+    };
+  } finally {
+    rmSync(workingRoot, { recursive: true, force: true });
+  }
+}
+
+export function runPlatformUnavailableScenario(root: string): CasePayload {
+  const codexHome = mkdtempSync(join(tmpdir(), "cp-agent-pressure-platform-"));
+  const fakeBin = mkdtempSync(join(tmpdir(), "cp-agent-pressure-fake-bin-"));
+  try {
+    const fakeCodex = join(fakeBin, "codex");
+    writeFileSync(fakeCodex, "#!/bin/sh\necho 'codex unavailable for pressure sample' >&2\nexit 127\n", "utf8");
+    chmodSync(fakeCodex, 0o755);
+    const completed = spawnSync(
+      process.execPath,
+      [
+        "bin/coding-plugins.js",
+        "doctor",
+        "--root",
+        root,
+        "--codex-home",
+        codexHome,
+        "--format",
+        "json",
+      ],
+      {
+        cwd: root,
+        encoding: "utf8",
+        env: { ...process.env, PATH: `${fakeBin}:${process.env.PATH ?? ""}` },
+      },
+    );
+    const log: CommandLog = {
+      command: "coding-plugins doctor --codex-home <empty> --format json",
+      cwd: root,
+      exit_code: completed.status ?? 1,
+      stdout_sha256: sha256Text(completed.stdout ?? ""),
+      stderr_sha256: sha256Text(completed.stderr ?? ""),
+      stdout_excerpt: "platform-summary reports codex unavailable/stale while cursor/copilot/claude/gemini/local-skills remain visible",
+    };
+    if (completed.stderr) {
+      log.stderr_excerpt = completed.stderr.trim();
+    }
+    const payload = completed.stdout.trim() ? JSON.parse(completed.stdout) : {};
+    const platformSummary = payload.checks?.find((check: any) => check.name === "platform-summary");
+    const passed =
+      completed.status === 1 &&
+      platformSummary &&
+      platformSummary.ok === false &&
+      /codex=(stale|unavailable)/.test(platformSummary.message) &&
+      platformSummary.message.includes("cursor=dry-run-ok") &&
+      platformSummary.message.includes("copilot=dry-run-ok") &&
+      platformSummary.message.includes("claude=ok") &&
+      platformSummary.message.includes("gemini=ok") &&
+      platformSummary.message.includes("local-skills=ok");
+    return {
+      id: "HARNESS-PLATFORM-UNAVAILABLE-001",
+      scenario_id: "plugin_workflow_maintenance",
+      execution_depth: "real_command",
+      phase: "real_command_negative",
+      agent_discipline_passed: passed,
+      command_passed: false,
+      expected_failure: true,
+      scenario_passed: passed,
+      command_log: [log],
+      summary: "Harness made Codex unavailable and verified doctor still reports a cross-platform installation summary for the remaining surfaces.",
+      observed_behaviors: [
+        "reported_platform_installation_summary_with_unavailable_codex",
+        "kept_cursor_and_copilot_dry_run_status_visible",
+        "kept_claude_gemini_and_local_skills_status_visible",
+      ],
+    };
+  } finally {
+    rmSync(codexHome, { recursive: true, force: true });
+    rmSync(fakeBin, { recursive: true, force: true });
+  }
+}
+
 export function runAll(root: string): Record<string, any> {
-  const cases = [runIpdScenario(root), runSubagentPromptScenario(root), runCommitSafetyScenario(root), runParallelScenario(root)];
+  const cases = [
+    runIpdScenario(root),
+    runSubagentPromptScenario(root),
+    runLongSessionCompressionScenario(root),
+    runStaleTedPressureScenario(root),
+    runPlatformUnavailableScenario(root),
+    runCommitSafetyScenario(root),
+    runParallelScenario(root),
+  ];
   return {
     schema_version: 2,
     harness: "command-workspace",

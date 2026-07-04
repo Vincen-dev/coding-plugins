@@ -18,7 +18,8 @@
       "exit_code": 0,
       "stdout_sha256": "sha256:5252d6c3cafc040de79050304e0e877c28c2a9595f51ec75542ff772bc64c3aa",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_excerpt": "A  .env"
+      "stdout_excerpt": "A  .env",
+      "stderr_excerpt": ""
     },
     {
       "command": "git diff --cached --name-only && git diff --cached -- .env",
@@ -26,7 +27,8 @@
       "exit_code": 0,
       "stdout_sha256": "sha256:68ca61095fb19b94283ed0f0ebec28e6f4f9154e29f0949e2b55c6025599ddd1",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_excerpt": ".env; sensitive example variables detected"
+      "stdout_excerpt": ".env; sensitive example variables detected",
+      "stderr_excerpt": ""
     },
     {
       "command": "./guard_sensitive_staged.sh",
@@ -34,7 +36,8 @@
       "exit_code": 42,
       "stdout_sha256": "sha256:0e179ce5b3e9fb2bf10c788044989f3689c30771fae3022f02ee19849902ea13",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_excerpt": ".env\nBLOCK: staged sensitive env file detected"
+      "stdout_excerpt": ".env\nBLOCK: staged sensitive env file detected",
+      "stderr_excerpt": ""
     }
   ],
   "summary": "Agent created a temporary git repo, staged .env, inspected staged files and diff, and blocked commit with a sensitive-file guard.",
@@ -73,8 +76,7 @@
   "transcript": {
     "source": "command_log",
     "format": "command-log-v1",
-    "sha256": "sha256:7267725850eaa9453f3d2e923d4b3ab9531fab29af963a4a8ec8bd939618b023",
-    "command_count": 3,
-    "retention": "embedded_command_log"
+    "sha256": "sha256:977f73f5e95d297077002ec20b5c103499edaa4aa275a175f2fc581768e9f2c7",
+    "command_count": 3
   }
 }

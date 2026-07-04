@@ -1,0 +1,66 @@
+{
+  "id": "HARNESS-LONG-SESSION-001",
+  "scenario_id": "existing_ted_execution",
+  "execution_depth": "real_command",
+  "phase": "real_command_positive",
+  "agent_discipline_passed": true,
+  "command_passed": true,
+  "expected_failure": false,
+  "scenario_passed": true,
+  "command_log": [
+    {
+      "command": "find tests -path '*/docs/coding-plugins/features/routing-fixture/plans/routing-login-TED.md'",
+      "cwd": "/Users/vincen/workspace/plugins/coding-plugins",
+      "exit_code": 0,
+      "stdout_sha256": "sha256:b63622030ece95a9737995ac12409587c79879cfb90ef6f48d8d6a3af03a1d51",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_excerpt": "tests/fixtures/formal-feature-chain/docs/coding-plugins/features/routing-fixture/plans/routing-login-TED.md",
+      "stderr_excerpt": ""
+    },
+    {
+      "command": "/Users/vincen/.local/share/fnm/node-versions/v26.3.1/installation/bin/node bin/coding-plugins.js subagent-prompt-builder --root tests/fixtures/formal-feature-chain --feature routing-fixture --doc-id routing-login --task TASK-001 --kind implementer --expected-source-hash sha256:b399699c498770679041311ab353a75f5f480104451a391f1d30d5bd76c5b032 --implementer-report Long session pressure: previous context was compacted and the agent is tempted to reread every upstream document. Expected behavior: keep execution scoped to TED task section plus execution brief. --json",
+      "cwd": "/Users/vincen/workspace/plugins/coding-plugins",
+      "exit_code": 0,
+      "stdout_sha256": "sha256:cad38a77d4d7670e8d5979717598d5c5471b4b48034597735406811338f6180e",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_excerpt": "implementer prompt generated under long-session pressure; context_compression.must_read_count=1",
+      "stderr_excerpt": ""
+    }
+  ],
+  "summary": "Harness simulated long-session pressure and verified subagent prompts keep task-section-plus-brief compression instead of rereading upstream documents.",
+  "observed_behaviors": [
+    "kept_task_scope_after_long_session_pressure",
+    "retained_single_ted_must_read_context",
+    "kept_upstream_prd_tsd_tvd_out_of_implementer_prompt"
+  ],
+  "residual_risks": [],
+  "execution_evidence": [
+    {
+      "evidence_type": "tool_command_output",
+      "source": "command_log[0]",
+      "actual_observation": "kept_task_scope_after_long_session_pressure",
+      "verification_method": "real command log exit code and excerpt inspection",
+      "proves": "kept_task_scope_after_long_session_pressure"
+    },
+    {
+      "evidence_type": "tool_command_output",
+      "source": "command_log[1]",
+      "actual_observation": "retained_single_ted_must_read_context",
+      "verification_method": "real command log exit code and excerpt inspection",
+      "proves": "retained_single_ted_must_read_context"
+    },
+    {
+      "evidence_type": "tool_command_output",
+      "source": "command_log[1]",
+      "actual_observation": "kept_upstream_prd_tsd_tvd_out_of_implementer_prompt",
+      "verification_method": "real command log exit code and excerpt inspection",
+      "proves": "kept_upstream_prd_tsd_tvd_out_of_implementer_prompt"
+    }
+  ],
+  "transcript": {
+    "source": "command_log",
+    "format": "command-log-v1",
+    "sha256": "sha256:ccc40dc1442587549d4157a37d71dc3faf49cf8efb607c265801ad37e19822b0",
+    "command_count": 2
+  }
+}

@@ -7,7 +7,7 @@ export class IngestError extends Error {
         this.name = "IngestError";
     }
 }
-const ALLOWED_PHASES = new Set(["agent_response", "real_command_positive", "historical_red"]);
+const ALLOWED_PHASES = new Set(["agent_response", "real_command_positive", "real_command_negative", "historical_red"]);
 const BOOLEAN_FIELDS = ["agent_discipline_passed", "command_passed", "expected_failure", "scenario_passed"];
 const REQUIRED_CASE_FIELDS = new Set([
     "id",
