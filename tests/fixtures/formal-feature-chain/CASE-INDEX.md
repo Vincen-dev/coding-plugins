@@ -32,6 +32,8 @@
 - optimization_target: 验证插件发布、安装缓存刷新和仓库实现一致性的文档闭环。
 - covered_risks:
   - 仓库实现已更新，但安装缓存仍使用旧链路。
+  - Agent 硬编码旧 `~/.codex/plugins/cache/personal/coding-plugins/<version>` 路径，导致读取过期 skill。
+  - `coding-plugins` 不在 PATH 时，代理把 CLI 能力误判为不存在，而不是使用本地 bin 或 npm script fallback。
   - TED 只复述技术方案，没有形成可执行任务。
   - VED 没有记录缓存刷新验证结果。
 
@@ -92,6 +94,7 @@
   - 场景链路文档有 gate 文案，但没有稳定 ID，后续修改难以发现语义漂移。
   - 新增场景没有绑定真实案例，导致流程看似完整但没有回归依据。
   - 插件维护场景绕过 RED 行为测试或 fixture case，只改文档说明。
+  - 正式 PRD/TSD/TVD/TED/VED 链路绕过 `coding-plugins start` 和 `workflow-guard`，只凭 skill 文本继续实现。
 
 ## claude-entrypoint-fixture
 

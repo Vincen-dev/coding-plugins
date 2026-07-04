@@ -1,6 +1,6 @@
 {
   "name": "coding-plugins",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "description": "面向 Codex 和 Claude Code 的中文构思收敛、SDD/TDD 编码工作流插件。",
   "author": {
     "name": "Vincen"

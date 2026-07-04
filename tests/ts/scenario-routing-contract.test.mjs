@@ -55,6 +55,15 @@ test("scenario routing references existing discoverable skills", () => {
   }
 });
 
+test("using-coding-plugins makes start and workflow guard mandatory for formal chains", () => {
+  const skill = readFileSync(usingCodingPluginsPath, "utf8");
+
+  assert.match(skill, /正式 PRD\/TSD\/TVD\/TED\/VED 工作必须先运行 `coding-plugins start/);
+  assert.match(skill, /`using-coding-plugins` 不能替代 `coding-plugins start`/);
+  assert.match(skill, /执行 TED 前必须运行 `coding-plugins workflow-guard check/);
+  assert.match(skill, /命令不可用.*node \/absolute\/path\/to\/coding-plugins\/bin\/coding-plugins\.js/s);
+});
+
 test("scenario routing gate ids all exist in gate catalog", () => {
   const routing = readJson(routingPath);
   const gateIds = new Set(Object.keys(routing.gate_catalog ?? {}));

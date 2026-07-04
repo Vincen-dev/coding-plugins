@@ -361,6 +361,23 @@ test("doctor audits plugin repository wiring and detects stale Codex cache versi
   }
 });
 
+test("runtime command surfaces provide local fallback when coding-plugins is not on PATH", () => {
+  const packageJson = JSON.parse(readFileSync(join(repoRoot, "package.json"), "utf8"));
+  assert.equal(packageJson.scripts.test, "npm run preflight");
+
+  const fallbackHint = "node /absolute/path/to/coding-plugins/bin/coding-plugins.js";
+  for (const relativePath of [
+    "README.md",
+    "INSTALL.md",
+    "skills/using-coding-plugins/SKILL.md",
+    "skills/test-driven-development/SKILL.md",
+    "src/lib/platform/project-install.ts",
+  ]) {
+    const text = readFileSync(join(repoRoot, relativePath), "utf8");
+    assert.ok(text.includes(fallbackHint), `${relativePath} must document the local CLI fallback`);
+  }
+});
+
 test("doctor checks active Codex plugin enablement from codex plugin list json", () => {
   const codexHome = mkdtempSync(join(tmpdir(), "coding-plugins-codex-enabled-"));
   const fakeBin = mkdtempSync(join(tmpdir(), "coding-plugins-fake-bin-"));
@@ -572,10 +589,14 @@ test("schema validate rejects documents that have IDs but miss required structur
 test("Cursor/Copilot install commands smoke-test real file writes", () => {
   const root = mkdtempSync(join(tmpdir(), "coding-plugins-install-"));
   try {
+    writeFileSync(join(root, ".gitignore"), "node_modules/\n", "utf8");
     const cursor = json(["install-cursor", "--root", root, "--format", "json"]);
     assert.equal(cursor.platform, "cursor");
+    assert.ok(cursor.files.includes(".gitignore"));
     const cursorFile = join(root, ".cursor/rules/coding-plugins.mdc");
     assert.ok(existsSync(cursorFile));
+    const gitignoreFile = join(root, ".gitignore");
+    assert.equal(readFileSync(gitignoreFile, "utf8"), "node_modules/\n\ndocs/coding-plugins/\n");
     writeFileSync(cursorFile, "existing cursor rules\n", "utf8");
     const duplicateCursor = run(["install-cursor", "--root", root, "--format", "json"]);
     assert.equal(duplicateCursor.status, 1);
@@ -591,6 +612,7 @@ test("Cursor/Copilot install commands smoke-test real file writes", () => {
     const copilotFile = join(root, ".github/copilot-instructions.md");
     assert.ok(existsSync(copilotFile));
     assert.ok(readFileSync(copilotFile, "utf8").includes("apply to every coding task"));
+    assert.equal(readFileSync(gitignoreFile, "utf8"), "node_modules/\n\ndocs/coding-plugins/\n");
   } finally {
     rmSync(root, { recursive: true, force: true });
   }

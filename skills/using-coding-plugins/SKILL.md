@@ -13,6 +13,12 @@ description: 开始任何任务时使用；建立 Coding Plugins 技能选择、
 
 只要当前任务有可能匹配某个技能，就先读取并使用该技能。技能负责约束“怎么做”，用户负责决定“做什么”。当用户显式指令和技能冲突时，用户指令优先。
 
+## 命令入口
+
+正式 PRD/TSD/TVD/TED/VED 工作必须先运行 `coding-plugins start --root . --intent "<用户意图>" --json`，再按输出选择 skill、下一条命令和执行边界。`using-coding-plugins` 不能替代 `coding-plugins start`；它只负责在读取到 CLI 状态后解释和执行对应工作方式。
+
+命令不可用时，不要直接判定插件能力缺失。优先使用本地插件仓库 fallback：`node /absolute/path/to/coding-plugins/bin/coding-plugins.js <command> ...`。如果当前就在插件仓库内，也可以使用对应 npm script，例如 `npm run workflow-guard:ts -- check ...` 或 `npm run validate-tdd-evidence:ts -- ...`。不要硬编码 `~/.codex/plugins/cache/personal/coding-plugins/<version>/...`；需要读已安装 skill 时，先用 `find ~/.codex/plugins/cache/personal/coding-plugins -path '*skills/<skill-name>/SKILL.md' -print` 定位当前版本，优先使用最高版本或当前仓库 `skills/`。
+
 ## 任务类型判断
 
 先判断直接意图，再判断开发任务类型。多个技能同时适用时，先满足用户明确请求和安全门禁，再进入开发流程。

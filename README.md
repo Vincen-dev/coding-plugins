@@ -95,6 +95,12 @@ brainstorming
 coding-plugins start --intent "我要实现 <功能>" --root .
 ```
 
+如果 `coding-plugins` 不在 PATH，先使用本地插件仓库 fallback，不要直接跳过 CLI 门禁：
+
+```bash
+node /absolute/path/to/coding-plugins/bin/coding-plugins.js start --intent "我要实现 <功能>" --root .
+```
+
 已有正式文档链时：
 
 ```bash
@@ -219,9 +225,9 @@ git-commit -> finishing-a-development-branch
 | Codex App | 先用 CLI 添加 marketplace，再在 App 插件面板启用 |
 | Claude Code | `claude --plugin-dir /absolute/path/to/coding-plugins` |
 | Gemini CLI | `gemini extensions install https://github.com/Vincen-dev/coding-plugins` |
-| GitHub Copilot CLI | `coding-plugins install-copilot --root <project>` 写入 `.github/copilot-instructions.md`，默认不覆盖 |
+| GitHub Copilot CLI | `coding-plugins install-copilot --root <project>` 写入 `.github/copilot-instructions.md`，并确保 `.gitignore` 忽略 `docs/coding-plugins/` |
 | OpenCode / Trae / Qoder / Trae CN | clone 仓库，把 `skills/` symlink 或复制到客户端技能目录 |
-| Cursor | `coding-plugins install-cursor --root <project>` 写入 `.cursor/rules/coding-plugins.mdc`，默认不覆盖 |
+| Cursor | `coding-plugins install-cursor --root <project>` 写入 `.cursor/rules/coding-plugins.mdc`，并确保 `.gitignore` 忽略 `docs/coding-plugins/` |
 
 ### 使用
 

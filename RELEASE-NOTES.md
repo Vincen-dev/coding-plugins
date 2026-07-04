@@ -1,5 +1,13 @@
 # Release Notes
 
+## 1.0.17 - 2026-07-04
+
+- 强化正式 PRD/TSD/TVD/TED/VED 链路入口，要求先运行 `coding-plugins start`，再按 CLI 状态进入对应 skill 和 `workflow-guard`。
+- 为 `coding-plugins` 不在 PATH 的环境补充本地 bin fallback，并同步到 README、INSTALL、TDD evidence 校验和 Cursor/Copilot 注入内容。
+- 新增 `npm test` 入口，统一指向完整 `preflight`，并增加回归测试覆盖 CLI fallback、正式链路门禁和提交语言偏好。
+- 安装 Cursor/Copilot 项目规则时自动确保 `.gitignore` 忽略 `docs/coding-plugins/`，避免插件沉淀文档默认进入业务仓库提交。
+- 提升插件、npm package、lockfile 和版本提升配置到 `1.0.17`。
+
 ## 1.0.16 - 2026-07-04
 
 - 修复发布 workflow 在 GitHub Linux runner 上失败的问题：npm pack/install 测试和 release security audit 不再硬编码 macOS `/private/tmp` 缓存路径，改用跨平台临时目录。

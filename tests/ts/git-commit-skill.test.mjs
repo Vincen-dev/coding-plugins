@@ -23,6 +23,7 @@ test("git-commit skill makes user-selected commit language rules unambiguous", (
 
   assert.match(skill, /^## 提交语言$/m);
   assert.match(skill, /提交信息可以使用中文或英文，必须由用户决定/);
+  assert.match(skill, /当前对话持续使用中文或英文，且用户直接要求提交时，可视为该语言偏好/);
   assert.match(skill, /如果用户没有明确语言偏好，提交前先询问用户/);
   assert.match(skill, /`type` 和 `scope` 保持英文 Conventional Commit 标识/);
   assert.match(skill, /description、body、footer 中给人阅读的说明文字必须和用户选择的语言一致/);
