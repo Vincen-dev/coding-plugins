@@ -57,6 +57,18 @@
   - related_* 关系存在，但正文无法说明阅读重点。
   - README 和 INDEX 无法帮助维护者理解文档链路。
 
+## technical-quality-fixture
+
+- case_id: CASE-TECHNICAL-QUALITY-001
+- source_type: quality_regression
+- source_reference: writing-technicals generated document readability and unfinished template content
+- optimization_target: 验证 TDD/TID 不只满足结构闭包，还要拒绝未替换模板占位和不可交接的空泛内容。
+- executable_regression: `tests/ts/test_document_metadata.mjs` 中的 technical quality validator case。
+- covered_risks:
+  - TDD/TID 保留 `<...>`、`YYYY-MM-DD` 或模板说明，却仍通过 preflight。
+  - TDD 看似有映射表，但阅读摘要和设计摘要不能支持评审。
+  - TID 存在文件但没有真实实现边界，导致 IPD 和 TCD 只能继续复述空泛方案。
+
 ## brainstorming-fixture
 
 - case_id: CASE-BRAINSTORMING-001

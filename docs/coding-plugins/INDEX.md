@@ -5,6 +5,7 @@
 | Feature | Doc ID | 功能根目录 | 需求文档 | 技术设计 | 技术实现 | 测试用例 | 任务执行 | 证据 | 标签 | 更新日期 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | review-findings-subagents | review-findings-subagents | `docs/coding-plugins/features/review-findings-subagents` | - | - | - | - | - | `docs/coding-plugins/features/review-findings-subagents/evidences/review-findings-subagents-TED.md` | - | - |
+| technical-doc-quality | technical-doc-quality | `docs/coding-plugins/features/technical-doc-quality` | - | - | - | - | - | `docs/coding-plugins/features/technical-doc-quality/evidences/technical-doc-quality-TED.md` | - | - |
 
 规则:
 

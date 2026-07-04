@@ -106,7 +106,8 @@
       ],
       "case_ids": [
         "CASE-ROUTING-001",
-        "CASE-CREEK-001"
+        "CASE-CREEK-001",
+        "CASE-TECHNICAL-QUALITY-001"
       ],
       "gate_ids": [
         "approved_prd_required"
