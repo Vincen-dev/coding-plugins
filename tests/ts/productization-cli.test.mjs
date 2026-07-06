@@ -423,6 +423,110 @@ test("workflow mode routes dependency SDK release work to the maintenance chain"
   assert.match(payload.reason, /dependency|SDK|release|compatibility/i);
 });
 
+test("scope-check allows docs-only work when actual files stay within docs", () => {
+  const payload = json([
+    "scope-check",
+    "--mode",
+    "docs-only",
+    "--intent",
+    "更新 README 和 TODO 说明",
+    "--planned-files",
+    "README.md,todo.md",
+    "--actual-files",
+    "README.md,todo.md",
+    "--task-count",
+    "1",
+    "--feature-count",
+    "1",
+    "--json",
+  ]);
+
+  assert.equal(payload.ok, true);
+  assert.deepEqual(payload.violations, []);
+  assert.equal(payload.required_action, "continue");
+});
+
+test("scope-check blocks docs-only work that expands into source, tests, or tools", () => {
+  const result = run([
+    "scope-check",
+    "--mode",
+    "docs-only",
+    "--intent",
+    "更新 README 说明",
+    "--planned-files",
+    "README.md",
+    "--actual-files",
+    "README.md,src/cli/doctor.ts,tests/ts/productization-cli.test.mjs",
+    "--task-count",
+    "1",
+    "--feature-count",
+    "1",
+    "--json",
+  ]);
+
+  assert.equal(result.status, 1);
+  const payload = JSON.parse(result.stdout);
+  assert.equal(payload.ok, false);
+  assert.equal(payload.required_action, "reroute-workflow");
+  assert.ok(payload.violations.some((violation) => violation.id === "docs-only-scope-expanded"));
+  assert.ok(payload.blocked_actions.includes("continue-with-current-mode"));
+});
+
+test("scope-check requires task splitting when one task expands into multiple features", () => {
+  const result = run([
+    "scope-check",
+    "--mode",
+    "tdd-only",
+    "--intent",
+    "实现一个明确修复",
+    "--planned-files",
+    "src/lib/alpha.ts",
+    "--actual-files",
+    "src/lib/alpha.ts,src/lib/beta.ts",
+    "--task-count",
+    "1",
+    "--feature-count",
+    "2",
+    "--json",
+  ]);
+
+  assert.equal(result.status, 1);
+  const payload = JSON.parse(result.stdout);
+  assert.equal(payload.ok, false);
+  assert.equal(payload.required_action, "split-task");
+  assert.ok(payload.violations.some((violation) => violation.id === "multiple-features-detected"));
+});
+
+test("scope-check upgrades README TODO work that expands into release actions", () => {
+  const result = run([
+    "scope-check",
+    "--mode",
+    "docs-only",
+    "--intent",
+    "补充 README 和 TODO",
+    "--planned-files",
+    "README.md,todo.md",
+    "--actual-files",
+    "README.md,todo.md,src/cli/release/prepare-release.ts",
+    "--actions",
+    "tag,publish",
+    "--task-count",
+    "1",
+    "--feature-count",
+    "1",
+    "--json",
+  ]);
+
+  assert.equal(result.status, 1);
+  const payload = JSON.parse(result.stdout);
+  assert.equal(payload.ok, false);
+  assert.equal(payload.recommended_mode, "maintenance-chain");
+  assert.equal(payload.required_action, "upgrade-to-maintenance-chain");
+  assert.ok(payload.violations.some((violation) => violation.id === "release-scope-expanded"));
+  assert.ok(payload.blocked_actions.includes("tag"));
+  assert.ok(payload.blocked_actions.includes("publish"));
+});
+
 test("execution-contract generates a deterministic contract from the approved document chain", () => {
   const payload = json([
     "execution-contract",

@@ -5,3 +5,4 @@ export { resolveArtifactMode } from "./lib/documents/artifact-mode.ts";
 export { inspectDocumentChain } from "./lib/workflow/workflow-state.ts";
 export { checkWorkflowGuard } from "./lib/workflow/workflow-guard.ts";
 export { buildTaskStatus } from "./lib/workflow/task-status.ts";
+export { checkScope } from "./lib/workflow/scope-check.ts";

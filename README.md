@@ -186,6 +186,7 @@ git-commit -> finishing-a-development-branch
 | Cursor/Copilot 安装 | `src/cli/platform/install-cursor.ts`, `src/cli/platform/install-copilot.ts` |
 | 短上下文生成 | `src/cli/workflow/workflow-brief.ts` |
 | 工作流轻重模式判断 | `skills/using-coding-plugins/scripts/workflow-mode.ts` |
+| 范围膨胀检测 | `coding-plugins scope-check --mode <mode> --intent <text> --planned-files <paths> --actual-files <paths> --json` |
 | 子代理提示词生成 | `skills/subagent-driven-development/scripts/subagent-prompt-builder.ts`，`implementer/all` 必须传 `--expected-source-hash` 防止 TED 漂移 |
 | 文档 metadata 和索引 | `src/lib/documents/document-metadata.ts`, `src/lib/documents/docs-index.ts` |
 | 真实 agent 压力证据 | `src/cli/agents/agent-pressure-harness.ts`, `src/cli/agents/agent-pressure-ingest.ts` |

@@ -38,6 +38,7 @@ export const COMMAND_REGISTRY = [
   { name: "scaffold-feature-docs", script: "skills/spec-driven-development/scripts/scaffold-feature-docs.ts", usage: "scaffold-feature-docs <feature-name> --title <title> [--doc-id <id>] [--root <path>]" },
   { name: "scaffold-fixture-case", script: "skills/writing-skills/scripts/scaffold-fixture-case.ts", usage: "scaffold-fixture-case <root> --feature <name> --doc-id <id> --title <title> ..." },
   { name: "security-audit", script: "src/cli/security-audit.ts", usage: "security-audit [--root <path>] [--strict-release] [--format text|json]" },
+  { name: "scope-check", script: "src/cli/scope-check.ts", usage: "scope-check --mode <mode> --intent <text> [--planned-files <paths>] [--actual-files <paths>] [--task-count <n>] [--feature-count <n>] [--actions <actions>] [--json]" },
   { name: "start", script: "src/cli/start.ts", usage: "start --intent <text> [--feature <name>] [--doc-id <id>] [--root <path>] [--json]" },
   { name: "state", script: "src/cli/state.ts", usage: "state <init|check|transition|audit> [--root <path>] [--json]" },
   {

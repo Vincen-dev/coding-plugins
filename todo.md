@@ -26,7 +26,7 @@
 
 ## P1：范围控制、发布和插件版本稳定性
 
-- [ ] 增加范围膨胀检测 `coding-plugins scope-check`。
+- [x] 增加范围膨胀检测 `coding-plugins scope-check`。
   - docs-only 改到 source/test/tool 时要求重新路由。
   - 单一任务扩展到多个独立 feature 时要求拆分。
   - README/TODO 任务扩展到 release helper、tag、publish 时要求升级为 maintenance-chain 或 release-chain。
@@ -73,4 +73,4 @@
 - [ ] ignored 的 VED 不能被用作正式完成证据。
 - [ ] release tag 推送后，必须验证 workflow 和发布目标可见，才能声明发布完成。
 - [ ] 同一会话只使用一个插件版本；混读 cache 版本会被 doctor 报告。
-- [ ] docs-only 任务扩展到源码、工具或发布动作时，scope-check 要求重新路由。
+- [x] docs-only 任务扩展到源码、工具或发布动作时，scope-check 要求重新路由。

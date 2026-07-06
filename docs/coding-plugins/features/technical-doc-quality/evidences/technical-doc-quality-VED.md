@@ -14,6 +14,18 @@ external_references: []
 
 ## TDD 证据
 
+- **规格/缺陷/验收:** P1 验收要求新增 `coding-plugins scope-check` 范围膨胀检测：`docs-only` 改到 source/test/tool 时要求重新路由，单一任务扩展到多个独立 feature 时要求拆分，README 与任务清单类工作扩展到 release helper、tag、publish 时要求升级为 maintenance-chain。
+- **测试类型:** `contract`
+- **RED 测试:** `tests/ts/productization-cli.test.mjs` 中新增四个 `scope-check` contract tests，覆盖 docs-only 正常路径、触碰 source/test/tool、单任务多 feature 和 release action 升级。
+- **RED 命令:** `node --test tests/ts/productization-cli.test.mjs`
+- **RED 失败:** 新增测试失败于 `Unknown command: scope-check`，证明 CLI 尚未提供范围膨胀门禁。
+- **GREEN 变更:** 新增 `src/lib/workflow/scope-check.ts` 和 `src/cli/scope-check.ts`，输出 `ok`、`violations`、`recommended_mode`、`required_action` 和 `blocked_actions`；注册命令并导出 `checkScope`；同步 README、`using-coding-plugins`、任务清单和 dist 产物。
+- **GREEN 命令:** `npm run typecheck`；`npm run build`；`node --test tests/ts/productization-cli.test.mjs`
+- **REFACTOR 命令:** `node --test tests/ts/npm-package.test.mjs`
+- **最终验证:** `npm run preflight` PASS。
+
+## TDD 证据
+
 - **规格/缺陷/验收:** P0 验收要求明确 `docs/coding-plugins/` artifact mode，支持 `tracked`、`local`、`external`；`tracked` 模式下 `.gitignore` 忽略该目录时 preflight 失败，`local` 不能作为正式完成证据，`external` 必须记录外部链接或 artifact id；同时强化 VED evidence 合法性检查，要求引用的测试/命令路径可复核，ignored evidence 不能作为正式证据，没有正式 Spec ID 的 warning 按 artifact mode 决定。
 - **测试类型:** `contract`
 - **RED 测试:** `tests/ts/productization-cli.test.mjs` 中的 `schema validate reports artifact mode and rejects tracked docs ignored by gitignore` 和 `validate-tdd-evidence enforces formal evidence rules by artifact mode`。

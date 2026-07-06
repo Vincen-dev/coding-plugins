@@ -46,6 +46,14 @@ description: 开始任何任务时使用；建立 Coding Plugins 技能选择、
 
 进入开发链路前，如果任务范围不确定或可能过重，先用 `${CP_CLI} task status --intent "<用户意图>" --json` 输出统一任务状态；需要单独调试 mode 时，再用 `${CP_CLI} workflow-mode --intent "<用户意图>" --files "<逗号分隔路径>" --task-count <数量> --json`。显式用户指令优先于推断结果。
 
+实际修改文件或动作超出初始判断时，运行范围门禁：
+
+```bash
+${CP_CLI} scope-check --mode <analysis-only|docs-only|tdd-only|full-chain|maintenance-chain> --intent "<用户意图>" --planned-files "<初始文件>" --actual-files "<实际文件>" --task-count <数量> --feature-count <数量> --actions "<动作>" --json
+```
+
+`docs-only` 触碰 source/test/tool、单任务扩展到多个独立 feature、README/TODO 任务扩展到 release helper、tag 或 publish 时，必须按 `required_action` 重新路由、拆分任务或升级到 maintenance-chain。
+
 | Workflow mode | 含义 | 默认处理 |
 | --- | --- | --- |
 | `analysis-only` | 只分析、解释、读取或 review，不改代码 | 不创建正式文档 |
