@@ -1,11 +1,14 @@
+import { type SessionLockStatus } from "./session-lock.ts";
 export type CliScope = "user" | "project";
 export interface CliStatus {
     cli_on_path: boolean;
     path_command: string | null;
     plugin_root: string;
+    plugin_version: string;
     current_cli: string;
     fallback_argv: string[];
     fallback_command: string;
+    session_lock: SessionLockStatus;
     shim_target: string;
     shim_exists: boolean;
     shim_points_to_current_cli: boolean;
@@ -38,6 +41,7 @@ export declare function cliStatus(options: {
     target?: string;
     scope?: CliScope;
     root?: string;
+    threadId?: string | null;
 }): CliStatus;
 export declare function installCliShim(options: {
     pluginRoot: string;

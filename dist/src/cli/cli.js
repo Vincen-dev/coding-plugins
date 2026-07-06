@@ -35,6 +35,10 @@ function parse(argv) {
             options.root = requireValue(argv, index, arg);
             index += 1;
         }
+        else if (arg === "--thread-id") {
+            options.threadId = requireValue(argv, index, arg);
+            index += 1;
+        }
         else if (arg === "--format") {
             options.format = requireValue(argv, index, arg);
             index += 1;
@@ -83,6 +87,7 @@ try {
         target: options.target,
         scope: options.scope,
         root: resolve(options.root),
+        threadId: options.threadId,
     };
     if (options.command === "status") {
         print(cliStatus(common), options.format);

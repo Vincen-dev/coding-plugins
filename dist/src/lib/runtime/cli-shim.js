@@ -1,6 +1,7 @@
 import { accessSync, constants, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, isAbsolute, join, resolve } from "node:path";
+import { defaultThreadId, ensureSessionLock, readPluginVersion } from "./session-lock.js";
 function shellQuote(value) {
     return `"${value.replaceAll("\\", "\\\\").replaceAll('"', '\\"')}"`;
 }
@@ -66,8 +67,18 @@ function pathContains(directory, envPath = process.env.PATH ?? "") {
 }
 export function cliStatus(options) {
     const scope = options.scope ?? "user";
-    const target = resolve(options.target ?? defaultShimTarget(scope, { root: options.root }));
+    const root = resolve(options.root ?? ".");
+    const target = resolve(options.target ?? defaultShimTarget(scope, { root }));
     const currentCli = join(options.pluginRoot, "bin", "coding-plugins.js");
+    const pluginVersion = readPluginVersion(options.pluginRoot);
+    const sessionLock = ensureSessionLock({
+        root,
+        pluginVersion,
+        pluginRoot: options.pluginRoot,
+        cliPath: currentCli,
+        threadId: options.threadId ?? defaultThreadId(),
+    });
+    const fallbackCli = sessionLock.lock.cli_path || currentCli;
     const pathCommand = findOnPath("coding-plugins");
     const shimExists = existsSync(target);
     const shimPointsToCurrentCli = sameShim(target, currentCli);
@@ -77,9 +88,11 @@ export function cliStatus(options) {
         cli_on_path: cliOnPath,
         path_command: pathCommand,
         plugin_root: options.pluginRoot,
+        plugin_version: pluginVersion,
         current_cli: currentCli,
-        fallback_argv: [process.execPath, currentCli],
-        fallback_command: `${shellQuote(process.execPath)} ${shellQuote(currentCli)}`,
+        fallback_argv: [process.execPath, fallbackCli],
+        fallback_command: `${shellQuote(process.execPath)} ${shellQuote(fallbackCli)}`,
+        session_lock: sessionLock,
         shim_target: target,
         shim_exists: shimExists,
         shim_points_to_current_cli: shimPointsToCurrentCli,

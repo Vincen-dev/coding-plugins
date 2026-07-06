@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -32,7 +32,21 @@ test("TypeScript preflight CLI rejects unknown arguments without legacy delegati
 
   assert.equal(ts.status, 2);
   assert.equal(ts.stdout, "");
-  assert.equal(ts.stderr, "Usage: coding-plugins preflight [--write-index] [--check-external-references]\n");
+  assert.equal(ts.stderr, "Usage: coding-plugins preflight [--root <path>] [--write-index] [--check-external-references]\n");
+});
+
+test("TypeScript preflight --root runs against the target repository", () => {
+  const root = mkdtempSync(join(tmpdir(), "coding-plugins-preflight-root-"));
+  try {
+    const { typescript } = scripts();
+    const result = run(typescript, ["--root", root]);
+
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /Missing required plugin file/);
+    assert.doesNotMatch(result.stderr, /Unknown argument: --root/);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
 });
 
 test("TypeScript preflight source stays self-contained", () => {

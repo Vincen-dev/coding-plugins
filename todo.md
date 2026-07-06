@@ -39,11 +39,11 @@
   - 统一判断提交语言、作者身份、敏感文件、变更范围、当前分支、是否需要 DP-7。
   - 用户未指定提交语言时，不能只凭最近提交语言静默决定；需要按项目策略或显式确认。
   - main 分支直接提交或直接 push 时，按任务风险提示 branch/worktree/PR 方案。
-- [ ] 固定单会话插件版本。
+- [x] 固定单会话插件版本。
   - 首次运行生成 session lock，记录 plugin version、plugin root、CLI path、thread id。
   - 后续 fallback 必须读取该 lock，不允许混读多个 cache 版本。
   - `coding-plugins doctor` 输出 PATH、cache manifest、installed/enabled/version 和 artifact mode。
-- [ ] 修正 CLI fallback 体验。
+- [x] 修正 CLI fallback 体验。
   - 避免 agent 直接 import `src/lib/...` 内部 TS 模块。
   - `preflight --root`、`--write-index`、`validate` 等命令必须能可靠作用于目标仓库。
   - CLI 不在 PATH 时，提供稳定的“当前 repo fallback”命令，而不是依赖硬编码 cache 版本。
@@ -72,5 +72,5 @@
 - [ ] 用户说“继续”时，CLI 能返回唯一下一步，而不是让 agent 自行推断。
 - [ ] ignored 的 VED 不能被用作正式完成证据。
 - [x] release tag 推送后，必须验证 workflow 和发布目标可见，才能声明发布完成。
-- [ ] 同一会话只使用一个插件版本；混读 cache 版本会被 doctor 报告。
+- [x] 同一会话只使用一个插件版本；混读 cache 版本会被 doctor 报告。
 - [x] docs-only 任务扩展到源码、工具或发布动作时，scope-check 要求重新路由。

@@ -14,6 +14,18 @@ external_references: []
 
 ## TDD 证据
 
+- **规格/缺陷/验收:** P1 验收要求固定单会话插件版本并修正 CLI fallback：首次运行生成 session lock，记录 plugin version、plugin root、CLI path、thread id；后续 fallback 读取 lock，混读 cache 版本由 doctor 报告；doctor 输出 PATH、cache manifest、installed/enabled/version 和 artifact mode；`preflight --root` / `--write-index` / `validate` 必须可靠作用于目标仓库。
+- **测试类型:** `contract`
+- **RED 测试:** `tests/ts/productization-cli.test.mjs` 中的 `doctor audits plugin repository wiring and detects stale Codex cache versions`、`cli status reports fallback command when coding-plugins is not on PATH`、`cli status reuses session lock and reports mixed plugin versions`；`tests/ts/preflight-cli.test.mjs` 中的 `TypeScript preflight --root runs against the target repository`。
+- **RED 命令:** `node --test tests/ts/productization-cli.test.mjs`；`node --test tests/ts/preflight-cli.test.mjs`
+- **RED 失败:** doctor 缺少 `path`、`artifact-mode`、`cli-status` 和 `session-lock` checks；`cli status` 报 `Unknown argument: --thread-id` 且不生成 session lock；`preflight` usage 缺少 `--root`，目标仓库测试失败于未知参数和错误 usage。
+- **GREEN 变更:** 新增 `src/lib/runtime/session-lock.ts`，`cli status` 首次写入 `.coding-plugins/session-lock.json` 并在 fallback 中复用锁定 CLI；doctor 输出 PATH、artifact mode、cli status、session lock、cache manifest 和 installed/enabled/version，并对混合 cache 版本报错；preflight 的 root 解析和索引写入都改为作用于目标仓库；同步 README、任务清单、命令注册、测试、dist 产物和 gitignore 会话锁忽略规则。
+- **GREEN 命令:** `npm run typecheck`；`npm run build`；`node --test tests/ts/productization-cli.test.mjs`；`node --test tests/ts/preflight-cli.test.mjs`
+- **REFACTOR 命令:** `node --test tests/ts/npm-package.test.mjs`
+- **最终验证:** `npm run preflight` PASS。
+
+## TDD 证据
+
 - **规格/缺陷/验收:** P1 验收要求新增 `coding-plugins commit-guard`，统一判断提交语言、作者身份、敏感文件、变更范围、当前分支和 DP-7；用户未指定提交语言时不得静默继承最近提交语言；main 分支直接提交需要阻断并提示分支或 PR 方案。
 - **测试类型:** `contract`
 - **RED 测试:** `tests/ts/productization-cli.test.mjs` 中的 `commit-guard blocks missing language confirmation, sensitive files, and missing DP-7`、`commit-guard passes after language and DP-7 are explicitly approved` 和 `commit-guard rejects AI-like author identities`。

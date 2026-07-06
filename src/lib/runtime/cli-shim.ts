@@ -2,15 +2,19 @@ import { accessSync, constants, existsSync, mkdirSync, readFileSync, rmSync, wri
 import { homedir } from "node:os";
 import { dirname, isAbsolute, join, resolve } from "node:path";
 
+import { defaultThreadId, ensureSessionLock, readPluginVersion, type SessionLockStatus } from "./session-lock.ts";
+
 export type CliScope = "user" | "project";
 
 export interface CliStatus {
   cli_on_path: boolean;
   path_command: string | null;
   plugin_root: string;
+  plugin_version: string;
   current_cli: string;
   fallback_argv: string[];
   fallback_command: string;
+  session_lock: SessionLockStatus;
   shim_target: string;
   shim_exists: boolean;
   shim_points_to_current_cli: boolean;
@@ -103,10 +107,20 @@ function pathContains(directory: string, envPath = process.env.PATH ?? ""): bool
     .some((entry) => resolve(entry) === resolved);
 }
 
-export function cliStatus(options: { pluginRoot: string; target?: string; scope?: CliScope; root?: string }): CliStatus {
+export function cliStatus(options: { pluginRoot: string; target?: string; scope?: CliScope; root?: string; threadId?: string | null }): CliStatus {
   const scope = options.scope ?? "user";
-  const target = resolve(options.target ?? defaultShimTarget(scope, { root: options.root }));
+  const root = resolve(options.root ?? ".");
+  const target = resolve(options.target ?? defaultShimTarget(scope, { root }));
   const currentCli = join(options.pluginRoot, "bin", "coding-plugins.js");
+  const pluginVersion = readPluginVersion(options.pluginRoot);
+  const sessionLock = ensureSessionLock({
+    root,
+    pluginVersion,
+    pluginRoot: options.pluginRoot,
+    cliPath: currentCli,
+    threadId: options.threadId ?? defaultThreadId(),
+  });
+  const fallbackCli = sessionLock.lock.cli_path || currentCli;
   const pathCommand = findOnPath("coding-plugins");
   const shimExists = existsSync(target);
   const shimPointsToCurrentCli = sameShim(target, currentCli);
@@ -116,9 +130,11 @@ export function cliStatus(options: { pluginRoot: string; target?: string; scope?
     cli_on_path: cliOnPath,
     path_command: pathCommand,
     plugin_root: options.pluginRoot,
+    plugin_version: pluginVersion,
     current_cli: currentCli,
-    fallback_argv: [process.execPath, currentCli],
-    fallback_command: `${shellQuote(process.execPath)} ${shellQuote(currentCli)}`,
+    fallback_argv: [process.execPath, fallbackCli],
+    fallback_command: `${shellQuote(process.execPath)} ${shellQuote(fallbackCli)}`,
+    session_lock: sessionLock,
     shim_target: target,
     shim_exists: shimExists,
     shim_points_to_current_cli: shimPointsToCurrentCli,

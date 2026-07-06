@@ -12,14 +12,39 @@ import { collectFeatureRoots, frontmatterListValues } from "../../lib/documents/
 import { resolveArtifactMode } from "../../lib/documents/artifact-mode.js";
 import { withBuildLock } from "../../lib/runtime/build-lock.js";
 import { findRepositoryRoot } from "../../lib/runtime/repository-root.js";
-const root = findRepositoryRoot(dirname(fileURLToPath(import.meta.url)));
 const args = process.argv.slice(2);
-const allowedArgs = new Set(["--write-index", "--check-external-references"]);
-const unknownArgs = args.filter((arg) => !allowedArgs.has(arg));
-if (unknownArgs.length > 0) {
-    console.error("Usage: coding-plugins preflight [--write-index] [--check-external-references]");
-    process.exit(2);
+const usage = "Usage: coding-plugins preflight [--root <path>] [--write-index] [--check-external-references]";
+function parseArgs(argv) {
+    const parsed = {
+        root: findRepositoryRoot(dirname(fileURLToPath(import.meta.url))),
+        writeIndex: false,
+    };
+    for (let index = 0; index < argv.length; index += 1) {
+        const arg = argv[index];
+        if (arg === "--root") {
+            const value = argv[index + 1];
+            if (!value) {
+                console.error(usage);
+                process.exit(2);
+            }
+            parsed.root = resolve(value);
+            index += 1;
+        }
+        else if (arg === "--write-index") {
+            parsed.writeIndex = true;
+        }
+        else if (arg === "--check-external-references") {
+            continue;
+        }
+        else {
+            console.error(usage);
+            process.exit(2);
+        }
+    }
+    return parsed;
 }
+const options = parseArgs(args);
+const root = options.root;
 function collectSpecFiles() {
     return collectFeatureRoots(root).flatMap((featureRoot) => featureSpecFiles(featureRoot)).sort();
 }
@@ -152,7 +177,7 @@ function collectTypeScriptTestFiles() {
 }
 try {
     withBuildLock(root, () => {
-        if (args.includes("--write-index")) {
+        if (options.writeIndex) {
             writeArtifactIndex(root);
         }
         checkExternalReferences();

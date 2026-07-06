@@ -11,6 +11,7 @@ interface Options {
   scope: CliScope;
   target?: string;
   root: string;
+  threadId?: string;
   format: Format;
   force: boolean;
 }
@@ -45,6 +46,9 @@ function parse(argv: string[]): Options {
       index += 1;
     } else if (arg === "--root") {
       options.root = requireValue(argv, index, arg);
+      index += 1;
+    } else if (arg === "--thread-id") {
+      options.threadId = requireValue(argv, index, arg);
       index += 1;
     } else if (arg === "--format") {
       options.format = requireValue(argv, index, arg) as Format;
@@ -95,6 +99,7 @@ try {
     target: options.target,
     scope: options.scope,
     root: resolve(options.root),
+    threadId: options.threadId,
   };
 
   if (options.command === "status") {

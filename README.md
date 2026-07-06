@@ -87,7 +87,7 @@ brainstorming
 
 ## 推荐使用方式
 
-入口永远从 Coding Plugins CLI 的 `task start|continue|status` 开始。Codex 插件安装后，SessionStart 会注入本次可用的 `CP_CLI` fallback；用户不需要先把 `coding-plugins` 安装到全局 PATH。
+入口永远从 Coding Plugins CLI 的 `task start|continue|status` 开始。Codex 插件安装后，SessionStart 会注入本次可用的 `CP_CLI` fallback；用户不需要先把 `coding-plugins` 安装到全局 PATH。第一次 `cli status` 会在目标仓库写入本机会话锁 `.coding-plugins/session-lock.json`，后续 fallback 继续使用锁定的 plugin version、plugin root 和 CLI path，避免同一会话混读多个 cache 版本。
 
 安装后告诉 Agent：
 
@@ -106,6 +106,12 @@ coding-plugins task start --intent "我要实现 <功能>" --root .
 ```bash
 ${CP_CLI} cli status --format json
 ${CP_CLI} cli install --scope user
+```
+
+需要诊断插件版本、PATH、artifact mode 或 Codex cache 时：
+
+```bash
+${CP_CLI} doctor --root . --codex-home ~/.codex --format json
 ```
 
 已有正式文档链时：
@@ -182,7 +188,7 @@ git-commit -> finishing-a-development-branch
 | 执行契约生成 | `src/cli/workflow/execution-contract.ts`, `src/lib/workflow/execution-contract.ts` |
 | 文档 schema/parser | `src/cli/documents/validate.ts`, `src/lib/documents/document-schema.ts` |
 | 用户级检查和注入 | `src/cli/documents/doctor.ts`, `src/cli/documents/list.ts`, `src/cli/platform/inject.ts` |
-| 插件版本漂移诊断 | `coding-plugins doctor --root <repo> --codex-home ~/.codex --format json`，检查 cache manifest 和 `codex plugin list --json` 的 installed/enabled/version |
+| 插件版本漂移诊断 | `coding-plugins doctor --root <repo> --codex-home ~/.codex --format json`，检查 PATH、session lock、artifact mode、cache manifest 和 `codex plugin list --json` 的 installed/enabled/version |
 | Cursor/Copilot 安装 | `src/cli/platform/install-cursor.ts`, `src/cli/platform/install-copilot.ts` |
 | 短上下文生成 | `src/cli/workflow/workflow-brief.ts` |
 | 工作流轻重模式判断 | `skills/using-coding-plugins/scripts/workflow-mode.ts` |
@@ -191,7 +197,7 @@ git-commit -> finishing-a-development-branch
 | 子代理提示词生成 | `skills/subagent-driven-development/scripts/subagent-prompt-builder.ts`，`implementer/all` 必须传 `--expected-source-hash` 防止 TED 漂移 |
 | 文档 metadata 和索引 | `src/lib/documents/document-metadata.ts`, `src/lib/documents/docs-index.ts` |
 | 真实 agent 压力证据 | `src/cli/agents/agent-pressure-harness.ts`, `src/cli/agents/agent-pressure-ingest.ts` |
-| 发布前检查 | `src/cli/release/preflight.ts` |
+| 发布前检查 | `coding-plugins preflight --root <repo> [--write-index]` |
 | 版本同步 | `src/cli/release/bump-version.ts`, `.version-bump.json` |
 | Release 专用链路 | `coding-plugins release plan|guard|verify`，固定检查 release commit、tag、workflow、发布目标和依赖解析 |
 | Release 准备和远程审计 | `src/cli/release/prepare-release.ts`, `src/cli/release/remote-audit.ts` |

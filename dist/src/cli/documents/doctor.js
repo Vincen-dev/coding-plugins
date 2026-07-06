@@ -1,8 +1,11 @@
 #!/usr/bin/env node
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { resolveArtifactMode } from "../../lib/documents/artifact-mode.js";
 import { validateDocumentSchemas } from "../../lib/documents/document-schema.js";
+import { cliStatus, findPluginRoot } from "../../lib/runtime/cli-shim.js";
 import { checkCodexHookConfigDeclared, checkManifestVersions } from "../../lib/release/manifest-checks.js";
 import { installPlatform } from "../../lib/platform/project-install.js";
 import { checkState, STATE_FILE_NAME } from "../../lib/workflow/project-state.js";
@@ -50,6 +53,45 @@ try {
     });
     checks.push({ name: "document-schema", ok: validation.ok, message: validation.ok ? `${validation.documents.length} document(s)` : validation.errors.join("; ") });
     checks.push({ name: "node-version", ok: Number(process.versions.node.split(".")[0]) >= 22, message: `Node.js ${process.versions.node}` });
+    checks.push({ name: "path", ok: true, message: `PATH=${process.env.PATH ?? ""}` });
+    const artifactMode = resolveArtifactMode(resolved);
+    checks.push({
+        name: "artifact-mode",
+        ok: artifactMode.errors.length === 0,
+        message: [
+            `mode=${artifactMode.mode}`,
+            `source=${artifactMode.source}`,
+            `docs_ignored=${artifactMode.docs_ignored}`,
+            `formal_evidence_allowed=${artifactMode.formal_evidence_allowed}`,
+            artifactMode.external_reference ? `external_reference=${artifactMode.external_reference}` : null,
+            artifactMode.errors.length > 0 ? `errors=${artifactMode.errors.join("|")}` : null,
+        ].filter(Boolean).join("; "),
+    });
+    const runtimeStatus = cliStatus({ pluginRoot: findPluginRoot(dirname(fileURLToPath(import.meta.url))), root: resolved });
+    checks.push({
+        name: "cli-status",
+        ok: runtimeStatus.session_lock.ok,
+        message: [
+            `cli_on_path=${runtimeStatus.cli_on_path}`,
+            `path_command=${runtimeStatus.path_command ?? ""}`,
+            `current_cli=${runtimeStatus.current_cli}`,
+            `fallback=${runtimeStatus.fallback_command}`,
+            `recommended_action=${runtimeStatus.recommended_action}`,
+        ].join("; "),
+    });
+    checks.push({
+        name: "session-lock",
+        ok: runtimeStatus.session_lock.ok,
+        message: [
+            `path=${runtimeStatus.session_lock.path}`,
+            `created=${runtimeStatus.session_lock.created}`,
+            `version=${runtimeStatus.session_lock.lock.plugin_version}`,
+            `plugin_root=${runtimeStatus.session_lock.lock.plugin_root}`,
+            `cli_path=${runtimeStatus.session_lock.lock.cli_path}`,
+            runtimeStatus.session_lock.lock.thread_id ? `thread_id=${runtimeStatus.session_lock.lock.thread_id}` : null,
+            runtimeStatus.session_lock.errors.length > 0 ? `errors=${runtimeStatus.session_lock.errors.join("|")}` : null,
+        ].filter(Boolean).join("; "),
+    });
     if (isPluginRepository) {
         const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf8"));
         const packageLock = existsSync(packageLockPath) ? JSON.parse(readFileSync(packageLockPath, "utf8")) : null;
@@ -198,10 +240,17 @@ function checkCodexCacheVersion(codexHome, repositoryVersion) {
     const cacheVersion = existsSync(manifestPath)
         ? String(JSON.parse(readFileSync(manifestPath, "utf8")).version ?? latest)
         : latest;
+    if (versions.length > 1) {
+        return {
+            name: "codex-cache-version",
+            ok: false,
+            message: `mixed cache versions: repository=${repositoryVersion}; versions=${versions.join(",")}; latest=${cacheVersion}; cache_manifest=${manifestPath}`,
+        };
+    }
     return {
         name: "codex-cache-version",
         ok: cacheVersion === repositoryVersion,
-        message: `repository=${repositoryVersion}; cache=${cacheVersion}; cache_path=${manifestPath}`,
+        message: `repository=${repositoryVersion}; cache=${cacheVersion}; cache_manifest=${manifestPath}`,
     };
 }
 function checkCodexPluginEnabled(codexHome, repositoryVersion) {
@@ -233,7 +282,7 @@ function checkCodexPluginEnabled(codexHome, repositoryVersion) {
             return {
                 name: "codex-plugin-enabled",
                 ok: installed && enabled && version === repositoryVersion,
-                message: `installed=${installed}; enabled=${enabled}; repository=${repositoryVersion}; active=${version}; source=codex plugin list --json`,
+                message: `installed=${installed}; enabled=${enabled}; repository=${repositoryVersion}; version=${version}; source=codex plugin list --json`,
             };
         }
         catch (error) {

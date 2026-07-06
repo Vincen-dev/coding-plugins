@@ -897,9 +897,17 @@ test("doctor audits plugin repository wiring and detects stale Codex cache versi
       "workflow-state-source",
       "cursor-inject-dry-run",
       "copilot-inject-dry-run",
+      "path",
+      "artifact-mode",
+      "cli-status",
+      "session-lock",
     ]) {
       assert.ok(repositoryDoctor.checks.some((check) => check.name === expected && check.ok), `missing ok doctor check: ${expected}`);
     }
+    const artifactMode = repositoryDoctor.checks.find((check) => check.name === "artifact-mode");
+    assert.ok(artifactMode.message.includes("mode=tracked"));
+    const pathCheck = repositoryDoctor.checks.find((check) => check.name === "path");
+    assert.ok(pathCheck.message.includes("PATH="));
 
     const staleManifest = join(codexHome, "plugins/cache/personal/coding-plugins/1.0.12/.codex-plugin");
     mkdirSync(staleManifest, { recursive: true });
@@ -920,6 +928,17 @@ test("doctor audits plugin repository wiring and detects stale Codex cache versi
     assert.equal(cacheCheck.ok, false);
     assert.ok(cacheCheck.message.includes(`repository=${packageVersion}`));
     assert.ok(cacheCheck.message.includes("cache=1.0.12"));
+
+    const currentManifest = join(codexHome, `plugins/cache/personal/coding-plugins/${packageVersion}/.codex-plugin`);
+    mkdirSync(currentManifest, { recursive: true });
+    writeFileSync(join(currentManifest, "plugin.json"), JSON.stringify({ name: "coding-plugins", version: packageVersion }, null, 2), "utf8");
+    const mixed = run(["doctor", "--root", repoRoot, "--codex-home", codexHome, "--format", "json"]);
+    assert.equal(mixed.status, 1);
+    const mixedPayload = JSON.parse(mixed.stdout);
+    const mixedCacheCheck = mixedPayload.checks.find((check) => check.name === "codex-cache-version");
+    assert.equal(mixedCacheCheck.ok, false);
+    assert.ok(mixedCacheCheck.message.includes("mixed cache versions"));
+    assert.ok(mixedCacheCheck.message.includes("cache_manifest="));
   } finally {
     rmSync(codexHome, { recursive: true, force: true });
   }
@@ -951,7 +970,7 @@ test("cli status reports fallback command when coding-plugins is not on PATH", (
   const targetRoot = mkdtempSync(join(tmpdir(), "coding-plugins-cli-status-"));
   try {
     const target = join(targetRoot, "bin", "coding-plugins");
-    const payload = json(["cli", "status", "--target", target, "--format", "json"], {
+    const payload = json(["cli", "status", "--root", targetRoot, "--target", target, "--thread-id", "thread-a", "--format", "json"], {
       env: { ...npmCacheEnv(), PATH: dirname(process.execPath) },
     });
 
@@ -962,6 +981,46 @@ test("cli status reports fallback command when coding-plugins is not on PATH", (
     assert.equal(payload.fallback_argv[1], bin);
     assert.ok(payload.fallback_command.includes("bin/coding-plugins.js"));
     assert.equal(payload.recommended_action, "install-cli-shim-or-use-fallback");
+    assert.equal(payload.session_lock.ok, true);
+    assert.equal(payload.session_lock.lock.thread_id, "thread-a");
+    assert.equal(payload.session_lock.lock.plugin_version, packageVersion);
+    assert.equal(existsSync(join(targetRoot, ".coding-plugins/session-lock.json")), true);
+  } finally {
+    rmSync(targetRoot, { recursive: true, force: true });
+  }
+});
+
+test("cli status reuses session lock and reports mixed plugin versions", () => {
+  const targetRoot = mkdtempSync(join(tmpdir(), "coding-plugins-session-lock-"));
+  try {
+    const lockDirectory = join(targetRoot, ".coding-plugins");
+    mkdirSync(lockDirectory, { recursive: true });
+    const lockedCli = join(targetRoot, "locked-cache/bin/coding-plugins.js");
+    writeFileSync(
+      join(lockDirectory, "session-lock.json"),
+      JSON.stringify(
+        {
+          schema_version: 1,
+          plugin_version: "1.0.0",
+          plugin_root: join(targetRoot, "locked-cache"),
+          cli_path: lockedCli,
+          thread_id: "thread-a",
+          created_at: "2026-07-06T00:00:00.000Z",
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+
+    const payload = json(["cli", "status", "--root", targetRoot, "--thread-id", "thread-a", "--format", "json"], {
+      env: { ...npmCacheEnv(), PATH: dirname(process.execPath) },
+    });
+
+    assert.equal(payload.session_lock.ok, false);
+    assert.ok(payload.session_lock.errors.some((error) => error.includes("plugin_version")));
+    assert.equal(payload.fallback_argv[1], lockedCli);
+    assert.ok(payload.fallback_command.includes("locked-cache/bin/coding-plugins.js"));
   } finally {
     rmSync(targetRoot, { recursive: true, force: true });
   }
