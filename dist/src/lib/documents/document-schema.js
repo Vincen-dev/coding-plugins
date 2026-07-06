@@ -1,10 +1,11 @@
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join, relative } from "node:path";
-import { ARTIFACT_SUFFIXES, DOCUMENT_ARTIFACTS, collectFeatureRoots, documentDocId, documentSuffix, parseFrontmatter as parseDocumentFrontmatter, splitFrontmatter, } from "./document-metadata.js";
+import { ARTIFACT_SUFFIXES, DOCUMENT_ARTIFACTS, collectFeatureRoots, documentDocId, documentSuffix, frontmatterListValues, parseFrontmatter as parseDocumentFrontmatter, splitFrontmatter, } from "./document-metadata.js";
 import { computeUpstreamHash } from "../workflow/workflow-state.js";
 const REQUIRED_FRONTMATTER = ["title", "status", "feature", "doc_id"];
 const REQUIRED_ARTIFACTS = ["PRD", "TSD", "TVD", "TED", "VED"];
+const EXECUTION_APPROVAL_ARTIFACTS = ["PRD", "TSD", "TVD", "TED"];
 const REQUIRED_SECTIONS = {
     PRD: ["需求总览", "追踪矩阵"],
     TSD: ["规格到设计映射", "测试策略"],
@@ -158,6 +159,7 @@ export function validateDocumentChains(root, documents, options = {}) {
         const first = group[0];
         const artifacts = Object.fromEntries(REQUIRED_ARTIFACTS.map((suffix) => [suffix, null]));
         const errors = [];
+        const workflowViolations = [];
         for (const document of group) {
             if (artifacts[document.kind]) {
                 errors.push(`${document.feature}/${document.doc_id} duplicate artifact: ${document.kind}`);
@@ -169,6 +171,28 @@ export function validateDocumentChains(root, documents, options = {}) {
         const chainType = missingArtifacts.length === 0 ? "complete" : standaloneEvidenceOnly ? "evidence-only" : "incomplete";
         if (missingArtifacts.length > 0 && !(standaloneEvidenceOnly && options.allowEvidenceOnly === true)) {
             errors.push(`${first.feature}/${first.doc_id} missing artifacts: ${missingArtifacts.join(", ")}`);
+        }
+        for (const suffix of EXECUTION_APPROVAL_ARTIFACTS) {
+            const document = group.find((item) => item.kind === suffix);
+            if (!document || document.status === "approved") {
+                continue;
+            }
+            workflowViolations.push(`${first.feature}/${first.doc_id} workflow violation: ${suffix} status '${document.status || "missing"}' is not approved; PRD/TSD/TVD/TED must be approved before implementation`);
+        }
+        const tsd = group.find((document) => document.kind === "TSD");
+        if (tsd) {
+            const implementedCommits = frontmatterListValues(readFileSync(join(root, tsd.path), "utf8"), "implemented_commits");
+            const implemented = tsd.frontmatter.lifecycle_status === "implemented" || implementedCommits.length > 0;
+            if (implemented) {
+                const unapprovedDownstream = ["TVD", "TED"]
+                    .filter((suffix) => {
+                    const document = group.find((item) => item.kind === suffix);
+                    return !document || document.status !== "approved";
+                });
+                if (unapprovedDownstream.length > 0) {
+                    workflowViolations.push(`${first.feature}/${first.doc_id} workflow violation: TSD is marked implemented before ${unapprovedDownstream.join(", ")} are approved`);
+                }
+            }
         }
         const ted = group.find((document) => document.kind === "TED");
         if (ted && !missingArtifacts.some((suffix) => ["PRD", "TSD", "TVD"].includes(suffix))) {
@@ -196,6 +220,7 @@ export function validateDocumentChains(root, documents, options = {}) {
                 }
             }
         }
+        errors.push(...workflowViolations);
         return {
             feature: first.feature,
             doc_id: first.doc_id,
@@ -203,6 +228,7 @@ export function validateDocumentChains(root, documents, options = {}) {
             artifacts,
             missing_artifacts: missingArtifacts,
             chain_type: chainType,
+            workflow_violations: workflowViolations,
             errors,
         };
     });

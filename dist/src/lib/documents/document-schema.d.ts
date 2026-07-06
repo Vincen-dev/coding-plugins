@@ -31,6 +31,7 @@ export interface ParsedDocumentChain {
     artifacts: Record<string, string | null>;
     missing_artifacts: string[];
     chain_type: "complete" | "incomplete" | "evidence-only";
+    workflow_violations: string[];
     errors: string[];
 }
 export interface DocumentValidationOptions {

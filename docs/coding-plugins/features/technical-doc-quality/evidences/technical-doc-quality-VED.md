@@ -14,6 +14,18 @@ external_references: []
 
 ## TDD 证据
 
+- **规格/缺陷/验收:** P0 验收要求强化 full-chain / maintenance-chain 执行门禁：没有 approved PRD/TSD/TVD/TED 时不允许进入实现；public API、schema、generator、release、dependency、SDK 兼容窗口等变更默认进入 full-chain 或 maintenance-chain；发现实现状态早于 TSD/TVD/TED 正式批准时标记 workflow violation。
+- **测试类型:** `contract`
+- **RED 测试:** `tests/ts/productization-cli.test.mjs` 中的 `schema validate reports workflow violations when formal execution artifacts are not approved`、`schema validate reports workflow violations when implementation is marked before downstream planning is approved` 和 `workflow mode routes dependency SDK release work to the maintenance chain`。
+- **RED 命令:** `node --test tests/ts/productization-cli.test.mjs`
+- **RED 失败:** 前两个 validate 测试失败于 `chain.workflow_violations` 不存在；workflow mode 测试失败于英文 dependency / SDK / release 维护风险被判为 `full-chain` 而不是 `maintenance-chain`。
+- **GREEN 变更:** `validateDocumentChains()` 为每条链输出 `workflow_violations`，并把未 approved 的 PRD/TSD/TVD/TED、implemented TSD 下游仍未批准的情况并入 `chain_errors`；`workflow-mode` 增加 dependency、SDK、release、generator 等维护风险关键词和原因文本。
+- **GREEN 命令:** `npm run build`；`node --test tests/ts/productization-cli.test.mjs`
+- **REFACTOR 命令:** `npm run typecheck`；`git diff --check`
+- **最终验证:** `npm run preflight` PASS。
+
+## TDD 证据
+
 - **规格/缺陷/验收:** P0 验收要求新增 `coding-plugins task start|continue|status` 统一入口，合并 mode、文档链状态、guard、brief、下一步和动作边界；输出必须包含 `mode`、`feature`、`doc_id`、`state`、`allowed_actions`、`blocked_actions`、`next_skill`、`decision_point`。
 - **测试类型:** `contract`
 - **RED 测试:** `tests/ts/productization-cli.test.mjs` 中的 `task status is the unified workflow entrypoint for executable document work` 和 `task start blocks execution when a document chain has not been started`。

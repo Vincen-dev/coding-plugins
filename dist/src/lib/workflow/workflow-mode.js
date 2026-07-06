@@ -29,8 +29,8 @@ const CONTRACT_KEYWORDS = [
     "兼容",
     "验收标准",
 ];
-const MAINTENANCE_KEYWORDS = ["重构", "迁移", "升级", "依赖", "安全", "性能", "稳定性", "缓存格式"];
-const MAINTENANCE_RISK_KEYWORDS = ["外部行为", "兼容", "验证口径", "回滚", "灰度", "数据", "schema", "api", "接口"];
+const MAINTENANCE_KEYWORDS = ["重构", "迁移", "升级", "依赖", "发布", "生成器", "安全", "性能", "稳定性", "缓存格式", "dependency", "release", "generator", "sdk"];
+const MAINTENANCE_RISK_KEYWORDS = ["外部行为", "兼容", "兼容窗口", "验证口径", "回滚", "灰度", "数据", "schema", "api", "接口", "compatibility", "dependency", "release", "generator", "sdk"];
 const BEHAVIOR_KEYWORDS = ["修复", "实现", "新增", "行为", "bug", "测试", "按钮", "流程"];
 function normalize(text) {
     return text.toLowerCase();
@@ -67,7 +67,7 @@ export function inferMode(intent, options = {}) {
         return {
             mode: "maintenance-chain",
             explicit: false,
-            reason: "maintenance work has compatibility, data, API, or verification risk",
+            reason: "maintenance work has compatibility, data, API, dependency, SDK, generator, release, or verification risk",
         };
     }
     if (hasAny(text, CONTRACT_KEYWORDS)) {

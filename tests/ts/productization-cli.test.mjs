@@ -32,7 +32,7 @@ function json(args, options = {}) {
   return JSON.parse(result.stdout);
 }
 
-function writeWorkflowDoc(root, feature, directory, docId, suffix, body) {
+function writeWorkflowDoc(root, feature, directory, docId, suffix, body, options = {}) {
   const dir = join(root, "docs/coding-plugins/features", feature, directory);
   mkdirSync(dir, { recursive: true });
   writeFileSync(
@@ -40,7 +40,8 @@ function writeWorkflowDoc(root, feature, directory, docId, suffix, body) {
     [
       "---",
       `title: ${docId} ${suffix}`,
-      "status: approved",
+      `status: ${options.status ?? "approved"}`,
+      ...(options.frontmatter ?? []),
       `feature: ${feature}`,
       `doc_id: ${docId}`,
       "created: 2026-07-04",
@@ -53,6 +54,16 @@ function writeWorkflowDoc(root, feature, directory, docId, suffix, body) {
     ].join("\n"),
     "utf8",
   );
+}
+
+function approvedChainBodies() {
+  return {
+    PRD: "## 需求总览\n\nREQ-001 must be traceable.\n\n## 追踪矩阵\n\nREQ-001 is covered.",
+    TSD: "## 规格到设计映射\n\nREQ-001 maps to TD-001.\n\n## 测试策略\n\nREQ-001 uses contract tests.",
+    TVD: "## 测试用例总览\n\nTC-001 covers REQ-001.",
+    TED: "## 执行锁定区\n\n- **Intent Lock:** Execute REQ-001.\n- **Scope Fence:** Only REQ-001.\n- **Required Spec IDs:** REQ-001\n- **Required Tests:** TC-001\n- **Review Gates:** review\n- **Rewind Triggers:** upstream change\n\n## 执行简报\n\nExecute TASK-001.\n\n## 任务总览\n\nTASK-001 covers REQ-001.\n\n## 完成任务（TASK-001 / REQ-001）\n\nDo it.",
+    VED: "## TDD 证据\n\nRED 命令 covers REQ-001.",
+  };
 }
 
 test("state CLI initializes, checks, transitions, and audits .coding-plugins.yaml", () => {
@@ -283,6 +294,18 @@ test("task start blocks execution when a document chain has not been started", (
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
+});
+
+test("workflow mode routes dependency SDK release work to the maintenance chain", () => {
+  const payload = json([
+    "workflow-mode",
+    "--intent",
+    "bump dependency range for SDK release compatibility window",
+    "--json",
+  ]);
+
+  assert.equal(payload.mode, "maintenance-chain");
+  assert.match(payload.reason, /dependency|SDK|release|compatibility/i);
 });
 
 test("execution-contract generates a deterministic contract from the approved document chain", () => {
@@ -700,6 +723,55 @@ test("schema validate rejects incomplete PRD/TSD/TVD/TED/VED chains even when in
     const payload = JSON.parse(result.stdout);
     assert.equal(payload.ok, false);
     assert.ok(payload.chain_errors.some((error) => error.includes("alpha/alpha-login missing artifacts: TVD")));
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("schema validate reports workflow violations when formal execution artifacts are not approved", () => {
+  const root = mkdtempSync(join(tmpdir(), "coding-plugins-unapproved-chain-"));
+  const bodies = approvedChainBodies();
+  try {
+    writeWorkflowDoc(root, "alpha", "requirements", "alpha-login", "PRD", bodies.PRD);
+    writeWorkflowDoc(root, "alpha", "technicals", "alpha-login", "TSD", bodies.TSD, { status: "draft" });
+    writeWorkflowDoc(root, "alpha", "test-cases", "alpha-login", "TVD", bodies.TVD);
+    writeWorkflowDoc(root, "alpha", "plans", "alpha-login", "TED", bodies.TED);
+    writeWorkflowDoc(root, "alpha", "evidences", "alpha-login", "VED", bodies.VED);
+
+    const result = run(["validate", "--root", root, "--format", "json"]);
+    assert.equal(result.status, 1);
+    const payload = JSON.parse(result.stdout);
+    const chain = payload.chains.find((item) => item.feature === "alpha" && item.doc_id === "alpha-login");
+    assert.equal(chain.ok, false);
+    assert.ok(chain.workflow_violations.some((violation) => violation.includes("TSD status 'draft' is not approved")));
+    assert.ok(payload.chain_errors.some((error) => error.includes("workflow violation")));
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("schema validate reports workflow violations when implementation is marked before downstream planning is approved", () => {
+  const root = mkdtempSync(join(tmpdir(), "coding-plugins-implemented-before-plan-"));
+  const bodies = approvedChainBodies();
+  try {
+    writeWorkflowDoc(root, "alpha", "requirements", "alpha-login", "PRD", bodies.PRD);
+    writeWorkflowDoc(root, "alpha", "technicals", "alpha-login", "TSD", bodies.TSD, {
+      frontmatter: [
+        "lifecycle_status: implemented",
+        "implemented_commits:",
+        "  - 5c105ee",
+        "validated_by: npm run preflight",
+      ],
+    });
+    writeWorkflowDoc(root, "alpha", "evidences", "alpha-login", "VED", bodies.VED);
+
+    const result = run(["validate", "--root", root, "--format", "json"]);
+    assert.equal(result.status, 1);
+    const payload = JSON.parse(result.stdout);
+    const chain = payload.chains.find((item) => item.feature === "alpha" && item.doc_id === "alpha-login");
+    assert.equal(chain.ok, false);
+    assert.ok(chain.workflow_violations.some((violation) => violation.includes("TSD is marked implemented before TVD, TED are approved")));
+    assert.ok(payload.chain_errors.some((error) => error.includes("workflow violation")));
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
