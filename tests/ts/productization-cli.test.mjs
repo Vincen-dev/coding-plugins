@@ -527,6 +527,84 @@ test("scope-check upgrades README TODO work that expands into release actions", 
   assert.ok(payload.blocked_actions.includes("publish"));
 });
 
+test("release plan records completion standards and package dependency order", () => {
+  const payload = json([
+    "release",
+    "plan",
+    "--version",
+    "1.2.3",
+    "--package-order",
+    "runtime,generator",
+    "--json",
+  ]);
+
+  assert.equal(payload.ok, true);
+  assert.equal(payload.version, "1.2.3");
+  assert.deepEqual(payload.package_order, ["runtime", "generator"]);
+  for (const standard of [
+    "release_commit_pushed",
+    "tag_pushed",
+    "github_actions_success",
+    "release_target_visible",
+    "dependency_resolution_passed",
+  ]) {
+    assert.ok(payload.completion_standards.includes(standard));
+  }
+});
+
+test("release plan rejects multi-package releases without dependency order", () => {
+  const result = run([
+    "release",
+    "plan",
+    "--version",
+    "1.2.3",
+    "--packages",
+    "runtime,generator",
+    "--json",
+  ]);
+
+  assert.equal(result.status, 1);
+  const payload = JSON.parse(result.stdout);
+  assert.equal(payload.ok, false);
+  assert.ok(payload.missing_standards.includes("package_dependency_order"));
+});
+
+test("release verify blocks tag-pushed-only completion claims", () => {
+  const result = run([
+    "release",
+    "verify",
+    "--tag-pushed",
+    "--json",
+  ]);
+
+  assert.equal(result.status, 1);
+  const payload = JSON.parse(result.stdout);
+  assert.equal(payload.ok, false);
+  assert.ok(payload.missing_standards.includes("release_commit_pushed"));
+  assert.ok(payload.missing_standards.includes("github_actions_success"));
+  assert.ok(payload.missing_standards.includes("release_target_visible"));
+  assert.ok(payload.missing_standards.includes("dependency_resolution_passed"));
+  assert.ok(payload.violations.some((violation) => violation.id === "tag-pushed-is-not-release-complete"));
+  assert.ok(payload.blocked_actions.includes("declare-release-complete"));
+});
+
+test("release guard passes only when all release completion standards are met", () => {
+  const payload = json([
+    "release",
+    "guard",
+    "--commit-pushed",
+    "--tag-pushed",
+    "--workflow-ok",
+    "--release-visible",
+    "--dependency-resolved",
+    "--json",
+  ]);
+
+  assert.equal(payload.ok, true);
+  assert.deepEqual(payload.missing_standards, []);
+  assert.deepEqual(payload.blocked_actions, []);
+});
+
 test("execution-contract generates a deterministic contract from the approved document chain", () => {
   const payload = json([
     "execution-contract",

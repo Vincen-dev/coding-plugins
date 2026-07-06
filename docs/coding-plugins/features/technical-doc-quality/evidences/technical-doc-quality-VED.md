@@ -14,6 +14,18 @@ external_references: []
 
 ## TDD 证据
 
+- **规格/缺陷/验收:** P1 验收要求新增 `coding-plugins release plan|guard|verify`，固定完成标准为 release commit 已推送、tag 已推送、GitHub Actions 成功、发布目标可见、依赖解析通过；明确 `tag pushed != release complete`；多包发布必须表达顺序依赖。
+- **测试类型:** `contract`
+- **RED 测试:** `tests/ts/productization-cli.test.mjs` 中的 `release plan records completion standards and package dependency order`、`release plan rejects multi-package releases without dependency order`、`release verify blocks tag-pushed-only completion claims` 和 `release guard passes only when all release completion standards are met`。
+- **RED 命令:** `node --test tests/ts/productization-cli.test.mjs`
+- **RED 失败:** 新增 release tests 失败于 `Unknown command: release`，证明 CLI 尚未提供 release 专用链路。
+- **GREEN 变更:** 新增 `src/lib/release/release-flow.ts` 和 `src/cli/release.ts` / `src/cli/release/release.ts`，提供 `release plan|guard|verify`；输出 completion standards、missing standards、violations 和 blocked actions；同步 README、任务清单、产品化测试、dist 产物和包导出。
+- **GREEN 命令:** `npm run typecheck`；`npm run build`；`node --test tests/ts/productization-cli.test.mjs`
+- **REFACTOR 命令:** `node --test tests/ts/npm-package.test.mjs`
+- **最终验证:** `npm run preflight` PASS。
+
+## TDD 证据
+
 - **规格/缺陷/验收:** P1 验收要求新增 `coding-plugins scope-check` 范围膨胀检测：`docs-only` 改到 source/test/tool 时要求重新路由，单一任务扩展到多个独立 feature 时要求拆分，README 与任务清单类工作扩展到 release helper、tag、publish 时要求升级为 maintenance-chain。
 - **测试类型:** `contract`
 - **RED 测试:** `tests/ts/productization-cli.test.mjs` 中新增四个 `scope-check` contract tests，覆盖 docs-only 正常路径、触碰 source/test/tool、单任务多 feature 和 release action 升级。

@@ -6,3 +6,4 @@ export { inspectDocumentChain } from "./lib/workflow/workflow-state.ts";
 export { checkWorkflowGuard } from "./lib/workflow/workflow-guard.ts";
 export { buildTaskStatus } from "./lib/workflow/task-status.ts";
 export { checkScope } from "./lib/workflow/scope-check.ts";
+export { planRelease, verifyRelease } from "./lib/release/release-flow.ts";

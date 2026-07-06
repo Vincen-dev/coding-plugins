@@ -192,6 +192,7 @@ git-commit -> finishing-a-development-branch
 | 真实 agent 压力证据 | `src/cli/agents/agent-pressure-harness.ts`, `src/cli/agents/agent-pressure-ingest.ts` |
 | 发布前检查 | `src/cli/release/preflight.ts` |
 | 版本同步 | `src/cli/release/bump-version.ts`, `.version-bump.json` |
+| Release 专用链路 | `coding-plugins release plan|guard|verify`，固定检查 release commit、tag、workflow、发布目标和依赖解析 |
 | Release 准备和远程审计 | `src/cli/release/prepare-release.ts`, `src/cli/release/remote-audit.ts` |
 
 顶层 `src/cli/*.ts` 和 `src/lib/*.ts` 保留为兼容入口；新增实现应优先放入对应领域目录。

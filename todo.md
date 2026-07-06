@@ -30,7 +30,7 @@
   - docs-only 改到 source/test/tool 时要求重新路由。
   - 单一任务扩展到多个独立 feature 时要求拆分。
   - README/TODO 任务扩展到 release helper、tag、publish 时要求升级为 maintenance-chain 或 release-chain。
-- [ ] 增加 release 专用链路。
+- [x] 增加 release 专用链路。
   - 新增 `coding-plugins release plan|guard|verify`。
   - 固定完成标准：release commit 已推送、tag 已推送、GitHub Actions 成功、发布目标可见、依赖解析通过。
   - 明确 `tag pushed != release complete`。
@@ -71,6 +71,6 @@
 - [ ] `full-chain` 下没有 approved TED 时，任何实现动作都会被 guard 阻止。
 - [ ] 用户说“继续”时，CLI 能返回唯一下一步，而不是让 agent 自行推断。
 - [ ] ignored 的 VED 不能被用作正式完成证据。
-- [ ] release tag 推送后，必须验证 workflow 和发布目标可见，才能声明发布完成。
+- [x] release tag 推送后，必须验证 workflow 和发布目标可见，才能声明发布完成。
 - [ ] 同一会话只使用一个插件版本；混读 cache 版本会被 doctor 报告。
 - [x] docs-only 任务扩展到源码、工具或发布动作时，scope-check 要求重新路由。
