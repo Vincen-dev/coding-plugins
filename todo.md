@@ -4,7 +4,7 @@
 
 ## P0：流程门禁和正式证据
 
-- [ ] 统一任务入口：新增或强化 `coding-plugins task start|continue|status`，把 `start`、`workflow-mode`、`workflow-state`、`workflow-guard`、`workflow-brief` 的结果合并成唯一任务状态输出。
+- [x] 统一任务入口：新增或强化 `coding-plugins task start|continue|status`，把 `start`、`workflow-mode`、`workflow-state`、`workflow-guard`、`workflow-brief` 的结果合并成唯一任务状态输出。
   - 输出必须包含 `mode`、`feature`、`doc_id`、`state`、`allowed_actions`、`blocked_actions`、`next_skill`、`decision_point`。
   - 用户说“继续 / 恢复 / 开始实现 / 执行 TED”时，必须先通过该入口重新判定状态。
 - [ ] 强化 full-chain / maintenance-chain 执行门禁：没有 approved PRD/TSD/TVD/TED 时，不允许进入实现。

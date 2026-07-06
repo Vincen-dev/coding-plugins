@@ -14,6 +14,18 @@ external_references: []
 
 ## TDD 证据
 
+- **规格/缺陷/验收:** P0 验收要求新增 `coding-plugins task start|continue|status` 统一入口，合并 mode、文档链状态、guard、brief、下一步和动作边界；输出必须包含 `mode`、`feature`、`doc_id`、`state`、`allowed_actions`、`blocked_actions`、`next_skill`、`decision_point`。
+- **测试类型:** `contract`
+- **RED 测试:** `tests/ts/productization-cli.test.mjs` 中的 `task status is the unified workflow entrypoint for executable document work` 和 `task start blocks execution when a document chain has not been started`。
+- **RED 命令:** `node --test tests/ts/productization-cli.test.mjs`
+- **RED 失败:** 两个新测试均失败于 `Unknown command: task`，证明 CLI 注册表尚未提供统一任务入口。
+- **GREEN 变更:** 新增 `src/lib/workflow/task-status.ts` 聚合 mode、`workflow-state`、`workflow-guard` 和 `workflow-brief`；新增 `src/cli/task.ts`、`src/cli/workflow/task.ts` 并注册 `task start|continue|status`；README、INSTALL、`using-coding-plugins` 和 P0 清单改为以 `task status/start` 为主入口。
+- **GREEN 命令:** `npm run typecheck`；`npm run build`；`node --test tests/ts/productization-cli.test.mjs`
+- **REFACTOR 命令:** `node --test tests/ts/scenario-routing-contract.test.mjs`
+- **最终验证:** `npm run preflight` PASS。
+
+## TDD 证据
+
 - **规格/缺陷/验收:** 明确验收：`writing-technicals` 生成的 TSD 不能保留模板残留文本。
 - **测试类型:** `contract`
 - **RED 测试:** `tests/ts/document-metadata.test.mjs` 中的 `TypeScript technical validator rejects unfinished template content in TSD`

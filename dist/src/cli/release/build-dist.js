@@ -35,6 +35,7 @@ withBuildLock(root, () => {
         'export { validateDocumentSchemas } from "./src/lib/documents/document-schema.js";',
         'export { inspectDocumentChain } from "./src/lib/workflow/workflow-state.js";',
         'export { checkWorkflowGuard } from "./src/lib/workflow/workflow-guard.js";',
+        'export { buildTaskStatus } from "./src/lib/workflow/task-status.js";',
         "",
     ].join("\n"), "utf8");
     writeFileSync(resolve(dist, "index.d.ts"), [
@@ -43,6 +44,7 @@ withBuildLock(root, () => {
         'export { validateDocumentSchemas } from "./src/lib/documents/document-schema.js";',
         'export { inspectDocumentChain } from "./src/lib/workflow/workflow-state.js";',
         'export { checkWorkflowGuard } from "./src/lib/workflow/workflow-guard.js";',
+        'export { buildTaskStatus } from "./src/lib/workflow/task-status.js";',
         "",
     ].join("\n"), "utf8");
     console.log("Built dist JavaScript runtime and type declarations");

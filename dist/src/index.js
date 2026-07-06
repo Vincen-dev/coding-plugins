@@ -3,3 +3,4 @@ export { auditState, checkState, initState, transitionState } from "./lib/workfl
 export { validateDocumentSchemas } from "./lib/documents/document-schema.js";
 export { inspectDocumentChain } from "./lib/workflow/workflow-state.js";
 export { checkWorkflowGuard } from "./lib/workflow/workflow-guard.js";
+export { buildTaskStatus } from "./lib/workflow/task-status.js";

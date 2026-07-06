@@ -204,6 +204,87 @@ test("start keeps analysis-only requests out of document scaffolding", () => {
   assert.deepEqual(payload.next_args, []);
 });
 
+test("task status is the unified workflow entrypoint for executable document work", () => {
+  const payload = json([
+    "task",
+    "status",
+    "--root",
+    fixtureRoot,
+    "--feature",
+    "routing-fixture",
+    "--doc-id",
+    "routing-login",
+    "--intent",
+    "开始执行这个 TED",
+    "--json",
+  ]);
+
+  assert.equal(payload.entrypoint, "coding-plugins task status");
+  assert.equal(payload.action, "status");
+  assert.equal(payload.conversation_judgment_allowed, false);
+  assert.equal(payload.feature, "routing-fixture");
+  assert.equal(payload.doc_id, "routing-login");
+  assert.equal(payload.state, "ready-for-execution");
+  assert.equal(payload.decision_point, "DP-4");
+  assert.equal(payload.next_skill, "using-git-worktrees");
+  assert.ok(payload.allowed_actions.includes("workflow-guard:execute"));
+  assert.ok(payload.allowed_actions.includes("workflow-brief"));
+  assert.deepEqual(payload.blocked_actions, []);
+  assert.equal(payload.guard.pass, true);
+  assert.equal(payload.brief.pass, true);
+  assert.equal(
+    payload.next_command,
+    `coding-plugins workflow-guard check --root ${fixtureRoot} --feature routing-fixture --doc-id routing-login --target execute`,
+  );
+  assert.deepEqual(payload.next_args, [
+    "workflow-guard",
+    "check",
+    "--root",
+    fixtureRoot,
+    "--feature",
+    "routing-fixture",
+    "--doc-id",
+    "routing-login",
+    "--target",
+    "execute",
+  ]);
+});
+
+test("task start blocks execution when a document chain has not been started", () => {
+  const root = mkdtempSync(join(tmpdir(), "coding-plugins-task-not-started-"));
+  try {
+    const payload = json([
+      "task",
+      "start",
+      "--root",
+      root,
+      "--feature",
+      "alpha",
+      "--doc-id",
+      "alpha-login",
+      "--intent",
+      "开始执行 alpha-login",
+      "--json",
+    ]);
+
+    assert.equal(payload.entrypoint, "coding-plugins task start");
+    assert.equal(payload.action, "start");
+    assert.equal(payload.feature, "alpha");
+    assert.equal(payload.doc_id, "alpha-login");
+    assert.equal(payload.state, "not-started");
+    assert.equal(payload.decision_point, "DP-0");
+    assert.equal(payload.next_skill, "spec-driven-development");
+    assert.ok(payload.allowed_actions.includes("scaffold-feature-docs"));
+    assert.ok(payload.allowed_actions.includes("write-requirements"));
+    assert.ok(payload.blocked_actions.includes("workflow-guard:execute"));
+    assert.equal(payload.guard.pass, false);
+    assert.equal(payload.brief, null);
+    assert.match(payload.next_command, /scaffold-feature-docs alpha/);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test("execution-contract generates a deterministic contract from the approved document chain", () => {
   const payload = json([
     "execution-contract",

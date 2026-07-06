@@ -94,7 +94,7 @@
   - 场景链路文档有 gate 文案，但没有稳定 ID，后续修改难以发现语义漂移。
   - 新增场景没有绑定真实案例，导致流程看似完整但没有回归依据。
   - 插件维护场景绕过 RED 行为测试或 fixture case，只改文档说明。
-  - 正式 PRD/TSD/TVD/TED/VED 链路绕过 `coding-plugins start` 和 `workflow-guard`，只凭 skill 文本继续实现。
+  - 正式 PRD/TSD/TVD/TED/VED 链路绕过 `coding-plugins task status` 和 `workflow-guard`，只凭 skill 文本继续实现。
 
 ## claude-entrypoint-fixture
 
