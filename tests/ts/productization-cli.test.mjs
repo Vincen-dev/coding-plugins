@@ -605,6 +605,98 @@ test("release guard passes only when all release completion standards are met", 
   assert.deepEqual(payload.blocked_actions, []);
 });
 
+test("commit-guard blocks missing language confirmation, sensitive files, and missing DP-7", () => {
+  const root = mkdtempSync(join(tmpdir(), "coding-plugins-commit-guard-"));
+  try {
+    const result = run([
+      "commit-guard",
+      "--root",
+      root,
+      "--feature",
+      "alpha",
+      "--doc-id",
+      "alpha-login",
+      "--author-name",
+      "Vincen",
+      "--author-email",
+      "hx001007@gmail.com",
+      "--branch",
+      "main",
+      "--changed-files",
+      "src/index.ts,.env",
+      "--json",
+    ]);
+
+    assert.equal(result.status, 1);
+    const payload = JSON.parse(result.stdout);
+    assert.equal(payload.ok, false);
+    assert.ok(payload.violations.some((violation) => violation.id === "commit-language-unconfirmed"));
+    assert.ok(payload.violations.some((violation) => violation.id === "sensitive-file-staged"));
+    assert.ok(payload.violations.some((violation) => violation.id === "main-branch-direct-commit"));
+    assert.ok(payload.violations.some((violation) => violation.id === "dp7-not-approved"));
+    assert.ok(payload.blocked_actions.includes("commit"));
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("commit-guard passes after language and DP-7 are explicitly approved", () => {
+  const root = mkdtempSync(join(tmpdir(), "coding-plugins-commit-guard-pass-"));
+  try {
+    json(["dp", "approve", "--root", root, "--feature", "alpha", "--doc-id", "alpha-login", "--id", "DP-6", "--reason", "Verified", "--json"]);
+    json(["dp", "approve", "--root", root, "--feature", "alpha", "--doc-id", "alpha-login", "--id", "DP-7", "--reason", "Commit approved", "--json"]);
+
+    const payload = json([
+      "commit-guard",
+      "--root",
+      root,
+      "--feature",
+      "alpha",
+      "--doc-id",
+      "alpha-login",
+      "--language",
+      "zh",
+      "--author-name",
+      "Vincen",
+      "--author-email",
+      "hx001007@gmail.com",
+      "--branch",
+      "codex/scope-check",
+      "--changed-files",
+      "src/index.ts,tests/ts/productization-cli.test.mjs",
+      "--json",
+    ]);
+
+    assert.equal(payload.ok, true);
+    assert.equal(payload.language_confirmed, true);
+    assert.equal(payload.decision_status.ok, true);
+    assert.deepEqual(payload.violations, []);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("commit-guard rejects AI-like author identities", () => {
+  const result = run([
+    "commit-guard",
+    "--language",
+    "en",
+    "--author-name",
+    "Codex Bot",
+    "--author-email",
+    "bot@example.com",
+    "--branch",
+    "codex/test",
+    "--changed-files",
+    "src/index.ts",
+    "--json",
+  ]);
+
+  assert.equal(result.status, 1);
+  const payload = JSON.parse(result.stdout);
+  assert.ok(payload.violations.some((violation) => violation.id === "invalid-author-identity"));
+});
+
 test("execution-contract generates a deterministic contract from the approved document chain", () => {
   const payload = json([
     "execution-contract",

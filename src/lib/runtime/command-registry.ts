@@ -17,6 +17,7 @@ export const COMMAND_REGISTRY = [
   },
   { name: "bump-version", script: "src/cli/bump-version.ts", usage: "bump-version <version> [--root <path>]" },
   { name: "cli", script: "src/cli/cli.ts", usage: "cli <status|install|uninstall> [--scope user|project] [--target <path>] [--root <path>] [--format text|json] [--force]" },
+  { name: "commit-guard", script: "src/cli/commit-guard.ts", usage: "commit-guard [--root <path>] [--feature <name>] [--doc-id <id>] [--language zh|en] [--author-name <name>] [--author-email <email>] [--branch <name>] [--changed-files <paths>] [--allow-main] [--json]" },
   { name: "command-registry", script: "src/cli/command-registry.ts", usage: "command-registry [--format text|json]" },
   { name: "decision-points", script: "skills/using-coding-plugins/scripts/decision-points.ts", usage: "decision-points [--id <DP-n>] [--json]" },
   { name: "dp", script: "src/cli/dp.ts", usage: "dp <status|request|approve|audit> --feature <name> --doc-id <id> [--id <DP-n>] [--target <execute|commit|tag|release|publish>] [--root <path>] [--json]" },

@@ -35,7 +35,7 @@
   - 固定完成标准：release commit 已推送、tag 已推送、GitHub Actions 成功、发布目标可见、依赖解析通过。
   - 明确 `tag pushed != release complete`。
   - 多包发布必须表达顺序依赖，例如先 runtime 包，确认可解析后再 generator 包。
-- [ ] 增加 commit guard。
+- [x] 增加 commit guard。
   - 统一判断提交语言、作者身份、敏感文件、变更范围、当前分支、是否需要 DP-7。
   - 用户未指定提交语言时，不能只凭最近提交语言静默决定；需要按项目策略或显式确认。
   - main 分支直接提交或直接 push 时，按任务风险提示 branch/worktree/PR 方案。

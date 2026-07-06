@@ -14,6 +14,18 @@ external_references: []
 
 ## TDD 证据
 
+- **规格/缺陷/验收:** P1 验收要求新增 `coding-plugins commit-guard`，统一判断提交语言、作者身份、敏感文件、变更范围、当前分支和 DP-7；用户未指定提交语言时不得静默继承最近提交语言；main 分支直接提交需要阻断并提示分支或 PR 方案。
+- **测试类型:** `contract`
+- **RED 测试:** `tests/ts/productization-cli.test.mjs` 中的 `commit-guard blocks missing language confirmation, sensitive files, and missing DP-7`、`commit-guard passes after language and DP-7 are explicitly approved` 和 `commit-guard rejects AI-like author identities`。
+- **RED 命令:** `node --test tests/ts/productization-cli.test.mjs`
+- **RED 失败:** 新增 commit guard tests 失败于 `Unknown command: commit-guard`，证明 CLI 尚未提供提交前门禁。
+- **GREEN 变更:** 新增 `src/lib/git/commit-guard.ts` 和 `src/cli/commit-guard.ts`，输出 language confirmation、author、changed files、decision status、violations、blocked actions 和 recommended action；注册命令并导出 `checkCommitGuard`；同步 README、任务清单、产品化测试和 dist 产物。
+- **GREEN 命令:** `npm run typecheck`；`npm run build`；`node --test tests/ts/productization-cli.test.mjs`
+- **REFACTOR 命令:** `node --test tests/ts/npm-package.test.mjs`
+- **最终验证:** `npm run preflight` PASS。
+
+## TDD 证据
+
 - **规格/缺陷/验收:** P1 验收要求新增 `coding-plugins release plan|guard|verify`，固定完成标准为 release commit 已推送、tag 已推送、GitHub Actions 成功、发布目标可见、依赖解析通过；明确 `tag pushed != release complete`；多包发布必须表达顺序依赖。
 - **测试类型:** `contract`
 - **RED 测试:** `tests/ts/productization-cli.test.mjs` 中的 `release plan records completion standards and package dependency order`、`release plan rejects multi-package releases without dependency order`、`release verify blocks tag-pushed-only completion claims` 和 `release guard passes only when all release completion standards are met`。

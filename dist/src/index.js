@@ -7,3 +7,4 @@ export { checkWorkflowGuard } from "./lib/workflow/workflow-guard.js";
 export { buildTaskStatus } from "./lib/workflow/task-status.js";
 export { checkScope } from "./lib/workflow/scope-check.js";
 export { planRelease, verifyRelease } from "./lib/release/release-flow.js";
+export { checkCommitGuard } from "./lib/git/commit-guard.js";
