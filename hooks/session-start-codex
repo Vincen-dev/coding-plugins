@@ -1,9 +1,19 @@
 #!/usr/bin/env sh
 set -eu
 
+SCRIPT_DIR=$(CDPATH= cd "$(dirname "$0")" && pwd)
+PLUGIN_ROOT=${PLUGIN_ROOT:-$(CDPATH= cd "$SCRIPT_DIR/.." && pwd)}
+export PLUGIN_ROOT
+
 node <<'JS'
+const pluginRoot = process.env.PLUGIN_ROOT;
+const cpCli = `node "${pluginRoot}/bin/coding-plugins.js"`;
 const context = [
   "你正在使用 coding-plugins 中文编码工作流插件。",
+  "",
+  "本次可用 CLI fallback（无需安装全局 coding-plugins 命令）：",
+  `CP_CLI: ${cpCli}`,
+  "当终端没有 `coding-plugins` 命令时，优先使用 `${CP_CLI} <command> ...`；只有用户明确需要终端快捷命令时，才提示运行 `coding-plugins cli install` 或 `${CP_CLI} cli install`。",
   "",
   "开始任何编码相关任务前，优先读取并使用 `coding-plugins:using-coding-plugins`。它负责判断直接意图和开发任务类型，再路由到对应 skill。",
   "",

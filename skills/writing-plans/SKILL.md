@@ -66,7 +66,7 @@ docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-VED.md
 7. 为每个任务创建独立章节，标题格式固定为 `## 任务标题（TASK-001 / REQ-001）`。
 8. 每个任务必须包含：任务目标、执行前提、修改范围、执行步骤、验证方式、VED 记录要求。
 9. 行为变更任务必须要求 RED/GREEN/REFACTOR；无法自动测试时必须要求 VED 例外记录。
-10. 运行 `coding-plugins workflow-state hash --feature <feature-name> --doc-id <doc-id>`，把结果写入 TED frontmatter 的 `source_hash`。
+10. 运行 `${CP_CLI} workflow-state hash --feature <feature-name> --doc-id <doc-id>`，把结果写入 TED frontmatter 的 `source_hash`。
 11. 在 TED 正文写 `## 执行锁定区`，包含 Intent Lock、Scope Fence、Required Spec IDs、Required Tests、Review Gates 和 Rewind Triggers。
 12. 新增或更新 TED 后运行 `npm run preflight -- --write-index`，再运行 `npm run preflight`。
 
@@ -106,7 +106,7 @@ source_hash: sha256:<由 src/cli/workflow-state.ts hash 生成>
 `source_hash` 只覆盖上游 PRD、TSD 和 TVD，用来检测 TED 是否落后于已批准上游文档。执行前用：
 
 ```bash
-coding-plugins workflow-state inspect --feature <feature-name> --doc-id <doc-id> --json
+${CP_CLI} workflow-state inspect --feature <feature-name> --doc-id <doc-id> --json
 ```
 
 如果输出 `state: plan-draft`、`plan-unlocked` 或 `plan-stale`，不得继续执行，先回到 `writing-plans` 批准 TED、补齐 `source_hash`，或刷新 TED。
@@ -114,7 +114,7 @@ coding-plugins workflow-state inspect --feature <feature-name> --doc-id <doc-id>
 进入实现前运行执行门禁：
 
 ```bash
-coding-plugins workflow-guard check --feature <feature-name> --doc-id <doc-id> --target execute --json
+${CP_CLI} workflow-guard check --feature <feature-name> --doc-id <doc-id> --target execute --json
 ```
 
 只有 `pass: true` 才能进入 `using-git-worktrees` 和执行技能。
@@ -122,7 +122,7 @@ coding-plugins workflow-guard check --feature <feature-name> --doc-id <doc-id> -
 执行阶段优先生成短上下文：
 
 ```bash
-coding-plugins workflow-brief --feature <feature-name> --doc-id <doc-id> --target execute --task TASK-001 --json
+${CP_CLI} workflow-brief --feature <feature-name> --doc-id <doc-id> --target execute --task TASK-001 --json
 ```
 
 如果 brief 通过，执行者默认只读 TED，并聚焦 `## 执行简报`、`## 执行锁定区`、`## 任务总览` 和当前任务章节；PRD/TSD/TVD 只在 Rewind Triggers 命中或 guard 失败时回读。多任务 TED 必须指定当前 `--task`；未知当前任务时才省略。

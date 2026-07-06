@@ -43,7 +43,7 @@ source_hash: sha256:<由 src/cli/workflow-state.ts hash --feature <feature-name>
 - 推荐方式：`subagent-driven-development`，按任务派发并在任务间评审。
 - 降级方式：`executing-plans`，在当前会话按检查点执行。
 - 执行约束：不得跳过 RED/GREEN/REFACTOR；无法自动测试时必须在 VED 写 TDD 例外记录。
-- 新鲜度检查：执行前运行 `coding-plugins workflow-state inspect --feature <feature-name> --doc-id <doc-id> --json`；如果状态是 `plan-draft`、`plan-unlocked` 或 `plan-stale`，先回到 `writing-plans` 批准 TED、补齐 `source_hash`，或刷新 TED。
+- 新鲜度检查：执行前运行 `${CP_CLI} workflow-state inspect --feature <feature-name> --doc-id <doc-id> --json`；如果状态是 `plan-draft`、`plan-unlocked` 或 `plan-stale`，先回到 `writing-plans` 批准 TED、补齐 `source_hash`，或刷新 TED。
 
 ## 执行锁定区
 

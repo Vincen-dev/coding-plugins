@@ -85,6 +85,9 @@ if (typeof context !== 'string' || !context.trim()) {
 }
 const required = [
   'coding-plugins:using-coding-plugins',
+  'CP_CLI',
+  'bin/coding-plugins.js',
+  '无需安装全局 coding-plugins 命令',
   'SDD',
   'TDD',
   'docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md',

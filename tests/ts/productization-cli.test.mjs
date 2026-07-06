@@ -370,11 +370,10 @@ test("doctor audits plugin repository wiring and detects stale Codex cache versi
   }
 });
 
-test("runtime command surfaces provide local fallback when coding-plugins is not on PATH", () => {
+test("runtime command surfaces provide CP_CLI fallback when coding-plugins is not on PATH", () => {
   const packageJson = JSON.parse(readFileSync(join(repoRoot, "package.json"), "utf8"));
   assert.equal(packageJson.scripts.test, "npm run preflight");
 
-  const fallbackHint = "node /absolute/path/to/coding-plugins/bin/coding-plugins.js";
   for (const relativePath of [
     "README.md",
     "INSTALL.md",
@@ -383,7 +382,94 @@ test("runtime command surfaces provide local fallback when coding-plugins is not
     "src/lib/platform/project-install.ts",
   ]) {
     const text = readFileSync(join(repoRoot, relativePath), "utf8");
-    assert.ok(text.includes(fallbackHint), `${relativePath} must document the local CLI fallback`);
+    assert.ok(text.includes("CP_CLI"), `${relativePath} must document the SessionStart CLI fallback`);
+  }
+  const readme = readFileSync(join(repoRoot, "README.md"), "utf8");
+  const install = readFileSync(join(repoRoot, "INSTALL.md"), "utf8");
+  assert.ok(readme.includes("cli status --format json"));
+  assert.ok(readme.includes("cli install --scope user"));
+  assert.ok(install.includes("cli status --format json"));
+  assert.ok(install.includes("cli install --scope user"));
+});
+
+test("cli status reports fallback command when coding-plugins is not on PATH", () => {
+  const targetRoot = mkdtempSync(join(tmpdir(), "coding-plugins-cli-status-"));
+  try {
+    const target = join(targetRoot, "bin", "coding-plugins");
+    const payload = json(["cli", "status", "--target", target, "--format", "json"], {
+      env: { ...npmCacheEnv(), PATH: dirname(process.execPath) },
+    });
+
+    assert.equal(payload.cli_on_path, false);
+    assert.equal(payload.shim_target, target);
+    assert.equal(payload.shim_exists, false);
+    assert.equal(payload.fallback_argv[0], process.execPath);
+    assert.equal(payload.fallback_argv[1], bin);
+    assert.ok(payload.fallback_command.includes("bin/coding-plugins.js"));
+    assert.equal(payload.recommended_action, "install-cli-shim-or-use-fallback");
+  } finally {
+    rmSync(targetRoot, { recursive: true, force: true });
+  }
+});
+
+test("cli install creates a user shim that runs the packaged CLI", () => {
+  const targetRoot = mkdtempSync(join(tmpdir(), "coding-plugins-cli-install-"));
+  try {
+    const target = join(targetRoot, "bin", "coding-plugins");
+    const installed = json(["cli", "install", "--target", target, "--format", "json"], {
+      env: npmCacheEnv(),
+    });
+
+    assert.equal(installed.installed, true);
+    assert.equal(installed.target, target);
+    assert.equal(installed.scope, "user");
+    assert.ok(existsSync(target));
+
+    const shimText = readFileSync(target, "utf8");
+    assert.ok(shimText.includes(bin));
+    assert.ok(shimText.includes('exec "'));
+
+    const help = spawnSync(target, ["--help"], {
+      cwd: repoRoot,
+      encoding: "utf8",
+      env: npmCacheEnv(),
+    });
+    assert.equal(help.status, 0, help.stderr);
+    assert.ok(help.stdout.includes("Usage: coding-plugins <command> [args]"));
+
+    const status = json(["cli", "status", "--target", target, "--format", "json"], {
+      env: { ...npmCacheEnv(), PATH: `${join(targetRoot, "bin")}:${dirname(process.execPath)}` },
+    });
+    assert.equal(status.cli_on_path, true);
+    assert.equal(status.shim_exists, true);
+    assert.equal(status.shim_points_to_current_cli, true);
+    assert.equal(status.recommended_action, "none");
+  } finally {
+    rmSync(targetRoot, { recursive: true, force: true });
+  }
+});
+
+test("cli uninstall removes only the current coding-plugins shim", () => {
+  const targetRoot = mkdtempSync(join(tmpdir(), "coding-plugins-cli-uninstall-"));
+  try {
+    const target = join(targetRoot, "bin", "coding-plugins");
+    json(["cli", "install", "--target", target, "--format", "json"]);
+    assert.ok(existsSync(target));
+
+    const removed = json(["cli", "uninstall", "--target", target, "--format", "json"]);
+    assert.equal(removed.removed, true);
+    assert.equal(removed.target, target);
+    assert.equal(existsSync(target), false);
+
+    mkdirSync(dirname(target), { recursive: true });
+    writeFileSync(target, "#!/usr/bin/env sh\nexit 0\n", "utf8");
+    chmodSync(target, 0o755);
+    const refused = run(["cli", "uninstall", "--target", target, "--format", "json"]);
+    assert.equal(refused.status, 1);
+    assert.ok(refused.stderr.includes("refusing to remove non-coding-plugins shim"));
+    assert.ok(existsSync(target));
+  } finally {
+    rmSync(targetRoot, { recursive: true, force: true });
   }
 });
 

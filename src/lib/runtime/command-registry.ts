@@ -16,6 +16,7 @@ export const COMMAND_REGISTRY = [
     usage: "agent-pressure-ingest --input <raw.json> --output <artifact.json> [--split-cases]",
   },
   { name: "bump-version", script: "src/cli/bump-version.ts", usage: "bump-version <version> [--root <path>]" },
+  { name: "cli", script: "src/cli/cli.ts", usage: "cli <status|install|uninstall> [--scope user|project] [--target <path>] [--root <path>] [--format text|json] [--force]" },
   { name: "command-registry", script: "src/cli/command-registry.ts", usage: "command-registry [--format text|json]" },
   { name: "decision-points", script: "skills/using-coding-plugins/scripts/decision-points.ts", usage: "decision-points [--id <DP-n>] [--json]" },
   { name: "doctor", script: "src/cli/doctor.ts", usage: "doctor [--root <path>] [--format text|json]" },

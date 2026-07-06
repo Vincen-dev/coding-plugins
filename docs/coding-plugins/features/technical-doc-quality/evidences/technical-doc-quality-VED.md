@@ -4,7 +4,7 @@ status: approved
 feature: technical-doc-quality
 doc_id: technical-doc-quality
 created: 2026-07-04
-updated: 2026-07-04
+updated: 2026-07-06
 related_docs: []
 external_references: []
 ---
@@ -107,3 +107,15 @@ external_references: []
 - **GREEN 命令:** `node --test tests/ts/formal-fixture-document-quality.test.mjs`；`node --test tests/ts/scenario-routing-contract.test.mjs`；`node --test tests/ts/scaffold-fixture-case.test.mjs`
 - **REFACTOR 命令:** `node --test tests/ts/agent-pressure-harness.test.mjs`
 - **最终验证:** `NPM_CONFIG_CACHE=/private/tmp/codex-npm-cache npm run preflight` PASS；`git diff --check` PASS。
+
+## TDD 证据
+
+- **规格/缺陷/验收:** 明确验收：Codex marketplace 安装后，即使 `coding-plugins` 不在 PATH，SessionStart 也必须给 Agent 暴露可执行的 `CP_CLI` fallback；用户需要终端快捷命令时，CLI 必须能显式安装和卸载 shim，且不能静默覆盖或删除非本插件 shim。
+- **测试类型:** `contract`
+- **RED 测试:** `tests/hooks/test-session-start.sh` 中的 SessionStart context assertions；`tests/ts/productization-cli.test.mjs` 中的 `cli status reports fallback command when coding-plugins is not on PATH`、`cli install creates a user shim that runs the packaged CLI`、`cli uninstall removes only the current coding-plugins shim`。
+- **RED 命令:** `bash tests/hooks/test-session-start.sh`；`node --test tests/ts/productization-cli.test.mjs`
+- **RED 失败:** SessionStart 输出缺少 `CP_CLI`、`bin/coding-plugins.js` 和“无需安装全局 coding-plugins 命令”；`productization-cli` 中 `cli` 子命令返回 `Unknown command: cli`，无法提供 status/install/uninstall。
+- **GREEN 变更:** 新增 `src/lib/runtime/cli-shim.ts` 和 `src/cli/cli.ts`，提供 `cli status|install|uninstall`；SessionStart 根据 `PLUGIN_ROOT` 注入 `CP_CLI`；README/INSTALL/skills/platform instructions 改为优先使用 `CP_CLI`，需要终端快捷命令时再显式安装 shim。
+- **GREEN 命令:** `bash tests/hooks/test-session-start.sh`；`node --test tests/ts/productization-cli.test.mjs`
+- **REFACTOR 命令:** `npm run typecheck`
+- **最终验证:** `npm run preflight` PASS。

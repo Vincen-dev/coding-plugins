@@ -15,9 +15,9 @@ description: 开始任何任务时使用；建立 Coding Plugins 技能选择、
 
 ## 命令入口
 
-正式 PRD/TSD/TVD/TED/VED 工作必须先运行 `coding-plugins start --root . --intent "<用户意图>" --json`，再按输出选择 skill、下一条命令和执行边界。`using-coding-plugins` 不能替代 `coding-plugins start`；它只负责在读取到 CLI 状态后解释和执行对应工作方式。
+正式 PRD/TSD/TVD/TED/VED 工作必须先运行 Coding Plugins CLI，再按输出选择 skill、下一条命令和执行边界。优先使用 SessionStart 注入的 `CP_CLI` fallback，例如 `${CP_CLI} start --root . --intent "<用户意图>" --json`；如果终端已经安装 `coding-plugins`，也可以运行 `coding-plugins start --root . --intent "<用户意图>" --json`。`using-coding-plugins` 不能替代 `start`；它只负责在读取到 CLI 状态后解释和执行对应工作方式。
 
-命令不可用时，不要直接判定插件能力缺失。优先使用本地插件仓库 fallback：`node /absolute/path/to/coding-plugins/bin/coding-plugins.js <command> ...`。如果当前就在插件仓库内，也可以使用对应 npm script，例如 `npm run workflow-guard:ts -- check ...` 或 `npm run validate-tdd-evidence:ts -- ...`。不要硬编码 `~/.codex/plugins/cache/personal/coding-plugins/<version>/...`；需要读已安装 skill 时，先用 `find ~/.codex/plugins/cache/personal/coding-plugins -path '*skills/<skill-name>/SKILL.md' -print` 定位当前版本，优先使用最高版本或当前仓库 `skills/`。
+命令不可用时，不要直接判定插件能力缺失。优先级：1）使用 SessionStart 输出的 `${CP_CLI} <command> ...`；2）当前就在插件仓库内时使用 `node ./bin/coding-plugins.js <command> ...` 或对应 npm script，例如 `npm run workflow-guard:ts -- check ...`；3）需要长期在终端输入 `coding-plugins` 时，先运行 `${CP_CLI} cli status --format json`，再询问用户是否执行 `${CP_CLI} cli install --scope user` 或 `${CP_CLI} cli install --scope project`。不要硬编码 `~/.codex/plugins/cache/personal/coding-plugins/<version>/...`；需要读已安装 skill 时，先用 `find ~/.codex/plugins/cache/personal/coding-plugins -path '*skills/<skill-name>/SKILL.md' -print` 定位当前版本，优先使用最高版本或当前仓库 `skills/`。
 
 ## 任务类型判断
 
@@ -44,7 +44,7 @@ description: 开始任何任务时使用；建立 Coding Plugins 技能选择、
 
 ### 开发任务
 
-进入开发链路前，如果任务范围不确定或可能过重，先用 `coding-plugins workflow-mode --intent "<用户意图>" --files "<逗号分隔路径>" --task-count <数量> --json` 推断 workflow mode。显式用户指令优先于推断结果。
+进入开发链路前，如果任务范围不确定或可能过重，先用 `${CP_CLI} workflow-mode --intent "<用户意图>" --files "<逗号分隔路径>" --task-count <数量> --json` 推断 workflow mode；如果已安装终端命令，也可以使用 `coding-plugins workflow-mode ...`。显式用户指令优先于推断结果。
 
 | Workflow mode | 含义 | 默认处理 |
 | --- | --- | --- |
@@ -71,10 +71,10 @@ description: 开始任何任务时使用；建立 Coding Plugins 技能选择、
 
 - 用户点名技能时，优先读取该技能；若明显不适用，说明原因并转入更合适技能。
 - 任何技能需要读取或维护 `docs/coding-plugins/features/<feature-name>/` 下的 README、PRD、TSD、TVD、TED 或 VED 关系时，先使用 `document-metadata` 确认 frontmatter 和 `related_docs` 关系。
-- 当用户说“继续”“恢复”“开始实现”“执行 TED”，且能识别 `feature` 和 `doc_id` 时，先运行 `coding-plugins workflow-state inspect --feature <feature> --doc-id <doc-id> --json`。输出必须说明当前状态、判断原因、缺失产物、是否 stale、推荐下一个 skill。
-- 执行 TED 前必须运行 `coding-plugins workflow-guard check --feature <feature> --doc-id <doc-id> --target execute --json`；未通过时按 `next_skill` 回退，不得继续实现。
-- `workflow-guard.ts` 通过后，运行 `coding-plugins workflow-brief --feature <feature> --doc-id <doc-id> --target execute --task TASK-001 --json` 生成短上下文；默认只读 TED 的 `## 执行简报`、`## 执行锁定区`、`## 任务总览` 和当前任务章节，除非 Rewind Triggers 命中，不重复读取完整 PRD/TSD/TVD。未知当前任务时可以省略 `--task`，但多任务 TED 应优先指定。
-- 进入 `subagent-driven-development` 时，优先运行 `coding-plugins subagent-prompt-builder --feature <feature> --doc-id <doc-id> --task TASK-001 --kind implementer --expected-source-hash <sha256>` 生成实现子代理提示词；评审阶段用同一脚本生成 `spec-reviewer` 和 `code-quality-reviewer` 提示词，避免手工漏粘 TED 锁定区、当前任务或 prompt hash。
+- 当用户说“继续”“恢复”“开始实现”“执行 TED”，且能识别 `feature` 和 `doc_id` 时，先运行 `${CP_CLI} workflow-state inspect --feature <feature> --doc-id <doc-id> --json`。输出必须说明当前状态、判断原因、缺失产物、是否 stale、推荐下一个 skill。
+- 执行 TED 前必须运行 `${CP_CLI} workflow-guard check --feature <feature> --doc-id <doc-id> --target execute --json`；未通过时按 `next_skill` 回退，不得继续实现。
+- `workflow-guard.ts` 通过后，运行 `${CP_CLI} workflow-brief --feature <feature> --doc-id <doc-id> --target execute --task TASK-001 --json` 生成短上下文；默认只读 TED 的 `## 执行简报`、`## 执行锁定区`、`## 任务总览` 和当前任务章节，除非 Rewind Triggers 命中，不重复读取完整 PRD/TSD/TVD。未知当前任务时可以省略 `--task`，但多任务 TED 应优先指定。
+- 进入 `subagent-driven-development` 时，优先运行 `${CP_CLI} subagent-prompt-builder --feature <feature> --doc-id <doc-id> --task TASK-001 --kind implementer --expected-source-hash <sha256>` 生成实现子代理提示词；评审阶段用同一脚本生成 `spec-reviewer` 和 `code-quality-reviewer` 提示词，避免手工漏粘 TED 锁定区、当前任务或 prompt hash。
 - 如果 `workflow-state.ts` 输出 `plan-draft`、`plan-unlocked` 或 `plan-stale`，不得进入实现；先路由到 `writing-plans` 批准 TED、补齐 `source_hash`，或刷新执行锁定区。
 - 需要声称完成、修复或通过前，必须使用 `verification-before-completion`。
 - 需要提交时必须使用 `git-commit`；提交前仍要检查 diff、作者身份和敏感文件。
