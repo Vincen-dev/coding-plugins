@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "decisions": [
+    {
+      "feature": "skill-internationalization",
+      "doc_id": "skill-internationalization",
+      "id": "DP-4",
+      "status": "approved",
+      "reason": "用户回复“好的”，批准 skill-internationalization TED 执行计划进入实现",
+      "requested_at": "2026-07-06T18:02:32.138Z",
+      "approved_at": "2026-07-06T18:02:32.138Z"
+    },
+    {
+      "feature": "skill-internationalization",
+      "doc_id": "skill-internationalization",
+      "id": "DP-6",
+      "status": "approved",
+      "reason": "用户在收到最新验证结果后回复“好的继续下一步”，确认进入完成验证门禁并允许准备提交前检查",
+      "requested_at": "2026-07-06T18:23:43.363Z",
+      "approved_at": "2026-07-06T18:23:43.363Z"
+    },
+    {
+      "feature": "skill-internationalization",
+      "doc_id": "skill-internationalization",
+      "id": "DP-7",
+      "status": "approved",
+      "reason": "用户回复“好的，继续”，批准按建议的中文 Conventional Commit 提交当前 skill 国际化优化变更，包括 DP 状态记录",
+      "requested_at": "2026-07-06T18:24:44.441Z",
+      "approved_at": "2026-07-06T18:29:50.518Z"
+    }
+  ]
+}

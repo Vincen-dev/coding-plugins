@@ -21,15 +21,14 @@ const languageContractFiles = [
 test("git-commit skill makes user-selected commit language rules unambiguous", () => {
   const skill = readFileSync(skillPath, "utf8");
 
-  assert.match(skill, /^## 提交语言$/m);
-  assert.match(skill, /提交信息可以使用中文或英文，不得硬编码为单一语言/);
-  assert.match(skill, /如果用户已经明确要求中文或英文，直接使用该语言/);
-  assert.match(skill, /检查最近提交信息，优先沿用历史提交中占主导且一致的语言作为默认值/);
-  assert.match(skill, /历史提交缺失、语言混合或无法判断时，先询问用户确认中文还是英文/);
-  assert.match(skill, /当前对话持续使用中文或英文，只能作为最后兜底/);
-  assert.match(skill, /`type` 和 `scope` 保持英文 Conventional Commit 标识/);
-  assert.match(skill, /description、body、footer 中给人阅读的说明文字必须和确定后的语言一致/);
-  assert.match(skill, /不得把中文或英文写成硬性默认值/);
+  assert.match(skill, /^## Commit Language Resolution$/m);
+  assert.match(skill, /Explicit user choice/);
+  assert.match(skill, /Recent repository commit history/);
+  assert.match(skill, /Ask the user if ambiguous/);
+  assert.match(skill, /Current conversation language only as a fallback/);
+  assert.match(skill, /Do not hard-code Chinese or English as a universal rule/);
+  assert.match(skill, /Conventional Commit/);
+  assert.match(skill, /Authored-by/);
 });
 
 test("git-commit language contract surfaces do not force Chinese commit messages", () => {

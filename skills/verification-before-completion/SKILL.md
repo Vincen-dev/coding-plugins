@@ -1,104 +1,45 @@
 ---
 name: verification-before-completion
-description: 准备声称工作完成、问题已修复或测试通过之前使用；要求先运行验证命令并确认输出，证据永远先于断言。
+description: Use before claiming work is complete, fixed, or passing; requires running verification commands and reading their output first.
 ---
 
-# 完成前验证
+# Verification Before Completion
 
-## 总览
+## Overview
 
-没有验证就声称完成，不是效率，是不诚实。
+Evidence comes before the claim. Do not say work is complete, fixed, clean, passing, or ready unless fresh verification from this turn supports that statement.
 
-**核心原则：**证据先于声明，永远如此。
+## Gate Function
 
-## 铁律
+Before making any completion claim:
 
-```text
-没有新鲜验证证据，就不能声称完成
-```
+1. Identify the command or check that proves the claim.
+2. Run the full command in the current context.
+3. Read the output, exit code, pass/fail count, and warnings.
+4. Decide whether the output supports the claim.
+5. Report the result with the command and relevant evidence.
 
-如果你没有在这次上下文里运行验证命令，就不能说它通过。
+If verification fails, report the failure and do not claim completion.
 
-## 闸门函数
+## Required Evidence Examples
 
-在声称任何状态或表达满意之前：
+| Claim | Required Evidence |
+| --- | --- |
+| Tests pass | Test output with zero failures. |
+| Lint is clean | Lint output with zero errors. |
+| Build succeeds | Build command exit code 0. |
+| Bug is fixed | The reproduction or regression test now passes. |
+| Requirement is satisfied | Spec traceability plus relevant tests or contract checks. |
+| Subagent work is complete | Main-thread diff inspection plus independent verification. |
 
-1. **识别**：哪个命令能证明这个声明？
-2. **运行**：执行完整命令，必须是新的完整运行。
-3. **阅读**：读完整输出，检查退出码，统计失败。
-4. **验证**：输出是否支持声明？
-   - 否：带证据说明实际状态。
-   - 是：带证据说明结论。
-5. **然后**才能作出声明。
+## Red Flags
 
-跳过任何一步都不是验证。
+- Saying "should", "probably", or "looks good" before verification.
+- Trusting a previous run as current evidence.
+- Trusting a subagent success report without checking.
+- Running only a narrow check while claiming broad completion.
+- Preparing a commit, PR, tag, or release without fresh checks.
 
-## 常见声明与所需证据
+## Bottom Line
 
-| 声明 | 需要 | 不足以证明 |
-| --- | --- | --- |
-| 测试通过 | 测试命令输出 0 failures | 之前跑过、“应该通过” |
-| Lint 干净 | Lint 输出 0 errors | 部分检查、推测 |
-| 构建成功 | 构建命令 exit 0 | Lint 通过 |
-| bug 修好了 | 原症状测试通过 | 代码改了，假设修好 |
-| 回归测试有效 | red-green 验证 | 只看到测试通过一次 |
-| 子代理完成 | 检查 VCS diff 和验证结果 | 子代理报告成功 |
-| 需求满足 | 逐项清单核对 | 仅测试通过 |
-| 规格满足 | Traceability Matrix 覆盖所有 MUST，相关测试/契约校验通过 | 只说实现了规格 |
-
-## 红旗
-
-- 使用“应该”“大概”“看起来”。
-- 验证前说“完成”“很好”“没问题”。
-- 未验证就准备提交、push 或开 PR。
-- 信任子代理成功报告。
-- 依赖部分验证。
-- 累了想结束。
-
-## 关键模式
-
-测试：
-
-```text
-正确：运行测试命令 -> 看到 34/34 pass -> 说“全部测试通过”
-错误：“现在应该通过了”
-```
-
-回归测试：
-
-```text
-正确：写测试 -> 运行通过 -> 回退修复 -> 测试必须失败 -> 恢复修复 -> 测试通过
-错误：只说“我写了回归测试”
-```
-
-构建：
-
-```text
-正确：运行构建，exit 0
-错误：lint 通过就推断构建通过
-```
-
-需求：
-
-```text
-正确：重读计划 -> 建清单 -> 逐项验证 -> 报告缺口或完成
-错误：测试通过就说阶段完成
-```
-
-规格：
-
-```text
-正确：重读 spec -> 检查 Spec ID 追踪矩阵 -> 运行对应测试/契约校验 -> 报告覆盖情况
-错误：只说“符合规格”
-```
-
-子代理：
-
-```text
-正确：子代理报告成功 -> 检查 diff -> 独立验证 -> 报告真实状态
-错误：直接相信子代理报告
-```
-
-## 底线
-
-没有验证捷径。运行命令，读输出，然后再下结论。
+No shortcut exists. Run the command, read the output, then make the claim only if the evidence supports it.

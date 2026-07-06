@@ -1,73 +1,60 @@
 ---
 name: executing-plans
-description: 有书面 TED 任务执行文档，需要在当前会话按检查点执行时使用。
+description: Use when a written TED task execution document exists and should be executed in the current session by checkpoint.
 ---
 
-# 执行计划
+# Executing Plans
 
-## 总览
+## Overview
 
-加载计划，批判性审阅，执行所有任务，完成后报告。
+Load the written plan, review it critically, execute the tasks, and report only after verification.
 
-开始时声明：“我正在使用 executing-plans 技能来实现这个计划。”
+Start by saying: "I am using the executing-plans skill to implement this plan."
 
-如果有可用子代理，应优先使用 `subagent-driven-development`。没有子代理时，才用本技能在当前会话中按批次执行。
+If subagents are available and the user has explicitly authorized subagent work, prefer `subagent-driven-development`. Otherwise execute in the current session.
 
-## 流程
+## Step 1: Load and Review the Plan
 
-### Step 1：加载并审阅计划
+1. Read the TED.
+2. Review it critically for missing prerequisites, unclear instructions, stale source hash, unsafe scope, or impossible verification.
+3. If there is a serious issue, stop and tell the user before implementation.
+4. If the plan is sound, create a task checklist and continue.
 
-1. 读取计划文件。
-2. 批判性审阅，找出疑问或风险。
-3. 如有重大问题，先告诉用户，不要开始。
-4. 如无问题，创建任务清单并继续。
+## Step 2: Execute Tasks
 
-### Step 2：执行任务
+For each task:
 
-对每个任务：
+1. Mark the task as in progress.
+2. Follow the task steps exactly.
+3. Use TDD whenever behavior, contract, config, or source-scan behavior changes.
+4. Run the task's specified verification.
+5. Record VED evidence.
+6. Mark the task complete only after verification supports it.
 
-1. 标记为进行中。
-2. 严格按计划中的小步骤执行。
-3. 运行计划指定的验证。
-4. 标记为完成。
+## Step 3: Finish Development
 
-### Step 3：完成开发
+After all tasks are complete and verified:
 
-所有任务完成并验证后：
+- Say: "I am using the finishing-a-development-branch skill to finish this work."
+- Use `finishing-a-development-branch`.
+- Verify tests, then present the allowed integration choices.
 
-- 声明：“我正在使用 finishing-a-development-branch 技能来完成这项工作。”
-- 使用 `finishing-a-development-branch`。
-- 按该技能验证测试、提出选项并执行用户选择。
+## Stop Conditions
 
-## 何时停下来求助
+Stop and ask for guidance when:
 
-遇到以下情况立即停止执行：
+- Dependencies are missing.
+- Tests fail for an unclear reason.
+- The plan has a critical gap.
+- You do not understand an instruction.
+- Verification repeatedly fails.
 
-- 缺依赖、测试失败、指令不清。
-- 计划有关键缺口导致无法开始。
-- 不理解某条指令。
-- 验证反复失败。
+Do not guess through a blocked plan.
 
-不要猜。先请求澄清。
+## Important Rules
 
-## 何时回到审阅
-
-- 用户根据你的反馈更新了计划。
-- 基本方案需要重新考虑。
-
-## 记住
-
-- 先批判性审阅计划。
-- 严格执行计划步骤。
-- 不跳过验证。
-- 计划要求使用技能时必须使用。
-- 被阻塞时停下，不强行推进。
-- 未经用户明确同意，不要在 `main` 或 `master` 分支直接开始实现。
-
-## 集成关系
-
-常见前后置技能：
-
-- `using-git-worktrees`：保证隔离工作区。
-- `writing-plans`：创建本技能执行的计划。
-- `finishing-a-development-branch`：所有任务完成后收尾。
+- Review the plan before editing.
+- Follow the plan steps; do not silently widen scope.
+- Do not skip verification.
+- Use required skills named by the plan.
+- Do not start implementation directly on `main` or `master` without explicit user approval.

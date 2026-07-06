@@ -1,100 +1,60 @@
 ---
 name: dispatching-parallel-agents
-description: 面对 2 个以上互相独立、无共享状态或顺序依赖的任务时使用。
+description: Use when there are two or more independent tasks with no shared state or ordering dependency.
 ---
 
-# 派发并行代理
+# Dispatching Parallel Agents
 
-## 总览
+## Overview
 
-把任务委派给拥有隔离上下文的专门代理。你要精确构造它们的指令和上下文，让它们保持聚焦并完成任务。它们不应继承你的会话历史；你只给它们完成任务所需的信息。这也保留你的上下文用于协调。
+Delegate independent problem areas to focused agents with isolated context. Give each agent only the instructions, files, constraints, and expected output needed for its task.
 
-当多个失败彼此无关，例如不同测试文件、不同子系统、不同 bug，顺序调查会浪费时间。每个调查都可以并行。
+Core principle: assign each independent domain to one agent so investigation or implementation can happen concurrently without shared-state conflicts.
 
-**核心原则：**每个独立问题域派一个代理，让它们并发工作。
+## When to Use
 
-## 何时使用
+Use this skill when:
 
-使用：
+- Three or more test files fail for unrelated root causes.
+- Multiple subsystems are independently broken.
+- Each problem can be understood without the context of the others.
+- The investigations do not share mutable state.
+- The tasks have disjoint write sets.
 
-- 3 个以上测试文件失败，且根因不同。
-- 多个子系统独立损坏。
-- 每个问题不需要其他问题的上下文就能理解。
-- 调查之间没有共享状态。
+Do not use it when:
 
-不要使用：
+- Failures are related and one fix may resolve several.
+- The full system state must be understood before changing anything.
+- Agents would edit the same files or interfere with shared resources.
+- The user has not authorized subagent or parallel-agent work on the current platform.
 
-- 失败彼此相关，修一个可能修多个。
-- 必须理解完整系统状态。
-- 代理会互相干扰，例如改同一文件或共享资源。
+## Pattern
 
-## 模式
+1. Identify independent domains. Group by test file, subsystem, feature, or failure mode.
+2. Define narrow tasks. Each agent needs scope, goal, constraints, and expected output.
+3. Dispatch in parallel only when the tool and user authorization allow it.
+4. Review returned work. Read summaries, inspect diffs, check conflicts, and run integrated tests.
 
-### 1. 识别独立域
+## Good Agent Prompt
 
-按损坏内容分组：
+```text
+Fix the three failures in src/agents/agent-tool-abort.test.ts.
 
-- 文件 A 测试：工具审批流程。
-- 文件 B 测试：批处理完成行为。
-- 文件 C 测试：取消功能。
+Scope:
+- Read the test file and the implementation it exercises.
+- Find whether the failures are timing issues or product bugs.
+- Prefer event-driven waits over arbitrary timeouts.
+- Do not edit unrelated files.
 
-如果修工具审批不会影响取消测试，这就是独立域。
-
-### 2. 创建聚焦任务
-
-每个代理得到：
-
-- **具体范围**：一个测试文件或一个子系统。
-- **清晰目标**：让这些测试通过，或找出根因。
-- **约束**：不要修改其他代码，或只调查不编辑。
-- **预期输出**：发现、根因、修改和验证结果。
-
-### 3. 并行派发
-
-同时发出多个独立任务。不要让代理共享模糊上下文，也不要让它们在同一文件上并发编辑。
-
-### 4. 审阅和集成
-
-代理返回后：
-
-1. 阅读每个摘要。
-2. 检查修复是否冲突。
-3. 运行完整测试套件。
-4. spot check 关键改动，代理也可能系统性犯错。
-
-## 好的代理提示
-
-```markdown
-修复 `src/agents/agent-tool-abort.test.ts` 中 3 个失败测试：
-
-1. "should abort tool with partial output capture"：期望消息包含 `interrupted at`
-2. "should handle mixed completed and aborted tools"：fast tool 被错误取消
-3. "should properly track pendingToolCount"：期望 3 个结果但得到 0
-
-这些看起来是 timing/race condition。你的任务：
-
-1. 阅读测试文件，理解每个测试验证什么。
-2. 找根因：是 timing 问题还是真实 bug？
-3. 修复方式：
-   - 用事件驱动等待替换任意 timeout。
-   - 如果发现取消实现有 bug，修实现。
-   - 如果测试在验证已改变行为，调整预期。
-
-不要只增加 timeout。找真实问题。
-
-返回：你发现了什么、修了什么、运行了哪些验证。
+Return:
+- Root cause.
+- Files changed.
+- Verification commands and results.
 ```
 
-## 常见错误
+## Common Mistakes
 
-- 太宽泛：“修所有测试”。
-- 没上下文：“修 race condition”。
-- 没约束：代理可能重构所有东西。
-- 输出模糊：“修好它”。
-
-## 收益
-
-- 多个调查同时进行。
-- 每个代理范围窄，认知负担小。
-- 独立代理互不干扰。
-- 三个问题可用一个问题的时间解决。
+- Asking an agent to "fix all tests".
+- Sending vague context such as "fix the race condition".
+- Omitting file ownership and allowing broad refactors.
+- Accepting an agent success report without reading the diff and running verification.

@@ -1,7 +1,7 @@
 {
   "name": "@vincen-dev/coding-plugins",
   "version": "1.0.19",
-  "description": "Chinese coding workflow plugin for Codex, Claude Code, Gemini CLI and local skills clients.",
+  "description": "Chinese-first coding workflow plugin with English agent-facing skills for Codex, Claude Code, Gemini CLI and local skills clients.",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

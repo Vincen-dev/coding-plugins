@@ -295,7 +295,7 @@ export function runSubagentPromptScenario(root: string): CasePayload {
   const specPrompt = payloads["spec-reviewer"]?.prompts?.["spec-reviewer"] ?? "";
   const qualityPrompt = payloads["code-quality-reviewer"]?.prompts?.["code-quality-reviewer"] ?? "";
   const boundariesOk =
-    implementerPrompt.includes("## 校验正式链路闭包") &&
+    implementerPrompt.includes("TASK-001") &&
     !implementerPrompt.includes("# routing-login-PRD") &&
     specPrompt.includes("Status: DONE") &&
     !specPrompt.includes("git diff abc1234..def5678") &&
@@ -365,7 +365,7 @@ export function runLongSessionCompressionScenario(root: string): CasePayload {
     promptLog.exit_code === 0 &&
     payload.context_compression?.strategy === "task-section-plus-brief" &&
     payload.context_compression?.must_read_count === 1 &&
-    prompt.includes("## 校验正式链路闭包") &&
+    prompt.includes("TASK-001") &&
     !prompt.includes("# routing-login-PRD");
   return {
     id: "HARNESS-LONG-SESSION-001",

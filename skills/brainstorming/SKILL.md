@@ -7,81 +7,81 @@ description: Use when users want idea exploration, solution comparison, product 
 
 ## Overview
 
-`brainstorming` 是 SDD 前置的构思收敛技能。它负责把未定型想法收敛成清楚的问题定义、边界、方案选择和下一步决策，但不创建正式 SDD 文档。
+`brainstorming` is the pre-SDD framing skill. It turns an unformed idea into a clear problem statement, boundaries, options, tradeoffs, and a next-step decision without creating formal SDD artifacts.
 
-核心原则：先判断“是否值得进入正式文档链路”，再决定是否交给 `spec-driven-development`。
+Core principle: decide whether the work is worth entering the formal document chain before handing it to `spec-driven-development`.
 
 ## When to Use
 
-使用本技能：
+Use this skill when:
 
-- 用户说“头脑风暴”“先讨论”“有哪些方案”“要不要做”“怎么设计更合理”。
-- 产品方向、功能边界、用户价值、成功标准或非目标还不清。
-- 存在多个可行方案，需要比较代价、风险和推荐路径。
-- 用户明确表示暂时不要写文档、不要实现或先分析。
-- 需求可能很大，需要先拆分成可落地的子问题。
+- The user asks to brainstorm, discuss first, compare options, evaluate whether to do something, or design a better approach.
+- Product direction, feature boundaries, user value, success criteria, or non-goals are still unclear.
+- Several viable approaches need cost, risk, and recommendation comparison.
+- The user explicitly says not to write documents, not to implement, or to analyze first.
+- The request is large enough that it should be split before implementation.
 
-不使用本技能：
+Do not use this skill when:
 
-- 用户已经明确要求进入文档落地、编写 PRD、开始实现或创建计划：用 `spec-driven-development` 或对应下游技能。
-- 已有 approved PRD：直接进入 `writing-technicals`、`writing-test-cases` 或 `writing-plans`。
-- 已有清晰 bug 复现：用 `systematic-debugging`。
-- 小型明确变更且验收标准清楚：用 `test-driven-development`。
-- 用户只要求解释、读取、搜索、状态查询或 review：普通分析或对应技能。
+- The user already asked to land documentation, write a PRD, start implementation, or create a plan; use `spec-driven-development` or the appropriate downstream skill.
+- An approved PRD already exists; go directly to `writing-technicals`, `writing-test-cases`, or `writing-plans`.
+- There is a clear bug reproduction; use `systematic-debugging`.
+- The change is small, clear, and has known acceptance criteria; use `test-driven-development`.
+- The user only asks to explain, read, search, query status, or review; use normal analysis or the matching skill.
 
 ## Hard Gates
 
-- 不写代码、不搭脚手架、不调用实现技能。
-- 不创建 README、PRD、TSD、TVD、TED 或 VED。
-- 不维护正式 `document-metadata`、`related_docs`、README 或 `docs/coding-plugins/INDEX.md`。
-- 不把探索性判断包装成 approved 需求。
-- 用户没有确认进入落地前，不得转入 `writing-requirements`、`writing-technicals`、`writing-test-cases` 或 `writing-plans`。
+- Do not write code, scaffold implementation, or invoke implementation skills.
+- Do not create README, PRD, TSD, TVD, TED, or VED documents.
+- Do not maintain formal `document-metadata`, `related_docs`, README, or `docs/coding-plugins/INDEX.md`.
+- Do not present exploratory judgment as an approved requirement.
+- Do not enter `writing-requirements`, `writing-technicals`, `writing-test-cases`, or `writing-plans` until the user confirms formal landing.
 
 ## Process
 
-1. **读取上下文**：检查相关代码、文档、已有约定和最近变更；没有仓库上下文时说明基于当前信息判断。
-2. **确认问题类型**：区分产品方向、用户流程、技术方案、维护风险、迁移、调试或纯解释。
-3. **澄清关键缺口**：一次只问一个会影响目标、边界、方案或验收的问题；能合理假设时直接说明假设。
-4. **拆分问题**：如果范围过大，先拆成独立子问题，并建议第一个应落地的子问题。
-5. **提出方案**：给出 2-3 个可行方案，说明适用场景、代价、风险和不适用情况。
-6. **给出推荐**：明确推荐方案和理由，并列出仍需确认的问题。
-7. **决定下一步**：只有用户确认进入落地，才交给 `spec-driven-development`；否则停留在分析和方案讨论。
+1. Read context: inspect relevant code, documents, conventions, and recent changes; if repository context is unavailable, state the basis for the judgment.
+2. Identify the problem type: product direction, user workflow, technical approach, maintenance risk, migration, debugging, or explanation.
+3. Clarify the key gap: ask at most one question that changes goals, boundaries, solution choice, or acceptance; otherwise state a reasonable assumption.
+4. Split the problem when the scope is too large, and recommend the first landable slice.
+5. Present two or three viable options with fit, cost, risk, and non-fit.
+6. Recommend one option with concrete reasoning and list remaining open questions.
+7. Decide the next step: only after user confirmation, hand off to `spec-driven-development`; otherwise stay in analysis and option comparison.
 
 ## Output Shape
 
-默认只在对话中输出，不沉淀正式文档。输出应包含：
+By default, answer in the conversation only and do not create formal documents. Include:
 
-- 问题定义。
-- 目标和非目标。
-- 已知约束。
-- 方案对比。
-- 推荐方案。
-- 风险和开放问题。
-- 是否建议进入 `spec-driven-development`。
+- Problem definition.
+- Goals and non-goals.
+- Known constraints.
+- Option comparison.
+- Recommendation.
+- Risks and open questions.
+- Whether `spec-driven-development` is recommended.
 
-如果用户明确要求沉淀临时讨论记录，只能创建非正式 notes，并说明它不是 PRD、TSD、TVD、TED 或 VED，不进入正式文档索引。
+If the user explicitly asks for temporary notes, create only informal notes and state that they are not PRD, TSD, TVD, TED, or VED artifacts and do not enter the formal document index.
 
 ## Handoff to SDD
 
-当用户确认“开始落地”“开始实现”“进入文档链路”或选择某个方案后，交接给 `spec-driven-development`，并带上：
+When the user confirms formal landing, implementation, document-chain entry, or picks an option, hand off to `spec-driven-development` with:
 
-- 选定方案。
-- 目标和非目标。
-- 需求边界。
-- 已拒绝方案和原因。
-- 仍需在 PRD 中确认的契约、验收或风险问题。
+- The chosen option.
+- Goals and non-goals.
+- Requirement boundaries.
+- Rejected options and why.
+- Contracts, acceptance criteria, or risks that still need PRD confirmation.
 
-交接语：
+Handoff phrase:
 
 ```text
-构思已收敛为 <方案名>。如果确认进入落地，下一步使用 spec-driven-development 创建或更新正式 PRD 链路。
+The idea has been framed as <option name>. If you confirm formal landing, the next step is to use spec-driven-development to create or update the formal PRD chain.
 ```
 
 ## Common Mistakes
 
-- 用户只是问“有哪些方案”，却直接创建 PRD。
-- 把 brainstorming 当成 Superpowers 式强制设计文档，并提交到正式 specs 目录。
-- 在没有用户确认的情况下进入 `writing-requirements`。
-- 只给一个方案，没有比较替代路径。
-- 只讨论技术实现，没有先定义目标、非目标和成功标准。
-- 把“推荐方案”写成命令式任务清单，绕过 SDD。
+- Creating a PRD when the user only asked for options.
+- Treating brainstorming as a mandatory design-doc phase and committing it into formal specs.
+- Entering `writing-requirements` before user confirmation.
+- Giving only one option without comparing alternatives.
+- Discussing implementation without defining goals, non-goals, and success criteria.
+- Turning the recommendation into a task checklist that bypasses SDD.

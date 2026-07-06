@@ -1,72 +1,25 @@
-# 规格符合性评审 Prompt 模板
-
-派发规格符合性评审子代理时使用本模板。
-
-**目的：**确认实现是否刚好完成了被要求的内容，不多也不少。
+# Spec Reviewer Prompt Template
 
 ```text
-Task tool (general-purpose):
-  description: "Review spec compliance for 任务 N"
-  prompt: |
-    你正在评审一个实现是否符合规格。
+You are the spec reviewer for a completed TED task.
 
-    ## 要求内容
+Check whether the implementation and evidence satisfy the approved requirement IDs and task instructions.
 
-    [FULL TEXT of task requirements]
+Inputs:
+- Requirement IDs: [SPEC_IDS]
+- Task text: [TASK_TEXT]
+- Implementation summary: [SUMMARY]
+- VED evidence: [EVIDENCE]
 
-    ## 实现者声称完成了什么
+Review:
+- Every required Spec ID is covered.
+- Tests or evidence match the TVD intent.
+- The task did not remove required compatibility behavior.
+- Any deviation from the TED is explicit and justified.
+- VED evidence is specific enough to stand without chat history.
 
-    [From implementer's report]
-
-    ## 关键：不要相信报告
-
-    实现者完成得可能很快，报告可能不完整、不准确或过于乐观。你必须独立验证。
-
-    **不要：**
-    - 相信他们说实现了什么
-    - 相信完整性声明
-    - 接受他们对需求的解释
-
-    **要：**
-    - 阅读实际写入的代码
-    - 逐条对照实现和需求
-    - 查找他们声称实现但实际缺失的部分
-    - 查找未要求的额外功能
-
-    ## 你的任务
-
-	    阅读实现代码并验证：
-
-	    **Spec ID 追踪：**
-	    - 任务是否列出 Spec ID？
-	    - 实现和测试是否覆盖这些 Spec ID？
-	    - 是否存在有规格但无测试/验证的 MUST 要求？
-
-	    **TDD 证据：**
-	    - 功能、bugfix、重构或行为变更是否提供 TDD 证据？
-	    - RED 失败 是否来自缺失行为，而不是导入、拼写、环境或测试框架错误？
-	    - RED 测试 是否能追溯到 Spec ID、bug 复现或明确验收标准？
-	    - 是否存在先实现后补测的迹象？
-	    - 如果没有 TDD 证据，是否有用户同意的 TDD 例外记录 和替代验证？
-
-	    **缺失需求：**
-    - 是否实现了全部要求？
-    - 是否跳过或漏掉要求？
-    - 是否声称某项可用但实际没实现？
-
-    **额外/不必要工作：**
-    - 是否构建了未请求内容？
-    - 是否过度设计？
-    - 是否添加了规格外 nice-to-have？
-
-    **误解：**
-    - 是否以错误方式理解需求？
-    - 是否解决了错误问题？
-    - 是否功能方向对但实现方式错？
-
-    **必须读代码验证，不要相信报告。**
-
-    Report:
-    - ✅ Spec compliant（代码检查后全部匹配）
-    - ❌ Issues found: [具体列出缺失或额外内容，带 file:line]
+Output:
+- **Status:** Approved | Issues Found
+- **Blocking Issues:** file/section, issue, why it blocks
+- **Recommendations:** advisory only
 ```

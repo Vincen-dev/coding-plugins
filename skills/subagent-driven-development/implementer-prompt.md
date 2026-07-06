@@ -1,103 +1,102 @@
-# 实现子代理 Prompt 模板
+# Implementer Agent Prompt Template
 
-派发实现子代理时使用本模板。
+Use this template when dispatching an implementation agent.
 
 ```text
 Task tool (general-purpose):
-  description: "Implement 任务 N: [task name]"
+  description: "Implement Task N: [task name]"
   prompt: |
-    你正在实现 任务 N: [task name]
+    You are implementing Task N: [task name].
 
-    ## 任务描述
+    ## Task Description
 
-    [FULL TEXT of task from plan - 粘贴在这里，不要让子代理自己读文件]
+    [FULL TEXT of the task from the plan - paste it here; do not make the agent read files on its own]
 
-    ## 上下文
+    ## Context
 
-    [说明该任务在整体中的位置、依赖、架构背景]
+    [Explain where this task sits in the overall work, dependencies, and architecture background]
 
-    ## 开始前
+    ## Before You Start
 
-    如果你对以下内容有问题：
-    - 需求或验收标准
-    - 方案或实现策略
-    - 依赖或假设
-    - 任务描述中任何不清楚的地方
+    If you have questions about:
+    - Requirements or acceptance criteria
+    - Technical approach or implementation strategy
+    - Dependencies or assumptions
+    - Anything unclear in the task description
 
-    **现在就问。** 开始前提出疑问和担忧。
+    Ask now. Raise concerns before starting.
 
-    ## 你的任务
+    ## Your Task
 
-    明确需求后：
-    1. 精确实现任务指定内容。
-    2. 对任何功能、bugfix、重构或行为变更，默认使用 TDD：先写来自 Spec ID、bug 复现或验收标准的失败测试，确认 RED，再写最小实现。
-    3. 验证实现可用。
-    4. 如任务要求提交，使用 `git-commit` 规则提交你的工作：提交信息语言由用户决定，禁止 AI 作者、AI co-author 或 AI 生成声明。
-    5. 自审。
-    6. 回报结果。
+    After requirements are clear:
+    1. Implement exactly what the task specifies.
+    2. For any feature, bugfix, refactor, or behavior change, use TDD by default: write a failing test from a Spec ID, bug reproduction, or acceptance criterion; confirm RED; then write the smallest implementation.
+    3. Verify the implementation.
+    4. If the task requires a commit, use `git-commit` rules: commit-message language is chosen by the user; AI authors, AI co-authors, and AI-generated statements are forbidden.
+    5. Self-review.
+    6. Report results.
 
-    工作目录：[directory]
+    Working directory: [directory]
 
-    **工作过程中：**遇到意外或不清楚之处就提问。暂停澄清永远可以，不要猜。
+    During work, ask when you hit surprises or unclear instructions. Pausing for clarification is always allowed; do not guess.
 
-    ## 代码组织
+    ## Code Organization
 
-    你对能放进上下文的代码推理最好，文件聚焦时编辑也更可靠：
-    - 遵循计划定义的文件结构。
-    - 每个文件应有单一职责和清晰接口。
-    - 如果新文件超出计划意图而快速膨胀，停下并以 DONE_WITH_CONCERNS 报告，不要自行拆分。
-    - 如果修改的现有文件已经很大或纠缠，谨慎修改并在报告中说明 concern。
-    - 在现有代码库中遵循既有模式。可以改善正在触碰的代码，但不要重构任务外内容。
+    - Follow the file structure defined by the plan.
+    - Keep each file focused with a clear responsibility and interface.
+    - If a new file grows beyond the plan's intent, stop and report DONE_WITH_CONCERNS instead of splitting on your own.
+    - If an existing file is large or tangled, modify it carefully and mention the concern in your report.
+    - Follow existing codebase patterns. Improve touched code when needed, but do not refactor outside the task.
 
-    ## 超出能力时
+    ## When the Task Is Too Hard
 
-    停下说“这对我太难”是可以的。糟糕工作比没有工作更坏。
+    It is acceptable to stop and say the task is too hard. Bad work is worse than no work.
 
-    **遇到以下情况 STOP 并升级：**
-    - 任务需要多个合理架构决策。
-    - 需要理解计划未提供的大量代码且找不到清晰点。
-    - 不确定方案是否正确。
-    - 任务涉及计划未预期的重构。
-    - 连续阅读很多文件仍无进展。
+    Stop and escalate when:
+    - The task requires several reasonable architecture decisions.
+    - You need broad codebase context that the plan did not provide and cannot find a clear entry point.
+    - You are unsure the approach is correct.
+    - The task requires refactoring not anticipated by the plan.
+    - You have read many files and made no progress.
 
-    **升级方式：**返回 BLOCKED 或 NEEDS_CONTEXT，说明卡在哪里、尝试了什么、需要什么帮助。
+    Escalate with BLOCKED or NEEDS_CONTEXT, explaining what you tried and what help is needed.
 
-    ## 回报前自审
+    ## Self-Review Before Reporting
 
-    **完整性：**
-    - 是否实现规格全部内容？
-    - 是否漏需求？
-    - 是否漏边界情况？
+    **Completeness:**
+    - Did you implement the full spec?
+    - Did you miss any requirement?
+    - Did you miss edge cases?
 
-    **质量：**
-    - 这是我能交付的最好工作吗？
-    - 命名是否清楚准确？
-    - 代码是否可维护？
+    **Quality:**
+    - Is this the best work you can deliver?
+    - Are names clear and accurate?
+    - Is the code maintainable?
 
-    **纪律：**
-    - 是否避免过度构建（YAGNI）？
-    - 是否只构建被要求内容？
-    - 是否遵循代码库模式？
+    **Discipline:**
+    - Did you avoid overbuilding?
+    - Did you build only what was requested?
+    - Did you follow codebase patterns?
 
-    **测试：**
-    - 测试是否验证真实行为？
-    - 是否留下 TDD 证据，证明先 RED 后 GREEN？
-    - 如果没有 TDD 证据，是否有用户同意的 TDD 例外记录 和替代验证？
-    - 测试是否足够？
+    **Testing:**
+    - Do tests verify real behavior?
+    - Is there TDD evidence proving RED before GREEN?
+    - If TDD evidence is absent, is there a user-approved TDD exception and replacement verification?
+    - Are tests sufficient?
 
-    自审发现问题时，先修复再回报。
+    Fix issues before reporting.
 
-    ## 回报格式
+    ## Report Format
 
     - **Status:** DONE | DONE_WITH_CONCERNS | BLOCKED | NEEDS_CONTEXT
-    - 实现了什么（若阻塞则说明尝试了什么）
-    - TDD 证据（功能、bugfix、重构或行为变更必须提供）
-    - TDD 例外记录（仅在用户同意跳过 TDD 时提供）
-    - 测试内容和结果
-    - 修改文件
-    - 提交 SHA（如果本任务创建了提交）
-    - 自审发现
-    - 问题或担忧
+    - What was implemented, or what was attempted if blocked
+    - TDD evidence for features, bugfixes, refactors, or behavior changes
+    - TDD exception record only if the user approved skipping TDD
+    - Tests and results
+    - Files changed
+    - Commit SHA if this task created a commit
+    - Self-review findings
+    - Questions or concerns
 
-    有疑虑但完成时用 DONE_WITH_CONCERNS。无法完成用 BLOCKED。缺信息用 NEEDS_CONTEXT。不要默默交付自己都不确定的工作。
+    Use DONE_WITH_CONCERNS when completed with concerns. Use BLOCKED when unable to finish. Use NEEDS_CONTEXT when missing information. Do not silently deliver work you do not trust.
 ```

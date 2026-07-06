@@ -1,301 +1,128 @@
 ---
 name: test-driven-development
-description: 实现任何功能或 bugfix 且准备写实现代码前使用；强制先写失败测试。
+description: Use before implementing any feature, bugfix, refactor, or behavior change; requires writing and observing a failing test before production changes.
 ---
 
-# 测试驱动开发（TDD）
+# Test Driven Development
 
-## 总览
+## Overview
 
-先从规格、bug 复现或明确验收标准写测试。看着它失败。写最小代码让它通过。
+Start from a spec, bug reproduction, or explicit acceptance criterion. Write the test first, watch it fail for the right reason, then write the smallest code that makes it pass.
 
-**核心原则：**如果你没有看见测试失败，就不知道它是否真的测试了正确的东西。
-
-违反规则的字面要求，就是违反规则的精神。
-
-测试必须来自已批准规格、Spec ID、bug 复现或明确验收标准。不要根据实现细节倒推测试。
-
-## 何时使用
-
-必须使用：
-
-- 新功能。
-- bug 修复。
-- 重构。
-- 行为变更。
-
-例外必须询问用户：
-
-- 一次性原型。
-- 生成代码。
-- 配置文件。
-
-如果你在想“这次先跳过 TDD”，停下。这是在合理化偷懒。
-
-## 铁律
+Core rule:
 
 ```text
-没有先失败的测试，就不能写生产代码
+No failing test first, no production implementation.
 ```
 
-先写了代码？删除它，重新开始。
+If production code was written first, remove it and restart from the test.
 
-不要保留作为“参考”，不要边写测试边“改造”它，不要再看它。删除就是删除。根据测试重新实现。
+## When to Use
 
-## RED-GREEN-REFACTOR
+Use this skill for:
 
-### RED：写失败测试
+- Features.
+- Bug fixes.
+- Refactors.
+- Behavior changes.
+- Config, architecture, or source-scan contracts that can be tested.
 
-写一个最小测试，展示期望行为。
+Exceptions require user approval and a VED exception record.
 
-如果有 SDD 规格，测试名称或注释必须能追溯到相关 Spec ID，例如 `REQ-001` 或 `AC-003`。
+## RED / GREEN / REFACTOR
 
-好测试：
+### RED
 
-- 名称清楚。
-- 测试真实行为。
-- 一次只测一件事。
-- 除非不可避免，不 mock 被测对象本身。
+Write a minimal test from a Spec ID, bug reproduction, or acceptance criterion. The test name or body should trace to IDs such as `REQ-001`.
 
-坏测试：
+Run the focused test and confirm:
 
-- 名字模糊。
-- 只测试 mock 是否被调用。
-- 把多个行为塞进一个测试。
+- It fails.
+- The failure is due to missing behavior or broken contract.
+- It is not an import, spelling, environment, or test-construction error.
 
-### 验证 RED：看它正确失败
+### GREEN
 
-必须执行，不能跳过：
+Write the smallest implementation that makes the test pass. Do not add future features, broad refactors, speculative abstractions, or unrelated cleanup.
 
-```bash
-npm test path/to/test.test.ts
-```
+Run the focused test and relevant existing tests. Fix implementation when tests fail; do not weaken the test to fit the implementation.
 
-确认：
+### REFACTOR
 
-- 测试失败，而不是测试运行错误。
-- 失败信息符合预期。
-- 失败原因是功能缺失，而不是拼写、导入或环境错误。
+Only refactor after green. Keep behavior unchanged and rerun tests.
 
-如果测试通过，说明你在测试已有行为，修测试。如果测试报错，修正错误并重跑，直到它因正确原因失败。
+## Test Level Selection
 
-### GREEN：写最小代码
+Choose the test layer from the requirement:
 
-只写让测试通过所需的最简单代码。
+| Source | Preferred Test |
+| --- | --- |
+| Business rule or function logic | Unit test |
+| API, SDK, schema, or protocol | Contract or integration test |
+| State machine or async lifecycle | State transition test |
+| UI behavior | Component or interaction test |
+| Bug fix | Reproduction test |
+| Pure refactor | Existing tests or characterization test |
+| Static surface such as prompts or manifests | Source-scan or config test |
 
-不要添加未来功能、重构其他代码、顺手“优化”或做测试未要求的抽象。
+Source-scan tests are acceptable for text surfaces, manifests, and agent-facing instructions, but should not replace behavior tests for user-visible behavior.
 
-### 验证 GREEN：看它通过
+## Evidence Location
 
-再次运行测试，确认：
-
-- 新测试通过。
-- 相关旧测试仍通过。
-- 输出干净，没有错误或警告。
-
-如果测试失败，修代码，不要改测试来迁就实现。其他测试失败也要立刻处理。
-
-### REFACTOR：清理
-
-只有在 green 后才重构：
-
-- 去重复。
-- 改善命名。
-- 提取辅助函数。
-
-保持测试一直为 green，不添加新行为。
-
-## 测试层级选择
-
-测试层级由规格或 bug 复现决定，不由实现方便程度决定。
-
-| 来源 | 首选测试 | 补充测试 |
-| --- | --- | --- |
-| 函数逻辑、业务规则、边界条件 | 单元测试 | 少量集成测试 |
-| API、SDK、协议、schema | 契约测试或集成测试 | 单元测试覆盖分支 |
-| 状态机、生命周期、异步流程 | 状态转换测试 | 端到端关键路径 |
-| UI 行为 | 组件/交互测试 | 截图或人工验收证据 |
-| bug 修复 | 失败复现测试 | 回归测试覆盖邻近边界 |
-| 纯重构 | 现有测试或 characterization test | 行为不变的快照/金样本测试 |
-
-如果无法写自动测试，必须先记录 TDD 例外记录，并获得用户同意，再使用最接近的替代验证。
-
-## 落地路径
-
-TDD 证据不是只写在聊天里。默认保存到：
+For formal Coding Plugins work, record evidence in:
 
 ```text
 docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-VED.md
 ```
 
-`<feature-name>` 表示 feature 模块目录，`<doc-id>` 表示同一 feature 下的一条具体文档链路，必须和 PRD、TSD、TVD、TED 文件名前缀一致。例如：
+Read or create VED metadata with `document-metadata` before writing evidence.
 
-```text
-docs/coding-plugins/features/auth/requirements/auth-login-PRD.md
-docs/coding-plugins/features/auth/plans/auth-login-TED.md
-docs/coding-plugins/features/auth/evidences/auth-login-VED.md
-```
-
-如果项目已有测试报告或 ADR 约定，优先使用项目约定，但最终报告必须写明实际 evidence 文件路径。
-
-Evidence 文件必须包含 frontmatter metadata。读取或更新 evidence 时，先使用 `document-metadata` 确认 `feature`、`doc_id` 和 `related_docs`，再追加正文证据。相关规则见 `docs/coding-plugins/document-contract.md`。
-
-`docs/coding-plugins/` 有三种 artifact mode，正式证据必须先确认模式：
-
-- `tracked`：PRD/TSD/TVD/TED/VED 提交到当前仓库；`.gitignore` 不得忽略 `docs/coding-plugins/`。
-- `local`：只作为本机 scratch，不得作为完成、commit、tag、release 或 publish 证据。
-- `external`：正式文档在外部系统，仓库根目录 `.coding-plugins-artifacts.json` 必须记录 `external_reference` 或 `external_artifact_id`。
-
-一个文件可以记录同一 feature 下多个任务。每个任务使用二级标题，例如：
-
-```markdown
-## 任务 1: 登录失败错误码
-
-### TDD 证据
-```
-
-无法 TDD 时，同一个文件中记录 `TDD 例外记录`。
-
-## TDD 证据
-
-每个会改变行为的实现任务，必须在 evidence 文件中写入 TDD 证据块，并在回报时给出该文件路径。字段标签使用中文，便于中文文档保持一致：
-
-VED 是证据交接材料，不是“测试通过”的一句话摘要。每个证据块必须让读者不用翻聊天记录也能判断：测试为什么先失败、实现改了什么、最终命令覆盖到哪里、还有什么风险。命令可以写一行，结果摘要要写可辨认的失败/通过信号。
-
-```markdown
-## TDD 证据
-
-- **规格/缺陷/验收:** REQ-001 或 bug 复现链接/明确验收标准
-- **测试类型:** `behavior`、`contract`、`architecture`、`source-scan` 或 `config`
-- **RED 测试:** `tests/path/example.test.ts::test_specific_behavior`
-- **RED 命令:** `node --test tests/path/example.test.ts::test_specific_behavior -v`
-- **RED 失败:** 失败信息摘要，说明它因缺失行为失败，而不是导入、拼写或环境问题
-- **GREEN 变更:** 最小实现摘要
-- **GREEN 命令:** `node --test tests/path/example.test.ts::test_specific_behavior -v`
-- **REFACTOR 命令:** `node --test tests/path/example.test.ts -v`，没有重构也写明重跑命令
-- **最终验证:** 最终相关测试/构建命令和结果
-```
-
-纯重构没有新增行为时，`RED 失败` 字段写 existing green baseline 或 characterization test 的基线结果，并说明为什么 RED 不适用。发现真实 bug 时不要混在重构里修，拆出 bugfix 并走标准 RED。
-
-证据写作要求：
-
-- `RED 失败` 不能只写“失败”或“不通过”，必须摘出关键错误、断言差异或缺失行为。
-- `GREEN 变更` 不能复述文件清单，必须说明最小行为变化。
-- `最终验证` 必须写命令和结论；如果命令未运行，改写为 `TDD 例外记录`，说明阻塞原因和替代验证。
-- 多任务 VED 用多个 `## 任务 N：...` 分隔，避免把不同任务的 RED/GREEN 混成一个证据块。
-
-可以用脚本检查证据：
-
-```bash
-coding-plugins validate-tdd-evidence docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-VED.md
-```
-
-如果 `coding-plugins` 不在 PATH，不要把证据校验标记为不可用；先使用 SessionStart 提供的 `CP_CLI` fallback：
+When validating evidence, prefer the SessionStart CLI fallback if `coding-plugins` is not on `PATH`:
 
 ```bash
 ${CP_CLI} validate-tdd-evidence docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-VED.md
 ```
 
-在插件仓库内也可以运行：
+## TDD Evidence Block
 
-```bash
-npm run validate-tdd-evidence:ts -- docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-VED.md
-```
-
-测试类型用于区分证据强度：
-
-| 测试类型 | 适用范围 |
-| --- | --- |
-| `behavior` | 用户行为、UI 交互、业务流程和可观察结果。 |
-| `contract` | API、SDK、schema、状态机和协议契约。 |
-| `architecture` | 分层边界、依赖方向、导入规则和公开 surface。 |
-| `source-scan` | 文件存在、配置文本、导入路径、静态字符串等源码扫描；不得作为用户行为的主要证据。 |
-| `config` | manifest、Info.plist、launch.json、CI 配置等配置契约。 |
-
-如果测试通过读取源码文本来保护 UI 或业务行为，必须优先改成 `behavior` 或 `contract` 测试；确实只能源码扫描时，把类型标成 `source-scan` 并在证据中写清剩余风险。
-
-严格检查用于发布前或 CI：
-
-```bash
-coding-plugins validate-tdd-evidence --strict --root <repo> --artifact-mode tracked docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-VED.md
-```
-
-严格模式会检查证据引用的本地测试/源码路径是否存在；`tracked` 和 `external` 模式下，没有正式 Spec ID、bug 复现或验收标准会失败。`local` 模式可用于草稿校验，但不能作为正式完成证据。
-
-## TDD 例外记录
-
-跳过先写失败测试不是默认选项。只有确实无法 TDD 时，先问用户，并记录：
+Each behavior-changing task needs an evidence block:
 
 ```markdown
-## TDD 例外记录
+## Task N: <title>
 
-- **原因:** 为什么无法先写失败测试
-- **用户批准:** 用户同意的原话或明确说明
-- **替代验证:** 替代验证命令、日志、截图或人工验收步骤
-- **风险:** 剩余风险和后续补测试计划
+### TDD Evidence
+
+- **Spec / Defect / Acceptance:** REQ-001 or bug reproduction
+- **Test Type:** `behavior`, `contract`, `architecture`, `source-scan`, or `config`
+- **RED Test:** `tests/path/example.test.ts`
+- **RED Command:** `node --test tests/path/example.test.ts`
+- **RED Failure:** specific failure signal proving the missing behavior
+- **GREEN Change:** minimal behavior change
+- **GREEN Command:** focused passing command
+- **REFACTOR Command:** command rerun after cleanup
+- **Final Verification:** final relevant command and result
 ```
 
-以下情况也需要 例外记录：
+`RED Failure` must be specific. `GREEN Change` must explain behavior, not just list files. `Final Verification` must name commands actually run.
 
-- 第三方生成代码无法提前写测试。
-- 纯文档、manifest 或配置修改没有可执行行为。
-- 环境缺失导致自动测试无法运行。
+## TDD Exception Record
 
-如果只是“赶时间”“改动很小”“写测试麻烦”，不是例外。
+Use only when TDD is truly impossible and the user approved it:
 
-## 好测试标准
+```markdown
+## TDD Exception Record
 
-| 质量 | 好 | 坏 |
-| --- | --- | --- |
-| 最小 | 一个行为；名字里有“and”通常要拆 | `validates email and domain and whitespace` |
-| 清楚 | 名称描述行为 | `test1` |
-| 表达意图 | 展示期望 API 和结果 | 只暴露内部实现细节 |
+- **Reason:** why failing test first is impossible
+- **User Approval:** user approval text or summary
+- **Replacement Verification:** commands, logs, screenshots, or manual steps
+- **Risk:** remaining risk and follow-up test plan
+```
 
-## 为什么顺序重要
+## Common Mistakes
 
-“写完后补测试”证明不了测试能抓住错误。它可能测试错东西、测试实现而非行为、遗漏你没想到的边界。测试先行迫使你先看到失败，证明测试确实能捕捉缺失行为。
-
-“我已经手工测试过”也不够。手工测试没有稳定记录，不能随代码变化重复执行，压力下容易漏掉情况。自动测试是系统化的。
-
-“删掉几个小时工作很浪费”是沉没成本。真正浪费的是保留你无法信任的代码。没有真实测试保护的工作代码就是技术债。
-
-## 常见合理化
-
-| 借口 | 现实 |
-| --- | --- |
-| 太简单不需要测试 | 简单代码也会坏，测试只需很短时间。 |
-| 之后补测试一样 | 不一样，你失去了测试确实会失败的证据。 |
-| 时间不够 | 调试回归更慢。 |
-| 这个很难测 | 那通常说明设计或边界需要改善。 |
-| 先实现再改成 TDD | 先实现的代码必须删除后重写。 |
-
-## 测试反模式
-
-开始写测试前，阅读 `testing-anti-patterns.md`。尤其警惕：
-
-- 过度 mock。
-- 测试实现细节。
-- 只为了覆盖率写断言。
-- 没有先验证失败。
-
-## 压力场景
-
-遇到以下场景时，先读对应参考，避免在压力下绕过 TDD：
-
-- `test-pressure-simple-change.md`：小改动也要留下 RED 证据。
-- `test-pressure-bugfix-urgent.md`：紧急 bugfix 先复现失败，再修复。
-- `test-pressure-refactor-no-behavior-change.md`：纯重构用现有测试或 characterization test 保护行为。
-
-## 完成标准
-
-最终报告必须包含 TDD 证据文件路径，并概述其中记录的证据：
-
-- 写了哪个失败测试。
-- 它对应哪个 Spec ID、bug 复现或验收标准。
-- 它初始如何失败。
-- 写了什么最小实现。
-- 是否重构，以及重构后运行了什么测试。
-- 最终运行了哪些测试，结果如何。
-
-若没有 TDD 证据，必须在 evidence 文件中有 TDD 例外记录；否则不能声称任务完成。
+- Writing tests after implementation.
+- Keeping production code written before RED.
+- Testing mocks instead of behavior.
+- Combining many behaviors into one test.
+- Weakening assertions to pass.
+- Claiming manual testing as a substitute for repeatable verification without an approved exception.

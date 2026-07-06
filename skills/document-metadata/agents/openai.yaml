@@ -1,3 +1,3 @@
 interface:
-  display_name: "文档 Metadata"
-  short_description: "先读 frontmatter，并用 metadata 串联规格、设计、TED 和证据"
+  display_name: "Document Metadata"
+  short_description: "Read frontmatter first and maintain metadata links across specs, designs, plans, and evidence."

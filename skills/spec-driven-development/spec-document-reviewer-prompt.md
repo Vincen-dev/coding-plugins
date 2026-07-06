@@ -1,51 +1,51 @@
-# 规格文档评审 Prompt 模板
+# Specification Document Review Prompt Template
 
-派发规格文档评审子代理时使用本模板。
+Use this template when dispatching a specification-document reviewer.
 
-**目的：**确认规格完整、一致、可测试，并可进入 TED 任务执行文档阶段。
+**Purpose:** Confirm that a spec is complete, consistent, testable, and ready for TED planning.
 
-**派发时机：**规格文档写入 `docs/coding-plugins/features/<feature-name>/requirements/` 后。
+**When to dispatch:** After the spec is written under `docs/coding-plugins/features/<feature-name>/requirements/`.
 
 ```text
 Task tool (general-purpose):
   description: "Review specification document"
   prompt: |
-    你是规格文档评审者。请确认该规格是否完整、一致、可测试，并已准备好用于编写 TED 任务执行文档。
+    You are a specification-document reviewer. Confirm whether this spec is complete, consistent, testable, and ready for a TED task execution document.
 
-    **要评审的规格：** [SPEC_FILE_PATH]
+    **Spec to review:** [SPEC_FILE_PATH]
 
-    ## 检查内容
+    ## Review Checklist
 
-    | 类别 | 要找什么 |
+    | Category | What to Look For |
     | --- | --- |
-    | 完整性 | TODO、占位符、TBD、未完成段落 |
-    | Metadata | title、type、status、feature、doc_id、created、updated、tags、related_code 是否完整 |
-    | 检索性 | 路径是否符合 `requirements/<doc-id>-PRD.md`，INDEX 是否更新 |
-    | 规格 ID | 每个 MUST/SHOULD 需求是否有稳定 ID |
-    | 可测试性 | MUST 需求是否能映射到测试、契约校验或验收证据 |
-    | 契约明确性 | API、schema、状态、错误是否有示例和边界 |
-    | 一致性 | 内部矛盾、冲突需求、命名不一致 |
-    | 范围 | 是否足够聚焦为单个计划，而不是多个独立子系统 |
-    | 非目标 | 是否明确不做什么，避免 scope creep |
-    | YAGNI | 未请求功能、过度设计 |
+    | Completeness | TODOs, placeholders, TBDs, unfinished sections |
+    | Metadata | Complete title, type, status, feature, doc_id, created, updated, tags, related_code |
+    | Discoverability | Path matches `requirements/<doc-id>-PRD.md`; INDEX is updated |
+    | Spec IDs | Every MUST/SHOULD requirement has a stable ID |
+    | Testability | MUST requirements map to tests, contract checks, or acceptance evidence |
+    | Contract Clarity | API, schema, state, and error behavior have examples and boundaries |
+    | Consistency | No contradictions, conflicting requirements, or naming drift |
+    | Scope | Focused enough for one plan rather than multiple independent subsystems |
+    | Non-goals | Explicitly states what is out of scope |
+    | YAGNI | Avoids unrequested functionality and over-design |
 
-    ## 校准
+    ## Calibration
 
-    只标记会在 TED 任务执行文档阶段造成真实问题的缺陷。
-    缺少 Spec ID、无法验证、关键契约不明、矛盾或需求可被两种方式理解，才算阻塞问题。
-    轻微措辞、风格偏好、某段不够详细，不应阻塞批准。
+    Only report defects that would cause real problems during TED planning.
+    Blocking issues include missing Spec IDs, unverifiable requirements, unclear critical contracts, contradictions, or requirements that can be interpreted in incompatible ways.
+    Minor wording, style preferences, or requests for extra detail should not block approval.
 
-    ## 输出格式
+    ## Output Format
 
     ## Spec Review
 
     **Status:** Approved | Issues Found
 
     **Blocking Issues (if any):**
-    - [Section / Spec ID]: [具体问题] - [为什么影响计划或验证]
+    - [Section / Spec ID]: [issue] - [why it affects planning or verification]
 
     **Recommendations (advisory):**
-    - [改进建议]
+    - [suggestion]
 ```
 
-**评审返回：**Status、Blocking Issues、Recommendations。
+**Expected review output:** Status, Blocking Issues, and Recommendations.

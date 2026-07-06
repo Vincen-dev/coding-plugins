@@ -151,24 +151,33 @@ ${maySkip}
 Focus sections:
 ${focusSections}
 
-Context rule: 不得自行读取完整 TED 或上游 PRD/TSD/TVD；只按主代理粘贴的任务全文、执行锁定区摘要和必要上下文执行。若 Rewind Triggers 命中或上下文不足，返回 NEEDS_CONTEXT。`;
+Context rule: Do not read the full TED or upstream PRD/TSD/TVD on your own. Work only from the task text, execution-lock summary, and necessary context pasted by the main agent. If rewind triggers fire or context is insufficient, return NEEDS_CONTEXT.`;
 }
 
 function buildImplementerPrompt(options: { task: string; taskName: string; taskSection: string; context: string; workdir: string }): string {
   const template = readFencedText(resolve(SUBAGENT_SKILL_DIR, "implementer-prompt.md"));
   return template
     .replaceAll("任务 N: [task name]", `任务 ${options.task}: ${options.taskName}`)
+    .replaceAll("Task N: [task name]", `Task ${options.task}: ${options.taskName}`)
     .replaceAll("[FULL TEXT of task from plan - 粘贴在这里，不要让子代理自己读文件]", options.taskSection)
+    .replaceAll("[FULL TEXT of the task from the plan - paste it here; do not make the agent read files on its own]", options.taskSection)
     .replaceAll("[说明该任务在整体中的位置、依赖、架构背景]", options.context)
-    .replaceAll("工作目录：[directory]", `工作目录：${options.workdir}`);
+    .replaceAll("[Explain where this task sits in the overall work, dependencies, and architecture background]", options.context)
+    .replaceAll("工作目录：[directory]", `工作目录：${options.workdir}`)
+    .replaceAll("Working directory: [directory]", `Working directory: ${options.workdir}`);
 }
 
 function buildSpecReviewerPrompt(options: { task: string; taskSection: string; implementerReport: string }): string {
   const template = readFencedText(resolve(SUBAGENT_SKILL_DIR, "spec-reviewer-prompt.md"));
+  const specIds = [...new Set(options.taskSection.match(/\bREQ-\d+\b/g) ?? [])].join(", ") || options.task;
   return template
     .replaceAll("Review spec compliance for 任务 N", `Review spec compliance for 任务 ${options.task}`)
     .replaceAll("[FULL TEXT of task requirements]", options.taskSection)
-    .replaceAll("[From implementer's report]", options.implementerReport);
+    .replaceAll("[From implementer's report]", options.implementerReport)
+    .replaceAll("[SPEC_IDS]", specIds)
+    .replaceAll("[TASK_TEXT]", options.taskSection)
+    .replaceAll("[SUMMARY]", options.implementerReport)
+    .replaceAll("[EVIDENCE]", options.implementerReport);
 }
 
 function buildCodeQualityPrompt(options: {

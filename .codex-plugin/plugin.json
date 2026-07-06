@@ -1,7 +1,7 @@
 {
   "name": "coding-plugins",
   "version": "1.0.19",
-  "description": "面向 Codex 和 Claude Code 的中文构思收敛、SDD/TDD 编码工作流插件。",
+  "description": "Chinese-first coding workflow plugin with English agent-facing skills for Codex and Claude Code.",
   "author": {
     "name": "Vincen"
   },
@@ -27,8 +27,8 @@
   "hooks": "./hooks/hooks-codex.json",
   "interface": {
     "displayName": "Coding Plugins",
-    "shortDescription": "中文版编码工作流：构思、规划、TDD、调试、评审与收尾",
-    "longDescription": "Coding Plugins 是面向 Codex 和 Claude Code 的中文本地插件，提供方案讨论、构思收敛、规格驱动开发、计划编写、测试驱动开发、系统化调试、并行代理协作、代码评审、带 Authored-by footer 的中文 Git 提交、技能编写和分支收尾工作流。",
+    "shortDescription": "Chinese-first coding workflow with English agent-facing skills for planning, TDD, debugging, review, and finishing.",
+    "longDescription": "Coding Plugins is a Chinese-first local workflow plugin for Codex and Claude Code. It provides English agent-facing skills for brainstorming, SDD, planning, TDD, systematic debugging, parallel agent coordination, code review, Git commits with Authored-by footers, skill authoring, and branch finishing.",
     "developerName": "Vincen",
     "category": "Developer Tools",
     "capabilities": [
@@ -37,10 +37,10 @@
       "Write"
     ],
     "defaultPrompt": [
-      "我有一个想法，先帮我讨论方案和值不值得做。",
-      "我有一个功能想实现，先帮我写清楚规格。",
-      "帮我按测试驱动方式修这个问题。",
-      "请检查这次改动是否可以收尾。"
+      "I have an idea; help me compare options before deciding whether to build it.",
+      "I want to implement a feature; help me write the specification first.",
+      "Help me fix this with a test-driven workflow.",
+      "Check whether this change is ready to finish."
     ],
     "websiteURL": "https://github.com/Vincen-dev/coding-plugins",
     "privacyPolicyURL": "https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement",

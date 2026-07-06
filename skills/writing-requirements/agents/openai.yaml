@@ -1,3 +1,3 @@
 interface:
-  display_name: "编写需求文档"
-  short_description: "编写 feature、API、schema、状态机、验收和维护需求文档"
+  display_name: "Writing Requirements"
+  short_description: "Write feature, API, schema, state-machine, acceptance, and maintenance requirements."

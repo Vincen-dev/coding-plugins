@@ -1,51 +1,51 @@
-# 计划文档评审 Prompt 模板
+# Plan Document Review Prompt Template
 
-派发计划文档评审子代理时使用本模板。
+Use this template when dispatching a plan-document reviewer.
 
-**目的：**确认计划完整、匹配规格，Spec ID 可追踪，并且任务拆分可执行。
+**Purpose:** Confirm that the plan is complete, matches the spec, has traceable Spec IDs, and is executable.
 
-**派发时机：**完整计划写完后。
+**When to dispatch:** After the full plan is written.
 
 ```text
 Task tool (general-purpose):
   description: "Review plan document"
   prompt: |
-    你是计划文档评审者。请确认该计划完整，并已准备好用于实现。
+    You are a plan-document reviewer. Confirm whether this plan is complete and ready for implementation.
 
-    **要评审的计划：** [PLAN_FILE_PATH]
-    **参考规格：** [SPEC_FILE_PATH]
+    **Plan to review:** [PLAN_FILE_PATH]
+    **Reference spec:** [SPEC_FILE_PATH]
 
-    ## 检查内容
+    ## Review Checklist
 
-    | 类别 | 要找什么 |
+    | Category | What to Look For |
     | --- | --- |
-	    | 完整性 | TODO、占位符、不完整任务、缺步骤 |
-	    | 规格对齐 | 覆盖规格需求，无明显 scope creep |
-	    | 技术方案 | Design Summary、关键决策、影响组件、接口契约、迁移兼容、测试策略和风险缓解是否具体 |
-	    | 追踪矩阵 | 每个 MUST Spec ID 是否映射到测试和任务 |
-	    | 测试来源 | 失败测试是否来自 Spec ID、bug 复现或明确验收标准 |
-	    | 任务拆分 | 任务边界清楚，步骤可执行 |
-	    | 可构建性 | 工程师能否照计划执行而不卡住 |
+    | Completeness | TODOs, placeholders, incomplete tasks, missing steps |
+    | Spec Alignment | Covers spec requirements without obvious scope creep |
+    | Technical Design | Design summary, decisions, affected components, contracts, migration, tests, and risk mitigation are concrete |
+    | Traceability | Every MUST Spec ID maps to tests and tasks |
+    | Test Source | Failing tests come from Spec IDs, bug reproductions, or explicit acceptance criteria |
+    | Task Split | Task boundaries are clear and executable |
+    | Buildability | An engineer can follow the plan without getting stuck |
 
-    ## 校准
+    ## Calibration
 
-    只标记会在实现中造成真实问题的缺陷。
-    实现者会做错、卡住、漏需求，才算问题。
-    轻微措辞、风格偏好、“nice to have” 不阻塞批准。
+    Only report defects that would cause real implementation problems.
+    It is blocking only if the implementer would likely fail, get stuck, miss requirements, or be unable to verify.
+    Minor wording, style preferences, and nice-to-have detail do not block approval.
 
-	    除非有严重缺口、矛盾、占位符、无法追踪的 MUST 规格，或模糊到无法执行的任务，否则批准。
+    Approve unless there is a serious gap, contradiction, placeholder, untraceable MUST spec, or task too vague to execute.
 
-    ## 输出格式
+    ## Output Format
 
     ## Plan Review
 
     **Status:** Approved | Issues Found
 
     **Issues (if any):**
-    - [Task X, Step Y]: [具体问题] - [为什么影响实现]
+    - [Task X, Step Y]: [issue] - [why it affects implementation]
 
     **Recommendations (advisory, do not block approval):**
-    - [改进建议]
+    - [suggestion]
 ```
 
-**评审返回：**Status、Issues、Recommendations。
+**Expected review output:** Status, Issues, and Recommendations.

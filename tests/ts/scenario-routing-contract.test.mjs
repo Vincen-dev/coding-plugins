@@ -58,11 +58,11 @@ test("scenario routing references existing discoverable skills", () => {
 test("using-coding-plugins makes task status and workflow guard mandatory for formal chains", () => {
   const skill = readFileSync(usingCodingPluginsPath, "utf8");
 
-  assert.match(skill, /正式 PRD\/TSD\/TVD\/TED\/VED 工作必须先运行 Coding Plugins CLI/);
+  assert.match(skill, /Formal PRD\/TSD\/TVD\/TED\/VED work must run the Coding Plugins CLI/);
   assert.match(skill, /\$\{CP_CLI\} task status --root \. --intent/);
-  assert.match(skill, /`using-coding-plugins` 不能替代 `task status`/);
-  assert.match(skill, /执行 TED 前必须运行 `\$\{CP_CLI\} workflow-guard check/);
-  assert.match(skill, /命令不可用.*SessionStart 输出的 `\$\{CP_CLI\} <command> \.\.\.`/s);
+  assert.match(skill, /`using-coding-plugins` cannot replace `task status`/);
+  assert.match(skill, /Before executing a TED:[\s\S]*\$\{CP_CLI\} workflow-guard check/);
+  assert.match(skill, /If commands are unavailable.*SessionStart `\$\{CP_CLI\} <command> \.\.\.` fallback/s);
 });
 
 test("scenario routing gate ids all exist in gate catalog", () => {

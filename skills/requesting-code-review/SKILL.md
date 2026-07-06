@@ -1,84 +1,55 @@
 ---
 name: requesting-code-review
-description: 完成任务、实现重要功能或合并前需要验证工作是否满足要求时使用。
+description: Use after completing a task, implementing important behavior, or before merging when the work needs validation against requirements and quality risks.
 ---
 
-# 请求代码评审
+# Requesting Code Review
 
-派发代码评审子代理，在问题扩散前抓住它。评审者应获得精确构造的上下文，而不是你的会话历史。这样评审者关注工作产物，而不是你的思考过程，也保留你的上下文继续协调。
+## Overview
 
-**核心原则：**早评审，常评审。
+Request focused review after implementation and local verification. A useful review checks behavior against the spec and checks code quality against maintainability risks.
 
-## 何时请求评审
+## Review Types
 
-必须：
+Use two review angles when possible:
 
-- 子代理驱动开发中每个任务之后。
-- 完成重要功能之后。
-- 合并到 main 之前。
+- Spec review: verifies that the implementation satisfies PRD/TSD/TVD/TED requirements and does not miss acceptance criteria.
+- Code quality review: looks for bugs, regressions, maintainability issues, missing tests, and risky abstractions.
 
-可选但有价值：
+Do not ask for broad aesthetic review when the task needs concrete risk discovery.
 
-- 卡住时获取新视角。
-- 重构前做基线检查。
-- 修复复杂 bug 后。
+## Process
 
-## 如何请求
+1. Summarize the intended behavior and scope.
+2. Provide changed files, relevant specs, tests, and known constraints.
+3. Ask for findings ordered by severity.
+4. After review, independently inspect findings before applying them.
+5. Fix valid issues with TDD when behavior changes.
+6. Rerun verification.
 
-1. 获取 git SHA：
+## Review Prompt Shape
 
-```bash
-BASE_SHA=$(git rev-parse HEAD~1)
-HEAD_SHA=$(git rev-parse HEAD)
+```text
+Review this change for correctness and regression risk.
+
+Scope:
+- <feature or bug>
+- <files changed>
+- <spec IDs or acceptance criteria>
+
+Focus:
+- Behavior bugs.
+- Missing tests.
+- Contract drift.
+- Risky implementation choices.
+
+Return findings first, ordered by severity, with file and line references.
 ```
 
-2. 派发代码评审子代理，使用 `code-reviewer-prompt.md` 模板。
+## Completion
 
-占位符：
+Do not claim the review is resolved until:
 
-- `{DESCRIPTION}`：构建内容摘要。
-- `{PLAN_OR_REQUIREMENTS}`：应该满足的计划或需求。
-- `{BASE_SHA}`：起始提交。
-- `{HEAD_SHA}`：结束提交。
-
-3. 处理反馈：
-
-- Critical 立即修复。
-- Important 继续前修复。
-- Minor 可记录稍后处理。
-- 如果评审者错了，用技术理由反驳。
-
-## 工作流集成
-
-**子代理驱动开发**
-
-- 每个任务后评审。
-- 问题复合前修掉。
-- 修完再进入下个任务。
-
-**执行计划**
-
-- 每个任务或自然检查点后评审。
-- 收到反馈，处理后继续。
-
-**临时开发**
-
-- 合并前评审。
-- 卡住时评审。
-
-## 红旗
-
-不要：
-
-- 因为“很简单”跳过评审。
-- 忽略 Critical。
-- 带着未修复 Important 继续。
-- 和有效技术反馈争辩。
-
-如果评审者错误：
-
-- 用技术推理反驳。
-- 展示代码或测试证据。
-- 请求澄清。
-
-模板见 `requesting-code-review/code-reviewer-prompt.md`。
+- Findings have been inspected.
+- Valid findings are fixed or documented as intentionally deferred.
+- Relevant tests and validators have been rerun.
