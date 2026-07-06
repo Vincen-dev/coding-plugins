@@ -10,7 +10,7 @@
 - [x] 强化 full-chain / maintenance-chain 执行门禁：没有 approved PRD/TSD/TVD/TED 时，不允许进入实现。
   - 对 public API、schema、generator、release、dependency、SDK 兼容窗口等变更，默认进入 full-chain 或 maintenance-chain。
   - 发现“先实现，后补 TSD/TVD/TED”时，标记为 workflow violation，而不是允许补票通过。
-- [ ] 将 DP-0 到 DP-7 做成可执行决策点。
+- [x] 将 DP-0 到 DP-7 做成可执行决策点。
   - 增加 `coding-plugins dp status|request|approve|audit`。
   - 在正式链路中显式输出当前 DP、所需用户确认和被阻止的动作。
   - 未通过 DP-4 时禁止执行；未通过 DP-6/DP-7 时禁止提交、tag、发布。

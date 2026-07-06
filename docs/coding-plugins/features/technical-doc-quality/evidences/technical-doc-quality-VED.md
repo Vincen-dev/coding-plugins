@@ -14,6 +14,18 @@ external_references: []
 
 ## TDD 证据
 
+- **规格/缺陷/验收:** P0 验收要求将 DP-0 到 DP-7 做成可执行决策点，提供 `coding-plugins dp status|request|approve|audit`；正式链路输出当前 DP、所需确认和被阻止动作；DP-4 未批准禁止执行，DP-6/DP-7 未批准禁止提交、tag、发布。
+- **测试类型:** `contract`
+- **RED 测试:** `tests/ts/productization-cli.test.mjs` 中的 `task status is the unified workflow entrypoint for executable document work`、`dp CLI requests, approves, audits, and unblocks executable task status` 和 `dp audit blocks commit and release targets until DP-6 and DP-7 are approved`。
+- **RED 命令:** `node --test tests/ts/productization-cli.test.mjs`
+- **RED 失败:** `task status` 没有 `decision_status` 字段，`dp` 子命令返回 `Unknown command: dp`。
+- **GREEN 变更:** 新增 `.coding-plugins-decisions.json` 决策点状态、`dp status/request/approve/audit` CLI、DP-4 execute audit 和 DP-6/DP-7 commit/tag/release/publish audit；`task status` 在 DP-4 未批准时输出 `request-decision:DP-4` 并阻断 execute/brief；修正 npm 包边界，确保 dist registry 进入安装包。
+- **GREEN 命令:** `npm run typecheck`；`npm run build`；`node --test tests/ts/productization-cli.test.mjs`
+- **REFACTOR 命令:** `node --test tests/ts/npm-package.test.mjs`
+- **最终验证:** `npm run preflight` PASS。
+
+## TDD 证据
+
 - **规格/缺陷/验收:** P0 验收要求强化 full-chain / maintenance-chain 执行门禁：没有 approved PRD/TSD/TVD/TED 时不允许进入实现；public API、schema、generator、release、dependency、SDK 兼容窗口等变更默认进入 full-chain 或 maintenance-chain；发现实现状态早于 TSD/TVD/TED 正式批准时标记 workflow violation。
 - **测试类型:** `contract`
 - **RED 测试:** `tests/ts/productization-cli.test.mjs` 中的 `schema validate reports workflow violations when formal execution artifacts are not approved`、`schema validate reports workflow violations when implementation is marked before downstream planning is approved` 和 `workflow mode routes dependency SDK release work to the maintenance chain`。

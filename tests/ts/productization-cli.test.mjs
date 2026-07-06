@@ -237,28 +237,96 @@ test("task status is the unified workflow entrypoint for executable document wor
   assert.equal(payload.doc_id, "routing-login");
   assert.equal(payload.state, "ready-for-execution");
   assert.equal(payload.decision_point, "DP-4");
+  assert.equal(payload.decision_status.required_decision, "DP-4");
+  assert.equal(payload.decision_status.approved, false);
   assert.equal(payload.next_skill, "using-git-worktrees");
-  assert.ok(payload.allowed_actions.includes("workflow-guard:execute"));
-  assert.ok(payload.allowed_actions.includes("workflow-brief"));
-  assert.deepEqual(payload.blocked_actions, []);
+  assert.ok(payload.allowed_actions.includes("request-decision:DP-4"));
+  assert.ok(payload.blocked_actions.includes("workflow-guard:execute"));
+  assert.ok(payload.blocked_actions.includes("execute-ted"));
   assert.equal(payload.guard.pass, true);
-  assert.equal(payload.brief.pass, true);
+  assert.equal(payload.brief, null);
   assert.equal(
     payload.next_command,
-    `coding-plugins workflow-guard check --root ${fixtureRoot} --feature routing-fixture --doc-id routing-login --target execute`,
+    `coding-plugins dp request --root ${fixtureRoot} --feature routing-fixture --doc-id routing-login --id DP-4`,
   );
   assert.deepEqual(payload.next_args, [
-    "workflow-guard",
-    "check",
+    "dp",
+    "request",
     "--root",
     fixtureRoot,
     "--feature",
     "routing-fixture",
     "--doc-id",
     "routing-login",
-    "--target",
-    "execute",
+    "--id",
+    "DP-4",
   ]);
+});
+
+test("dp CLI requests, approves, audits, and unblocks executable task status", () => {
+  const root = mkdtempSync(join(tmpdir(), "coding-plugins-dp-"));
+  try {
+    const pending = json(["dp", "status", "--root", root, "--feature", "alpha", "--doc-id", "alpha-login", "--id", "DP-4", "--json"]);
+    assert.equal(pending.id, "DP-4");
+    assert.equal(pending.approved, false);
+    assert.ok(pending.blocked_actions.includes("execute"));
+
+    const requested = json(["dp", "request", "--root", root, "--feature", "alpha", "--doc-id", "alpha-login", "--id", "DP-4", "--reason", "TED ready", "--json"]);
+    assert.equal(requested.status, "requested");
+    assert.equal(requested.approved, false);
+
+    const failedAudit = run(["dp", "audit", "--root", root, "--feature", "alpha", "--doc-id", "alpha-login", "--target", "execute", "--json"]);
+    assert.equal(failedAudit.status, 1);
+    const failedPayload = JSON.parse(failedAudit.stdout);
+    assert.equal(failedPayload.ok, false);
+    assert.ok(failedPayload.blocked_actions.includes("execute"));
+
+    const approved = json(["dp", "approve", "--root", root, "--feature", "alpha", "--doc-id", "alpha-login", "--id", "DP-4", "--reason", "Approved", "--json"]);
+    assert.equal(approved.status, "approved");
+    assert.equal(approved.approved, true);
+
+    const passedAudit = json(["dp", "audit", "--root", root, "--feature", "alpha", "--doc-id", "alpha-login", "--target", "execute", "--json"]);
+    assert.equal(passedAudit.ok, true);
+    assert.deepEqual(passedAudit.blocked_actions, []);
+
+    const task = json([
+      "task",
+      "status",
+      "--root",
+      fixtureRoot,
+      "--feature",
+      "routing-fixture",
+      "--doc-id",
+      "routing-login",
+      "--intent",
+      "开始执行这个 TED",
+      "--json",
+    ]);
+    assert.equal(task.decision_status.approved, false, "fixture root is independent and remains blocked without a DP-4 approval");
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("dp audit blocks commit and release targets until DP-6 and DP-7 are approved", () => {
+  const root = mkdtempSync(join(tmpdir(), "coding-plugins-dp-release-"));
+  try {
+    json(["dp", "approve", "--root", root, "--feature", "alpha", "--doc-id", "alpha-login", "--id", "DP-6", "--reason", "Verified", "--json"]);
+
+    const commitAudit = run(["dp", "audit", "--root", root, "--feature", "alpha", "--doc-id", "alpha-login", "--target", "commit", "--json"]);
+    assert.equal(commitAudit.status, 1);
+    const commitPayload = JSON.parse(commitAudit.stdout);
+    assert.equal(commitPayload.ok, false);
+    assert.deepEqual(commitPayload.missing_decisions, ["DP-7"]);
+    assert.ok(commitPayload.blocked_actions.includes("commit"));
+
+    json(["dp", "approve", "--root", root, "--feature", "alpha", "--doc-id", "alpha-login", "--id", "DP-7", "--reason", "Commit approved", "--json"]);
+    const releaseAudit = json(["dp", "audit", "--root", root, "--feature", "alpha", "--doc-id", "alpha-login", "--target", "release", "--json"]);
+    assert.equal(releaseAudit.ok, true);
+    assert.deepEqual(releaseAudit.blocked_actions, []);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
 });
 
 test("task start blocks execution when a document chain has not been started", () => {

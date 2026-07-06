@@ -2,4 +2,3 @@
 **/*.pyc
 artifacts/
 node_modules/
-dist/

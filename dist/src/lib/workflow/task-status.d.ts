@@ -1,4 +1,5 @@
 import { checkState } from "./project-state.ts";
+import type { DecisionAuditResult } from "./decision-state.ts";
 import type { WorkflowBriefPayload } from "./workflow-brief.ts";
 import type { WorkflowGuardResult } from "./workflow-guard.ts";
 import { inferMode } from "./workflow-mode.ts";
@@ -21,6 +22,7 @@ export interface TaskStatusPayload {
     workflow_state: WorkflowStateResult | null;
     guard: WorkflowGuardResult | null;
     brief: WorkflowBriefPayload | null;
+    decision_status: DecisionAuditResult | null;
     feature: string | null;
     doc_id: string | null;
     state: string;

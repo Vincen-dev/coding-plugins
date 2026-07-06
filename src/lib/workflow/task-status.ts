@@ -1,4 +1,6 @@
 import { checkState } from "./project-state.ts";
+import { auditDecisions } from "./decision-state.ts";
+import type { DecisionAuditResult } from "./decision-state.ts";
 import { buildBrief } from "./workflow-brief.ts";
 import type { WorkflowBriefPayload } from "./workflow-brief.ts";
 import { checkWorkflowGuard } from "./workflow-guard.ts";
@@ -27,6 +29,7 @@ export interface TaskStatusPayload {
   workflow_state: WorkflowStateResult | null;
   guard: WorkflowGuardResult | null;
   brief: WorkflowBriefPayload | null;
+  decision_status: DecisionAuditResult | null;
   feature: string | null;
   doc_id: string | null;
   state: string;
@@ -40,7 +43,8 @@ export interface TaskStatusPayload {
 }
 
 function targetForState(state: string, intent: string): "plan" | "execute" {
-  if (state === "ready-for-execution" || /执行|execute|继续|continue/i.test(intent)) {
+  void intent;
+  if (state === "ready-for-execution") {
     return "execute";
   }
   return "plan";
@@ -169,13 +173,40 @@ export function buildTaskStatus(options: TaskStatusOptions): TaskStatusPayload {
   const guard = workflowState
     ? checkWorkflowGuard(options.root, { feature: workflowState.feature, docId: workflowState.doc_id, target })
     : null;
-  const brief = guard?.pass
+  const decisionStatus = workflowState && target === "execute"
+    ? auditDecisions(options.root, { feature: workflowState.feature, docId: workflowState.doc_id, target: "execute" })
+    : null;
+  const decisionBlocked = decisionStatus ? !decisionStatus.ok : false;
+  const brief = guard?.pass && !decisionBlocked
     ? buildBrief(options.root, { feature: guard.feature, docId: guard.doc_id, target: guard.target })
     : null;
   const actions = actionsForState(stateName);
   const next = stateMismatch
     ? { next_command: null, next_args: [] }
+    : decisionBlocked && workflowState
+      ? {
+        next_command: `coding-plugins dp request --root ${options.root} --feature ${workflowState.feature} --doc-id ${workflowState.doc_id} --id ${decisionStatus?.missing_decisions[0] ?? "DP-4"}`,
+        next_args: [
+          "dp",
+          "request",
+          "--root",
+          options.root,
+          "--feature",
+          workflowState.feature,
+          "--doc-id",
+          workflowState.doc_id,
+          "--id",
+          decisionStatus?.missing_decisions[0] ?? "DP-4",
+        ],
+      }
     : nextForState(options.root, options.intent, workflowState, mode);
+  const allowedActions = decisionBlocked
+    ? [`request-decision:${decisionStatus?.missing_decisions[0] ?? "DP-4"}`]
+    : actions.allowed_actions;
+  const blockedActions = [
+    ...(stateMismatch ? [...actions.blocked_actions, "continue-with-stale-project-state"] : actions.blocked_actions),
+    ...(decisionBlocked ? ["workflow-guard:execute", "workflow-brief", "execute-ted"] : []),
+  ];
 
   return {
     entrypoint: `coding-plugins task ${options.action}`,
@@ -187,11 +218,12 @@ export function buildTaskStatus(options: TaskStatusOptions): TaskStatusPayload {
     workflow_state: workflowState,
     guard,
     brief,
+    decision_status: decisionStatus,
     feature: workflowState?.feature ?? feature ?? null,
     doc_id: workflowState?.doc_id ?? docId ?? null,
     state: stateName,
-    allowed_actions: actions.allowed_actions,
-    blocked_actions: stateMismatch ? [...actions.blocked_actions, "continue-with-stale-project-state"] : actions.blocked_actions,
+    allowed_actions: [...new Set(allowedActions)],
+    blocked_actions: [...new Set(blockedActions)],
     next_skill: workflowState?.next_skill ?? (mode.mode === "analysis-only" ? "using-coding-plugins" : "spec-driven-development"),
     decision_point: decisionPointForState(stateName),
     next_command: next.next_command,

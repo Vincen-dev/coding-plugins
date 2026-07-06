@@ -19,6 +19,7 @@ export const COMMAND_REGISTRY = [
   { name: "cli", script: "src/cli/cli.ts", usage: "cli <status|install|uninstall> [--scope user|project] [--target <path>] [--root <path>] [--format text|json] [--force]" },
   { name: "command-registry", script: "src/cli/command-registry.ts", usage: "command-registry [--format text|json]" },
   { name: "decision-points", script: "skills/using-coding-plugins/scripts/decision-points.ts", usage: "decision-points [--id <DP-n>] [--json]" },
+  { name: "dp", script: "src/cli/dp.ts", usage: "dp <status|request|approve|audit> --feature <name> --doc-id <id> [--id <DP-n>] [--target <execute|commit|tag|release|publish>] [--root <path>] [--json]" },
   { name: "doctor", script: "src/cli/doctor.ts", usage: "doctor [--root <path>] [--format text|json]" },
   { name: "document-contract-migration", script: "skills/document-metadata/scripts/document-contract-migration.ts", usage: "document-contract-migration [--root <path>] [--dry-run]" },
   {

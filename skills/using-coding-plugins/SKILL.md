@@ -116,10 +116,19 @@ description: 开始任何任务时使用；建立 Coding Plugins 技能选择、
 
 ## 决策点协议
 
-工作流中的用户确认点使用 DP-0 到 DP-7 编号。需要展示或校验完整定义时运行：
+工作流中的用户确认点使用 DP-0 到 DP-7 编号。需要展示完整定义时运行：
 
 ```bash
-coding-plugins decision-points --json
+${CP_CLI} decision-points --json
+```
+
+需要校验、申请或记录批准时使用可执行状态命令：
+
+```bash
+${CP_CLI} dp status --feature <feature> --doc-id <doc-id> --id DP-4 --json
+${CP_CLI} dp request --feature <feature> --doc-id <doc-id> --id DP-4 --reason "<为什么到达该决策点>" --json
+${CP_CLI} dp approve --feature <feature> --doc-id <doc-id> --id DP-4 --reason "<用户确认摘要>" --json
+${CP_CLI} dp audit --feature <feature> --doc-id <doc-id> --target execute --json
 ```
 
 | 决策点 | 名称 | 默认位置 |
@@ -133,7 +142,7 @@ coding-plugins decision-points --json
 | DP-6 | 完成验证确认 | 声称完成、修复或提交前 |
 | DP-7 | 提交和分支收尾确认 | commit、PR、merge、worktree 清理前 |
 
-到达决策点时，先说明对应 DP 编号、所需输入和预期输出；未经用户确认，不得跨过该门禁。
+到达决策点时，先说明对应 DP 编号、所需输入和预期输出；未经用户确认，不得跨过该门禁。DP-4 未批准时不得执行 TED；DP-6/DP-7 未批准时不得提交、tag、发布或声称收尾完成。
 
 ## 输出原则
 
