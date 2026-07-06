@@ -14,6 +14,18 @@ external_references: []
 
 ## TDD 证据
 
+- **规格/缺陷/验收:** P0 验收要求明确 `docs/coding-plugins/` artifact mode，支持 `tracked`、`local`、`external`；`tracked` 模式下 `.gitignore` 忽略该目录时 preflight 失败，`local` 不能作为正式完成证据，`external` 必须记录外部链接或 artifact id；同时强化 VED evidence 合法性检查，要求引用的测试/命令路径可复核，ignored evidence 不能作为正式证据，没有正式 Spec ID 的 warning 按 artifact mode 决定。
+- **测试类型:** `contract`
+- **RED 测试:** `tests/ts/productization-cli.test.mjs` 中的 `schema validate reports artifact mode and rejects tracked docs ignored by gitignore` 和 `validate-tdd-evidence enforces formal evidence rules by artifact mode`。
+- **RED 命令:** `node --test tests/ts/productization-cli.test.mjs`
+- **RED 失败:** `validate` JSON 没有 `artifact_mode` 字段，`validate-tdd-evidence` 不支持 `--root` / `--artifact-mode`，无法区分 tracked/local/external 或检测 ignored evidence。
+- **GREEN 变更:** 新增 artifact mode 解析与 `.coding-plugins-artifacts.json` 配置；`validate` 返回 artifact mode 并拒绝 tracked+ignored / external 缺引用；`preflight` 接入 artifact mode 门禁；`validate-tdd-evidence` 支持 root/mode 上下文，按 mode 处理 Spec ID warning、拒绝 ignored formal evidence，并校验证据字段中的本地路径引用；同步 README、INSTALL、TDD skill 和 dist 产物。
+- **GREEN 命令:** `npm run typecheck`；`npm run build`；`node --test tests/ts/productization-cli.test.mjs`
+- **REFACTOR 命令:** `node --test tests/ts/npm-package.test.mjs`；`node bin/coding-plugins.js validate-tdd-evidence --strict --root . --artifact-mode tracked --format json docs/coding-plugins/features/*/evidences/*-VED.md`
+- **最终验证:** `npm run preflight` PASS。
+
+## TDD 证据
+
 - **规格/缺陷/验收:** P0 验收要求将 DP-0 到 DP-7 做成可执行决策点，提供 `coding-plugins dp status|request|approve|audit`；正式链路输出当前 DP、所需确认和被阻止动作；DP-4 未批准禁止执行，DP-6/DP-7 未批准禁止提交、tag、发布。
 - **测试类型:** `contract`
 - **RED 测试:** `tests/ts/productization-cli.test.mjs` 中的 `task status is the unified workflow entrypoint for executable document work`、`dp CLI requests, approves, audits, and unblocks executable task status` 和 `dp audit blocks commit and release targets until DP-6 and DP-7 are approved`。

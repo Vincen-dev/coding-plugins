@@ -1,3 +1,4 @@
+import type { ArtifactModeStatus } from "./artifact-mode.ts";
 export interface ParsedDocument {
     path: string;
     kind: string;
@@ -19,6 +20,7 @@ export type ParsedDocumentSummary = Omit<ParsedDocument, "sections"> & {
 export interface DocumentValidationResult<TDocument extends ParsedDocument | ParsedDocumentSummary = ParsedDocumentSummary> {
     ok: boolean;
     root: string;
+    artifact_mode: ArtifactModeStatus;
     documents: TDocument[];
     chains: ParsedDocumentChain[];
     chain_errors: string[];

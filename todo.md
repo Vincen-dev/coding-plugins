@@ -14,12 +14,12 @@
   - 增加 `coding-plugins dp status|request|approve|audit`。
   - 在正式链路中显式输出当前 DP、所需用户确认和被阻止的动作。
   - 未通过 DP-4 时禁止执行；未通过 DP-6/DP-7 时禁止提交、tag、发布。
-- [ ] 明确 `docs/coding-plugins/` artifact mode。
+- [x] 明确 `docs/coding-plugins/` artifact mode。
   - 支持 `tracked`、`local`、`external` 三种模式。
   - `tracked`：PRD/TSD/TVD/TED/VED 必须入库，`.gitignore` 忽略该目录时 preflight 失败。
   - `local`：只能作为本机 scratch，不能作为完成声明或提交证据。
   - `external`：必须记录外部文档链接或 artifact id。
-- [ ] 强化 evidence 合法性检查。
+- [x] 强化 evidence 合法性检查。
   - VED 引用的命令、测试、commit、tag、workflow run 必须可复核。
   - ignored evidence 不能作为正式完成证据。
   - `validate-tdd-evidence` 对“没有正式 Spec ID”的 warning 应根据 artifact mode 决定是否允许通过。

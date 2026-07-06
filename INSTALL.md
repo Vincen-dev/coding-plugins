@@ -230,6 +230,23 @@ doctor 会额外检查 npm lockfile、dist 入口、Codex hook、`.agents/skills
 docs/coding-plugins/features/<feature-name>/
 ```
 
+业务仓库安装命令默认把 `docs/coding-plugins/` 加入 `.gitignore`，这表示 `local` artifact mode：文档只用于本机会话 scratch，不能作为完成、提交、tag 或发布证据。团队要把 PRD/TSD/TVD/TED/VED 作为正式仓库资产时，删除该 ignore 规则，并在仓库根目录写入：
+
+```json
+{
+  "mode": "tracked"
+}
+```
+
+如果正式文档放在外部系统，使用：
+
+```json
+{
+  "mode": "external",
+  "external_reference": "https://example.com/path/to/artifact"
+}
+```
+
 统一索引是：
 
 ```text

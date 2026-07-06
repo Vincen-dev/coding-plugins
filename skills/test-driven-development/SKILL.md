@@ -140,6 +140,12 @@ docs/coding-plugins/features/auth/evidences/auth-login-VED.md
 
 Evidence 文件必须包含 frontmatter metadata。读取或更新 evidence 时，先使用 `document-metadata` 确认 `feature`、`doc_id` 和 `related_docs`，再追加正文证据。相关规则见 `docs/coding-plugins/document-contract.md`。
 
+`docs/coding-plugins/` 有三种 artifact mode，正式证据必须先确认模式：
+
+- `tracked`：PRD/TSD/TVD/TED/VED 提交到当前仓库；`.gitignore` 不得忽略 `docs/coding-plugins/`。
+- `local`：只作为本机 scratch，不得作为完成、commit、tag、release 或 publish 证据。
+- `external`：正式文档在外部系统，仓库根目录 `.coding-plugins-artifacts.json` 必须记录 `external_reference` 或 `external_artifact_id`。
+
 一个文件可以记录同一 feature 下多个任务。每个任务使用二级标题，例如：
 
 ```markdown
@@ -212,8 +218,10 @@ npm run validate-tdd-evidence:ts -- docs/coding-plugins/features/<feature-name>/
 严格检查用于发布前或 CI：
 
 ```bash
-coding-plugins validate-tdd-evidence --strict docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-VED.md
+coding-plugins validate-tdd-evidence --strict --root <repo> --artifact-mode tracked docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-VED.md
 ```
+
+严格模式会检查证据引用的本地测试/源码路径是否存在；`tracked` 和 `external` 模式下，没有正式 Spec ID、bug 复现或验收标准会失败。`local` 模式可用于草稿校验，但不能作为正式完成证据。
 
 ## TDD 例外记录
 

@@ -1,4 +1,6 @@
 import { existsSync, readFileSync, statSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { isPathIgnoredByGitignore } from "./artifact-mode.js";
 const EVIDENCE_HEADING_RE = /^\s{0,3}#{1,6}\s+TDD 证据\s*$/gim;
 const EXCEPTION_HEADING_RE = /^\s{0,3}#{1,6}\s+TDD 例外记录\s*$/gim;
 const SPEC_SOURCE_RE = /\b(?:REQ|API|SCHEMA|STATE|ERR|AC|NFR|MIG|OBS|NON)(?:-[A-Z0-9]+)*-\d{3,}\b|bug|复现|验收|acceptance/i;
@@ -15,6 +17,7 @@ const EVIDENCE_FIELDS = [
     "REFACTOR 命令",
     "最终验证",
 ];
+const REPRODUCIBLE_REFERENCE_FIELDS = ["RED 测试", "RED 命令", "GREEN 命令", "REFACTOR 命令", "最终验证"];
 const OPTIONAL_TEST_TYPE_FIELD = "测试类型";
 const ALLOWED_TEST_TYPES = new Set(["behavior", "contract", "architecture", "source-scan", "config"]);
 const EXCEPTION_FIELDS = ["原因", "用户批准", "替代验证", "风险"];
@@ -27,6 +30,9 @@ function fieldPattern(label) {
 function getField(text, label) {
     const match = fieldPattern(label).exec(text);
     return match ? match[1].trim() : undefined;
+}
+function getFields(text, label) {
+    return [...text.matchAll(fieldPattern(label))].map((match) => match[1].trim());
 }
 function isPlaceholder(value) {
     const cleaned = value.trim().replace(/^`+|`+$/g, "").trim();
@@ -45,7 +51,43 @@ function requireFields(text, labels, sectionName) {
     }
     return errors;
 }
-export function validateText(text, strict) {
+function normalizeOptions(input) {
+    if (typeof input === "boolean") {
+        return { strict: input };
+    }
+    return input;
+}
+function localPathReferences(text) {
+    const withoutQuotedSearchPatterns = text.replace(/"[^"\n]*"|'[^'\n]*'/g, " ");
+    return [...new Set([...withoutQuotedSearchPatterns.matchAll(/\b(?:tests|src|skills|docs|hooks|assets|\.github)\/[A-Za-z0-9_.\/-]+/g)]
+            .map((match) => match[0])
+            .filter((reference) => !reference.includes("...") && /\.[A-Za-z0-9]+$/.test(reference)))]
+        .sort();
+}
+function referencedPathExists(root, evidencePath, reference) {
+    const candidates = [resolve(root, reference), resolve(dirname(evidencePath), reference)];
+    return candidates.some((candidate) => existsSync(candidate));
+}
+function validateEvidenceContext(path, text, options) {
+    const errors = [];
+    if (!options.root) {
+        return errors;
+    }
+    const root = resolve(options.root);
+    const evidencePath = resolve(path);
+    if (options.artifactMode !== "local" && isPathIgnoredByGitignore(root, evidencePath)) {
+        errors.push("ignored evidence cannot be used as formal completion evidence.");
+    }
+    const reproducibleText = REPRODUCIBLE_REFERENCE_FIELDS.flatMap((field) => getFields(text, field)).join("\n");
+    for (const reference of localPathReferences(reproducibleText)) {
+        if (!referencedPathExists(root, evidencePath, reference)) {
+            errors.push(`referenced path does not exist: ${reference}`);
+        }
+    }
+    return errors;
+}
+export function validateText(text, input) {
+    const options = normalizeOptions(input);
     const errors = [];
     let warnings = [];
     if (!text.trim()) {
@@ -67,7 +109,7 @@ export function validateText(text, strict) {
         const testType = getField(text, OPTIONAL_TEST_TYPE_FIELD);
         const redFailure = getField(text, "RED 失败");
         const finalVerification = getField(text, "最终验证");
-        if (source && !isPlaceholder(source) && !SPEC_SOURCE_RE.test(source)) {
+        if (source && !isPlaceholder(source) && options.artifactMode !== "local" && !SPEC_SOURCE_RE.test(source)) {
             warnings.push("规格/缺陷/验收 does not look traceable to a Spec ID, bug reproduction, or acceptance criterion.");
         }
         if (testType) {
@@ -89,24 +131,28 @@ export function validateText(text, strict) {
     if (hasException) {
         errors.push(...requireFields(text, EXCEPTION_FIELDS, "TDD 例外记录"));
     }
-    if (strict && warnings.length > 0) {
+    if (options.strict && warnings.length > 0) {
         errors.push(...warnings);
         warnings = [];
     }
     return [errors, warnings];
 }
-export function buildResult(path, strict) {
+export function buildResult(path, input) {
+    const options = normalizeOptions(input);
     if (!existsSync(path)) {
         return { path, ok: false, errors: [`File does not exist: ${path}`], warnings: [] };
     }
     if (!statSync(path).isFile()) {
         return { path, ok: false, errors: [`Path is not a file: ${path}`], warnings: [] };
     }
-    const [errors, warnings] = validateText(readFileSync(path, "utf8"), strict);
+    const text = readFileSync(path, "utf8");
+    const [errors, warnings] = validateText(text, options);
+    errors.push(...validateEvidenceContext(path, text, options));
     return { path, ok: errors.length === 0, errors, warnings };
 }
-export function buildPayload(paths, strict) {
-    const results = paths.map((path) => buildResult(path, strict));
+export function buildPayload(paths, input) {
+    const options = normalizeOptions(input);
+    const results = paths.map((path) => buildResult(path, options));
     return {
         ok: results.every((result) => result.ok),
         error_count: results.reduce((total, result) => total + result.errors.length, 0),

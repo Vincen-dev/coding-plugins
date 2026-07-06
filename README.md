@@ -305,6 +305,12 @@ docs/coding-plugins/
 
 实际 feature 根目录是 `docs/coding-plugins/features/<feature-name>/`。
 
+`docs/coding-plugins/` artifact mode 由仓库根目录 `.coding-plugins-artifacts.json` 或 `.gitignore` 推断：
+
+- `tracked`：正式 PRD/TSD/TVD/TED/VED 进入当前仓库；如果 `.gitignore` 忽略 `docs/coding-plugins/`，`preflight` 会失败。
+- `local`：安装器默认给业务仓库使用的本机 scratch 模式；可以辅助会话，但不能作为完成、commit、tag、release 或 publish 证据。
+- `external`：正式文档在外部系统；`.coding-plugins-artifacts.json` 必须写 `external_reference` 或 `external_artifact_id`。
+
 统一索引：
 
 ```text

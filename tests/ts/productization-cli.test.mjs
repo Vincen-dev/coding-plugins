@@ -56,6 +56,53 @@ function writeWorkflowDoc(root, feature, directory, docId, suffix, body, options
   );
 }
 
+function writeArtifactMode(root, payload) {
+  writeFileSync(join(root, ".coding-plugins-artifacts.json"), JSON.stringify(payload, null, 2), "utf8");
+}
+
+function writeTddEvidence(path, overrides = {}) {
+  const fields = {
+    source: "REQ-001 is covered by this evidence.",
+    redTest: "`tests/ts/productization-cli.test.mjs`",
+    redCommand: "`node --test tests/ts/productization-cli.test.mjs`",
+    redFailure: "The new assertion failed before implementation.",
+    greenChange: "Implemented the required behavior.",
+    greenCommand: "`node --test tests/ts/productization-cli.test.mjs`",
+    refactorCommand: "`npm run typecheck`",
+    finalVerification: "`npm run preflight` PASS.",
+    ...overrides,
+  };
+  mkdirSync(dirname(path), { recursive: true });
+  writeFileSync(
+    path,
+    [
+      "---",
+      "title: Evidence",
+      "status: approved",
+      "feature: alpha",
+      "doc_id: alpha-login",
+      "created: 2026-07-06",
+      "updated: 2026-07-06",
+      "---",
+      "# Evidence",
+      "",
+      "## TDD 证据",
+      "",
+      `- **规格/缺陷/验收:** ${fields.source}`,
+      "- **测试类型:** `contract`",
+      `- **RED 测试:** ${fields.redTest}`,
+      `- **RED 命令:** ${fields.redCommand}`,
+      `- **RED 失败:** ${fields.redFailure}`,
+      `- **GREEN 变更:** ${fields.greenChange}`,
+      `- **GREEN 命令:** ${fields.greenCommand}`,
+      `- **REFACTOR 命令:** ${fields.refactorCommand}`,
+      `- **最终验证:** ${fields.finalVerification}`,
+      "",
+    ].join("\n"),
+    "utf8",
+  );
+}
+
 function approvedChainBodies() {
   return {
     PRD: "## 需求总览\n\nREQ-001 must be traceable.\n\n## 追踪矩阵\n\nREQ-001 is covered.",
@@ -494,6 +541,68 @@ test("schema validate fails evidence-only chains by default and only allows them
     const chain = evidenceOnly.chains.find((item) => item.feature === "alpha");
     assert.equal(chain.chain_type, "evidence-only");
     assert.deepEqual(chain.missing_artifacts, ["PRD", "TSD", "TVD", "TED"]);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("schema validate reports artifact mode and rejects tracked docs ignored by gitignore", () => {
+  const root = mkdtempSync(join(tmpdir(), "coding-plugins-artifact-mode-"));
+  try {
+    writeFileSync(join(root, ".gitignore"), "docs/coding-plugins/\n", "utf8");
+
+    const inferredLocal = json(["validate", "--root", root, "--format", "json"]);
+    assert.equal(inferredLocal.artifact_mode.mode, "local");
+    assert.equal(inferredLocal.artifact_mode.formal_evidence_allowed, false);
+
+    writeArtifactMode(root, { mode: "tracked" });
+    const tracked = run(["validate", "--root", root, "--format", "json"]);
+    assert.equal(tracked.status, 1);
+    const trackedPayload = JSON.parse(tracked.stdout);
+    assert.equal(trackedPayload.artifact_mode.mode, "tracked");
+    assert.ok(trackedPayload.errors.some((error) => error.includes("tracked artifact mode")));
+    assert.ok(trackedPayload.errors.some((error) => error.includes(".gitignore")));
+
+    writeArtifactMode(root, { mode: "external" });
+    const external = run(["validate", "--root", root, "--format", "json"]);
+    assert.equal(external.status, 1);
+    const externalPayload = JSON.parse(external.stdout);
+    assert.equal(externalPayload.artifact_mode.mode, "external");
+    assert.ok(externalPayload.errors.some((error) => error.includes("external_reference")));
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("validate-tdd-evidence enforces formal evidence rules by artifact mode", () => {
+  const root = mkdtempSync(join(tmpdir(), "coding-plugins-evidence-mode-"));
+  try {
+    mkdirSync(join(root, "tests/ts"), { recursive: true });
+    writeFileSync(join(root, "tests/ts/productization-cli.test.mjs"), "import test from 'node:test';\n", "utf8");
+    const evidence = join(root, "docs/coding-plugins/features/alpha/evidences/alpha-login-VED.md");
+    writeTddEvidence(evidence, { source: "General cleanup without a formal spec id." });
+
+    const trackedMissingSpec = run(["validate-tdd-evidence", "--root", root, "--artifact-mode", "tracked", "--strict", "--format", "json", evidence]);
+    assert.equal(trackedMissingSpec.status, 1);
+    assert.ok(JSON.parse(trackedMissingSpec.stdout).results[0].errors.some((error) => error.includes("Spec ID")));
+
+    const localMissingSpec = json(["validate-tdd-evidence", "--root", root, "--artifact-mode", "local", "--strict", "--format", "json", evidence]);
+    assert.equal(localMissingSpec.ok, true);
+
+    writeFileSync(join(root, ".gitignore"), "docs/coding-plugins/\n", "utf8");
+    writeTddEvidence(evidence);
+    const ignoredTracked = run(["validate-tdd-evidence", "--root", root, "--artifact-mode", "tracked", "--strict", "--format", "json", evidence]);
+    assert.equal(ignoredTracked.status, 1);
+    assert.ok(JSON.parse(ignoredTracked.stdout).results[0].errors.some((error) => error.includes("ignored evidence")));
+
+    writeFileSync(join(root, ".gitignore"), "", "utf8");
+    writeTddEvidence(evidence, {
+      redTest: "`tests/ts/missing-productization.test.mjs`",
+      redCommand: "`node --test tests/ts/missing-productization.test.mjs`",
+    });
+    const missingReference = run(["validate-tdd-evidence", "--root", root, "--artifact-mode", "tracked", "--strict", "--format", "json", evidence]);
+    assert.equal(missingReference.status, 1);
+    assert.ok(JSON.parse(missingReference.stdout).results[0].errors.some((error) => error.includes("referenced path does not exist")));
   } finally {
     rmSync(root, { recursive: true, force: true });
   }

@@ -1,3 +1,4 @@
+import type { ArtifactModeValue } from "./artifact-mode.ts";
 export interface ValidationResult {
     path: string;
     ok: boolean;
@@ -10,7 +11,14 @@ export interface ValidationPayload {
     warning_count: number;
     results: ValidationResult[];
 }
-export declare function validateText(text: string, strict: boolean): [string[], string[]];
-export declare function buildResult(path: string, strict: boolean): ValidationResult;
-export declare function buildPayload(paths: string[], strict: boolean): ValidationPayload;
+export interface ValidationOptions {
+    strict: boolean;
+    root?: string;
+    artifactMode?: ArtifactModeValue;
+}
+type ValidationInput = boolean | ValidationOptions;
+export declare function validateText(text: string, input: ValidationInput): [string[], string[]];
+export declare function buildResult(path: string, input: ValidationInput): ValidationResult;
+export declare function buildPayload(paths: string[], input: ValidationInput): ValidationPayload;
 export declare function formatTextResults(results: ValidationResult[]): string;
+export {};

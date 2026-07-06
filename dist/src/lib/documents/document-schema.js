@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join, relative } from "node:path";
 import { ARTIFACT_SUFFIXES, DOCUMENT_ARTIFACTS, collectFeatureRoots, documentDocId, documentSuffix, frontmatterListValues, parseFrontmatter as parseDocumentFrontmatter, splitFrontmatter, } from "./document-metadata.js";
+import { resolveArtifactMode } from "./artifact-mode.js";
 import { computeUpstreamHash } from "../workflow/workflow-state.js";
 const REQUIRED_FRONTMATTER = ["title", "status", "feature", "doc_id"];
 const REQUIRED_ARTIFACTS = ["PRD", "TSD", "TVD", "TED", "VED"];
@@ -141,10 +142,11 @@ export function validateDocumentSchemas(root, options = {}) {
         .map((path) => parseWorkflowDocument(root, path))
         .filter((document) => document !== null);
     const chains = validateDocumentChains(root, parsedDocuments, options);
+    const artifactMode = resolveArtifactMode(root);
     const chainErrors = chains.flatMap((chain) => chain.errors);
-    const errors = [...parsedDocuments.flatMap((document) => document.errors), ...chainErrors];
+    const errors = [...artifactMode.errors, ...parsedDocuments.flatMap((document) => document.errors), ...chainErrors];
     const documents = options.includeSections === true ? parsedDocuments : parsedDocuments.map(summarizeDocument);
-    return { ok: errors.length === 0, root, documents, chains, chain_errors: chainErrors, errors };
+    return { ok: errors.length === 0, root, artifact_mode: artifactMode, documents, chains, chain_errors: chainErrors, errors };
 }
 export function validateDocumentChains(root, documents, options = {}) {
     const groups = new Map();

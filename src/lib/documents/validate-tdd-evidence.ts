@@ -1,4 +1,8 @@
 import { existsSync, readFileSync, statSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+
+import { isPathIgnoredByGitignore } from "./artifact-mode.ts";
+import type { ArtifactModeValue } from "./artifact-mode.ts";
 
 const EVIDENCE_HEADING_RE = /^\s{0,3}#{1,6}\s+TDD 证据\s*$/gim;
 const EXCEPTION_HEADING_RE = /^\s{0,3}#{1,6}\s+TDD 例外记录\s*$/gim;
@@ -17,6 +21,7 @@ const EVIDENCE_FIELDS = [
   "REFACTOR 命令",
   "最终验证",
 ];
+const REPRODUCIBLE_REFERENCE_FIELDS = ["RED 测试", "RED 命令", "GREEN 命令", "REFACTOR 命令", "最终验证"];
 const OPTIONAL_TEST_TYPE_FIELD = "测试类型";
 const ALLOWED_TEST_TYPES = new Set(["behavior", "contract", "architecture", "source-scan", "config"]);
 const EXCEPTION_FIELDS = ["原因", "用户批准", "替代验证", "风险"];
@@ -35,6 +40,14 @@ export interface ValidationPayload {
   results: ValidationResult[];
 }
 
+export interface ValidationOptions {
+  strict: boolean;
+  root?: string;
+  artifactMode?: ArtifactModeValue;
+}
+
+type ValidationInput = boolean | ValidationOptions;
+
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
@@ -49,6 +62,10 @@ function fieldPattern(label: string): RegExp {
 function getField(text: string, label: string): string | undefined {
   const match = fieldPattern(label).exec(text);
   return match ? match[1].trim() : undefined;
+}
+
+function getFields(text: string, label: string): string[] {
+  return [...text.matchAll(fieldPattern(label))].map((match) => match[1].trim());
 }
 
 function isPlaceholder(value: string): boolean {
@@ -69,7 +86,49 @@ function requireFields(text: string, labels: string[], sectionName: string): str
   return errors;
 }
 
-export function validateText(text: string, strict: boolean): [string[], string[]] {
+function normalizeOptions(input: ValidationInput): ValidationOptions {
+  if (typeof input === "boolean") {
+    return { strict: input };
+  }
+  return input;
+}
+
+function localPathReferences(text: string): string[] {
+  const withoutQuotedSearchPatterns = text.replace(/"[^"\n]*"|'[^'\n]*'/g, " ");
+  return [...new Set([...withoutQuotedSearchPatterns.matchAll(/\b(?:tests|src|skills|docs|hooks|assets|\.github)\/[A-Za-z0-9_.\/-]+/g)]
+    .map((match) => match[0])
+    .filter((reference) => !reference.includes("...") && /\.[A-Za-z0-9]+$/.test(reference)))]
+    .sort();
+}
+
+function referencedPathExists(root: string, evidencePath: string, reference: string): boolean {
+  const candidates = [resolve(root, reference), resolve(dirname(evidencePath), reference)];
+  return candidates.some((candidate) => existsSync(candidate));
+}
+
+function validateEvidenceContext(path: string, text: string, options: ValidationOptions): string[] {
+  const errors: string[] = [];
+  if (!options.root) {
+    return errors;
+  }
+
+  const root = resolve(options.root);
+  const evidencePath = resolve(path);
+  if (options.artifactMode !== "local" && isPathIgnoredByGitignore(root, evidencePath)) {
+    errors.push("ignored evidence cannot be used as formal completion evidence.");
+  }
+
+  const reproducibleText = REPRODUCIBLE_REFERENCE_FIELDS.flatMap((field) => getFields(text, field)).join("\n");
+  for (const reference of localPathReferences(reproducibleText)) {
+    if (!referencedPathExists(root, evidencePath, reference)) {
+      errors.push(`referenced path does not exist: ${reference}`);
+    }
+  }
+  return errors;
+}
+
+export function validateText(text: string, input: ValidationInput): [string[], string[]] {
+  const options = normalizeOptions(input);
   const errors: string[] = [];
   let warnings: string[] = [];
 
@@ -97,7 +156,7 @@ export function validateText(text: string, strict: boolean): [string[], string[]
     const redFailure = getField(text, "RED 失败");
     const finalVerification = getField(text, "最终验证");
 
-    if (source && !isPlaceholder(source) && !SPEC_SOURCE_RE.test(source)) {
+    if (source && !isPlaceholder(source) && options.artifactMode !== "local" && !SPEC_SOURCE_RE.test(source)) {
       warnings.push("规格/缺陷/验收 does not look traceable to a Spec ID, bug reproduction, or acceptance criterion.");
     }
 
@@ -123,7 +182,7 @@ export function validateText(text: string, strict: boolean): [string[], string[]
     errors.push(...requireFields(text, EXCEPTION_FIELDS, "TDD 例外记录"));
   }
 
-  if (strict && warnings.length > 0) {
+  if (options.strict && warnings.length > 0) {
     errors.push(...warnings);
     warnings = [];
   }
@@ -131,19 +190,23 @@ export function validateText(text: string, strict: boolean): [string[], string[]
   return [errors, warnings];
 }
 
-export function buildResult(path: string, strict: boolean): ValidationResult {
+export function buildResult(path: string, input: ValidationInput): ValidationResult {
+  const options = normalizeOptions(input);
   if (!existsSync(path)) {
     return { path, ok: false, errors: [`File does not exist: ${path}`], warnings: [] };
   }
   if (!statSync(path).isFile()) {
     return { path, ok: false, errors: [`Path is not a file: ${path}`], warnings: [] };
   }
-  const [errors, warnings] = validateText(readFileSync(path, "utf8"), strict);
+  const text = readFileSync(path, "utf8");
+  const [errors, warnings] = validateText(text, options);
+  errors.push(...validateEvidenceContext(path, text, options));
   return { path, ok: errors.length === 0, errors, warnings };
 }
 
-export function buildPayload(paths: string[], strict: boolean): ValidationPayload {
-  const results = paths.map((path) => buildResult(path, strict));
+export function buildPayload(paths: string[], input: ValidationInput): ValidationPayload {
+  const options = normalizeOptions(input);
+  const results = paths.map((path) => buildResult(path, options));
   return {
     ok: results.every((result) => result.ok),
     error_count: results.reduce((total, result) => total + result.errors.length, 0),

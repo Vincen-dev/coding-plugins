@@ -23,6 +23,18 @@ function parseArgs(argv) {
             options.format = value;
             index += 1;
         }
+        else if (arg === "--root") {
+            options.root = requireValue(argv, index, arg);
+            index += 1;
+        }
+        else if (arg === "--artifact-mode") {
+            const value = requireValue(argv, index, arg);
+            if (value !== "tracked" && value !== "local" && value !== "external") {
+                throw new Error("--artifact-mode must be tracked, local, or external.");
+            }
+            options.artifactMode = value;
+            index += 1;
+        }
         else if (arg === "--strict") {
             options.strict = true;
         }
@@ -40,7 +52,11 @@ function parseArgs(argv) {
 }
 try {
     const options = parseArgs(process.argv.slice(2));
-    const payload = buildPayload(options.evidenceFiles, options.strict);
+    const payload = buildPayload(options.evidenceFiles, {
+        strict: options.strict,
+        root: options.root,
+        artifactMode: options.artifactMode,
+    });
     if (options.format === "json") {
         console.log(JSON.stringify(payload, null, 2));
     }

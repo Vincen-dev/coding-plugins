@@ -43,7 +43,7 @@ export const COMMAND_REGISTRY = [
     { name: "validate", script: "src/cli/validate.ts", usage: "validate [--root <path>] [--format text|json] [--include-sections] [--allow-evidence-only|--strict-chain]" },
     { name: "validate-spec", script: "skills/spec-driven-development/scripts/validate-spec.ts", usage: "validate-spec [--format text|json] [--strict] <spec-files...>" },
     { name: "validate-technicals", script: "skills/writing-technicals/scripts/validate-technicals.ts", usage: "validate-technicals [--root <path>] [--format text|json] [--strict] [technical-files...]" },
-    { name: "validate-tdd-evidence", script: "skills/test-driven-development/scripts/validate-tdd-evidence.ts", usage: "validate-tdd-evidence [--format text|json] [--strict] <evidence-files...>" },
+    { name: "validate-tdd-evidence", script: "skills/test-driven-development/scripts/validate-tdd-evidence.ts", usage: "validate-tdd-evidence [--format text|json] [--strict] [--root <path>] [--artifact-mode tracked|local|external] <evidence-files...>" },
     { name: "workflow-brief", script: "src/cli/workflow-brief.ts", usage: "workflow-brief --feature <name> --doc-id <id> [--target <plan|execute>] [--task <task>] [--root <path>]" },
     { name: "workflow-guard", script: "src/cli/workflow-guard.ts", usage: "workflow-guard check --feature <name> --doc-id <id> --target <plan|execute> [--root <path>]" },
     { name: "workflow-mode", script: "skills/using-coding-plugins/scripts/workflow-mode.ts", usage: "workflow-mode --intent <text> [--files <paths>] [--task-count <n>] [--mode <mode>]" },

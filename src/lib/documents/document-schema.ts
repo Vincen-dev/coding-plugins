@@ -12,6 +12,8 @@ import {
   parseFrontmatter as parseDocumentFrontmatter,
   splitFrontmatter,
 } from "./document-metadata.ts";
+import { resolveArtifactMode } from "./artifact-mode.ts";
+import type { ArtifactModeStatus } from "./artifact-mode.ts";
 import { computeUpstreamHash } from "../workflow/workflow-state.ts";
 
 export interface ParsedDocument {
@@ -37,6 +39,7 @@ export type ParsedDocumentSummary = Omit<ParsedDocument, "sections"> & {
 export interface DocumentValidationResult<TDocument extends ParsedDocument | ParsedDocumentSummary = ParsedDocumentSummary> {
   ok: boolean;
   root: string;
+  artifact_mode: ArtifactModeStatus;
   documents: TDocument[];
   chains: ParsedDocumentChain[];
   chain_errors: string[];
@@ -212,10 +215,11 @@ export function validateDocumentSchemas(root: string, options: DocumentValidatio
     .map((path) => parseWorkflowDocument(root, path))
     .filter((document): document is ParsedDocument => document !== null);
   const chains = validateDocumentChains(root, parsedDocuments, options);
+  const artifactMode = resolveArtifactMode(root);
   const chainErrors = chains.flatMap((chain) => chain.errors);
-  const errors = [...parsedDocuments.flatMap((document) => document.errors), ...chainErrors];
+  const errors = [...artifactMode.errors, ...parsedDocuments.flatMap((document) => document.errors), ...chainErrors];
   const documents = options.includeSections === true ? parsedDocuments : parsedDocuments.map(summarizeDocument);
-  return { ok: errors.length === 0, root, documents, chains, chain_errors: chainErrors, errors };
+  return { ok: errors.length === 0, root, artifact_mode: artifactMode, documents, chains, chain_errors: chainErrors, errors };
 }
 
 export function validateDocumentChains(root: string, documents: ParsedDocument[], options: Pick<DocumentValidationOptions, "allowEvidenceOnly"> = {}): ParsedDocumentChain[] {

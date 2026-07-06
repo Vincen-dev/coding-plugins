@@ -9,6 +9,7 @@ import { buildPayload as buildSpecPayload } from "../../lib/documents/validate-s
 import { buildPayload as buildTddEvidencePayload } from "../../lib/documents/validate-tdd-evidence.js";
 import { validateRepository as validateTechnicals } from "../../lib/documents/validate-technicals.js";
 import { collectFeatureRoots, frontmatterListValues } from "../../lib/documents/document-metadata.js";
+import { resolveArtifactMode } from "../../lib/documents/artifact-mode.js";
 import { withBuildLock } from "../../lib/runtime/build-lock.js";
 import { findRepositoryRoot } from "../../lib/runtime/repository-root.js";
 const root = findRepositoryRoot(dirname(fileURLToPath(import.meta.url)));
@@ -107,6 +108,10 @@ function checkExternalReferences() {
     console.log(`External reference checks passed (${files.length} markdown files scanned).`);
 }
 function runStaticChecks() {
+    const artifactMode = resolveArtifactMode(root);
+    if (artifactMode.errors.length > 0) {
+        throw new Error(`Artifact mode validation failed: ${artifactMode.errors.join("; ")}`);
+    }
     checkRequiredPluginFiles(root);
     checkManifestVersions(root);
     checkPlatformEntrypoints(root);
@@ -121,7 +126,14 @@ function runStaticChecks() {
     }
     const evidenceFiles = collectTddEvidenceFiles();
     if (evidenceFiles.length > 0) {
-        assertPayload("TDD evidence validation", buildTddEvidencePayload(evidenceFiles, true));
+        if (!artifactMode.formal_evidence_allowed) {
+            throw new Error("Artifact mode validation failed: local artifact mode evidence cannot be used as formal completion evidence.");
+        }
+        assertPayload("TDD evidence validation", buildTddEvidencePayload(evidenceFiles, {
+            strict: true,
+            root,
+            artifactMode: artifactMode.mode,
+        }));
     }
     assertPayload("Technical design validation", validateTechnicals(root, { strict: true }));
 }
