@@ -55,6 +55,12 @@ function parse(argv) {
             options.packageVisible = requireValue(argv, index, arg);
             index += 1;
         }
+        else if (arg === "--commit-pushed") {
+            options.commitPushed = true;
+        }
+        else if (arg === "--dependency-resolved") {
+            options.dependencyResolved = true;
+        }
         else if (arg === "--json") {
             options.json = true;
         }

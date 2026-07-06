@@ -21,7 +21,7 @@ export const COMMAND_REGISTRY = [
   { name: "command-registry", script: "src/cli/command-registry.ts", usage: "command-registry [--format text|json]" },
   { name: "decision-points", script: "skills/using-coding-plugins/scripts/decision-points.ts", usage: "decision-points [--id <DP-n>] [--json]" },
   { name: "dp", script: "src/cli/dp.ts", usage: "dp <status|request|approve|audit> --feature <name> --doc-id <id> [--id <DP-n>] [--target <execute|commit|tag|release|publish>] [--root <path>] [--json]" },
-  { name: "doctor", script: "src/cli/doctor.ts", usage: "doctor [--root <path>] [--format text|json]" },
+  { name: "doctor", script: "src/cli/doctor.ts", usage: "doctor [--root <path>] [--require-env <checks>] [--format text|json]" },
   { name: "document-contract-migration", script: "skills/document-metadata/scripts/document-contract-migration.ts", usage: "document-contract-migration [--root <path>] [--dry-run]" },
   {
     name: "execution-contract",
@@ -36,7 +36,7 @@ export const COMMAND_REGISTRY = [
   { name: "preflight", script: "src/cli/preflight.ts", usage: "preflight [--root <path>] [--write-index] [--check-external-references]" },
   { name: "prepare-release", script: "src/cli/prepare-release.ts", usage: "prepare-release [--root <path>] [--version <version>]" },
   { name: "release", script: "src/cli/release.ts", usage: "release <plan|guard|verify> [--version <version>] [--packages <names>] [--package-order <names>] [--commit-pushed] [--tag-pushed] [--workflow-ok] [--release-visible] [--dependency-resolved] [--json]" },
-  { name: "report", script: "src/cli/report.ts", usage: "report completion [--kind task|release] [--implemented <items>] [--verified <command=status>] [--json]" },
+  { name: "report", script: "src/cli/report.ts", usage: "report completion [--kind task|release] [--implemented <items>] [--verified <command=status>] [--commit-pushed] [--dependency-resolved] [--json]" },
   { name: "remote-audit", script: "src/cli/remote-audit.ts", usage: "remote-audit --owner <owner> --repo <repo> --tag <tag> --expected-pusher <login>" },
   { name: "scaffold-feature-docs", script: "skills/spec-driven-development/scripts/scaffold-feature-docs.ts", usage: "scaffold-feature-docs <feature-name> --title <title> [--doc-id <id>] [--root <path>]" },
   { name: "scaffold-fixture-case", script: "skills/writing-skills/scripts/scaffold-fixture-case.ts", usage: "scaffold-fixture-case <root> --feature <name> --doc-id <id> --title <title> ..." },

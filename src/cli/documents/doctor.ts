@@ -18,6 +18,8 @@ interface Check {
   message: string;
 }
 
+type RequiredEnvironmentCheck = "fvm-dart-cache" | "build-runner" | "github-auth" | "pub-auth" | "ssh-host-key";
+
 function requireValue(argv: string[], index: number, arg: string): string {
   const value = argv[index + 1];
   if (!value) {
@@ -30,6 +32,7 @@ try {
   let root = ".";
   let codexHome: string | null = null;
   let format = "text";
+  const requiredEnv = new Set<RequiredEnvironmentCheck>();
   const args = process.argv.slice(2);
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index];
@@ -41,6 +44,11 @@ try {
       index += 1;
     } else if (arg === "--codex-home") {
       codexHome = requireValue(args, index, arg);
+      index += 1;
+    } else if (arg === "--require-env") {
+      for (const item of parseRequiredEnvironment(requireValue(args, index, arg))) {
+        requiredEnv.add(item);
+      }
       index += 1;
     } else {
       throw new Error(`Unknown argument: ${arg}`);
@@ -99,7 +107,7 @@ try {
       runtimeStatus.session_lock.errors.length > 0 ? `errors=${runtimeStatus.session_lock.errors.join("|")}` : null,
     ].filter(Boolean).join("; "),
   });
-  checks.push(...environmentDiagnosticChecks(resolved));
+  checks.push(...environmentDiagnosticChecks(resolved, requiredEnv));
 
   if (isPluginRepository) {
     const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf8")) as { version?: string };
@@ -158,60 +166,111 @@ try {
   process.exit(1);
 }
 
-function environmentDiagnosticChecks(root: string): Check[] {
-  const home = homedir();
+function parseRequiredEnvironment(value: string): RequiredEnvironmentCheck[] {
+  return value.split(",").map((item) => item.trim()).filter(Boolean).map((item) => {
+    const normalized = item.replace(/^env-/, "").replaceAll("_", "-");
+    if (
+      normalized === "fvm-dart-cache"
+      || normalized === "build-runner"
+      || normalized === "github-auth"
+      || normalized === "pub-auth"
+      || normalized === "ssh-host-key"
+    ) {
+      return normalized;
+    }
+    throw new Error(`Unknown required environment check: ${item}`);
+  });
+}
+
+function requiredMessage(name: RequiredEnvironmentCheck, requiredEnv: Set<RequiredEnvironmentCheck>): string {
+  return `required=${requiredEnv.has(name) ? "true" : "false"}`;
+}
+
+function environmentDiagnosticChecks(root: string, requiredEnv: Set<RequiredEnvironmentCheck>): Check[] {
+  const home = process.env.HOME ?? homedir();
   const pubspecPath = join(root, "pubspec.yaml");
   const pubspec = existsSync(pubspecPath) ? readFileSync(pubspecPath, "utf8") : "";
   const fvmConfig = [join(root, ".fvmrc"), join(root, ".fvm/fvm_config.json")].find((path) => existsSync(path));
+  const fvmHome = process.env.FVM_HOME ?? join(home, ".fvm");
   const dartTool = join(root, ".dart_tool");
+  const packageConfigPath = join(dartTool, "package_config.json");
   const buildRunnerDeclared = /\bbuild_runner\s*:/.test(pubspec);
   const ghHosts = join(home, ".config/gh/hosts.yml");
   const pubCredentials = join(home, ".pub-cache/credentials.json");
   const knownHosts = join(home, ".ssh/known_hosts");
   const knownHostsText = existsSync(knownHosts) ? readFileSync(knownHosts, "utf8") : "";
+  const githubAuthAvailable = Boolean(process.env.GH_TOKEN || process.env.GITHUB_TOKEN) || existsSync(ghHosts);
+  const pubAuthAvailable = existsSync(pubCredentials);
+  const sshHostKeyAvailable = knownHostsText.includes("github.com");
+  const buildRunnerPackageStatus = packageConfigIncludesPackage(packageConfigPath, "build_runner");
+  const buildRunnerReady = !buildRunnerDeclared || buildRunnerPackageStatus === "present";
+  const fvmReady = !fvmConfig || existsSync(fvmHome);
   return [
     {
       name: "env-fvm-dart-cache",
-      ok: true,
+      ok: !requiredEnv.has("fvm-dart-cache") || fvmReady,
       message: [
+        requiredMessage("fvm-dart-cache", requiredEnv),
         `fvm_config=${fvmConfig ?? "not-detected"}`,
-        `FVM_HOME=${process.env.FVM_HOME ?? ""}`,
+        `FVM_HOME=${fvmHome}`,
         `PUB_CACHE=${process.env.PUB_CACHE ?? join(home, ".pub-cache")}`,
+        fvmReady ? "status=ready-or-not-needed" : "status=install or warm FVM cache before Flutter verification",
       ].join("; "),
     },
     {
       name: "env-build-runner",
-      ok: true,
+      ok: !requiredEnv.has("build-runner") || buildRunnerReady,
       message: [
+        requiredMessage("build-runner", requiredEnv),
         `build_runner=${buildRunnerDeclared ? "declared" : "not-declared"}`,
         `.dart_tool=${existsSync(dartTool) ? "present" : "missing"}`,
+        `package_config=${buildRunnerPackageStatus === "present" ? "build_runner" : buildRunnerPackageStatus === "missing" ? "missing" : "missing-build_runner"}`,
+        buildRunnerReady ? "status=ready-or-not-needed" : "status=run dart pub get before build_runner verification",
       ].join("; "),
     },
     {
       name: "env-github-auth",
-      ok: true,
+      ok: !requiredEnv.has("github-auth") || githubAuthAvailable,
       message: [
+        requiredMessage("github-auth", requiredEnv),
         `GH_TOKEN=${process.env.GH_TOKEN || process.env.GITHUB_TOKEN ? "present" : "missing"}`,
         `gh_hosts=${existsSync(ghHosts) ? "present" : "missing"}`,
+        githubAuthAvailable ? "status=available" : "status=run gh auth login or set GH_TOKEN",
       ].join("; "),
     },
     {
       name: "env-pub-auth",
-      ok: true,
+      ok: !requiredEnv.has("pub-auth") || pubAuthAvailable,
       message: [
+        requiredMessage("pub-auth", requiredEnv),
         `pub_credentials=${existsSync(pubCredentials) ? "present" : "missing"}`,
         `PUB_HOSTED_URL=${process.env.PUB_HOSTED_URL ?? "default"}`,
+        pubAuthAvailable ? "status=available" : "status=run dart pub token add or dart pub login",
       ].join("; "),
     },
     {
       name: "env-ssh-host-key",
-      ok: true,
+      ok: !requiredEnv.has("ssh-host-key") || sshHostKeyAvailable,
       message: [
+        requiredMessage("ssh-host-key", requiredEnv),
         `known_hosts=${existsSync(knownHosts) ? "present" : "missing"}`,
-        `github.com=${knownHostsText.includes("github.com") ? "present" : "missing"}`,
+        `github.com=${sshHostKeyAvailable ? "present" : "missing"}`,
+        sshHostKeyAvailable ? "status=available" : "status=run ssh-keyscan github.com before SSH git operations",
       ].join("; "),
     },
   ];
+}
+
+function packageConfigIncludesPackage(path: string, packageName: string): "present" | "missing" | "missing-package" {
+  if (!existsSync(path)) {
+    return "missing";
+  }
+  try {
+    const parsed = JSON.parse(readFileSync(path, "utf8")) as { packages?: Array<{ name?: string }> };
+    return parsed.packages?.some((item) => item.name === packageName) ? "present" : "missing-package";
+  } catch {
+    return "missing-package";
+  }
 }
 
 function runCheck(name: string, fn: () => string): Check {

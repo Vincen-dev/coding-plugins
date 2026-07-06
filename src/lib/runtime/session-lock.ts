@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { accessSync, constants, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 
 export const SESSION_LOCK_FILE = ".coding-plugins/session-lock.json";
@@ -52,6 +52,15 @@ function readLock(path: string): SessionLock | null {
   };
 }
 
+function readable(path: string): boolean {
+  try {
+    accessSync(path, constants.R_OK);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function validateLock(lock: SessionLock, expected: { pluginVersion: string; pluginRoot: string; cliPath: string; threadId?: string | null }): string[] {
   const errors: string[] = [];
   if (lock.plugin_version !== expected.pluginVersion) {
@@ -62,6 +71,9 @@ function validateLock(lock: SessionLock, expected: { pluginVersion: string; plug
   }
   if (resolve(lock.cli_path) !== resolve(expected.cliPath)) {
     errors.push(`cli_path mismatch: locked=${lock.cli_path}; current=${expected.cliPath}`);
+  }
+  if (!readable(lock.cli_path)) {
+    errors.push(`cli_path is not available: ${lock.cli_path}`);
   }
   if (expected.threadId && lock.thread_id && lock.thread_id !== expected.threadId) {
     errors.push(`thread_id mismatch: locked=${lock.thread_id}; current=${expected.threadId}`);

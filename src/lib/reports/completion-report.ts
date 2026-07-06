@@ -1,3 +1,5 @@
+import { RELEASE_COMPLETION_STANDARDS, verifyRelease } from "../release/release-flow.ts";
+
 export type CompletionReportKind = "task" | "release";
 
 export interface VerifiedCommand {
@@ -6,11 +8,14 @@ export interface VerifiedCommand {
 }
 
 export interface ReleaseEvidence {
+  release_commit_pushed: boolean;
   workflow_run: string | null;
   remote_tag: string | null;
   package_visible: string | null;
+  dependency_resolution_passed: boolean;
   complete: boolean;
   missing: string[];
+  completion_standards: string[];
 }
 
 export interface CompletionReport {
@@ -53,15 +58,19 @@ export function buildCompletionReport(options: {
   workflowRun?: string;
   remoteTag?: string;
   packageVisible?: string;
+  commitPushed?: boolean;
+  dependencyResolved?: boolean;
 }): CompletionReport {
   const kind: CompletionReportKind = options.kind === "release" ? "release" : "task";
-  const releaseMissing = kind === "release"
-    ? [
-      options.workflowRun ? null : "workflow_run",
-      options.remoteTag ? null : "remote_tag",
-      options.packageVisible ? null : "package_visible",
-    ].filter((item): item is string => Boolean(item))
-    : [];
+  const releaseVerification = kind === "release"
+    ? verifyRelease({
+      releaseCommitPushed: options.commitPushed === true,
+      tagPushed: Boolean(options.remoteTag),
+      workflowOk: Boolean(options.workflowRun),
+      releaseVisible: Boolean(options.packageVisible),
+      dependencyResolved: options.dependencyResolved === true,
+    })
+    : null;
   return {
     kind,
     implemented: splitList(options.implemented),
@@ -71,11 +80,14 @@ export function buildCompletionReport(options: {
     commits: splitList(options.committed),
     published: splitList(options.published),
     release_evidence: {
+      release_commit_pushed: options.commitPushed === true,
       workflow_run: options.workflowRun ?? null,
       remote_tag: options.remoteTag ?? null,
       package_visible: options.packageVisible ?? null,
-      complete: kind === "release" && releaseMissing.length === 0,
-      missing: releaseMissing,
+      dependency_resolution_passed: options.dependencyResolved === true,
+      complete: releaseVerification?.ok ?? false,
+      missing: releaseVerification?.missing_standards ?? [],
+      completion_standards: [...RELEASE_COMPLETION_STANDARDS],
     },
     sections: ["已实现", "已验证", "未验证", "只本地验证", "已提交", "已发布"],
   };
@@ -98,9 +110,11 @@ export function formatCompletionReport(report: CompletionReport): string {
     ...(report.published.length ? report.published : ["none"]).map((item) => `- ${item}`),
   ];
   if (report.kind === "release") {
+    lines.push(`Release commit pushed: ${report.release_evidence.release_commit_pushed ? "yes" : "missing"}`);
     lines.push(`Release workflow: ${report.release_evidence.workflow_run ?? "missing"}`);
     lines.push(`Remote tag: ${report.release_evidence.remote_tag ?? "missing"}`);
     lines.push(`Package visible: ${report.release_evidence.package_visible ?? "missing"}`);
+    lines.push(`Dependency resolution: ${report.release_evidence.dependency_resolution_passed ? "pass" : "missing"}`);
   }
   return lines.join("\n");
 }

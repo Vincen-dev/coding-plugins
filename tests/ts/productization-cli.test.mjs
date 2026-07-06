@@ -728,6 +728,8 @@ test("completion report separates implementation, verification, commit, and rele
     "v1.0.18",
     "--package-visible",
     "https://github.com/Vincen-dev/coding-plugins/releases/tag/v1.0.18",
+    "--commit-pushed",
+    "--dependency-resolved",
     "--json",
   ]);
 
@@ -744,6 +746,28 @@ test("completion report separates implementation, verification, commit, and rele
   assert.equal(payload.release_evidence.complete, true);
   assert.equal(payload.sections.includes("已实现"), true);
   assert.equal(payload.sections.includes("已发布"), true);
+});
+
+test("completion report uses the release completion standards before declaring release complete", () => {
+  const result = run([
+    "report",
+    "completion",
+    "--kind",
+    "release",
+    "--workflow-run",
+    "https://github.com/Vincen-dev/coding-plugins/actions/runs/1",
+    "--remote-tag",
+    "v1.0.18",
+    "--package-visible",
+    "https://github.com/Vincen-dev/coding-plugins/releases/tag/v1.0.18",
+    "--json",
+  ]);
+
+  assert.equal(result.status, 1);
+  const payload = JSON.parse(result.stdout);
+  assert.equal(payload.release_evidence.complete, false);
+  assert.ok(payload.release_evidence.missing.includes("release_commit_pushed"));
+  assert.ok(payload.release_evidence.missing.includes("dependency_resolution_passed"));
 });
 
 test("commit-guard rejects AI-like author identities", () => {
@@ -1019,6 +1043,89 @@ test("doctor audits plugin repository wiring and detects stale Codex cache versi
   }
 });
 
+test("doctor can promote required environment diagnostics to blocking checks", () => {
+  const root = mkdtempSync(join(tmpdir(), "coding-plugins-required-env-"));
+  const home = mkdtempSync(join(tmpdir(), "coding-plugins-required-home-"));
+  try {
+    writeFileSync(join(root, "pubspec.yaml"), "dev_dependencies:\n  build_runner: ^2.4.0\n", "utf8");
+
+    const result = run([
+      "doctor",
+      "--root",
+      root,
+      "--require-env",
+      "github-auth,pub-auth,ssh-host-key,build-runner",
+      "--format",
+      "json",
+    ], {
+      env: { ...npmCacheEnv(), HOME: home, GH_TOKEN: "", GITHUB_TOKEN: "" },
+    });
+
+    assert.equal(result.status, 1);
+    const payload = JSON.parse(result.stdout);
+    assert.equal(payload.ok, false);
+    for (const expected of ["env-github-auth", "env-pub-auth", "env-ssh-host-key", "env-build-runner"]) {
+      const check = payload.checks.find((item) => item.name === expected);
+      assert.equal(check.ok, false, `${expected} should block when required inputs are missing`);
+      assert.match(check.message, /required=true/);
+    }
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+    rmSync(home, { recursive: true, force: true });
+  }
+});
+
+test("doctor requires build_runner to be resolved in package_config when requested", () => {
+  const root = mkdtempSync(join(tmpdir(), "coding-plugins-build-runner-env-"));
+  try {
+    mkdirSync(join(root, ".dart_tool"), { recursive: true });
+    writeFileSync(join(root, "pubspec.yaml"), "dev_dependencies:\n  build_runner: ^2.4.0\n", "utf8");
+    writeFileSync(
+      join(root, ".dart_tool/package_config.json"),
+      JSON.stringify({ configVersion: 2, packages: [{ name: "test", rootUri: "../.pub-cache/test" }] }, null, 2),
+      "utf8",
+    );
+
+    const unresolved = run([
+      "doctor",
+      "--root",
+      root,
+      "--require-env",
+      "build-runner",
+      "--format",
+      "json",
+    ]);
+
+    assert.equal(unresolved.status, 1);
+    const unresolvedPayload = JSON.parse(unresolved.stdout);
+    const unresolvedCheck = unresolvedPayload.checks.find((item) => item.name === "env-build-runner");
+    assert.equal(unresolvedCheck.ok, false);
+    assert.match(unresolvedCheck.message, /package_config=missing-build_runner/);
+
+    writeFileSync(
+      join(root, ".dart_tool/package_config.json"),
+      JSON.stringify({ configVersion: 2, packages: [{ name: "build_runner", rootUri: "../.pub-cache/build_runner" }] }, null, 2),
+      "utf8",
+    );
+
+    const resolved = run([
+      "doctor",
+      "--root",
+      root,
+      "--require-env",
+      "build-runner",
+      "--format",
+      "json",
+    ]);
+    const resolvedPayload = JSON.parse(resolved.stdout);
+    const resolvedCheck = resolvedPayload.checks.find((item) => item.name === "env-build-runner");
+    assert.equal(resolvedCheck.ok, true);
+    assert.match(resolvedCheck.message, /package_config=build_runner/);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test("migration guide documents lightweight/full-chain routing and artifact mode boundaries", () => {
   const guide = readFileSync(join(repoRoot, "docs/migration-guide.md"), "utf8");
   for (const expected of [
@@ -1110,8 +1217,10 @@ test("cli status reuses session lock and reports mixed plugin versions", () => {
 
     assert.equal(payload.session_lock.ok, false);
     assert.ok(payload.session_lock.errors.some((error) => error.includes("plugin_version")));
-    assert.equal(payload.fallback_argv[1], lockedCli);
-    assert.ok(payload.fallback_command.includes("locked-cache/bin/coding-plugins.js"));
+    assert.ok(payload.session_lock.errors.some((error) => error.includes("cli_path is not available")));
+    assert.deepEqual(payload.fallback_argv, []);
+    assert.equal(payload.fallback_command, "");
+    assert.equal(payload.recommended_action, "repair-session-lock");
   } finally {
     rmSync(targetRoot, { recursive: true, force: true });
   }

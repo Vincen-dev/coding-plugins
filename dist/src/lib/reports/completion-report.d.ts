@@ -4,11 +4,14 @@ export interface VerifiedCommand {
     status: string;
 }
 export interface ReleaseEvidence {
+    release_commit_pushed: boolean;
     workflow_run: string | null;
     remote_tag: string | null;
     package_visible: string | null;
+    dependency_resolution_passed: boolean;
     complete: boolean;
     missing: string[];
+    completion_standards: string[];
 }
 export interface CompletionReport {
     kind: CompletionReportKind;
@@ -32,5 +35,7 @@ export declare function buildCompletionReport(options: {
     workflowRun?: string;
     remoteTag?: string;
     packageVisible?: string;
+    commitPushed?: boolean;
+    dependencyResolved?: boolean;
 }): CompletionReport;
 export declare function formatCompletionReport(report: CompletionReport): string;

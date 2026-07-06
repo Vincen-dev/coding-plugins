@@ -19,7 +19,7 @@ export interface CliStatus {
   shim_exists: boolean;
   shim_points_to_current_cli: boolean;
   path_contains_target_dir: boolean;
-  recommended_action: "none" | "install-cli-shim-or-use-fallback";
+  recommended_action: "none" | "install-cli-shim-or-use-fallback" | "repair-session-lock";
 }
 
 export interface CliInstallResult {
@@ -120,7 +120,7 @@ export function cliStatus(options: { pluginRoot: string; target?: string; scope?
     cliPath: currentCli,
     threadId: options.threadId ?? defaultThreadId(),
   });
-  const fallbackCli = sessionLock.lock.cli_path || currentCli;
+  const fallbackCli = sessionLock.ok && sessionLock.lock.cli_path ? sessionLock.lock.cli_path : null;
   const pathCommand = findOnPath("coding-plugins");
   const shimExists = existsSync(target);
   const shimPointsToCurrentCli = sameShim(target, currentCli);
@@ -132,14 +132,18 @@ export function cliStatus(options: { pluginRoot: string; target?: string; scope?
     plugin_root: options.pluginRoot,
     plugin_version: pluginVersion,
     current_cli: currentCli,
-    fallback_argv: [process.execPath, fallbackCli],
-    fallback_command: `${shellQuote(process.execPath)} ${shellQuote(fallbackCli)}`,
+    fallback_argv: fallbackCli ? [process.execPath, fallbackCli] : [],
+    fallback_command: fallbackCli ? `${shellQuote(process.execPath)} ${shellQuote(fallbackCli)}` : "",
     session_lock: sessionLock,
     shim_target: target,
     shim_exists: shimExists,
     shim_points_to_current_cli: shimPointsToCurrentCli,
     path_contains_target_dir: targetDirectoryOnPath,
-    recommended_action: cliOnPath || (shimPointsToCurrentCli && targetDirectoryOnPath) ? "none" : "install-cli-shim-or-use-fallback",
+    recommended_action: !sessionLock.ok
+      ? "repair-session-lock"
+      : cliOnPath || (shimPointsToCurrentCli && targetDirectoryOnPath)
+        ? "none"
+        : "install-cli-shim-or-use-fallback",
   };
 }
 

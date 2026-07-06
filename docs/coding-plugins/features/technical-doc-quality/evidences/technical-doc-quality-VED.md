@@ -26,6 +26,30 @@ external_references: []
 
 ## TDD 证据
 
+- **规格/缺陷/验收:** Review 反馈指出 P1/P2 状态报告仍存在三类误判：`doctor` 环境诊断无法按任务需求阻断缺失 auth/cache/host-key 前置条件；`report completion --kind release` 未复用 release 五项完成标准；session lock fallback 可能继续指向已失效 CLI 路径。
+- **测试类型:** `contract`
+- **RED 测试:** `tests/ts/productization-cli.test.mjs` 中的 `completion report uses the release completion standards before declaring release complete`、`doctor can promote required environment diagnostics to blocking checks`，以及更新后的 `cli status reuses session lock and reports mixed plugin versions`。
+- **RED 命令:** `node --test tests/ts/productization-cli.test.mjs`
+- **RED 失败:** `report completion` 对 `--commit-pushed` 返回 `Unknown argument`，且缺 release commit / dependency resolution 时仍退出 0；`doctor --require-env` 返回未知参数且无 JSON 输出；session lock 错误列表缺少失效 CLI 路径诊断，fallback 仍指向 `locked-cache/bin/coding-plugins.js`。
+- **GREEN 变更:** `report completion` 接入 `verifyRelease` 五项标准并新增 commit/dependency evidence；`doctor` 增加 `--require-env`，可将 GitHub auth、pub auth、SSH host key、build_runner 和 FVM cache 诊断升级为阻断项；session lock 校验 locked CLI 路径可读性，失效时 fallback 回当前 CLI。
+- **GREEN 命令:** `npm run build`；`node --test tests/ts/productization-cli.test.mjs`
+- **REFACTOR 命令:** `node --test tests/ts/productization-cli.test.mjs`
+- **最终验证:** `npm run typecheck` PASS；`node --test tests/ts/productization-cli.test.mjs` PASS，53/53；`node --test tests/ts/agent-pressure-harness.test.mjs` PASS；`node --test tests/ts/npm-package.test.mjs` PASS，13/13；`git diff --check` PASS。
+
+## TDD 证据
+
+- **规格/缺陷/验收:** 第二次 review 指出三项剩余缺口：invalid session lock 不能继续给当前 CLI fallback 以绕过单会话锁定；`doctor --require-env` 测试必须不受真实 `GH_TOKEN` / `GITHUB_TOKEN` 污染；`build-runner` required check 不能只看 `.dart_tool` 目录，必须确认 `package_config.json` 已解析到 `build_runner`。
+- **测试类型:** `contract`
+- **RED 测试:** `tests/ts/productization-cli.test.mjs` 中更新后的 `cli status reuses session lock and reports mixed plugin versions`、`doctor can promote required environment diagnostics to blocking checks`，以及新增的 `doctor requires build_runner to be resolved in package_config when requested`。
+- **RED 命令:** `node --test tests/ts/productization-cli.test.mjs`；`env GH_TOKEN=dummy node --test tests/ts/productization-cli.test.mjs --test-name-pattern "doctor can promote required environment diagnostics"`
+- **RED 失败:** invalid session lock 仍返回 `[node, bin/coding-plugins.js]` fallback；带 `GH_TOKEN=dummy` 时 required GitHub auth 测试误判为通过；`.dart_tool/package_config.json` 缺少 `build_runner` 时 `env-build-runner` 仍为 ok。
+- **GREEN 变更:** invalid session lock 的 `fallback_argv` / `fallback_command` 置空并返回 `recommended_action=repair-session-lock`；required-env 测试显式清空 token；`doctor` 检查 `.dart_tool/package_config.json` 中的 `build_runner` package，并在 message 中输出 `package_config=build_runner|missing|missing-build_runner`；完成项从 `TODO.md` / `todo.md` 移除。
+- **GREEN 命令:** `npm run build`；`node --test tests/ts/productization-cli.test.mjs`
+- **REFACTOR 命令:** `env GH_TOKEN=dummy node --test tests/ts/productization-cli.test.mjs --test-name-pattern "doctor can promote required environment diagnostics"`
+- **最终验证:** `npm run typecheck` PASS；`node --test tests/ts/productization-cli.test.mjs` PASS，54/54；`env GH_TOKEN=dummy node --test tests/ts/productization-cli.test.mjs --test-name-pattern "doctor can promote required environment diagnostics"` PASS；`node --test tests/ts/agent-pressure-harness.test.mjs` PASS；`node --test tests/ts/npm-package.test.mjs` PASS，13/13；`git diff --check` PASS。
+
+## TDD 证据
+
 - **规格/缺陷/验收:** P1 验收要求固定单会话插件版本并修正 CLI fallback：首次运行生成 session lock，记录 plugin version、plugin root、CLI path、thread id；后续 fallback 读取 lock，混读 cache 版本由 doctor 报告；doctor 输出 PATH、cache manifest、installed/enabled/version 和 artifact mode；`preflight --root` / `--write-index` / `validate` 必须可靠作用于目标仓库。
 - **测试类型:** `contract`
 - **RED 测试:** `tests/ts/productization-cli.test.mjs` 中的 `doctor audits plugin repository wiring and detects stale Codex cache versions`、`cli status reports fallback command when coding-plugins is not on PATH`、`cli status reuses session lock and reports mixed plugin versions`；`tests/ts/preflight-cli.test.mjs` 中的 `TypeScript preflight --root runs against the target repository`。

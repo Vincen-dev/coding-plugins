@@ -13,7 +13,7 @@ export interface CliStatus {
     shim_exists: boolean;
     shim_points_to_current_cli: boolean;
     path_contains_target_dir: boolean;
-    recommended_action: "none" | "install-cli-shim-or-use-fallback";
+    recommended_action: "none" | "install-cli-shim-or-use-fallback" | "repair-session-lock";
 }
 export interface CliInstallResult {
     installed: boolean;
