@@ -1,5 +1,13 @@
 # Release Notes
 
+## 1.0.19 - 2026-07-06
+
+- 修复 `report completion --kind release` 的完成判断，统一复用 release commit、tag、workflow、发布目标和依赖解析五项发布完成标准。
+- `doctor` 新增 `--require-env` 阻断模式，可将 GitHub auth、pub.dev auth、SSH host key、FVM、Dart cache 和 build_runner 等环境诊断提升为必需检查。
+- 收紧会话锁 fallback：锁定 CLI 路径失效时报告错误并回退到当前 CLI，避免继续指向旧插件缓存。
+- 清理已完成 TODO，补充第二次 review 的 TDD evidence 和产品化 CLI 回归测试。
+- 提升插件、npm package、lockfile 和版本提升配置到 `1.0.19`。
+
 ## 1.0.18 - 2026-07-05
 
 - 将 CLI 命令入口收敛到共享 command registry，避免 `bin` 和帮助文本维护第二套命令映射。

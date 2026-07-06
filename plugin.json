@@ -1,7 +1,7 @@
 {
   "name": "coding-plugins",
   "description": "Chinese coding workflow plugin for brainstorming, SDD, TDD, debugging, review, commit, and branch finishing.",
-  "version": "1.0.18",
+  "version": "1.0.19",
   "author": {
     "name": "Vincen",
     "email": "hx001007@gmail.com",
