@@ -50,27 +50,27 @@
 
 ## P2：执行体验和报告质量
 
-- [ ] 提供 task brief 输出，减少重复读取完整 skill。
+- [x] 提供 task brief 输出，减少重复读取完整 skill。
   - 由 CLI 输出本轮必要 skill、当前状态、下一命令、阻塞点和验证要求。
   - skill 文件仍是权威规则，但不应在长会话中反复手动查找多个版本。
-- [ ] 优化完成报告模板。
+- [x] 优化完成报告模板。
   - 明确区分：已实现、已验证、未验证、只本地验证、已提交、已发布。
   - 发布类报告必须包含 workflow run、远端 tag、包仓库可见性或失败原因。
-- [ ] 增加环境诊断。
+- [x] 增加环境诊断。
   - 对 FVM/Dart SDK cache、build_runner AOT/JIT、GitHub auth、pub.dev auth、SSH host key 等常见阻塞提供 `doctor` 检查。
   - 避免每个验证命令都先失败再提权重跑。
-- [ ] 建立会话复盘测试集。
+- [x] 建立会话复盘测试集。
   - 将真实失控模式转成 fixture case：full-chain 先实现后补、ignored evidence、连续“继续”未走 state、tag pushed 误判发布完成、混读多个插件版本。
   - `npm run preflight` 必须覆盖这些回归。
-- [ ] 输出 migration guide。
+- [x] 输出 migration guide。
   - 说明何时使用 lightweight TDD，何时必须 full-chain / maintenance-chain。
   - 说明业务仓库是否应该提交 `docs/coding-plugins/`，以及 local/external 模式的边界。
 
 ## 验收标准
 
-- [ ] `full-chain` 下没有 approved TED 时，任何实现动作都会被 guard 阻止。
-- [ ] 用户说“继续”时，CLI 能返回唯一下一步，而不是让 agent 自行推断。
-- [ ] ignored 的 VED 不能被用作正式完成证据。
+- [x] `full-chain` 下没有 approved TED 时，任何实现动作都会被 guard 阻止。
+- [x] 用户说“继续”时，CLI 能返回唯一下一步，而不是让 agent 自行推断。
+- [x] ignored 的 VED 不能被用作正式完成证据。
 - [x] release tag 推送后，必须验证 workflow 和发布目标可见，才能声明发布完成。
 - [x] 同一会话只使用一个插件版本；混读 cache 版本会被 doctor 报告。
 - [x] docs-only 任务扩展到源码、工具或发布动作时，scope-check 要求重新路由。

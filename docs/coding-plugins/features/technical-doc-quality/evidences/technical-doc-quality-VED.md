@@ -14,6 +14,18 @@ external_references: []
 
 ## TDD 证据
 
+- **规格/缺陷/验收:** P2 验收要求改善执行体验和报告质量：`task brief` 输出必要 skill、当前状态、唯一下一命令、阻塞点和验证要求；完成报告明确区分已实现、已验证、未验证、只本地验证、已提交、已发布；doctor 增加 FVM/Dart cache、build_runner、GitHub auth、pub.dev auth、SSH host key 环境诊断；会话复盘 fixture 覆盖 full-chain 未批准链路提前实现、ignored evidence、继续未走 state、tag pushed 误判发布完成和混读插件版本；migration guide 说明 lightweight TDD、full-chain、maintenance-chain 和 artifact mode 边界。
+- **测试类型:** `contract`
+- **RED 测试:** `tests/ts/productization-cli.test.mjs` 中的 `task brief returns required skills, a unique next step, blockers, and verification requirements`、`completion report separates implementation, verification, commit, and release evidence`、`doctor audits plugin repository wiring and detects stale Codex cache versions`、`migration guide documents lightweight/full-chain routing and artifact mode boundaries`；`tests/ts/agent-pressure-harness.test.mjs` 中的 P2 review pressure sample assertions。
+- **RED 命令:** `node --test tests/ts/productization-cli.test.mjs`；`node --test tests/ts/agent-pressure-harness.test.mjs`
+- **RED 失败:** `task brief` 被拒绝为未知 task action；`report` 返回 `Unknown command: report`；doctor 缺少五类 env checks；`docs/migration-guide.md` 不存在；agent pressure harness 缺少五类 P2 review pressure observed behaviors。
+- **GREEN 变更:** `task` 新增 `brief` action 和 `task_brief` payload；新增 `report completion` CLI 和结构化 completion report；doctor 输出五类环境诊断；agent pressure harness 新增 P2 复盘 regression cases；新增 migration guide；同步 README、任务清单、测试和 dist 产物。
+- **GREEN 命令:** `npm run typecheck`；`npm run build`；`node --test tests/ts/productization-cli.test.mjs`；`node --test tests/ts/agent-pressure-harness.test.mjs`
+- **REFACTOR 命令:** `node --test tests/ts/npm-package.test.mjs`
+- **最终验证:** `npm run preflight` PASS。
+
+## TDD 证据
+
 - **规格/缺陷/验收:** P1 验收要求固定单会话插件版本并修正 CLI fallback：首次运行生成 session lock，记录 plugin version、plugin root、CLI path、thread id；后续 fallback 读取 lock，混读 cache 版本由 doctor 报告；doctor 输出 PATH、cache manifest、installed/enabled/version 和 artifact mode；`preflight --root` / `--write-index` / `validate` 必须可靠作用于目标仓库。
 - **测试类型:** `contract`
 - **RED 测试:** `tests/ts/productization-cli.test.mjs` 中的 `doctor audits plugin repository wiring and detects stale Codex cache versions`、`cli status reports fallback command when coding-plugins is not on PATH`、`cli status reuses session lock and reports mixed plugin versions`；`tests/ts/preflight-cli.test.mjs` 中的 `TypeScript preflight --root runs against the target repository`。

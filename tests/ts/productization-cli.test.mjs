@@ -310,6 +310,34 @@ test("task status is the unified workflow entrypoint for executable document wor
   ]);
 });
 
+test("task brief returns required skills, a unique next step, blockers, and verification requirements", () => {
+  const payload = json([
+    "task",
+    "brief",
+    "--root",
+    fixtureRoot,
+    "--feature",
+    "routing-fixture",
+    "--doc-id",
+    "routing-login",
+    "--intent",
+    "继续执行",
+    "--json",
+  ]);
+
+  assert.equal(payload.action, "brief");
+  assert.equal(payload.task_brief.current_status.state, "ready-for-execution");
+  assert.equal(payload.task_brief.unique_next_step, true);
+  assert.equal(
+    payload.task_brief.unique_next_command,
+    `coding-plugins dp request --root ${fixtureRoot} --feature routing-fixture --doc-id routing-login --id DP-4`,
+  );
+  assert.deepEqual(payload.task_brief.required_skills, ["using-coding-plugins", "using-git-worktrees"]);
+  assert.ok(payload.task_brief.blockers.some((blocker) => blocker.includes("DP-4")));
+  assert.ok(payload.task_brief.verification_requirements.includes("run-next-command-before-continuing"));
+  assert.ok(payload.task_brief.verification_requirements.includes("record-tdd-evidence-or-exception"));
+});
+
 test("dp CLI requests, approves, audits, and unblocks executable task status", () => {
   const root = mkdtempSync(join(tmpdir(), "coding-plugins-dp-"));
   try {
@@ -676,6 +704,48 @@ test("commit-guard passes after language and DP-7 are explicitly approved", () =
   }
 });
 
+test("completion report separates implementation, verification, commit, and release evidence", () => {
+  const payload = json([
+    "report",
+    "completion",
+    "--kind",
+    "release",
+    "--implemented",
+    "release guard,session lock",
+    "--verified",
+    "npm run preflight=PASS,node --test tests/ts/productization-cli.test.mjs=PASS",
+    "--unverified",
+    "none",
+    "--local-only",
+    "npm run preflight",
+    "--committed",
+    "a8fa26b",
+    "--published",
+    "GitHub Release",
+    "--workflow-run",
+    "https://github.com/Vincen-dev/coding-plugins/actions/runs/1",
+    "--remote-tag",
+    "v1.0.18",
+    "--package-visible",
+    "https://github.com/Vincen-dev/coding-plugins/releases/tag/v1.0.18",
+    "--json",
+  ]);
+
+  assert.equal(payload.kind, "release");
+  assert.deepEqual(payload.implemented, ["release guard", "session lock"]);
+  assert.deepEqual(payload.unverified, []);
+  assert.equal(payload.verified[0].command, "npm run preflight");
+  assert.equal(payload.verified[0].status, "PASS");
+  assert.deepEqual(payload.local_only_verification, ["npm run preflight"]);
+  assert.deepEqual(payload.commits, ["a8fa26b"]);
+  assert.equal(payload.release_evidence.workflow_run, "https://github.com/Vincen-dev/coding-plugins/actions/runs/1");
+  assert.equal(payload.release_evidence.remote_tag, "v1.0.18");
+  assert.equal(payload.release_evidence.package_visible, "https://github.com/Vincen-dev/coding-plugins/releases/tag/v1.0.18");
+  assert.equal(payload.release_evidence.complete, true);
+  assert.equal(payload.sections.includes("已实现"), true);
+  assert.equal(payload.sections.includes("已发布"), true);
+});
+
 test("commit-guard rejects AI-like author identities", () => {
   const result = run([
     "commit-guard",
@@ -901,6 +971,11 @@ test("doctor audits plugin repository wiring and detects stale Codex cache versi
       "artifact-mode",
       "cli-status",
       "session-lock",
+      "env-fvm-dart-cache",
+      "env-build-runner",
+      "env-github-auth",
+      "env-pub-auth",
+      "env-ssh-host-key",
     ]) {
       assert.ok(repositoryDoctor.checks.some((check) => check.name === expected && check.ok), `missing ok doctor check: ${expected}`);
     }
@@ -941,6 +1016,22 @@ test("doctor audits plugin repository wiring and detects stale Codex cache versi
     assert.ok(mixedCacheCheck.message.includes("cache_manifest="));
   } finally {
     rmSync(codexHome, { recursive: true, force: true });
+  }
+});
+
+test("migration guide documents lightweight/full-chain routing and artifact mode boundaries", () => {
+  const guide = readFileSync(join(repoRoot, "docs/migration-guide.md"), "utf8");
+  for (const expected of [
+    "lightweight TDD",
+    "full-chain",
+    "maintenance-chain",
+    "tracked",
+    "local",
+    "external",
+    "docs/coding-plugins/",
+    "commit, tag, release",
+  ]) {
+    assert.ok(guide.includes(expected), `migration guide must mention ${expected}`);
   }
 });
 

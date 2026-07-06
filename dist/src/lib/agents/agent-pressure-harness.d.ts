@@ -6,6 +6,7 @@ export declare function runParallelScenario(root: string): CasePayload;
 export declare function runSubagentPromptScenario(root: string): CasePayload;
 export declare function runLongSessionCompressionScenario(root: string): CasePayload;
 export declare function runStaleTedPressureScenario(root: string): CasePayload;
+export declare function runP2ReviewRegressionScenarios(root: string): CasePayload[];
 export declare function runPlatformUnavailableScenario(root: string): CasePayload;
 export declare function runAll(root: string): Record<string, any>;
 export declare function writeHarnessOutput(payload: Record<string, any>, outputPath: string): void;

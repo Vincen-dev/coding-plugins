@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
+import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -98,6 +99,7 @@ try {
       runtimeStatus.session_lock.errors.length > 0 ? `errors=${runtimeStatus.session_lock.errors.join("|")}` : null,
     ].filter(Boolean).join("; "),
   });
+  checks.push(...environmentDiagnosticChecks(resolved));
 
   if (isPluginRepository) {
     const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf8")) as { version?: string };
@@ -154,6 +156,62 @@ try {
 } catch (error) {
   console.error(error instanceof Error ? error.message : String(error));
   process.exit(1);
+}
+
+function environmentDiagnosticChecks(root: string): Check[] {
+  const home = homedir();
+  const pubspecPath = join(root, "pubspec.yaml");
+  const pubspec = existsSync(pubspecPath) ? readFileSync(pubspecPath, "utf8") : "";
+  const fvmConfig = [join(root, ".fvmrc"), join(root, ".fvm/fvm_config.json")].find((path) => existsSync(path));
+  const dartTool = join(root, ".dart_tool");
+  const buildRunnerDeclared = /\bbuild_runner\s*:/.test(pubspec);
+  const ghHosts = join(home, ".config/gh/hosts.yml");
+  const pubCredentials = join(home, ".pub-cache/credentials.json");
+  const knownHosts = join(home, ".ssh/known_hosts");
+  const knownHostsText = existsSync(knownHosts) ? readFileSync(knownHosts, "utf8") : "";
+  return [
+    {
+      name: "env-fvm-dart-cache",
+      ok: true,
+      message: [
+        `fvm_config=${fvmConfig ?? "not-detected"}`,
+        `FVM_HOME=${process.env.FVM_HOME ?? ""}`,
+        `PUB_CACHE=${process.env.PUB_CACHE ?? join(home, ".pub-cache")}`,
+      ].join("; "),
+    },
+    {
+      name: "env-build-runner",
+      ok: true,
+      message: [
+        `build_runner=${buildRunnerDeclared ? "declared" : "not-declared"}`,
+        `.dart_tool=${existsSync(dartTool) ? "present" : "missing"}`,
+      ].join("; "),
+    },
+    {
+      name: "env-github-auth",
+      ok: true,
+      message: [
+        `GH_TOKEN=${process.env.GH_TOKEN || process.env.GITHUB_TOKEN ? "present" : "missing"}`,
+        `gh_hosts=${existsSync(ghHosts) ? "present" : "missing"}`,
+      ].join("; "),
+    },
+    {
+      name: "env-pub-auth",
+      ok: true,
+      message: [
+        `pub_credentials=${existsSync(pubCredentials) ? "present" : "missing"}`,
+        `PUB_HOSTED_URL=${process.env.PUB_HOSTED_URL ?? "default"}`,
+      ].join("; "),
+    },
+    {
+      name: "env-ssh-host-key",
+      ok: true,
+      message: [
+        `known_hosts=${existsSync(knownHosts) ? "present" : "missing"}`,
+        `github.com=${knownHostsText.includes("github.com") ? "present" : "missing"}`,
+      ].join("; "),
+    },
+  ];
 }
 
 function runCheck(name: string, fn: () => string): Check {

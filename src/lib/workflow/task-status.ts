@@ -9,7 +9,7 @@ import { inferMode } from "./workflow-mode.ts";
 import { inspectDocumentChain } from "./workflow-state.ts";
 import type { WorkflowStateResult } from "./workflow-state.ts";
 
-export type TaskAction = "start" | "continue" | "status";
+export type TaskAction = "start" | "continue" | "status" | "brief";
 
 export interface TaskStatusOptions {
   action: TaskAction;
@@ -39,7 +39,27 @@ export interface TaskStatusPayload {
   decision_point: string | null;
   next_command: string | null;
   next_args: string[];
+  task_brief: TaskBriefPayload;
   warnings: string[];
+}
+
+export interface TaskBriefPayload {
+  current_status: {
+    feature: string | null;
+    doc_id: string | null;
+    state: string;
+    decision_point: string | null;
+    next_skill: string;
+    allowed_actions: string[];
+    blocked_actions: string[];
+  };
+  required_skills: string[];
+  unique_next_step: boolean;
+  unique_next_command: string | null;
+  next_args: string[];
+  blockers: string[];
+  verification_requirements: string[];
+  context_policy: string[];
 }
 
 function targetForState(state: string, intent: string): "plan" | "execute" {
@@ -150,6 +170,47 @@ function nextForState(
   return nextForMissingChain(root, null);
 }
 
+function verificationRequirements(state: string): string[] {
+  const requirements = ["run-next-command-before-continuing"];
+  if (state !== "analysis-only") {
+    requirements.push("run-relevant-tests-before-completion", "record-tdd-evidence-or-exception");
+  }
+  requirements.push("use-verification-before-completion-before-claiming-done");
+  return requirements;
+}
+
+function buildTaskBrief(payload: Omit<TaskStatusPayload, "task_brief">): TaskBriefPayload {
+  const requiredSkills = ["using-coding-plugins"];
+  if (payload.next_skill !== "using-coding-plugins") {
+    requiredSkills.push(payload.next_skill);
+  }
+  const blockers = [
+    ...(payload.decision_status?.missing_decisions ?? []).map((decision) => `${decision} approval required`),
+    ...payload.warnings,
+    ...payload.blocked_actions.filter((action) => action.startsWith("continue-with") || action.includes("stale")).map((action) => `blocked action: ${action}`),
+  ];
+  return {
+    current_status: {
+      feature: payload.feature,
+      doc_id: payload.doc_id,
+      state: payload.state,
+      decision_point: payload.decision_point,
+      next_skill: payload.next_skill,
+      allowed_actions: payload.allowed_actions,
+      blocked_actions: payload.blocked_actions,
+    },
+    required_skills: [...new Set(requiredSkills)],
+    unique_next_step: Boolean(payload.next_command) && payload.next_args.length > 0,
+    unique_next_command: payload.next_command,
+    next_args: payload.next_args,
+    blockers: [...new Set(blockers)],
+    verification_requirements: verificationRequirements(payload.state),
+    context_policy: payload.brief
+      ? ["read-task-brief-first", "must-read-only-listed-documents", "skip-may-skip-documents-unless-rewind-trigger"]
+      : ["read-task-brief-first", "do-not-reread-full-chain-unless-next-command-requires-it"],
+  };
+}
+
 export function buildTaskStatus(options: TaskStatusOptions): TaskStatusPayload {
   const projectState = options.feature && options.docId ? null : checkState(options.root);
   const feature = options.feature ?? (projectState?.valid && projectState.feature ? projectState.feature : undefined);
@@ -208,7 +269,7 @@ export function buildTaskStatus(options: TaskStatusOptions): TaskStatusPayload {
     ...(decisionBlocked ? ["workflow-guard:execute", "workflow-brief", "execute-ted"] : []),
   ];
 
-  return {
+  const payload: Omit<TaskStatusPayload, "task_brief"> = {
     entrypoint: `coding-plugins task ${options.action}`,
     action: options.action,
     conversation_judgment_allowed: false,
@@ -229,5 +290,9 @@ export function buildTaskStatus(options: TaskStatusOptions): TaskStatusPayload {
     next_command: next.next_command,
     next_args: next.next_args,
     warnings,
+  };
+  return {
+    ...payload,
+    task_brief: buildTaskBrief(payload),
   };
 }

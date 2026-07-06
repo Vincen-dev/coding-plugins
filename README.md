@@ -118,6 +118,7 @@ ${CP_CLI} doctor --root . --codex-home ~/.codex --format json
 
 ```bash
 ${CP_CLI} task status --root . --feature <feature> --doc-id <doc-id> --intent "开始执行"
+${CP_CLI} task brief --root . --feature <feature> --doc-id <doc-id> --intent "继续" --json
 ```
 
 `using-coding-plugins` 仍是 skill 层入口，但不再替代用户级 CLI 判断。正式 PRD/TSD/TVD/TED/VED 工作必须先让 `task status`、`state`、`validate`、`workflow-guard` 或 `execution-contract` 给出状态和下一命令，再进入对应 skill。
@@ -176,19 +177,20 @@ git-commit -> finishing-a-development-branch
 - 评审提示词必须使用真实实现报告，代码质量评审必须使用真实 `base/head` SHA。
 - 没有新鲜测试、构建、preflight 或人工验收证据，不能声明完成。
 
-完整链路见 [docs/workflow-chain.md](docs/workflow-chain.md)。
+完整链路见 [docs/workflow-chain.md](docs/workflow-chain.md)。迁移和 artifact mode 边界见 [docs/migration-guide.md](docs/migration-guide.md)。
 
 ## 核心能力
 
 | 能力 | 对应文件或脚本 |
 | --- | --- |
 | 统一入口和用户级状态 | `src/cli/workflow/task.ts`, `src/lib/workflow/task-status.ts`, `src/cli/workflow/start.ts` |
+| 本轮任务简报 | `coding-plugins task brief --root <repo> --intent <text> --json`，输出必要 skill、当前状态、唯一下一命令、阻塞点和验证要求 |
 | 工作流状态和 stale detection | `src/cli/workflow/workflow-state.ts`, `src/lib/workflow/workflow-state.ts` |
 | 执行门禁 | `src/cli/workflow/workflow-guard.ts`, `src/lib/workflow/workflow-guard.ts` |
 | 执行契约生成 | `src/cli/workflow/execution-contract.ts`, `src/lib/workflow/execution-contract.ts` |
 | 文档 schema/parser | `src/cli/documents/validate.ts`, `src/lib/documents/document-schema.ts` |
 | 用户级检查和注入 | `src/cli/documents/doctor.ts`, `src/cli/documents/list.ts`, `src/cli/platform/inject.ts` |
-| 插件版本漂移诊断 | `coding-plugins doctor --root <repo> --codex-home ~/.codex --format json`，检查 PATH、session lock、artifact mode、cache manifest 和 `codex plugin list --json` 的 installed/enabled/version |
+| 插件版本漂移和环境诊断 | `coding-plugins doctor --root <repo> --codex-home ~/.codex --format json`，检查 PATH、session lock、artifact mode、cache manifest、installed/enabled/version、FVM/Dart cache、build_runner、GitHub auth、pub.dev auth 和 SSH host key |
 | Cursor/Copilot 安装 | `src/cli/platform/install-cursor.ts`, `src/cli/platform/install-copilot.ts` |
 | 短上下文生成 | `src/cli/workflow/workflow-brief.ts` |
 | 工作流轻重模式判断 | `skills/using-coding-plugins/scripts/workflow-mode.ts` |
@@ -201,6 +203,7 @@ git-commit -> finishing-a-development-branch
 | 版本同步 | `src/cli/release/bump-version.ts`, `.version-bump.json` |
 | Release 专用链路 | `coding-plugins release plan|guard|verify`，固定检查 release commit、tag、workflow、发布目标和依赖解析 |
 | Release 准备和远程审计 | `src/cli/release/prepare-release.ts`, `src/cli/release/remote-audit.ts` |
+| 完成报告模板 | `coding-plugins report completion --kind task|release --json`，区分已实现、已验证、未验证、只本地验证、已提交和已发布 |
 
 顶层 `src/cli/*.ts` 和 `src/lib/*.ts` 保留为兼容入口；新增实现应优先放入对应领域目录。
 

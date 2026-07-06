@@ -10,8 +10,8 @@ function requireValue(argv, index, arg) {
 }
 function parseArgs(argv) {
     const [action, ...rest] = argv;
-    if (action !== "start" && action !== "continue" && action !== "status") {
-        throw new Error("command must be start, continue, or status.");
+    if (action !== "start" && action !== "continue" && action !== "status" && action !== "brief") {
+        throw new Error("command must be start, continue, status, or brief.");
     }
     const options = { action, root: ".", intent: "", json: false };
     for (let index = 0; index < rest.length; index += 1) {
@@ -59,6 +59,10 @@ try {
         console.log(`allowed_actions: ${payload.allowed_actions.join(", ") || "none"}`);
         console.log(`blocked_actions: ${payload.blocked_actions.join(", ") || "none"}`);
         console.log(`next_command: ${payload.next_command ?? "none"}`);
+        if (payload.action === "brief") {
+            console.log(`required_skills: ${payload.task_brief.required_skills.join(", ") || "none"}`);
+            console.log(`verification_requirements: ${payload.task_brief.verification_requirements.join(", ") || "none"}`);
+        }
     }
 }
 catch (error) {

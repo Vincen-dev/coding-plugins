@@ -101,6 +101,45 @@ function nextForState(root, intent, state, mode) {
     }
     return nextForMissingChain(root, null);
 }
+function verificationRequirements(state) {
+    const requirements = ["run-next-command-before-continuing"];
+    if (state !== "analysis-only") {
+        requirements.push("run-relevant-tests-before-completion", "record-tdd-evidence-or-exception");
+    }
+    requirements.push("use-verification-before-completion-before-claiming-done");
+    return requirements;
+}
+function buildTaskBrief(payload) {
+    const requiredSkills = ["using-coding-plugins"];
+    if (payload.next_skill !== "using-coding-plugins") {
+        requiredSkills.push(payload.next_skill);
+    }
+    const blockers = [
+        ...(payload.decision_status?.missing_decisions ?? []).map((decision) => `${decision} approval required`),
+        ...payload.warnings,
+        ...payload.blocked_actions.filter((action) => action.startsWith("continue-with") || action.includes("stale")).map((action) => `blocked action: ${action}`),
+    ];
+    return {
+        current_status: {
+            feature: payload.feature,
+            doc_id: payload.doc_id,
+            state: payload.state,
+            decision_point: payload.decision_point,
+            next_skill: payload.next_skill,
+            allowed_actions: payload.allowed_actions,
+            blocked_actions: payload.blocked_actions,
+        },
+        required_skills: [...new Set(requiredSkills)],
+        unique_next_step: Boolean(payload.next_command) && payload.next_args.length > 0,
+        unique_next_command: payload.next_command,
+        next_args: payload.next_args,
+        blockers: [...new Set(blockers)],
+        verification_requirements: verificationRequirements(payload.state),
+        context_policy: payload.brief
+            ? ["read-task-brief-first", "must-read-only-listed-documents", "skip-may-skip-documents-unless-rewind-trigger"]
+            : ["read-task-brief-first", "do-not-reread-full-chain-unless-next-command-requires-it"],
+    };
+}
 export function buildTaskStatus(options) {
     const projectState = options.feature && options.docId ? null : checkState(options.root);
     const feature = options.feature ?? (projectState?.valid && projectState.feature ? projectState.feature : undefined);
@@ -156,7 +195,7 @@ export function buildTaskStatus(options) {
         ...(stateMismatch ? [...actions.blocked_actions, "continue-with-stale-project-state"] : actions.blocked_actions),
         ...(decisionBlocked ? ["workflow-guard:execute", "workflow-brief", "execute-ted"] : []),
     ];
-    return {
+    const payload = {
         entrypoint: `coding-plugins task ${options.action}`,
         action: options.action,
         conversation_judgment_allowed: false,
@@ -177,5 +216,9 @@ export function buildTaskStatus(options) {
         next_command: next.next_command,
         next_args: next.next_args,
         warnings,
+    };
+    return {
+        ...payload,
+        task_brief: buildTaskBrief(payload),
     };
 }

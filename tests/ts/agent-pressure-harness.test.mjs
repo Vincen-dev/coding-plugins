@@ -36,6 +36,18 @@ test("TypeScript agent pressure harness writes command/workspace artifact", () =
       payload.cases.some((caseData) => caseData.observed_behaviors?.includes("reported_platform_installation_summary_with_unavailable_codex")),
       "harness must include a multi-platform unavailable pressure sample",
     );
+    for (const expected of [
+      "blocked_full_chain_implementation_without_approved_ted",
+      "rejected_ignored_evidence_as_formal_completion",
+      "required_task_status_after_continue",
+      "blocked_tag_pushed_only_release_completion",
+      "reported_mixed_plugin_cache_versions",
+    ]) {
+      assert.ok(
+        payload.cases.some((caseData) => caseData.observed_behaviors?.includes(expected)),
+        `harness must include P2 review pressure sample: ${expected}`,
+      );
+    }
     for (const caseData of payload.cases) {
       assert.equal(caseData.transcript.source, "command_log");
       assert.equal(caseData.transcript.format, "command-log-v1");

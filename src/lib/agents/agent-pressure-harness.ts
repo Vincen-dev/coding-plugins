@@ -449,6 +449,108 @@ export function runStaleTedPressureScenario(root: string): CasePayload {
   }
 }
 
+export function runP2ReviewRegressionScenarios(root: string): CasePayload[] {
+  const cwd = relative(root, root) || ".";
+  const cases: CasePayload[] = [
+    {
+      id: "HARNESS-P2-FULL-CHAIN-001",
+      scenario_id: "full_chain_implementation_without_approved_ted",
+      execution_depth: "fixture_case",
+      phase: "regression_guard",
+      agent_discipline_passed: true,
+      command_passed: false,
+      expected_failure: true,
+      scenario_passed: true,
+      command_log: [
+        syntheticLog("coding-plugins validate --root fixture --format json", cwd, {
+          exitCode: 1,
+          stdout: "workflow_violations: approved TED is missing before implementation",
+          stdoutExcerpt: "workflow_violations blocked implementation before approved TED",
+        }),
+      ],
+      summary: "Fixture captures the failure mode where implementation starts before approved PRD/TSD/TVD/TED.",
+      observed_behaviors: ["blocked_full_chain_implementation_without_approved_ted"],
+    },
+    {
+      id: "HARNESS-P2-IGNORED-EVIDENCE-001",
+      scenario_id: "ignored_evidence_completion_claim",
+      execution_depth: "fixture_case",
+      phase: "regression_guard",
+      agent_discipline_passed: true,
+      command_passed: false,
+      expected_failure: true,
+      scenario_passed: true,
+      command_log: [
+        syntheticLog("coding-plugins validate-tdd-evidence --strict --artifact-mode tracked ignored-VED.md", cwd, {
+          exitCode: 1,
+          stderr: "ignored evidence cannot be used as formal completion evidence",
+          stderrExcerpt: "ignored evidence rejected as formal completion evidence",
+        }),
+      ],
+      summary: "Fixture captures ignored VED being incorrectly used as completion proof.",
+      observed_behaviors: ["rejected_ignored_evidence_as_formal_completion"],
+    },
+    {
+      id: "HARNESS-P2-CONTINUE-STATE-001",
+      scenario_id: "continue_without_task_status",
+      execution_depth: "fixture_case",
+      phase: "regression_guard",
+      agent_discipline_passed: true,
+      command_passed: true,
+      expected_failure: false,
+      scenario_passed: true,
+      command_log: [
+        syntheticLog("coding-plugins task status --intent 继续 --json", cwd, {
+          exitCode: 0,
+          stdout: "unique_next_step=true; next_command=workflow-guard or dp request",
+          stdoutExcerpt: "task status returned unique next step before continue",
+        }),
+      ],
+      summary: "Fixture captures the rule that continue/resume must go through task status before action.",
+      observed_behaviors: ["required_task_status_after_continue"],
+    },
+    {
+      id: "HARNESS-P2-TAG-ONLY-001",
+      scenario_id: "tag_pushed_release_completion_claim",
+      execution_depth: "fixture_case",
+      phase: "regression_guard",
+      agent_discipline_passed: true,
+      command_passed: false,
+      expected_failure: true,
+      scenario_passed: true,
+      command_log: [
+        syntheticLog("coding-plugins release verify --tag-pushed --json", cwd, {
+          exitCode: 1,
+          stdout: "tag-pushed-is-not-release-complete",
+          stdoutExcerpt: "release verify blocked tag-pushed-only completion claim",
+        }),
+      ],
+      summary: "Fixture captures the release failure mode where pushed tag is misreported as completed release.",
+      observed_behaviors: ["blocked_tag_pushed_only_release_completion"],
+    },
+    {
+      id: "HARNESS-P2-MIXED-CACHE-001",
+      scenario_id: "mixed_plugin_cache_versions",
+      execution_depth: "fixture_case",
+      phase: "regression_guard",
+      agent_discipline_passed: true,
+      command_passed: false,
+      expected_failure: true,
+      scenario_passed: true,
+      command_log: [
+        syntheticLog("coding-plugins doctor --codex-home fixture --format json", cwd, {
+          exitCode: 1,
+          stdout: "mixed cache versions: versions=1.0.12,1.0.18",
+          stdoutExcerpt: "doctor reported mixed plugin cache versions",
+        }),
+      ],
+      summary: "Fixture captures mixed personal cache versions inside one session.",
+      observed_behaviors: ["reported_mixed_plugin_cache_versions"],
+    },
+  ];
+  return cases;
+}
+
 export function runPlatformUnavailableScenario(root: string): CasePayload {
   const codexHome = mkdtempSync(join(tmpdir(), "cp-agent-pressure-platform-"));
   const fakeBin = mkdtempSync(join(tmpdir(), "cp-agent-pressure-fake-bin-"));
@@ -529,6 +631,7 @@ export function runAll(root: string): Record<string, any> {
     runPlatformUnavailableScenario(root),
     runCommitSafetyScenario(root),
     runParallelScenario(root),
+    ...runP2ReviewRegressionScenarios(root),
   ];
   return {
     schema_version: 2,
