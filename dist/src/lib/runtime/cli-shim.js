@@ -76,7 +76,7 @@ export function cliStatus(options) {
         pluginVersion,
         pluginRoot: options.pluginRoot,
         cliPath: currentCli,
-        threadId: options.threadId ?? defaultThreadId(),
+        threadId: Object.hasOwn(options, "threadId") ? options.threadId : defaultThreadId(),
     });
     const fallbackCli = sessionLock.ok && sessionLock.lock.cli_path ? sessionLock.lock.cli_path : null;
     const pathCommand = findOnPath("coding-plugins");

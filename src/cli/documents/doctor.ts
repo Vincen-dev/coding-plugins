@@ -82,7 +82,7 @@ try {
       artifactMode.errors.length > 0 ? `errors=${artifactMode.errors.join("|")}` : null,
     ].filter(Boolean).join("; "),
   });
-  const runtimeStatus = cliStatus({ pluginRoot: findPluginRoot(dirname(fileURLToPath(import.meta.url))), root: resolved });
+  const runtimeStatus = cliStatus({ pluginRoot: findPluginRoot(dirname(fileURLToPath(import.meta.url))), root: resolved, threadId: null });
   checks.push({
     name: "cli-status",
     ok: runtimeStatus.session_lock.ok,

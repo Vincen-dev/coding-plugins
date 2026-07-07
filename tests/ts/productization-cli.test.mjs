@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { chmodSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { tmpdir } from "node:os";
 import { dirname } from "node:path";
@@ -858,7 +858,11 @@ test("subagent prompt builder requires an explicit expected source hash for impl
 test("schema validate/list/doctor/inject CLIs support arbitrary project roots", () => {
   const root = mkdtempSync(join(tmpdir(), "coding-plugins-user-root-"));
   try {
-    const validation = json(["validate", "--root", fixtureRoot, "--format", "json"]);
+    const fixtureCopy = join(root, "formal-feature-chain");
+    cpSync(fixtureRoot, fixtureCopy, { recursive: true });
+    rmSync(join(fixtureCopy, ".coding-plugins"), { recursive: true, force: true });
+
+    const validation = json(["validate", "--root", fixtureCopy, "--format", "json"]);
     assert.equal(validation.ok, true);
     assert.ok(validation.documents.some((document) => document.kind === "PRD"));
     assert.ok(validation.documents.every((document) => Array.isArray(document.headings)));
@@ -867,16 +871,16 @@ test("schema validate/list/doctor/inject CLIs support arbitrary project roots", 
     assert.ok(validation.documents.every((document) => !("sections" in document)), "validate JSON should not include full section bodies by default");
     assert.ok(validation.chains.some((chain) => chain.feature === "routing-fixture" && chain.doc_id === "routing-login" && chain.ok));
 
-    const validationWithSections = json(["validate", "--root", fixtureRoot, "--format", "json", "--include-sections"]);
+    const validationWithSections = json(["validate", "--root", fixtureCopy, "--format", "json", "--include-sections"]);
     assert.ok(validationWithSections.documents.some((document) => document.sections && Object.keys(document.sections).length > 0));
 
-    const strictFixtureValidation = json(["validate", "--root", fixtureRoot, "--format", "json", "--strict-chain"]);
+    const strictFixtureValidation = json(["validate", "--root", fixtureCopy, "--format", "json", "--strict-chain"]);
     assert.equal(strictFixtureValidation.ok, true);
 
-    const listed = json(["list", "--root", fixtureRoot, "--format", "json"]);
+    const listed = json(["list", "--root", fixtureCopy, "--format", "json"]);
     assert.ok(listed.features.some((feature) => feature.feature === "routing-fixture" && feature.doc_ids.includes("routing-login")));
 
-    const doctor = json(["doctor", "--root", fixtureRoot, "--format", "json"]);
+    const doctor = json(["doctor", "--root", fixtureCopy, "--format", "json"]);
     assert.equal(doctor.ok, true);
     assert.ok(doctor.checks.some((check) => check.name === "project-root"));
 
@@ -1251,7 +1255,7 @@ test("cli install creates a user shim that runs the packaged CLI", () => {
     assert.equal(help.status, 0, help.stderr);
     assert.ok(help.stdout.includes("Usage: coding-plugins <command> [args]"));
 
-    const status = json(["cli", "status", "--target", target, "--format", "json"], {
+    const status = json(["cli", "status", "--root", targetRoot, "--target", target, "--format", "json"], {
       env: { ...npmCacheEnv(), PATH: `${join(targetRoot, "bin")}:${dirname(process.execPath)}` },
     });
     assert.equal(status.cli_on_path, true);

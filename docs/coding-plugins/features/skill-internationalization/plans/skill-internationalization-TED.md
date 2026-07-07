@@ -10,7 +10,7 @@ related_docs:
   - docs/coding-plugins/features/skill-internationalization/technicals/skill-internationalization-TSD.md
   - docs/coding-plugins/features/skill-internationalization/test-cases/skill-internationalization-TVD.md
   - docs/coding-plugins/features/skill-internationalization/evidences/skill-internationalization-VED.md
-source_hash: sha256:d1d40d6ea4211674176a448a56989dbfc5437ac737d8211c55560d4f15cefbd2
+source_hash: sha256:93ef8f0a8f4f93c431958fcb5880b27202846d2e3ab8b641365be725c8e29e2a
 ---
 
 # Skill 国际化优化任务执行文档（TED）

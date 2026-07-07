@@ -87,10 +87,10 @@ const required = [
   'coding-plugins:using-coding-plugins',
   'CP_CLI',
   'bin/coding-plugins.js',
-  '无需安装全局 coding-plugins 命令',
+  'no global coding-plugins command is required',
   'SDD',
   'TDD',
-  'docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md',
+  'docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-VED.md',
   'verification-before-completion',
   'git-commit',
   'finishing-a-development-branch',
@@ -104,6 +104,7 @@ const forbidden = [
   'using-' + 'superpowers',
   'brain' + 'storming',
   'docs/coding-plugins/evidence/<feature-name>/tdd-evidence.md',
+  'docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-TED.md',
   'docs/coding-plugins/features/<feature-name>/evidences/<feature-name>-TED.md',
 ];
 for (const text of forbidden) {
