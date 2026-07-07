@@ -66,10 +66,10 @@ const REQUIRED_FRONTMATTER = ["title", "status", "feature", "doc_id"];
 const REQUIRED_ARTIFACTS = ["PRD", "TSD", "TVD", "TED", "VED"];
 const EXECUTION_APPROVAL_ARTIFACTS = ["PRD", "TSD", "TVD", "TED"];
 const REQUIRED_SECTIONS: Record<string, string[]> = {
-  PRD: ["需求总览", "追踪矩阵"],
-  TSD: ["规格到设计映射", "测试策略"],
-  TVD: ["测试用例总览"],
-  TED: ["执行锁定区", "执行简报", "任务总览"],
+  PRD: ["成功指标", "假设与依赖", "开放问题", "需求总览", "追踪矩阵"],
+  TSD: ["备选方案", "规格到设计映射", "非功能设计", "上线 / 回滚", "测试策略"],
+  TVD: ["风险到测试映射", "测试环境与数据", "测试用例总览", "通过 / 失败标准", "自动化状态"],
+  TED: ["执行锁定区", "执行简报", "任务总览", "任务依赖与并行性", "中止条件"],
   VED: ["TDD 证据"],
 };
 

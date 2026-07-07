@@ -105,10 +105,10 @@ function writeTddEvidence(path, overrides = {}) {
 
 function approvedChainBodies() {
   return {
-    PRD: "## 需求总览\n\nREQ-001 must be traceable.\n\n## 追踪矩阵\n\nREQ-001 is covered.",
-    TSD: "## 规格到设计映射\n\nREQ-001 maps to TD-001.\n\n## 测试策略\n\nREQ-001 uses contract tests.",
-    TVD: "## 测试用例总览\n\nTC-001 covers REQ-001.",
-    TED: "## 执行锁定区\n\n- **Intent Lock:** Execute REQ-001.\n- **Scope Fence:** Only REQ-001.\n- **Required Spec IDs:** REQ-001\n- **Required Tests:** TC-001\n- **Review Gates:** review\n- **Rewind Triggers:** upstream change\n\n## 执行简报\n\nExecute TASK-001.\n\n## 任务总览\n\nTASK-001 covers REQ-001.\n\n## 完成任务（TASK-001 / REQ-001）\n\nDo it.",
+    PRD: "## 成功指标\n\nREQ-001 has measurable success.\n\n## 假设与依赖\n\nREQ-001 depends on stable fixtures.\n\n## 开放问题\n\nNo open questions.\n\n## 需求总览\n\nREQ-001 must be traceable.\n\n## 追踪矩阵\n\nREQ-001 is covered.",
+    TSD: "## 备选方案\n\nREQ-001 uses the current fixture design.\n\n## 规格到设计映射\n\nREQ-001 maps to TD-001.\n\n## 非功能设计\n\nREQ-001 remains maintainable.\n\n## 上线 / 回滚\n\nREQ-001 rolls back by reverting the fixture.\n\n## 测试策略\n\nREQ-001 uses contract tests.",
+    TVD: "## 风险到测试映射\n\nREQ-001 maps to TC-001.\n\n## 测试环境与数据\n\nTC-001 uses local fixtures.\n\n## 测试用例总览\n\nTC-001 covers REQ-001.\n\n## 通过 / 失败标准\n\nTC-001 must pass.\n\n## 自动化状态\n\nTC-001 is automated.",
+    TED: "## 执行锁定区\n\n- **Intent Lock:** Execute REQ-001.\n- **Scope Fence:** Only REQ-001.\n- **Required Spec IDs:** REQ-001\n- **Required Tests:** TC-001\n- **Review Gates:** review\n- **Rewind Triggers:** upstream change\n\n## 执行简报\n\nExecute TASK-001.\n\n## 任务总览\n\nTASK-001 covers REQ-001.\n\n## 任务依赖与并行性\n\nTASK-001 has no dependencies.\n\n## 完成任务（TASK-001 / REQ-001）\n\nDo it.\n\n## 中止条件\n\nStop when REQ-001 changes.",
     VED: "## TDD 证据\n\nRED 命令 covers REQ-001.",
   };
 }
@@ -1580,8 +1580,21 @@ test("schema validate rejects documents that have IDs but miss required structur
     assert.equal(result.status, 1);
     const payload = JSON.parse(result.stdout);
     assert.ok(payload.errors.some((error) => error.includes("PRD is missing required sections")));
+    assert.ok(payload.errors.some((error) => error.includes("成功指标")));
+    assert.ok(payload.errors.some((error) => error.includes("假设与依赖")));
+    assert.ok(payload.errors.some((error) => error.includes("开放问题")));
     assert.ok(payload.errors.some((error) => error.includes("TSD is missing required sections")));
+    assert.ok(payload.errors.some((error) => error.includes("备选方案")));
+    assert.ok(payload.errors.some((error) => error.includes("非功能设计")));
+    assert.ok(payload.errors.some((error) => error.includes("上线 / 回滚")));
     assert.ok(payload.errors.some((error) => error.includes("TVD is missing required sections")));
+    assert.ok(payload.errors.some((error) => error.includes("风险到测试映射")));
+    assert.ok(payload.errors.some((error) => error.includes("测试环境与数据")));
+    assert.ok(payload.errors.some((error) => error.includes("通过 / 失败标准")));
+    assert.ok(payload.errors.some((error) => error.includes("自动化状态")));
+    assert.ok(payload.errors.some((error) => error.includes("TED is missing required sections")));
+    assert.ok(payload.errors.some((error) => error.includes("任务依赖与并行性")));
+    assert.ok(payload.errors.some((error) => error.includes("中止条件")));
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
