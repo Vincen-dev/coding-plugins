@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import test from "node:test";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
-const inventoryPath = "docs/coding-plugins/features/skills-optimization/skill-boundary-inventory.md";
+const inventoryPath = "tests/fixtures/skill-boundary-inventory.md";
 const inventoryColumns = [
   "skill",
   "primary_role",
