@@ -23,11 +23,11 @@ Run:
 git status --short
 ```
 
-If there are uncommitted changes, ask whether to create a commit before integration. If the user chooses commit, use `git-commit`.
+If there are uncommitted changes, ask whether to create a commit before integration. If the user chooses commit, use `using-git-commit`.
 
 The commit flow must:
 
-- Follow the `git-commit` skill.
+- Follow the `using-git-commit` skill.
 - Run the commit guard for author, language, sensitive-file, and DP-7 checks.
 - Keep unrelated or unsafe changes out of the finishing commit.
 
@@ -63,7 +63,7 @@ For detached or externally managed workspaces, omit destructive cleanup choices 
 ## Prohibited
 
 - Skipping verification before finishing.
-- Committing without `git-commit`.
+- Committing without `using-git-commit`.
 - Choosing a commit-message language without user preference or established rule.
 - Cleaning up after PR creation.
 - Deleting a branch or worktree without explicit discard confirmation.

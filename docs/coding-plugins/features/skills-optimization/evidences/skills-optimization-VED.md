@@ -72,8 +72,8 @@ external_references: []
 - **测试类型:** `source-scan`
 - **RED 测试:** `tests/ts/skill-guard-boundary.test.mjs`
 - **RED 命令:** `node --test tests/ts/skill-guard-boundary.test.mjs`
-- **RED 失败:** 1 failure：`REQ-001 skills avoid duplicating high-risk guard internals` 报告 `finishing-a-development-branch` 和 `git-commit` 复制 commit author AI 细节，`spec-driven-development` 和 `using-coding-plugins` 复制完整 DP 列表。
-- **GREEN 变更:** 将 commit author 判定细节委托给 `git-commit` 和 `commit-guard`；将 DP 完整目录委托给 `decision-points`、`dp status`、`dp approve` 和 `dp audit`；保留必要命令入口和执行边界。
+- **RED 失败:** 1 failure：`REQ-001 skills avoid duplicating high-risk guard internals` 报告 `finishing-a-development-branch` 和 `using-git-commit` 复制 commit author AI 细节，`spec-driven-development` 和 `using-coding-plugins` 复制完整 DP 列表。
+- **GREEN 变更:** 将 commit author 判定细节委托给 `using-git-commit` 和 `commit-guard`；将 DP 完整目录委托给 `decision-points`、`dp status`、`dp approve` 和 `dp audit`；保留必要命令入口和执行边界。
 - **GREEN 命令:** `node --test tests/ts/skill-guard-boundary.test.mjs` PASS，3/3。
 - **REFACTOR 命令:** `node --test tests/ts/skill-guard-boundary.test.mjs` PASS，3/3。
 - **最终验证:** 第一批 high-risk skill 文案不再触发边界 source-scan；inventory 已同步迁移动作状态。

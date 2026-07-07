@@ -60,7 +60,7 @@ When scope expands, run `scope-check` and reroute if required.
 - Code review requested: `requesting-code-review`.
 - Review feedback received: `receiving-code-review`.
 - Completion claim: `verification-before-completion`.
-- Commit requested: `git-commit`.
+- Commit requested: `using-git-commit`.
 - Creating or editing skills: `writing-skills`.
 - Branch finishing: `finishing-a-development-branch`.
 

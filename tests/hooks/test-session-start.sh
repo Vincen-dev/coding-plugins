@@ -92,7 +92,7 @@ const required = [
   'TDD',
   'docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-VED.md',
   'verification-before-completion',
-  'git-commit',
+  'using-git-commit',
   'finishing-a-development-branch',
 ];
 for (const text of required) {

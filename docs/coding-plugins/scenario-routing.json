@@ -269,7 +269,7 @@
       "doc_heading": "直接提交",
       "trigger": "用户要求提交、更改已完成需要 commit",
       "skills": [
-        "git-commit"
+        "using-git-commit"
       ],
       "artifacts": [],
       "case_ids": [
@@ -289,7 +289,7 @@
       "trigger": "完成验证后需要提交、分支收尾、merge、PR 或清理 worktree",
       "skills": [
         "verification-before-completion",
-        "git-commit",
+        "using-git-commit",
         "finishing-a-development-branch"
       ],
       "artifacts": [],

@@ -169,7 +169,7 @@
       "id": "FB-COMMIT-001",
       "user_prompt": "提交当前改动，先检查 diff、作者身份和敏感文件。",
       "expected_scenario_id": "direct_commit",
-      "expected_skills": ["git-commit"],
+      "expected_skills": ["using-git-commit"],
       "expected_gate_ids": ["diff_review_before_commit"],
       "expected_case_ids": ["CASE-COMMIT-001"],
       "feedback_signal": "gate"
@@ -178,7 +178,7 @@
       "id": "FB-COMMIT-002",
       "user_prompt": "提交完成后，请确认最新 commit 的作者和 Authored-by。",
       "expected_scenario_id": "direct_commit",
-      "expected_skills": ["git-commit"],
+      "expected_skills": ["using-git-commit"],
       "expected_gate_ids": ["verify_latest_commit_after_commit"],
       "expected_case_ids": ["CASE-COMMIT-001"],
       "feedback_signal": "execution"
@@ -196,7 +196,7 @@
       "id": "FB-FINISH-002",
       "user_prompt": "准备 merge 或 PR 前，除非我明确跳过，否则先提交。",
       "expected_scenario_id": "finish_branch",
-      "expected_skills": ["git-commit", "finishing-a-development-branch"],
+      "expected_skills": ["using-git-commit", "finishing-a-development-branch"],
       "expected_gate_ids": ["commit_before_finish_unless_skipped"],
       "expected_case_ids": ["CASE-COMMIT-001"],
       "feedback_signal": "gate"

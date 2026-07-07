@@ -10,7 +10,7 @@ related_docs:
   - docs/coding-plugins/features/skills-optimization/technicals/skills-optimization-TSD.md
   - docs/coding-plugins/features/skills-optimization/test-cases/skills-optimization-TVD.md
   - docs/coding-plugins/features/skills-optimization/evidences/skills-optimization-VED.md
-source_hash: sha256:0dc42abf0a6270614ab8b0893baecda9cc1825ab45aef4f70b56c3c8195ab7b5
+source_hash: sha256:1ba7da2bf1483644effa7d77c13747faefcc2c1ce3cdf296ff4cee09fbec2754
 ---
 
 # Skills 专项优化任务执行文档（TED）
@@ -201,7 +201,7 @@ source_hash: sha256:0dc42abf0a6270614ab8b0893baecda9cc1825ab45aef4f70b56c3c8195a
   - 命令：`node --test tests/ts/skill-guard-boundary.test.mjs`
   - 预期：PASS。
 - [ ] **步骤 4：人工抽查高风险 skill**
-  - 检查：`using-coding-plugins`、`git-commit`、`verification-before-completion`、`writing-plans`、`finishing-a-development-branch` 等仍保留必要行动入口。
+  - 检查：`using-coding-plugins`、`using-git-commit`、`verification-before-completion`、`writing-plans`、`finishing-a-development-branch` 等仍保留必要行动入口。
 - [ ] **步骤 5：记录 GREEN 证据**
   - 写入：同一 `doc_id` 的 VED 证据文档。
 

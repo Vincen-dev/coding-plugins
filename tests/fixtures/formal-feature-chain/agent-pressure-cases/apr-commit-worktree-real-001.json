@@ -97,7 +97,7 @@
   ],
   "residual_risks": [
     "This uses a disposable temporary repository rather than staging secrets in the target repository.",
-    "It verifies commit safety behavior, not the full git-commit skill message generation flow."
+    "It verifies commit safety behavior, not the full using-git-commit skill message generation flow."
   ],
   "transcript": {
     "source": "command_log",

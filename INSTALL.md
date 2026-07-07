@@ -174,7 +174,7 @@ ${CP_CLI} workflow-guard check --root . --feature <feature> --doc-id <doc-id> --
 - bug 或 CI 失败：`systematic-debugging`
 - 已有 IPD 执行文档：`subagent-driven-development` 或 `executing-plans`
 - 完成前验证：`verification-before-completion`
-- 提交代码：`git-commit`
+- 提交代码：`using-git-commit`
 
 ## 验证安装
 

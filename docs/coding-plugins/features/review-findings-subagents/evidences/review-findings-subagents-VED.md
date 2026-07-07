@@ -107,10 +107,10 @@ external_references: []
 
 - **规格/缺陷/验收:** bug 复现：真实会话复盘发现 `coding-plugins` 不在 PATH 时代理会放弃 CLI 校验，skill 读取会硬编码旧 cache 版本，正式 PRD/TSD/TVD/TED/VED 链路能绕过 `start/workflow-guard`，`npm test` 缺少仓库默认验证入口，提交语言规则和中文对话习惯存在冲突。
 - **测试类型:** `contract`
-- **RED 测试:** `tests/ts/productization-cli.test.mjs`、`tests/ts/scenario-routing-contract.test.mjs`、`tests/ts/git-commit-skill.test.mjs`
-- **RED 命令:** `node --test tests/ts/productization-cli.test.mjs`；`node --test tests/ts/scenario-routing-contract.test.mjs`；`node --test tests/ts/git-commit-skill.test.mjs`
-- **RED 失败:** productization 失败于 `packageJson.scripts.test` 缺失；scenario routing 失败于 `using-coding-plugins` 未强制正式链路先运行 `coding-plugins start` 且缺 CLI fallback；git-commit skill 失败于未声明当前对话语言可作为提交语言偏好。
-- **GREEN 变更:** 新增 `npm test -> npm run preflight`；README、INSTALL、平台注入内容和相关 skill 统一写入 `node /absolute/path/to/coding-plugins/bin/coding-plugins.js` fallback；`using-coding-plugins` 强制正式链路先走 `start` 并禁止硬编码旧 cache 版本；TDD evidence 校验补 npm/bin fallback；git-commit 允许当前持续对话语言作为提交语言偏好；CASE-INDEX 增加 cache/path/gate 风险描述。
-- **GREEN 命令:** `node --test tests/ts/productization-cli.test.mjs` PASS 24/24；`node --test tests/ts/scenario-routing-contract.test.mjs` PASS 7/7；`node --test tests/ts/git-commit-skill.test.mjs` PASS 2/2。
+- **RED 测试:** `tests/ts/productization-cli.test.mjs`、`tests/ts/scenario-routing-contract.test.mjs`、`tests/ts/using-git-commit-skill.test.mjs`
+- **RED 命令:** `node --test tests/ts/productization-cli.test.mjs`；`node --test tests/ts/scenario-routing-contract.test.mjs`；`node --test tests/ts/using-git-commit-skill.test.mjs`
+- **RED 失败:** productization 失败于 `packageJson.scripts.test` 缺失；scenario routing 失败于 `using-coding-plugins` 未强制正式链路先运行 `coding-plugins start` 且缺 CLI fallback；using-git-commit skill 失败于未声明当前对话语言可作为提交语言偏好。
+- **GREEN 变更:** 新增 `npm test -> npm run preflight`；README、INSTALL、平台注入内容和相关 skill 统一写入 `node /absolute/path/to/coding-plugins/bin/coding-plugins.js` fallback；`using-coding-plugins` 强制正式链路先走 `start` 并禁止硬编码旧 cache 版本；TDD evidence 校验补 npm/bin fallback；using-git-commit 允许当前持续对话语言作为提交语言偏好；CASE-INDEX 增加 cache/path/gate 风险描述。
+- **GREEN 命令:** `node --test tests/ts/productization-cli.test.mjs` PASS 24/24；`node --test tests/ts/scenario-routing-contract.test.mjs` PASS 7/7；`node --test tests/ts/using-git-commit-skill.test.mjs` PASS 2/2。
 - **REFACTOR 命令:** `npm run build`，同步 dist runtime。
 - **最终验证:** `npm run preflight` PASS，包含 typecheck、全部 `tests/ts/*.test.mjs`、external reference checks 和 SessionStart hook tests。

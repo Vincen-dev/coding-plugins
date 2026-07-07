@@ -32,7 +32,7 @@ Task tool (general-purpose):
     1. Implement exactly what the task specifies.
     2. For any feature, bugfix, refactor, or behavior change, use TDD by default: write a failing test from a Spec ID, bug reproduction, or acceptance criterion; confirm RED; then write the smallest implementation.
     3. Verify the implementation.
-    4. If the task requires a commit, use `git-commit` rules: commit-message language is chosen by the user; AI authors, AI co-authors, and AI-generated statements are forbidden.
+    4. If the task requires a commit, use `using-git-commit` rules: commit-message language is chosen by the user; AI authors, AI co-authors, and AI-generated statements are forbidden.
     5. Self-review.
     6. Report results.
 

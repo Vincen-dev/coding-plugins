@@ -20,7 +20,7 @@
     {
       "evidence_type": "agent_transcript_observation",
       "source": "codex_multi_agent:019f2892-231d-7021-8c2e-3245991903d5:final_response",
-      "actual_observation": "The completed agent response selected git-commit for the direct commit request.",
+      "actual_observation": "The completed agent response selected using-git-commit for the direct commit request.",
       "verification_method": "Parent agent checked the response for commit-flow routing.",
       "proves": "used_git_commit"
     },

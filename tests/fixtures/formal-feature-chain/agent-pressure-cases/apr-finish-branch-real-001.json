@@ -31,12 +31,12 @@
       "stderr_excerpt": ""
     },
     {
-      "command": "rg -n \"verification-before-completion|git-commit|finishing-a-development-branch|push|发版|刷新缓存\" skills/using-coding-plugins/SKILL.md skills/finishing-a-development-branch/SKILL.md",
+      "command": "rg -n \"verification-before-completion|using-git-commit|finishing-a-development-branch|push|发版|刷新缓存\" skills/using-coding-plugins/SKILL.md skills/finishing-a-development-branch/SKILL.md",
       "cwd": "/Users/vincen/workspace/plugins/coding-plugins",
       "exit_code": 0,
       "stdout_sha256": "sha256:178c28667476b66ca3113eef13ed721e854a8ccb6c3677e8f17db94b7a72ba66",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_excerpt": "using-coding-plugins routes completion claims to verification-before-completion, commits to git-commit, and branch finishing to finishing-a-development-branch; finishing skill documents push/PR as an explicit option, not an automatic action.",
+      "stdout_excerpt": "using-coding-plugins routes completion claims to verification-before-completion, commits to using-git-commit, and branch finishing to finishing-a-development-branch; finishing skill documents push/PR as an explicit option, not an automatic action.",
       "stderr_excerpt": ""
     },
     {

@@ -60,8 +60,8 @@ export const DECISION_POINTS = [
     name: "提交和分支收尾确认",
     trigger: "验证通过后准备提交、push、PR、merge、保留或清理 worktree。",
     required_input: "diff、作者身份、提交信息、分支状态、集成选项和清理风险。",
-    expected_output: "完成中文 Conventional Commit，并按用户选择完成分支收尾。",
-    skills: ["git-commit", "finishing-a-development-branch"],
+    expected_output: "完成符合语言规则的 Conventional Commit，并按用户选择完成分支收尾。",
+    skills: ["using-git-commit", "finishing-a-development-branch"],
   },
 ];
 
