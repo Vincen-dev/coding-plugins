@@ -5,20 +5,20 @@ import { fileURLToPath } from "node:url";
 import test from "node:test";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
-const skillPath = join(repoRoot, "skills/git-commit/SKILL.md");
+const skillPath = join(repoRoot, "skills/using-git-commit/SKILL.md");
 const languageContractFiles = [
   "README.md",
   "docs/workflow-chain.md",
   "hooks/session-start-codex",
-  "skills/git-commit/SKILL.md",
-  "skills/git-commit/agents/openai.yaml",
+  "skills/using-git-commit/SKILL.md",
+  "skills/using-git-commit/agents/openai.yaml",
   "skills/subagent-driven-development/SKILL.md",
   "skills/subagent-driven-development/implementer-prompt.md",
   "skills/finishing-a-development-branch/SKILL.md",
   "tests/fixtures/formal-feature-chain/CASE-INDEX.md",
 ].map((path) => join(repoRoot, path));
 
-test("git-commit skill makes user-selected commit language rules unambiguous", () => {
+test("using-git-commit skill makes user-selected commit language rules unambiguous", () => {
   const skill = readFileSync(skillPath, "utf8");
 
   assert.match(skill, /^## Commit Language Resolution$/m);
@@ -31,7 +31,7 @@ test("git-commit skill makes user-selected commit language rules unambiguous", (
   assert.match(skill, /Authored-by/);
 });
 
-test("git-commit language contract surfaces do not force Chinese commit messages", () => {
+test("using-git-commit language contract surfaces do not force Chinese commit messages", () => {
   const bannedHardRules = [
     /提交信息必须中文/,
     /默认使用中文提交信息/,

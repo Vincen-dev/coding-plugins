@@ -10,7 +10,7 @@ Coding Plugins is a Chinese-first coding-agent workflow plugin with English agen
 - Bug, failing test, CI failure, or unclear root cause: use `systematic-debugging`.
 - Approved TED task execution document: use `subagent-driven-development` when authorized, otherwise `executing-plans`.
 - Before claiming completion: use `verification-before-completion`.
-- When the user asks for a commit: use `git-commit`.
+- When the user asks for a commit: use `using-git-commit`.
 
 ## Core Constraints
 

@@ -1,5 +1,5 @@
 ---
-name: git-commit
+name: using-git-commit
 description: Use when the user asks to commit changes, mentions commit, or a completed task needs an intentional Conventional Commit.
 ---
 

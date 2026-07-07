@@ -14,7 +14,7 @@
 - `doctor` 新增跨平台安装状态汇总，覆盖 Codex、Claude、Gemini、本地 skills、Cursor 和 Copilot。
 - 扩展 agent pressure harness 和 fixture，新增长会话压缩、TED stale、平台不可用等真实命令压力样本。
 - 增加团队发布 checklist，明确 release branch/PR、preflight、strict audit、tag、remote audit 和本地插件缓存刷新步骤。
-- 调整 `git-commit` 提交语言策略：用户未明确指定时先沿用历史提交语言，历史缺失或混合时再询问，对话语言只作为最后兜底。
+- 调整 `using-git-commit` 提交语言策略：用户未明确指定时先沿用历史提交语言，历史缺失或混合时再询问，对话语言只作为最后兜底。
 - 提升插件、npm package、lockfile 和版本提升配置到 `1.0.18`。
 
 ## 1.0.17 - 2026-07-04
@@ -33,9 +33,9 @@
 
 ## 1.0.15 - 2026-07-04
 
-- 调整 `git-commit` skill：提交信息语言由用户决定，可使用中文或英文；用户未指定语言时必须先询问。
+- 调整 `using-git-commit` skill：提交信息语言由用户决定，可使用中文或英文；用户未指定语言时必须先询问。
 - 同步 README、workflow 文档、SessionStart hook、子代理提示和完成收尾提示，移除“必须中文提交”的硬性表述。
-- 增加 `git-commit` 语言契约回归测试，防止核心入口重新强制中文提交信息。
+- 增加 `using-git-commit` 语言契约回归测试，防止核心入口重新强制中文提交信息。
 - 提升插件、npm package、lockfile 和版本提升配置到 `1.0.15`。
 
 ## 1.0.14 - 2026-07-04

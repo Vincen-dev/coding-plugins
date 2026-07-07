@@ -51,7 +51,7 @@ Coding Plugins runs locally and gives AI agents workflow instructions. Important
 - **SessionStart hooks:** Codex hook scripts run with the user's shell privileges. Changes under `hooks/` must be reviewed carefully.
 - **Skill instructions:** files under `skills/` can influence agent behavior. Malicious or overly broad instructions can cause unsafe command usage or data exposure.
 - **Local scripts:** files under `scripts/` read and write local repository files. They must avoid destructive defaults and must not exfiltrate data.
-- **Git workflow:** `git-commit` intentionally checks author identity and sensitive files before committing. Bypassing those checks can leak secrets.
+- **Git workflow:** `using-git-commit` intentionally checks author identity and sensitive files before committing. Bypassing those checks can leak secrets.
 - **Subagent prompts:** generated prompts must avoid leaking unrelated project context, stale plan content, secrets, or unrelated user conversation.
 - **Platform manifests:** `.codex-plugin/`, `.claude-plugin/`, root `plugin.json`, `gemini-extension.json`, `.agents/skills`, and related install metadata must point only to intended local resources.
 
