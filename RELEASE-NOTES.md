@@ -1,5 +1,14 @@
 # Release Notes
 
+## 1.1.0 - 2026-07-07
+
+- 将 agent-facing skill 执行面系统性英文化，并保留中文优先的用户交互和工作流说明。
+- 将 `git-commit` skill 迁移为 `using-git-commit`，同步入口、代理配置和回归测试，避免命名与通用 git 操作混淆。
+- 增加 skill 与 guard/DP 边界检查，阻止门禁规则继续混入技能正文，并补充边界清单测试夹具。
+- 收紧正式发布包边界，排除开发夹具、Python 缓存和无关沉淀文档，确保用户安装内容更干净。
+- 补充 CODEOWNERS、平台约定文件检查和 GitHub Actions 依赖升级，增强发布前仓库治理。
+- 提升插件、npm package、lockfile 和版本提升配置到 `1.1.0`。
+
 ## 1.0.19 - 2026-07-06
 
 - 修复 `report completion --kind release` 的完成判断，统一复用 release commit、tag、workflow、发布目标和依赖解析五项发布完成标准。
