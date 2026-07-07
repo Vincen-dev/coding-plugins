@@ -83,6 +83,7 @@ feature: <feature-name>
 doc_id: <doc-id>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
+source_hash: sha256:<由 src/cli/workflow-state.ts hash --feature <feature-name> --doc-id <doc-id> 生成>
 related_docs:
   - docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md
   - docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TSD.md

@@ -122,9 +122,23 @@ export function scaffoldFixtureCase(root: string, options: ScaffoldFixtureCaseOp
       "| 需求点 | 标题 | 优先级 | 类型 | 验证方式 |\n" +
       "| --- | --- | --- | --- | --- |\n" +
       `| REQ-001 | ${options.title} | 必须 | fixture | contract 测试 |\n\n` +
+      "## 成功指标\n\n" +
+      "- 业务或用户指标：fixture 能稳定复现并覆盖该流程风险。\n" +
+      "- 质量指标：完整文档链路通过 schema 和 preflight 校验。\n" +
+      "- 观测方式：自动化测试读取生成的 PRD/TSD/TVD/TED/VED。\n\n" +
+      "## 假设与依赖\n\n" +
+      "- 假设：fixture 用例代表一个真实维护风险。\n" +
+      "- 依赖：依赖本仓库文档 schema、workflow-state 和 preflight。\n" +
+      "- 约束变化处理：fixture 风险变化时同步更新 CASE-INDEX 和文档链。\n\n" +
+      "## 开放问题\n\n" +
+      "- 无：fixture 只沉淀已知风险，不承载待确认产品范围。\n\n" +
       `## ${options.title}（REQ-001）\n\n` +
       "### 需求描述\n\n" +
-      `${options.optimizationTarget}\n\n`,
+      `${options.optimizationTarget}\n\n` +
+      "## 追踪矩阵\n\n" +
+      "| 规格 ID | 验证类型 | 验证证据 | 状态 |\n" +
+      "| --- | --- | --- | --- |\n" +
+      "| REQ-001 | contract | 同一 `doc_id` 的 VED | 已覆盖 |\n",
   );
 
   write(
@@ -138,10 +152,30 @@ export function scaffoldFixtureCase(root: string, options: ScaffoldFixtureCaseOp
         relatedDocs([prdPath, tvdPath, tedPath, vedPath]),
     ) +
       `# ${options.title} TSD\n\n` +
+      "## 规格缺口审查\n\n" +
+      "- 未覆盖需求：无，REQ-001 已覆盖。\n" +
+      "- 验收标准不清：无，fixture 校验目标已在 PRD 固定。\n" +
+      "- 新增外部行为：无，fixture 只维护测试文档链。\n" +
+      "- 处理状态：通过。\n\n" +
       "## 规格到设计映射\n\n" +
       "| 规格 ID | 技术落点 | 设计决策 | 测试策略 |\n" +
       "| --- | --- | --- | --- |\n" +
-      "| REQ-001 | `tests/fixtures` | fixture 文档链路覆盖 | contract 测试 |\n",
+      "| REQ-001 | `tests/fixtures` | fixture 文档链路覆盖 | contract 测试 |\n\n" +
+      "## 备选方案\n\n" +
+      "- 方案 A：只在 CASE-INDEX 记录风险；成本低，但无法验证文档链路。\n" +
+      "- 方案 B：生成完整 PRD/TSD/TVD/TED/VED fixture；可回归验证链路完整性。\n" +
+      "- 取舍结论：选择方案 B，作为自动化质量证据。\n\n" +
+      "## 非功能设计\n\n" +
+      "- 性能：fixture 文件较小，不引入运行时性能影响。\n" +
+      "- 安全 / 隐私：fixture 不包含真实用户数据或密钥。\n" +
+      "- 可靠性 / 可观测性：preflight 和 schema validate 负责发现漂移。\n" +
+      "- 可维护性：生成器集中维护 fixture 文档骨架。\n\n" +
+      "## 上线 / 回滚\n\n" +
+      "- 上线方式：随测试 fixture 和生成器一起发布。\n" +
+      "- 回滚方式：回退生成器和对应 fixture 测试。\n" +
+      "- 回滚验证：重新运行 fixture scaffold 测试和 preflight。\n\n" +
+      "## 测试策略\n\n" +
+      "- REQ-001：使用 contract/source-scan 测试验证生成链路、source_hash 和 schema。\n",
   );
 
   write(
@@ -154,10 +188,27 @@ export function scaffoldFixtureCase(root: string, options: ScaffoldFixtureCaseOp
       relatedDocs([prdPath, tsdPath, tedPath, vedPath]),
     ) +
       `# ${options.title} TVD\n\n` +
+      "## 测试策略摘要\n\n" +
+      "使用 contract 测试验证 fixture 文档链路、source_hash 和 schema 覆盖。\n\n" +
+      "## 风险到测试映射\n\n" +
+      "- REQ-001 / 风险：fixture 只记录风险但没有完整文档链。\n" +
+      "  - 测试覆盖：TC-001 验证生成的 PRD/TSD/TVD/TED/VED 和 schema。\n\n" +
+      "## 测试环境与数据\n\n" +
+      "- 环境：本地临时目录。\n" +
+      "- 数据：由 scaffoldFixtureCase 生成的 fixture 文档。\n" +
+      "- 隔离：测试结束删除临时目录。\n\n" +
       "## 测试用例总览\n\n" +
       "| 测试用例 | 标题 | 覆盖规格 | 测试类型 | 执行方式 | 证据目标 |\n" +
       "| --- | --- | --- | --- | --- | --- |\n" +
-      `| TC-001 | ${options.title} | REQ-001 | contract | 自动化 | VED |\n`,
+      `| TC-001 | ${options.title} | REQ-001 | contract | 自动化 | VED |\n\n` +
+      "## 通过 / 失败标准\n\n" +
+      "- 通过标准：生成链路完整，workflow state ready-for-execution，schema validate 通过。\n" +
+      "- 阻塞失败：缺少文档、source_hash stale、Spec 覆盖缺失或 schema 失败。\n" +
+      "- 非阻塞风险：无。\n\n" +
+      "## 自动化状态\n\n" +
+      "- 自动化覆盖：TC-001 由 scaffold-fixture-case 测试覆盖。\n" +
+      "- 人工验收：不需要。\n" +
+      "- 暂不覆盖：无。\n",
   );
 
   const sourceHash = computeUpstreamHash(root, { feature: options.feature, docId: options.docId });
@@ -192,9 +243,17 @@ export function scaffoldFixtureCase(root: string, options: ScaffoldFixtureCaseOp
       "| 任务 | 标题 | 覆盖规格 | 验证方式 | VED 记录 |\n" +
       "| --- | --- | --- | --- | --- |\n" +
       `| TASK-001 | ${options.title} | REQ-001 | preflight fixture 校验 | 同一 \`doc_id\` 的 VED |\n\n` +
+      "## 任务依赖与并行性\n\n" +
+      "- TASK-001：无前置任务；必须串行确认 source_hash 和 schema 后完成。\n" +
+      "- 可并行任务：无，fixture 生成链路需要保持同一 doc_id 一致。\n" +
+      "- 任务完成定义：生成文档存在、workflow state ready-for-execution、schema validate 通过。\n\n" +
       `## ${options.title}（TASK-001 / REQ-001）\n\n` +
       "### 执行步骤\n\n" +
-      "- [ ] 运行 fixture 校验。\n",
+      "- [ ] 运行 fixture 校验。\n\n" +
+      "## 中止条件\n\n" +
+      "- 上游变更：PRD、TSD 或 TVD 变更导致 `source_hash` 不匹配。\n" +
+      "- 范围漂移：fixture 用例开始承载真实发布、缓存刷新或仓库集成。\n" +
+      "- 验证失败：schema validate、workflow state 或 preflight fixture 校验失败。\n",
   );
 
   write(

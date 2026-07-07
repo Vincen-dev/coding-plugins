@@ -10,6 +10,12 @@ const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const fixtureDocsRoot = join(repoRoot, "tests/fixtures/formal-feature-chain/docs/coding-plugins/features");
 const artifactSuffixes = new Set(["PRD", "TSD", "TVD", "TED", "VED"]);
 const pathInBodyRe = /docs\/coding-plugins\/features\/[^`\s)]+\/(?:requirements|technicals|test-cases|plans|evidences)\/[^`\s)]+-(?:PRD|TSD|TVD|TED|VED)\.md/;
+const requiredFixtureSections = {
+  PRD: ["## 成功指标", "## 假设与依赖", "## 开放问题"],
+  TSD: ["## 备选方案", "## 非功能设计", "## 上线 / 回滚"],
+  TVD: ["## 风险到测试映射", "## 测试环境与数据", "## 通过 / 失败标准", "## 自动化状态"],
+  TED: ["## 任务依赖与并行性", "## 中止条件"],
+};
 
 function walk(dir) {
   const files = [];
@@ -38,6 +44,11 @@ test("formal feature chain fixture bodies stay readable and metadata-first", () 
     const relativePath = relative(repoRoot, path);
     if (!body.includes("## 阅读摘要")) {
       offenders.push(`${relativePath} missing 阅读摘要`);
+    }
+    for (const section of requiredFixtureSections[suffix] ?? []) {
+      if (!body.includes(section)) {
+        offenders.push(`${relativePath} missing ${section.replace(/^##\s+/, "")}`);
+      }
     }
     if (pathInBodyRe.test(body)) {
       offenders.push(`${relativePath} repeats full document path in body`);

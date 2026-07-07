@@ -3,7 +3,7 @@ title: Metadata Sync Task Execution Document
 status: approved
 feature: metadata-sync-fixture
 doc_id: metadata-sync
-source_hash: sha256:cb391503e8e712f593a5b0ce41465f84d46af89316d3b64629b7d17f94bbbe49
+source_hash: sha256:9cd99584ca38bd855408fbbf5d46bc837a48d5e5b7ae5b00e05eb8dada904ec6
 created: 2026-07-02
 updated: 2026-07-02
 related_docs:
@@ -56,6 +56,11 @@ related_docs:
 | --- | --- | --- | --- | --- |
 | TASK-001 | 校验 metadata 同步 freshness | REQ-001 | contract fixture 校验 | 同一 `doc_id` 的 VED |
 
+## 任务依赖与并行性
+
+- TASK-001：无前置任务；必须串行确认 source_hash 和 schema 后完成。
+- 并行性：本 fixture 只有单任务，不拆分并行执行。
+
 ## 校验 metadata 同步 freshness（TASK-001 / REQ-001）
 
 ### 任务目标
@@ -101,3 +106,8 @@ related_docs:
 | 覆盖规格 | 测试类型 | 命令或人工验收 | 预期结果 |
 | --- | --- | --- | --- |
 | REQ-001 | contract | `npm run preflight` | PASS |
+
+## 中止条件
+
+- 上游 PRD、TSD 或 TVD 变更导致 `source_hash` 不匹配。
+- fixture schema、metadata 或 preflight 校验失败。

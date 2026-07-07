@@ -305,6 +305,9 @@ test("technical solution template keeps relations in metadata and avoids table-h
   assert.equal(body.includes("## 技术实现文档\n\n`docs/"), false, "TSD body must not hard-code TID path links");
   assert.equal(/\bTID\b/.test(body), false, "TSD template body must not require a separate TID");
   assert.ok(body.includes("关联关系只维护在 frontmatter `related_docs` 和 `docs/coding-plugins/INDEX.md`"));
+  for (const section of ["## 备选方案", "## 非功能设计", "## 上线 / 回滚"]) {
+    assert.ok(body.includes(section), `TSD template missing section ${section}`);
+  }
 });
 
 test("artifact templates stay narrative-first and avoid path-heavy bodies", () => {
@@ -313,19 +316,28 @@ test("artifact templates stay narrative-first and avoid path-heavy bodies", () =
       name: "PRD",
       path: "skills/writing-requirements/templates/product-requirements-document.md",
       maxTables: 4,
-      requiredSections: ["## 阅读摘要", "## 目标", "## 需求总览", "## 追踪矩阵"],
+      requiredSections: ["## 阅读摘要", "## 目标", "## 成功指标", "## 假设与依赖", "## 开放问题", "## 需求总览", "## 追踪矩阵"],
     },
     {
       name: "TVD",
       path: "skills/writing-test-cases/templates/test-cases.md",
       maxTables: 3,
-      requiredSections: ["## 阅读摘要", "## 测试策略摘要", "## 测试用例总览", "## 不需要测试用例的规格"],
+      requiredSections: [
+        "## 阅读摘要",
+        "## 测试策略摘要",
+        "## 风险到测试映射",
+        "## 测试环境与数据",
+        "## 测试用例总览",
+        "## 通过 / 失败标准",
+        "## 自动化状态",
+        "## 不需要测试用例的规格",
+      ],
     },
     {
       name: "TED",
       path: "skills/writing-plans/templates/implementation-plan.md",
       maxTables: 2,
-      requiredSections: ["## 阅读摘要", "## 执行锁定区", "## 执行简报", "## 任务总览"],
+      requiredSections: ["## 阅读摘要", "## 执行锁定区", "## 执行简报", "## 任务总览", "## 任务依赖与并行性", "## 中止条件"],
     },
     {
       name: "VED",
@@ -351,4 +363,12 @@ test("artifact templates stay narrative-first and avoid path-heavy bodies", () =
       assert.ok(body.includes(section), `${templateInfo.name} template missing section ${section}`);
     }
   }
+});
+
+test("document metadata TED template includes source_hash", () => {
+  const template = readFileSync("skills/document-metadata/templates/document-metadata.md", "utf8");
+  const tedTemplate = template.match(/## TED frontmatter[\s\S]*?## Test cases frontmatter/)?.[0] ?? "";
+
+  assert.ok(tedTemplate.includes("source_hash:"), "TED metadata template must include source_hash");
+  assert.ok(tedTemplate.includes("workflow-state.ts hash"), "TED source_hash guidance must point to workflow-state hash generation");
 });

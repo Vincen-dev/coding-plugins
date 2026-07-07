@@ -3,7 +3,7 @@ title: Routing Login Task Execution Document
 status: approved
 feature: routing-fixture
 doc_id: routing-login
-source_hash: sha256:b399699c498770679041311ab353a75f5f480104451a391f1d30d5bd76c5b032
+source_hash: sha256:56dddf7b96e145c8576b3272384ab82f8d153ade2ac23a7ad28d4195832dd39e
 created: 2026-07-02
 updated: 2026-07-02
 related_docs:
@@ -68,6 +68,11 @@ related_docs:
 | --- | --- | --- | --- | --- |
 | TASK-001 | 校验正式链路闭包 | REQ-001 | `npm run preflight` | 同一 `doc_id` 的 VED |
 
+## 任务依赖与并行性
+
+- TASK-001：无前置任务；必须串行确认 source_hash 和 schema 后完成。
+- 并行性：本 fixture 只有单任务，不拆分并行执行。
+
 ## 校验正式链路闭包（TASK-001 / REQ-001）
 
 ### 任务目标
@@ -120,6 +125,11 @@ related_docs:
 - 证据文件：同一 `doc_id` 的 VED
 - 证据章节：`## TDD 证据`
 - 无法自动测试时：必须写 `### TDD 例外记录`。
+
+## 中止条件
+
+- 上游 PRD、TSD 或 TVD 变更导致 `source_hash` 不匹配。
+- fixture schema、metadata 或 preflight 校验失败。
 
 ## 完成检查
 

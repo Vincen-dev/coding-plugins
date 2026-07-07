@@ -34,6 +34,17 @@ related_docs:
 
 使用 contract 测试验证 metadata 同步 freshness 规则。
 
+## 风险到测试映射
+
+| 风险 | 覆盖测试 | 处理方式 |
+| --- | --- | --- |
+| 文档链路缺失或过期 | TC-001 / REQ-001 | 自动化校验同一 `doc_id` 的完整链路 |
+
+## 测试环境与数据
+
+- 环境：本仓库 Node.js 测试环境。
+- 数据：formal-feature-chain fixture 下的 metadata-sync-fixture/metadata-sync 文档链。
+
 ## 测试用例总览
 
 | 测试用例 | 标题 | 覆盖规格 | 测试类型 | 执行方式 | 证据目标 |
@@ -70,3 +81,14 @@ related_docs:
 ### 证据目标
 
 - VED 记录：同一 `doc_id` 的 VED
+
+## 通过 / 失败标准
+
+- 通过：TC-001 执行后，链路闭包、metadata 和 schema 校验均通过。
+- 失败：缺少任一上游文档、REQ-001 覆盖缺失或 TED source_hash 过期。
+
+## 自动化状态
+
+| 测试用例 | 自动化状态 | 命令 |
+| --- | --- | --- |
+| TC-001 | 已自动化 | `npm run preflight` |

@@ -6,6 +6,7 @@ import test from "node:test";
 
 import { scaffoldFixtureCase } from "../../src/lib/scaffold-fixture-case.ts";
 import { splitFrontmatter } from "../../src/lib/document-metadata.ts";
+import { validateDocumentSchemas } from "../../src/lib/documents/document-schema.ts";
 import { inspectDocumentChain } from "../../src/lib/workflow-state.ts";
 
 function scaffold(root, overrides = {}) {
@@ -50,6 +51,24 @@ test("TypeScript scaffold creates case index and valid document chain", () => {
     assert.ok(caseIndex.includes("## cache-fixture"));
     assert.ok(caseIndex.includes("case_id: CASE-CACHE-999"));
 
+    const prdText = readFileSync(join(featureRoot, "requirements/cache-refresh-PRD.md"), "utf8");
+    assert.ok(prdText.includes("## 成功指标"));
+    assert.ok(prdText.includes("## 假设与依赖"));
+    assert.ok(prdText.includes("## 开放问题"));
+    assert.ok(prdText.includes("## 追踪矩阵"));
+
+    const tsdText = readFileSync(join(featureRoot, "technicals/cache-refresh-TSD.md"), "utf8");
+    assert.ok(tsdText.includes("## 备选方案"));
+    assert.ok(tsdText.includes("## 非功能设计"));
+    assert.ok(tsdText.includes("## 上线 / 回滚"));
+    assert.ok(tsdText.includes("## 测试策略"));
+
+    const tvdText = readFileSync(join(featureRoot, "test-cases/cache-refresh-TVD.md"), "utf8");
+    assert.ok(tvdText.includes("## 风险到测试映射"));
+    assert.ok(tvdText.includes("## 测试环境与数据"));
+    assert.ok(tvdText.includes("## 通过 / 失败标准"));
+    assert.ok(tvdText.includes("## 自动化状态"));
+
     const tedText = readFileSync(join(featureRoot, "plans/cache-refresh-TED.md"), "utf8");
     assert.ok(tedText.includes("source_hash: sha256:"));
     assert.ok(tedText.includes("related_docs:"));
@@ -58,6 +77,8 @@ test("TypeScript scaffold creates case index and valid document chain", () => {
     assert.ok(tedText.includes("## 执行锁定区"));
     assert.ok(tedText.includes("## 执行简报"));
     assert.ok(tedText.includes("## 任务总览"));
+    assert.ok(tedText.includes("## 任务依赖与并行性"));
+    assert.ok(tedText.includes("## 中止条件"));
     assert.ok(tedText.includes("## 缓存刷新（TASK-001 / REQ-001）"));
     const [, tedBody] = splitFrontmatter(tedText);
     assert.equal(tedBody.includes("docs/coding-plugins/features/cache-fixture/evidences/cache-refresh-VED.md"), false);
@@ -65,6 +86,8 @@ test("TypeScript scaffold creates case index and valid document chain", () => {
 
     const state = inspectDocumentChain(root, { feature: "cache-fixture", docId: "cache-refresh" });
     assert.equal(state.state, "ready-for-execution");
+    const schema = validateDocumentSchemas(root);
+    assert.equal(schema.ok, true, schema.errors.join("\n"));
   } finally {
     rmSync(root, { recursive: true, force: true });
   }

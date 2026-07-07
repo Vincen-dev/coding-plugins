@@ -133,3 +133,13 @@ test("TypeScript preflight runs external reference checks by default", () => {
   assert.ok(source.stdout.includes("checkExternalReferences();"), "default preflight must run external reference checks");
   assert.ok(!source.stdout.includes('args.includes("--check-external-references")'), "external reference checks must not be optional only");
 });
+
+test("TypeScript preflight runs complete document schema validation", () => {
+  const source = spawnSync("node", ["-e", "process.stdout.write(require('node:fs').readFileSync(process.argv[1], 'utf8'))", preflightImplementation], {
+    cwd: repoRoot,
+    encoding: "utf8",
+  });
+  assert.equal(source.status, 0, source.stderr);
+  assert.ok(source.stdout.includes("validateDocumentSchemas"), "preflight must invoke the complete PRD/TSD/TVD/TED/VED schema validator");
+  assert.ok(source.stdout.includes('assertPayload("Document schema validation"'), "document schema failures must fail preflight");
+});

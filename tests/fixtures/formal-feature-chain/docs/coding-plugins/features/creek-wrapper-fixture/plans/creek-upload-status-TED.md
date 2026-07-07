@@ -3,7 +3,7 @@ title: Creek Upload Status Task Execution Document
 status: approved
 feature: creek-wrapper-fixture
 doc_id: creek-upload-status
-source_hash: sha256:f44741db7eb60e91de25ad573533c2732b356d925938595d561a836f444d22a9
+source_hash: sha256:0da74e89bd00914d3fb3df8e9eacbe6039e1e885cec714c330ece62156c10f43
 created: 2026-07-02
 updated: 2026-07-02
 related_docs:
@@ -56,6 +56,11 @@ related_docs:
 | --- | --- | --- | --- | --- |
 | TASK-001 | 校验上传状态契约 | REQ-001 | contract fixture 校验 | 同一 `doc_id` 的 VED |
 
+## 任务依赖与并行性
+
+- TASK-001：无前置任务；必须串行确认 source_hash 和 schema 后完成。
+- 并行性：本 fixture 只有单任务，不拆分并行执行。
+
 ## 校验上传状态契约（TASK-001 / REQ-001）
 
 ### 任务目标
@@ -100,3 +105,8 @@ related_docs:
 | 覆盖规格 | 测试类型 | 命令或人工验收 | 预期结果 |
 | --- | --- | --- | --- |
 | REQ-001 | contract | `npm run preflight` | PASS |
+
+## 中止条件
+
+- 上游 PRD、TSD 或 TVD 变更导致 `source_hash` 不匹配。
+- fixture schema、metadata 或 preflight 校验失败。

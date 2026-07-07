@@ -85,4 +85,4 @@ npm run preflight -- --write-index
 npm run preflight
 ```
 
-preflight 会校验 README metadata、Evidence metadata、路径一致性、关联路径存在性和生成索引一致性。
+preflight 会校验 README metadata、完整 PRD/TSD/TVD/TED/VED schema、Evidence metadata、路径一致性、关联路径存在性、TED `source_hash` 新鲜度和生成索引一致性。

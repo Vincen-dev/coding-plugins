@@ -45,6 +45,11 @@ validated_by:
 | --- | --- | --- | --- |
 | TD-001 | 用 manifest 版本作为缓存一致性源 | Codex 以插件 manifest 区分版本缓存 | 需要安装后再次读取缓存 manifest |
 
+## 备选方案
+
+- 方案 A：使用现有正式链路 fixture 结构维护 刷新并验证 personal 插件缓存。
+- 方案 B：新增专用 fixture；当前需求只需验证链路闭包，额外 fixture 会增加维护成本。
+
 ## 规格到设计映射
 
 | 规格 ID | 规格摘要 | 技术落点 | 关键决策 ID | 影响文件/符号 | 验证命令 | 证据 |
@@ -56,6 +61,16 @@ validated_by:
 | 规格 ID | 原因 |
 | --- | --- |
 | 无 | 所有 MUST 规格均有技术落点。 |
+
+## 非功能设计
+
+- 可维护性：正文不重复完整文档路径，关联关系以 frontmatter 为准。
+- 可验证性：REQ-001 必须能被 source-scan、schema 和 preflight 串联验证。
+
+## 上线 / 回滚
+
+- 上线：fixture 随测试一起进入 preflight 校验。
+- 回滚：若链路校验误伤，回退本 fixture 文档和对应测试合同。
 
 ## 测试策略
 

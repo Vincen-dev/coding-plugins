@@ -3,7 +3,7 @@ title: Plugin Cache Refresh Task Execution Document
 status: approved
 feature: plugin-cache-fixture
 doc_id: plugin-cache-refresh
-source_hash: sha256:964a8dcb4b387266f20890e453022a52e17e65ae53593a24d46bc5f58b39c99f
+source_hash: sha256:229076ad1355e5629b43f375ac17229b526a2f1e74093f3cb622700b1ea591a7
 created: 2026-07-02
 updated: 2026-07-02
 related_docs:
@@ -56,6 +56,11 @@ related_docs:
 | --- | --- | --- | --- | --- |
 | TASK-001 | 验证 personal cache 版本 | REQ-001 | config fixture 校验 | 同一 `doc_id` 的 VED |
 
+## 任务依赖与并行性
+
+- TASK-001：无前置任务；必须串行确认 source_hash 和 schema 后完成。
+- 并行性：本 fixture 只有单任务，不拆分并行执行。
+
 ## 验证 personal cache 版本（TASK-001 / REQ-001）
 
 ### 任务目标
@@ -101,3 +106,8 @@ related_docs:
 | 覆盖规格 | 测试类型 | 命令或人工验收 | 预期结果 |
 | --- | --- | --- | --- |
 | REQ-001 | config | `npm run preflight` | PASS |
+
+## 中止条件
+
+- 上游 PRD、TSD 或 TVD 变更导致 `source_hash` 不匹配。
+- fixture schema、metadata 或 preflight 校验失败。

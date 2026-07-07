@@ -9,6 +9,7 @@ import { buildPayload as buildSpecPayload } from "../../lib/documents/validate-s
 import { buildPayload as buildTddEvidencePayload } from "../../lib/documents/validate-tdd-evidence.js";
 import { validateRepository as validateTechnicals } from "../../lib/documents/validate-technicals.js";
 import { frontmatterListValues } from "../../lib/documents/document-metadata.js";
+import { validateDocumentSchemas } from "../../lib/documents/document-schema.js";
 import { resolveArtifactMode } from "../../lib/documents/artifact-mode.js";
 import { withBuildLock } from "../../lib/runtime/build-lock.js";
 import { findRepositoryRoot } from "../../lib/runtime/repository-root.js";
@@ -145,6 +146,7 @@ function runStaticChecks() {
     checkManifestAssetPaths(root);
     checkArtifactIndexCoversDocuments(root);
     checkNoPythonRuntime();
+    assertPayload("Document schema validation", validateDocumentSchemas(root));
     const specFiles = collectSpecFiles();
     if (specFiles.length > 0) {
         assertPayload("Spec validation", buildSpecPayload(specFiles, true));

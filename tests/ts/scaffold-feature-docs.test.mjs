@@ -23,6 +23,9 @@ test("feature scaffold PRD stays narrative-first", () => {
     const tableCount = body.split(/\r?\n/).filter((line) => /^\|\s*:?-{3,}/.test(line.trim())).length;
 
     assert.ok(body.includes("## 目标"));
+    assert.ok(body.includes("## 成功指标"));
+    assert.ok(body.includes("## 假设与依赖"));
+    assert.ok(body.includes("## 开放问题"));
     assert.ok(body.includes("## 需求总览"));
     assert.ok(body.includes("## 追踪矩阵"));
     assert.equal(body.includes("docs/coding-plugins/features/cache-quality"), false);
