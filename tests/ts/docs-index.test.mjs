@@ -78,3 +78,22 @@ test("TypeScript docs index renders one row per doc id and validates generated i
     rmSync(root, { recursive: true, force: true });
   }
 });
+
+test("TypeScript docs index excludes gitignored feature docs from formal index", () => {
+  const root = mkdtempSync(join(tmpdir(), "coding-plugins-docs-index-ignored-"));
+  try {
+    writeFileSync(join(root, ".gitignore"), "docs/coding-plugins/features/\n", "utf8");
+    const featureDir = join(root, "docs/coding-plugins/features/search");
+    mkdirSync(join(featureDir, "requirements"), { recursive: true });
+    writeFeatureReadme(featureDir);
+    writeFileSync(join(featureDir, "requirements/search-PRD.md"), "---\nupdated: 2026-06-29\n---\n# Feature\n", "utf8");
+
+    const rendered = renderArtifactIndex(root);
+
+    assert.equal(rendered.includes("docs/coding-plugins/features/search"), false);
+    writeArtifactIndex(root);
+    checkArtifactIndexCoversDocuments(root);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});

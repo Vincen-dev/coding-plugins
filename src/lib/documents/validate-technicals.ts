@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { isAbsolute, relative, resolve } from "node:path";
 
-import { featureSpecFiles, featureTechnicalDesignFiles } from "./docs-index.ts";
+import { collectFormalFeatureRoots, featureSpecFiles, featureTechnicalDesignFiles } from "./docs-index.ts";
 import {
   collectFeatureRoots,
   documentDocId,
@@ -122,12 +122,14 @@ function relativePath(root: string, path: string): string {
   return isRelativeTo(root, path) ? relative(root, path) : path;
 }
 
-function collectTechnicalDesignFiles(root: string, technicalFiles?: string[]): string[] {
+function collectTechnicalDesignFiles(root: string, options: { technicalFiles?: string[]; includeIgnored?: boolean }): string[] {
+  const { technicalFiles, includeIgnored = true } = options;
   if (technicalFiles && technicalFiles.length > 0) {
     return technicalFiles.map((path) => (isAbsolute(path) ? path : resolve(root, path))).sort();
   }
   const files: string[] = [];
-  for (const featureRoot of collectFeatureRoots(root)) {
+  const featureRoots = includeIgnored ? collectFeatureRoots(root) : collectFormalFeatureRoots(root);
+  for (const featureRoot of featureRoots) {
     files.push(...featureTechnicalDesignFiles(featureRoot));
   }
   return files.sort();
@@ -417,9 +419,9 @@ function validateNoUnfinishedTemplateContent(root: string, documentFile: string,
   return errors;
 }
 
-export function validateRepository(rootPath: string, options: { strict: boolean; technicalFiles?: string[] }): ValidationResult {
+export function validateRepository(rootPath: string, options: { strict: boolean; technicalFiles?: string[]; includeIgnored?: boolean }): ValidationResult {
   const root = resolve(rootPath);
-  const files = collectTechnicalDesignFiles(root, options.technicalFiles);
+  const files = collectTechnicalDesignFiles(root, options);
   const errors: string[] = [];
   const warnings: string[] = [];
 

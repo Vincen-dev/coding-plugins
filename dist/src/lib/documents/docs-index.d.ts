@@ -10,6 +10,7 @@ export declare function featureSpecFiles(featureRoot: string): string[];
 export declare function featureSpecFilesForDocId(featureRoot: string, docId: string): string[];
 export declare function featureEvidenceFiles(featureRoot: string): string[];
 export declare function featureEvidenceFilesForDocId(featureRoot: string, docId: string): string[];
+export declare function collectFormalFeatureRoots(root: string): string[];
 export declare function featureArchivedEvidenceFiles(featureRoot: string): string[];
 export declare function featureTechnicalDesignFiles(featureRoot: string): string[];
 export declare function featureTechnicalDesignFilesForDocId(featureRoot: string, docId: string): string[];

@@ -4,7 +4,13 @@ import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { dirname, isAbsolute, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { checkArtifactIndexCoversDocuments, featureEvidenceFiles, featureSpecFiles, writeArtifactIndex } from "../../lib/documents/docs-index.ts";
+import {
+  checkArtifactIndexCoversDocuments,
+  collectFormalFeatureRoots,
+  featureEvidenceFiles,
+  featureSpecFiles,
+  writeArtifactIndex,
+} from "../../lib/documents/docs-index.ts";
 import {
   checkCodexHookConfigDeclared,
   checkManifestAssetPaths,
@@ -16,7 +22,7 @@ import {
 import { buildPayload as buildSpecPayload } from "../../lib/documents/validate-spec.ts";
 import { buildPayload as buildTddEvidencePayload } from "../../lib/documents/validate-tdd-evidence.ts";
 import { validateRepository as validateTechnicals } from "../../lib/documents/validate-technicals.ts";
-import { collectFeatureRoots, frontmatterListValues } from "../../lib/documents/document-metadata.ts";
+import { frontmatterListValues } from "../../lib/documents/document-metadata.ts";
 import { resolveArtifactMode } from "../../lib/documents/artifact-mode.ts";
 import { withBuildLock } from "../../lib/runtime/build-lock.ts";
 import { findRepositoryRoot } from "../../lib/runtime/repository-root.ts";
@@ -55,11 +61,11 @@ const options = parseArgs(args);
 const root = options.root;
 
 function collectSpecFiles(): string[] {
-  return collectFeatureRoots(root).flatMap((featureRoot) => featureSpecFiles(featureRoot)).sort();
+  return collectFormalFeatureRoots(root).flatMap((featureRoot) => featureSpecFiles(featureRoot)).sort();
 }
 
 function collectTddEvidenceFiles(): string[] {
-  return collectFeatureRoots(root).flatMap((featureRoot) => featureEvidenceFiles(featureRoot)).sort();
+  return collectFormalFeatureRoots(root).flatMap((featureRoot) => featureEvidenceFiles(featureRoot)).sort();
 }
 
 function runCommand(command: string, args: string[]): void {
@@ -130,7 +136,7 @@ function localReferenceExists(documentPath: string, reference: string): boolean 
 }
 
 function checkExternalReferences(): void {
-  const files = collectMarkdownFiles(join(root, "docs/coding-plugins/features"));
+  const files = collectFormalFeatureRoots(root).flatMap((featureRoot) => collectMarkdownFiles(featureRoot)).sort();
   const errors: string[] = [];
   for (const file of files) {
     const text = readFileSync(file, "utf8");
@@ -181,7 +187,7 @@ function runStaticChecks(): void {
     }));
   }
 
-  assertPayload("Technical design validation", validateTechnicals(root, { strict: true }));
+  assertPayload("Technical design validation", validateTechnicals(root, { strict: true, includeIgnored: false }));
 }
 
 function runValidationCommands(): void {

@@ -89,7 +89,7 @@ test("TypeScript preflight discovers TypeScript test files instead of hard-codin
   assert.equal(source.stdout.includes('"tests/ts/scaffold-feature-docs.test.mjs"'), false);
 });
 
-test("TypeScript preflight fails missing local external references", () => {
+test("TypeScript preflight skips missing local external references in ignored feature docs", () => {
   const featureRoot = join(repoRoot, "docs/coding-plugins/features/preflight-external-reference-test");
   try {
     mkdirSync(featureRoot, { recursive: true });
@@ -116,9 +116,9 @@ test("TypeScript preflight fails missing local external references", () => {
       env: { ...process.env, NPM_CONFIG_CACHE: npmCacheDir, npm_config_cache: npmCacheDir },
     });
 
-    assert.equal(result.status, 1);
-    assert.match(result.stderr, /External reference checks failed/);
-    assert.match(result.stderr, /missing-local-file\.md/);
+    assert.equal(result.status, 0, result.stderr);
+    assert.match(result.stdout, /External reference checks passed \(0 markdown files scanned\)\./);
+    assert.doesNotMatch(result.stderr, /missing-local-file\.md/);
   } finally {
     rmSync(featureRoot, { recursive: true, force: true });
   }

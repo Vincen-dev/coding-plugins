@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import { isAbsolute, relative, resolve } from "node:path";
-import { featureSpecFiles, featureTechnicalDesignFiles } from "./docs-index.js";
+import { collectFormalFeatureRoots, featureSpecFiles, featureTechnicalDesignFiles } from "./docs-index.js";
 import { collectFeatureRoots, documentDocId, documentSuffix, expectedRelatedPathsForDocId, featureRootForDocument, frontmatterListValues, parseFrontmatter, parseFrontmatterBlock, RELATED_DOCS_KEY, splitFrontmatter, } from "./document-metadata.js";
 const SPEC_ID_RE = /\b(?:REQ|API|SCHEMA|STATE|ERR|AC|NFR|MIG|OBS|NON)(?:-[A-Z0-9]+)*-\d{3,}\b/g;
 const TD_ID_RE = /\bTD-\d{3,}\b/g;
@@ -88,12 +88,14 @@ function isRelativeTo(root, path) {
 function relativePath(root, path) {
     return isRelativeTo(root, path) ? relative(root, path) : path;
 }
-function collectTechnicalDesignFiles(root, technicalFiles) {
+function collectTechnicalDesignFiles(root, options) {
+    const { technicalFiles, includeIgnored = true } = options;
     if (technicalFiles && technicalFiles.length > 0) {
         return technicalFiles.map((path) => (isAbsolute(path) ? path : resolve(root, path))).sort();
     }
     const files = [];
-    for (const featureRoot of collectFeatureRoots(root)) {
+    const featureRoots = includeIgnored ? collectFeatureRoots(root) : collectFormalFeatureRoots(root);
+    for (const featureRoot of featureRoots) {
         files.push(...featureTechnicalDesignFiles(featureRoot));
     }
     return files.sort();
@@ -363,7 +365,7 @@ function validateNoUnfinishedTemplateContent(root, documentFile, text) {
 }
 export function validateRepository(rootPath, options) {
     const root = resolve(rootPath);
-    const files = collectTechnicalDesignFiles(root, options.technicalFiles);
+    const files = collectTechnicalDesignFiles(root, options);
     const errors = [];
     const warnings = [];
     for (const technicalFile of files) {

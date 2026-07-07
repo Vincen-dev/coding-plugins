@@ -175,6 +175,38 @@ test("TypeScript technical validator accepts related_docs as the metadata source
   }
 });
 
+test("TypeScript technical validator can skip gitignored feature docs for formal checks", () => {
+  const root = mkdtempSync(join(tmpdir(), "coding-plugins-ignored-technicals-"));
+  try {
+    writeFileSync(join(root, ".gitignore"), "docs/coding-plugins/features/\n", "utf8");
+    const featureRoot = join(root, "docs/coding-plugins/features/local-notes");
+    mkdirSync(join(featureRoot, "technicals"), { recursive: true });
+    writeFileSync(
+      join(featureRoot, "technicals/local-notes-TSD.md"),
+      "---\n" +
+        "title: Local Notes\n" +
+        "status: draft\n" +
+        "feature: local-notes\n" +
+        "doc_id: local-notes\n" +
+        "updated: 2026-07-07\n" +
+        "---\n" +
+        "# Local Notes\n\n" +
+        "未完成占位 <doc-id>\n",
+      "utf8",
+    );
+
+    const formalResult = validateRepository(root, { strict: true, includeIgnored: false });
+    assert.deepEqual(formalResult.checked_files, []);
+    assert.equal(formalResult.ok, true);
+
+    const localResult = validateRepository(root, { strict: true });
+    assert.equal(localResult.ok, false);
+    assert.deepEqual(localResult.checked_files, ["docs/coding-plugins/features/local-notes/technicals/local-notes-TSD.md"]);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test("TypeScript technical validator rejects unfinished template content in TSD", () => {
   const root = mkdtempSync(join(tmpdir(), "coding-plugins-technical-quality-"));
   try {

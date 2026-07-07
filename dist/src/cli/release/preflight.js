@@ -3,12 +3,12 @@ import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { dirname, isAbsolute, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { checkArtifactIndexCoversDocuments, featureEvidenceFiles, featureSpecFiles, writeArtifactIndex } from "../../lib/documents/docs-index.js";
+import { checkArtifactIndexCoversDocuments, collectFormalFeatureRoots, featureEvidenceFiles, featureSpecFiles, writeArtifactIndex, } from "../../lib/documents/docs-index.js";
 import { checkCodexHookConfigDeclared, checkManifestAssetPaths, checkManifestVersions, checkNpmPackageManifest, checkPlatformEntrypoints, checkRequiredPluginFiles, } from "../../lib/release/manifest-checks.js";
 import { buildPayload as buildSpecPayload } from "../../lib/documents/validate-spec.js";
 import { buildPayload as buildTddEvidencePayload } from "../../lib/documents/validate-tdd-evidence.js";
 import { validateRepository as validateTechnicals } from "../../lib/documents/validate-technicals.js";
-import { collectFeatureRoots, frontmatterListValues } from "../../lib/documents/document-metadata.js";
+import { frontmatterListValues } from "../../lib/documents/document-metadata.js";
 import { resolveArtifactMode } from "../../lib/documents/artifact-mode.js";
 import { withBuildLock } from "../../lib/runtime/build-lock.js";
 import { findRepositoryRoot } from "../../lib/runtime/repository-root.js";
@@ -46,10 +46,10 @@ function parseArgs(argv) {
 const options = parseArgs(args);
 const root = options.root;
 function collectSpecFiles() {
-    return collectFeatureRoots(root).flatMap((featureRoot) => featureSpecFiles(featureRoot)).sort();
+    return collectFormalFeatureRoots(root).flatMap((featureRoot) => featureSpecFiles(featureRoot)).sort();
 }
 function collectTddEvidenceFiles() {
-    return collectFeatureRoots(root).flatMap((featureRoot) => featureEvidenceFiles(featureRoot)).sort();
+    return collectFormalFeatureRoots(root).flatMap((featureRoot) => featureEvidenceFiles(featureRoot)).sort();
 }
 function runCommand(command, args) {
     console.log(`+ ${[command, ...args].join(" ")}`);
@@ -114,7 +114,7 @@ function localReferenceExists(documentPath, reference) {
     return candidates.some((candidate) => existsSync(candidate));
 }
 function checkExternalReferences() {
-    const files = collectMarkdownFiles(join(root, "docs/coding-plugins/features"));
+    const files = collectFormalFeatureRoots(root).flatMap((featureRoot) => collectMarkdownFiles(featureRoot)).sort();
     const errors = [];
     for (const file of files) {
         const text = readFileSync(file, "utf8");
@@ -160,7 +160,7 @@ function runStaticChecks() {
             artifactMode: artifactMode.mode,
         }));
     }
-    assertPayload("Technical design validation", validateTechnicals(root, { strict: true }));
+    assertPayload("Technical design validation", validateTechnicals(root, { strict: true, includeIgnored: false }));
 }
 function runValidationCommands() {
     runCommand("npm", ["run", "typecheck"]);

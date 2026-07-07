@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { collectFeatureRoots, documentDocId, featureDocIds, featureRootForDocument, frontmatterListValues, parseFrontmatter, artifactFiles, artifactFilesForDocId, } from "./document-metadata.js";
+import { isPathIgnoredByGitignore } from "./artifact-mode.js";
 export class DocsIndexError extends Error {
     constructor(message) {
         super(message);
@@ -73,6 +74,9 @@ export function featureEvidenceFiles(featureRoot) {
 export function featureEvidenceFilesForDocId(featureRoot, docId) {
     return artifactFilesForDocId(featureRoot, "VED", docId);
 }
+export function collectFormalFeatureRoots(root) {
+    return collectFeatureRoots(root).filter((featureRoot) => !isPathIgnoredByGitignore(root, featureRoot));
+}
 export function featureArchivedEvidenceFiles(featureRoot) {
     const archiveRoot = join(featureRoot, "evidences/archive");
     if (!existsSync(archiveRoot)) {
@@ -143,7 +147,7 @@ export function renderArtifactIndex(root) {
         "| Feature | Doc ID | 功能根目录 | 需求文档 | 技术方案 | 测试用例 | 任务执行 | 证据 | 标签 | 更新日期 |",
         "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
     ];
-    for (const featureRoot of collectFeatureRoots(root)) {
+    for (const featureRoot of collectFormalFeatureRoots(root)) {
         const featureContext = featureRootForDocument(root, join(featureRoot, "README.md"));
         if (!featureContext) {
             continue;
@@ -176,7 +180,7 @@ export function writeArtifactIndex(root) {
 }
 export function collectIndexDocumentFiles(root) {
     const documents = [];
-    for (const featureRoot of collectFeatureRoots(root)) {
+    for (const featureRoot of collectFormalFeatureRoots(root)) {
         documents.push(...featureSpecFiles(featureRoot));
         documents.push(...featureTechnicalDesignFiles(featureRoot));
         documents.push(...featureTestCaseFiles(featureRoot));
@@ -186,7 +190,7 @@ export function collectIndexDocumentFiles(root) {
     return documents.sort();
 }
 export function checkArtifactIndexCoversDocuments(root) {
-    const featureRoots = collectFeatureRoots(root);
+    const featureRoots = collectFormalFeatureRoots(root);
     const documents = collectIndexDocumentFiles(root);
     if (featureRoots.length === 0 && documents.length === 0) {
         return;

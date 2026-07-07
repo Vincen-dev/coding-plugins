@@ -11,6 +11,7 @@ import {
   artifactFiles,
   artifactFilesForDocId,
 } from "./document-metadata.ts";
+import { isPathIgnoredByGitignore } from "./artifact-mode.ts";
 
 export class DocsIndexError extends Error {
   constructor(message: string) {
@@ -94,6 +95,10 @@ export function featureEvidenceFilesForDocId(featureRoot: string, docId: string)
   return artifactFilesForDocId(featureRoot, "VED", docId);
 }
 
+export function collectFormalFeatureRoots(root: string): string[] {
+  return collectFeatureRoots(root).filter((featureRoot) => !isPathIgnoredByGitignore(root, featureRoot));
+}
+
 export function featureArchivedEvidenceFiles(featureRoot: string): string[] {
   const archiveRoot = join(featureRoot, "evidences/archive");
   if (!existsSync(archiveRoot)) {
@@ -173,7 +178,7 @@ export function renderArtifactIndex(root: string): string {
     "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
   ];
 
-  for (const featureRoot of collectFeatureRoots(root)) {
+  for (const featureRoot of collectFormalFeatureRoots(root)) {
     const featureContext = featureRootForDocument(root, join(featureRoot, "README.md"));
     if (!featureContext) {
       continue;
@@ -224,7 +229,7 @@ export function writeArtifactIndex(root: string): void {
 
 export function collectIndexDocumentFiles(root: string): string[] {
   const documents: string[] = [];
-  for (const featureRoot of collectFeatureRoots(root)) {
+  for (const featureRoot of collectFormalFeatureRoots(root)) {
     documents.push(...featureSpecFiles(featureRoot));
     documents.push(...featureTechnicalDesignFiles(featureRoot));
     documents.push(...featureTestCaseFiles(featureRoot));
@@ -235,7 +240,7 @@ export function collectIndexDocumentFiles(root: string): string[] {
 }
 
 export function checkArtifactIndexCoversDocuments(root: string): void {
-  const featureRoots = collectFeatureRoots(root);
+  const featureRoots = collectFormalFeatureRoots(root);
   const documents = collectIndexDocumentFiles(root);
   if (featureRoots.length === 0 && documents.length === 0) {
     return;

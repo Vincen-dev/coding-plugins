@@ -11,6 +11,7 @@ export interface ValidationPayload extends ValidationResult {
 export declare function validateRepository(rootPath: string, options: {
     strict: boolean;
     technicalFiles?: string[];
+    includeIgnored?: boolean;
 }): ValidationResult;
 export declare function buildPayload(result: ValidationResult): ValidationPayload;
 export declare function formatTextResult(result: ValidationResult): string;
