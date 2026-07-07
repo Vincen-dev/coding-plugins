@@ -6,7 +6,19 @@ import { resolve } from "node:path";
 import { withBuildLock } from "../../lib/runtime/build-lock.ts";
 import { findRepositoryRoot } from "../../lib/runtime/repository-root.ts";
 
-const root = findRepositoryRoot(resolve(import.meta.dirname, "../../.."));
+function resolveRuntimeRoot(): string {
+  const start = resolve(import.meta.dirname, "../../..");
+  try {
+    return findRepositoryRoot(start);
+  } catch {
+    return findRepositoryRoot(start, {
+      requiredPaths: ["package.json", "skills", "dist"],
+      errorMessage: "Unable to locate coding-plugins source or packaged runtime root.",
+    });
+  }
+}
+
+const root = resolveRuntimeRoot();
 const dist = resolve(root, "dist");
 const buildConfig = resolve(root, "tsconfig.build.json");
 const typeScriptCompiler = resolve(root, "node_modules/typescript/bin/tsc");

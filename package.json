@@ -46,11 +46,9 @@
   "files": [
     "bin/",
     "dist/",
-    "src/",
     "skills/",
     "hooks/",
     "assets/",
-    "docs/",
     ".codex-plugin/",
     ".claude-plugin/",
     ".opencode/",
@@ -63,6 +61,8 @@
     "README.md",
     "LICENSE",
     "RELEASE-NOTES.md",
+    "!skills/**/scripts/fixtures/",
+    "!skills/**/scripts/fixtures/**",
     "!**/__pycache__/",
     "!**/*.py",
     "!**/*.pyc"

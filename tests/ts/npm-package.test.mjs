@@ -6,6 +6,8 @@ import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
 
+import { auditPackedFilePaths } from "../../src/lib/release/package-policy.ts";
+
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const py = "py";
 const pySuffix = "." + py;
@@ -54,10 +56,12 @@ test("npm package includes runtime entrypoints and excludes generated caches", (
     "dist/src/cli/doctor.js",
     "dist/src/cli/documents/doctor.js",
     "dist/skills/using-coding-plugins/scripts/workflow-mode.js",
-    "src/cli/bump-version.ts",
-    "src/cli/release/bump-version.ts",
-    "src/cli/prepare-release.ts",
-    "src/cli/release/prepare-release.ts",
+    "dist/src/cli/bump-version.js",
+    "dist/src/cli/release/bump-version.js",
+    "dist/src/cli/preflight.js",
+    "dist/src/cli/release/preflight.js",
+    "dist/src/cli/prepare-release.js",
+    "dist/src/cli/release/prepare-release.js",
     ".codex-plugin/plugin.json",
     ".claude-plugin/plugin.json",
     "plugin.json",
@@ -78,10 +82,30 @@ test("npm package includes runtime entrypoints and excludes generated caches", (
   );
 });
 
+test("npm pack output satisfies release package policy", () => {
+  const files = packFiles();
+  const issues = auditPackedFilePaths(files);
+  assert.deepEqual(issues, []);
+});
+
+test("release package policy does not publish broad source or internal docs directories", () => {
+  const packageJson = JSON.parse(readFileSync(resolve(repoRoot, "package.json"), "utf8"));
+  const manifestChecks = readFileSync(resolve(repoRoot, "src/lib/release/manifest-checks.ts"), "utf8");
+  const forbiddenPackageEntries = ["src/", "docs/", "tests/"];
+
+  for (const entry of forbiddenPackageEntries) {
+    assert.ok(!packageJson.files.includes(entry), `package.json files must not include broad development entry: ${entry}`);
+    assert.ok(
+      !manifestChecks.includes(`"${entry}"`),
+      `manifest package policy must not require broad development entry: ${entry}`,
+    );
+  }
+});
+
 test("npm package and workflows use TypeScript runtime without Python", () => {
   const files = packFiles();
   assert.ok(files.every((path) => !path.endsWith(pySuffix)), "npm package must not include Python source files");
-  assert.ok(files.includes("src/cli/preflight.ts"), "npm package must include TypeScript preflight");
+  assert.ok(files.includes("dist/src/cli/preflight.js"), "npm package must include compiled preflight runtime");
   assert.ok(!files.includes(`scripts/preflight${pySuffix}`), "npm package must not include Python preflight");
 
   const packageJson = JSON.parse(readFileSync(resolve(repoRoot, "package.json"), "utf8"));
@@ -270,6 +294,54 @@ test("security audit fails real npm pack output that contains a secret-like toke
   }
 });
 
+test("security audit fails real npm pack output that contains internal development content", () => {
+  const root = mkdtempSync(join(tmpdir(), "coding-plugins-dev-content-pack-"));
+  try {
+    mkdirSync(join(root, "dist"), { recursive: true });
+    mkdirSync(join(root, "docs/coding-plugins/features/release-cleanup"), { recursive: true });
+    mkdirSync(join(root, ".github/workflows"), { recursive: true });
+    writeFileSync(
+      join(root, "package.json"),
+      JSON.stringify(
+        {
+          name: "dev-content-pack-fixture",
+          version: "1.0.0",
+          type: "module",
+          main: "./dist/index.js",
+          types: "./dist/index.d.ts",
+          files: ["dist/", "docs/", "package.json", "README.md", "INSTALL.md", "SECURITY.md", "LICENSE", "RELEASE-NOTES.md"],
+          engines: { node: ">=22.6" },
+          publishConfig: { access: "public", provenance: true },
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+    writeFileSync(join(root, "dist/index.js"), "export {};\n", "utf8");
+    writeFileSync(join(root, "dist/index.d.ts"), "export {};\n", "utf8");
+    writeFileSync(join(root, "docs/coding-plugins/features/release-cleanup/internal.md"), "# Internal\n", "utf8");
+    for (const path of ["README.md", "INSTALL.md", "SECURITY.md", "LICENSE", "RELEASE-NOTES.md"]) {
+      writeFileSync(join(root, path), "# User document\n", "utf8");
+    }
+    writeFileSync(join(root, ".github/workflows/ci.yml"), "steps:\n  - run: npm ci\n  - run: npm run preflight\n", "utf8");
+    writeFileSync(join(root, ".github/workflows/release.yml"), "steps:\n  - run: npm run preflight\n", "utf8");
+
+    const result = spawnSync("node", [resolve(repoRoot, "src/cli/security-audit.ts"), "--root", root, "--format", "json"], {
+      cwd: repoRoot,
+      encoding: "utf8",
+      env: npmCacheEnv(),
+    });
+    assert.equal(result.status, 1);
+    const payload = JSON.parse(result.stdout);
+    const packageCheck = payload.checks.find((check) => check.name === "pack-policy");
+    assert.equal(packageCheck.ok, false);
+    assert.ok(packageCheck.message.includes("denied_dev_content:docs/coding-plugins/features/release-cleanup/internal.md"));
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test("packed npm artifact supports installed runtime commands without repository-only files", () => {
   const packageRoot = mkdtempSync(join(tmpdir(), "coding-plugins-installed-package-"));
   const packRoot = mkdtempSync(join(tmpdir(), "coding-plugins-pack-output-"));
@@ -292,6 +364,10 @@ test("packed npm artifact supports installed runtime commands without repository
 
     const installedPackage = join(packageRoot, "node_modules/@vincen-dev/coding-plugins");
     assert.equal(existsSync(join(installedPackage, "tsconfig.build.json")), false, "published package should not rely on repository tsconfig");
+    assert.equal(existsSync(join(installedPackage, "src")), false, "published package should not include source tree");
+    assert.equal(existsSync(join(installedPackage, "tests")), false, "published package should not include test tree");
+    assert.equal(existsSync(join(installedPackage, "docs/coding-plugins/features")), false, "published package should not include internal feature docs");
+    assert.equal(existsSync(join(installedPackage, "skills/spec-driven-development/scripts/fixtures")), false, "published package should not include skill test fixtures");
 
     const help = spawnSync("node", [join(installedPackage, "bin/coding-plugins.js"), "--help"], {
       cwd: packageRoot,
@@ -307,6 +383,13 @@ test("packed npm artifact supports installed runtime commands without repository
     });
     assert.equal(build.status, 0, build.stderr);
     assert.ok(build.stdout.includes("dist is already packaged"));
+
+    const manifestCheck = spawnSync("node", [join(installedPackage, "bin/coding-plugins.js"), "manifest-check", "--root", installedPackage], {
+      cwd: packageRoot,
+      encoding: "utf8",
+    });
+    assert.equal(manifestCheck.status, 0, manifestCheck.stderr);
+    assert.equal(manifestCheck.stdout, "Manifest checks passed\n");
   } finally {
     rmSync(packageRoot, { recursive: true, force: true });
     rmSync(packRoot, { recursive: true, force: true });

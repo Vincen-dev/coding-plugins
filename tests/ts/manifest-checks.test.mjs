@@ -37,8 +37,10 @@ function writeValidFixture(root, version = "1.2.3") {
   mkdirSync(join(root, "assets"), { recursive: true });
   mkdirSync(join(root, "bin"), { recursive: true });
   mkdirSync(join(root, "dist"), { recursive: true });
-  mkdirSync(join(root, "src", "cli"), { recursive: true });
-  mkdirSync(join(root, "tests", "ts"), { recursive: true });
+  mkdirSync(join(root, "dist", "src", "cli", "release"), { recursive: true });
+  mkdirSync(join(root, "dist", "src", "cli", "workflow"), { recursive: true });
+  mkdirSync(join(root, "dist", "src", "cli", "documents"), { recursive: true });
+  mkdirSync(join(root, "dist", "skills", "using-coding-plugins", "scripts"), { recursive: true });
 
   for (const path of ["README.md", "INSTALL.md", "SECURITY.md", "GEMINI.md"]) {
     writeFileSync(join(root, path), "# Plugin\n", "utf8");
@@ -47,12 +49,17 @@ function writeValidFixture(root, version = "1.2.3") {
   writeFileSync(join(root, "bin/coding-plugins.js"), "#!/usr/bin/env node\n", "utf8");
   writeFileSync(join(root, "dist/index.d.ts"), "export {};\n", "utf8");
   writeFileSync(join(root, "dist/index.js"), "export {};\n", "utf8");
-  writeFileSync(join(root, "src/cli/bump-version.ts"), "export {};\n", "utf8");
-  writeFileSync(join(root, "src/cli/preflight.ts"), "export {};\n", "utf8");
-  writeFileSync(join(root, "src/cli/prepare-release.ts"), "export {};\n", "utf8");
-  writeFileSync(join(root, "tests/ts/no-python-source.test.mjs"), "import test from 'node:test';\n", "utf8");
-  writeFileSync(join(root, "tests/ts/preflight-cli.test.mjs"), "import test from 'node:test';\n", "utf8");
-  writeFileSync(join(root, "tests/ts/npm-package.test.mjs"), "import test from 'node:test';\n", "utf8");
+  writeFileSync(join(root, "dist/src/cli/bump-version.js"), "export {};\n", "utf8");
+  writeFileSync(join(root, "dist/src/cli/doctor.js"), "export {};\n", "utf8");
+  writeFileSync(join(root, "dist/src/cli/preflight.js"), "export {};\n", "utf8");
+  writeFileSync(join(root, "dist/src/cli/prepare-release.js"), "export {};\n", "utf8");
+  writeFileSync(join(root, "dist/src/cli/start.js"), "export {};\n", "utf8");
+  writeFileSync(join(root, "dist/src/cli/documents/doctor.js"), "export {};\n", "utf8");
+  writeFileSync(join(root, "dist/src/cli/release/bump-version.js"), "export {};\n", "utf8");
+  writeFileSync(join(root, "dist/src/cli/release/preflight.js"), "export {};\n", "utf8");
+  writeFileSync(join(root, "dist/src/cli/release/prepare-release.js"), "export {};\n", "utf8");
+  writeFileSync(join(root, "dist/src/cli/workflow/start.js"), "export {};\n", "utf8");
+  writeFileSync(join(root, "dist/skills/using-coding-plugins/scripts/workflow-mode.js"), "export {};\n", "utf8");
 
   writeJson(join(root, "plugin.json"), { version, skills: "skills/" });
   writeJson(join(root, "gemini-extension.json"), { version, contextFileName: "GEMINI.md" });
@@ -82,11 +89,9 @@ function writeValidFixture(root, version = "1.2.3") {
     files: [
       "bin/",
       "dist/",
-      "src/",
       "skills/",
       "hooks/",
       "assets/",
-      "docs/",
       ".codex-plugin/",
       ".claude-plugin/",
       ".opencode/",
@@ -99,6 +104,8 @@ function writeValidFixture(root, version = "1.2.3") {
       "README.md",
       "LICENSE",
       "RELEASE-NOTES.md",
+      "!skills/**/scripts/fixtures/",
+      "!skills/**/scripts/fixtures/**",
       "!**/__pycache__/",
       `!**/*.${"py"}`,
       "!**/*.pyc",

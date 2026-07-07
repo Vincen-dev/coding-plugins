@@ -4,6 +4,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 
+import { auditPackedFilePaths } from "../../lib/release/package-policy.ts";
 import { withBuildLock } from "../../lib/runtime/build-lock.ts";
 
 interface Check {
@@ -100,6 +101,7 @@ try {
     : "";
   const files = packFiles(resolved);
   const textFiles = files.filter((file) => !file.endsWith(".png") && existsSync(join(resolved, file)));
+  const packagePolicyIssues = auditPackedFilePaths(files);
   const secretPrefixes = ["ghp_", "gho_", "ghs_", "ghu_", "ghr_", "xoxb-", "xoxa-", "xoxp-", "xoxr-", "sk_live_", "AIza"];
   const secretPattern =
     /(AKIA[0-9A-Z]{16}|BEGIN (?:RSA|OPENSSH|EC|PRIVATE) KEY|npm_[A-Za-z0-9]{20,}|(?:ghp_|gho_|ghs_|ghu_|ghr_)[A-Za-z0-9]{20,}|(?:xoxb-|xoxa-|xoxp-|xoxr-)[A-Za-z0-9-]{20,}|sk_live_[A-Za-z0-9]{16,}|AIza[0-9A-Za-z_-]{20,}|(?:client_secret|api[_-]?key|access[_-]?token|refresh[_-]?token)\s*[:=]\s*["'][^"']{12,}["'])/i;
@@ -125,6 +127,11 @@ try {
       message: ".github/workflows/release.yml must run npm run preflight",
     },
     { name: "npm-publish-boundary", ok: !releaseWorkflow.includes("npm publish"), message: "release workflow must not publish automatically" },
+    {
+      name: "pack-policy",
+      ok: packagePolicyIssues.length === 0,
+      message: packagePolicyIssues.map((issue) => `${issue.kind}:${issue.path}`).sort().join(", ") || "pack files satisfy release package policy",
+    },
     { name: "pack-secrets", ok: secretHits.length === 0, message: secretHits.join(", ") || "no secret-like tokens in pack files" },
     { name: "env-files", ok: files.every((file) => !/(^|\/)\.env(\.|$)/.test(file)), message: "no .env files in npm pack" },
   ];

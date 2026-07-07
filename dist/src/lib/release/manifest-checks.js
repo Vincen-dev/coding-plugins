@@ -1,12 +1,12 @@
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
+import { auditPackageManifestEntries } from "./package-policy.js";
 export class ManifestCheckError extends Error {
     constructor(message) {
         super(message);
         this.name = "ManifestCheckError";
     }
 }
-const PY_SOURCE_EXCLUSION = `!**/*.${"py"}`;
 const REQUIRED_PLUGIN_FILES = [
     "plugin.json",
     "gemini-extension.json",
@@ -17,42 +17,12 @@ const REQUIRED_PLUGIN_FILES = [
     "bin/coding-plugins.js",
     "dist/index.d.ts",
     "dist/index.js",
-    "src/cli/bump-version.ts",
-    "src/cli/preflight.ts",
-    "src/cli/prepare-release.ts",
-    "tests/ts/no-python-source.test.mjs",
-    "tests/ts/preflight-cli.test.mjs",
-    "tests/ts/npm-package.test.mjs",
     ".codex-plugin/plugin.json",
     ".claude-plugin/plugin.json",
     ".agents/skills",
     "skills",
     "README.md",
 ];
-const REQUIRED_PACKAGE_FILES = new Set([
-    "bin/",
-    "dist/",
-    "src/",
-    "skills/",
-    "hooks/",
-    "assets/",
-    "docs/",
-    ".codex-plugin/",
-    ".claude-plugin/",
-    ".opencode/",
-    ".agents/skills",
-    "plugin.json",
-    "gemini-extension.json",
-    "GEMINI.md",
-    "INSTALL.md",
-    "SECURITY.md",
-    "README.md",
-    "LICENSE",
-    "RELEASE-NOTES.md",
-    "!**/__pycache__/",
-    PY_SOURCE_EXCLUSION,
-    "!**/*.pyc",
-]);
 export function readJson(path) {
     try {
         return JSON.parse(readFileSync(path, "utf8"));
@@ -215,9 +185,10 @@ export function checkNpmPackageManifest(root) {
     if (actualFiles.has("scripts/")) {
         throw new ManifestCheckError("NPM package files array must not include scripts/ in the TypeScript runtime package.");
     }
-    const missing = [...REQUIRED_PACKAGE_FILES].filter((item) => !actualFiles.has(item)).sort();
-    if (missing.length > 0) {
-        throw new ManifestCheckError(`NPM package files array is missing: ${missing.join(", ")}.`);
+    const packageIssues = auditPackageManifestEntries([...actualFiles]);
+    if (packageIssues.length > 0) {
+        const detail = packageIssues.map((issue) => `${issue.kind}:${issue.path}`).sort().join(", ");
+        throw new ManifestCheckError(`NPM package files array violates release package policy: ${detail}.`);
     }
 }
 export function normalizeManifestAssetPath(rawPath) {

@@ -54,6 +54,69 @@
       "reason": "用户确认提交 Skills 专项优化变更",
       "requested_at": "2026-07-07T08:34:46.387Z",
       "approved_at": "2026-07-07T08:34:46.387Z"
+    },
+    {
+      "feature": "release-cleanup",
+      "doc_id": "release-cleanup",
+      "id": "DP-0",
+      "status": "approved",
+      "reason": "用户确认开始进入正式发布优化正式链路",
+      "requested_at": "2026-07-07T09:37:07.466Z",
+      "approved_at": "2026-07-07T09:37:07.466Z"
+    },
+    {
+      "feature": "release-cleanup",
+      "doc_id": "release-cleanup",
+      "id": "DP-1",
+      "status": "approved",
+      "reason": "用户确认继续，批准正式发布优化 PRD 进入 TSD",
+      "requested_at": "2026-07-07T09:39:49.052Z",
+      "approved_at": "2026-07-07T09:44:51.312Z"
+    },
+    {
+      "feature": "release-cleanup",
+      "doc_id": "release-cleanup",
+      "id": "DP-2",
+      "status": "approved",
+      "reason": "用户确认继续，批准正式发布优化 TSD 进入 TVD",
+      "requested_at": "2026-07-07T09:46:14.846Z",
+      "approved_at": "2026-07-07T09:59:34.537Z"
+    },
+    {
+      "feature": "release-cleanup",
+      "doc_id": "release-cleanup",
+      "id": "DP-3",
+      "status": "approved",
+      "reason": "用户确认继续，批准正式发布优化 TVD 进入 TED",
+      "requested_at": "2026-07-07T10:00:56.311Z",
+      "approved_at": "2026-07-07T10:16:02.498Z"
+    },
+    {
+      "feature": "release-cleanup",
+      "doc_id": "release-cleanup",
+      "id": "DP-4",
+      "status": "approved",
+      "reason": "用户确认继续，批准正式发布优化 TED 进入实现",
+      "requested_at": "2026-07-07T10:18:10.821Z",
+      "approved_at": "2026-07-07T10:20:38.816Z"
+    },
+    {
+      "feature": "release-cleanup",
+      "doc_id": "release-cleanup",
+      "id": "DP-6",
+      "status": "approved",
+      "reason": "用户确认继续下一步；最新 preflight、security-audit 和 VED 校验均通过，批准完成验证确认",
+      "requested_at": "2026-07-07T12:58:30.724Z",
+      "approved_at": "2026-07-07T12:58:34.693Z"
+    },
+    {
+      "feature": "release-cleanup",
+      "doc_id": "release-cleanup",
+      "id": "DP-7",
+      "status": "approved",
+      "reason": "用户确认提交正式发布优化变更",
+      "requested_at": "2026-07-07T12:58:50.464Z",
+      "approved_at": "2026-07-07T13:00:30.950Z"
     }
   ]
 }
