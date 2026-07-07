@@ -1,6 +1,15 @@
 __pycache__/
 *.pyc
 node_modules/
+.DS_Store
+.env
+.env.*
+*.log
+*.tmp
+*.tgz
+coverage/
+.nyc_output/
+artifacts/
 **/.coding-plugins/session-lock.json
 dist/*
 !dist/**
