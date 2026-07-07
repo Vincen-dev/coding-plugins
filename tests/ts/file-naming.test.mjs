@@ -9,6 +9,7 @@ const ignoredDirectories = new Set([".git", "node_modules"]);
 const repoFilePattern = /^\.?[a-z0-9]+(?:-[a-z0-9]+)*(?:\.[a-z0-9]+)*$/;
 const conventionalNames = new Set([
   "CASE-INDEX.md",
+  "CODEOWNERS",
   "CODE_OF_CONDUCT.md",
   "GEMINI.md",
   "INDEX.md",
