@@ -10,7 +10,7 @@ function requireValue(argv, index, arg) {
     return value;
 }
 function csv(value) {
-    return value.split(",").map((item) => item.trim()).filter(Boolean);
+    return value.split(/[,\r\n]+/).map((item) => item.trim()).filter(Boolean);
 }
 function git(root, args) {
     const result = spawnSync("git", args, { cwd: root, encoding: "utf8" });

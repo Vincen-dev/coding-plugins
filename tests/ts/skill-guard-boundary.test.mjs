@@ -19,34 +19,42 @@ const inventoryColumns = [
 const highRiskGuardDetailRules = [
   {
     id: "commit-author-identity-detail",
+    recommendation: "Delegate author identity rejection to commit-guard and keep only the command entry in the skill.",
     pattern: /\b(?:author|identity)\b[\s\S]{0,220}\b(?:Codex|ChatGPT|OpenAI|AI-generated|bot)\b[\s\S]{0,220}\b(?:block|reject|fail|forbid)\b/i,
   },
   {
     id: "release-completion-standards-detail",
+    recommendation: "Delegate release completion criteria to release guard and keep only the command entry in the skill.",
     pattern: /\btag\b[\s\S]{0,220}\b(?:pushed|publish|published)\b[\s\S]{0,220}\b(?:not enough|insufficient|must not|cannot)\b/i,
   },
   {
     id: "artifact-mode-decision-detail",
+    recommendation: "Delegate artifact mode decisions to validate-tdd-evidence and document validators.",
     pattern: /\bartifact mode\b[\s\S]{0,220}\b(?:tracked|local|external)\b[\s\S]{0,220}\b(?:ignored|gitignore|formal evidence)\b/i,
   },
   {
     id: "workflow-state-stale-detail",
+    recommendation: "Delegate stale workflow state decisions to workflow-state, workflow-guard, or workflow-brief.",
     pattern: /\bsource_hash\b[\s\S]{0,220}\b(?:stale|plan-stale|mismatch)\b[\s\S]{0,220}\b(?:block|reject|must not|cannot)\b/i,
   },
   {
     id: "dp-full-list-detail",
+    recommendation: "Delegate the DP catalog to decision-points and DP state commands.",
     pattern: /\bDP-0\b[\s\S]{0,900}\bDP-7\b/,
   },
   {
     id: "artifact-mode-enumeration-detail",
+    recommendation: "Replace artifact mode enumeration with a validator command reference.",
     pattern: /\bartifact mode\b[\s\S]{0,260}\btracked\b[\s\S]{0,260}\blocal\b[\s\S]{0,260}\bexternal\b/i,
   },
   {
     id: "source-hash-stale-state-detail",
+    recommendation: "Replace source_hash state matrices with workflow-state or workflow-guard command references.",
     pattern: /\bsource_hash\b[\s\S]{0,260}\bplan-draft\b[\s\S]{0,260}\bplan-stale\b/i,
   },
   {
     id: "commit-author-ai-detail",
+    recommendation: "Replace AI author rejection details with a commit-guard command reference.",
     pattern: /\bReject AI authors\b[\s\S]{0,160}\bAI co-authors\b[\s\S]{0,160}\bAI-generated\b/i,
   },
 ];
@@ -106,6 +114,12 @@ function guardDetailMatches(text) {
     .map((rule) => rule.id);
 }
 
+function guardDetailFindings(path, text) {
+  return highRiskGuardDetailRules
+    .filter((rule) => rule.pattern.test(text))
+    .map((rule) => `${path}: ${rule.id}: ${rule.recommendation}`);
+}
+
 function hasAllowedGuardReference(text) {
   return allowedGuardReferenceRules.some((pattern) => pattern.test(text));
 }
@@ -124,6 +138,15 @@ test("REQ-002 inventory covers every skill with stable boundary fields", () => {
       assert.notEqual(row[column], "-", `${row.skill} must not leave ${column} empty`);
     }
   }
+});
+
+test("REQ-002 inventory has no unresolved migration actions", () => {
+  const rows = parseInventory(readFileSync(join(repoRoot, inventoryPath), "utf8"));
+  const unresolved = rows
+    .filter((row) => /\b(candidate|first-batch|future)\b|后续|候选/i.test(row.migration_action))
+    .map((row) => `${row.skill}: ${row.migration_action}`);
+
+  assert.deepEqual(unresolved, []);
 });
 
 test("REQ-003 boundary samples reject full guard internals and allow command references", () => {
@@ -151,13 +174,22 @@ test("REQ-003 boundary samples reject full guard internals and allow command ref
   assert.equal(hasAllowedGuardReference(allowedSummary), true);
 });
 
+test("REQ-003 boundary findings include path, category, and recommendation", () => {
+  const findings = guardDetailFindings(
+    "skills/example/SKILL.md",
+    "When commit author identity contains Codex, ChatGPT, OpenAI, AI-generated, or bot, commit-guard must reject and block the commit.",
+  );
+
+  assert.deepEqual(findings, [
+    "skills/example/SKILL.md: commit-author-identity-detail: Delegate author identity rejection to commit-guard and keep only the command entry in the skill.",
+  ]);
+});
+
 test("REQ-001 skills avoid duplicating high-risk guard internals", () => {
   const offenders = [];
   for (const file of skillFiles()) {
     const text = readFileSync(join(repoRoot, file), "utf8");
-    for (const ruleId of guardDetailMatches(text)) {
-      offenders.push(`${file}: ${ruleId}`);
-    }
+    offenders.push(...guardDetailFindings(file, text));
   }
 
   assert.deepEqual(offenders, []);

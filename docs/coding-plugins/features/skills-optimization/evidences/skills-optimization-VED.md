@@ -59,7 +59,7 @@ external_references: []
 - **RED 测试:** `tests/ts/skill-guard-boundary.test.mjs`
 - **RED 命令:** `node --test tests/ts/skill-guard-boundary.test.mjs`
 - **RED 失败:** TASK-001 RED 报告 `docs/coding-plugins/features/skills-optimization/skill-boundary-inventory.md must exist`，证明 inventory 覆盖率检查会阻止缺失清单。
-- **GREEN 变更:** 新增 `docs/coding-plugins/features/skills-optimization/skill-boundary-inventory.md`，覆盖 19 个 `skills/*/SKILL.md`，并为每个 skill 填写 `skill`、`primary_role`、`agent_guidance`、`guard_authority`、`duplication_risk`、`migration_action`、`verification`。
+- **GREEN 变更:** 新增 `docs/coding-plugins/features/skills-optimization/skill-boundary-inventory.md`，覆盖 20 个 `skills/*/SKILL.md`，并为每个 skill 填写 `skill`、`primary_role`、`agent_guidance`、`guard_authority`、`duplication_risk`、`migration_action`、`verification`。
 - **GREEN 命令:** `node --test tests/ts/skill-guard-boundary.test.mjs` PASS，2/2。
 - **REFACTOR 命令:** `node --test tests/ts/skill-guard-boundary.test.mjs` PASS，2/2。
 - **最终验证:** Inventory 覆盖率和字段完整性通过；第一批 high-risk skill 已在清单中标记为迁移候选。
@@ -105,3 +105,31 @@ external_references: []
 - **GREEN 命令:** `node ./bin/coding-plugins.js doctor --root . --format json` PASS；`node --test tests/ts/productization-cli.test.mjs` PASS，54/54；`npm run preflight -- --write-index` PASS。
 - **REFACTOR 命令:** `node --test tests/ts/skill-guard-boundary.test.mjs tests/ts/scenario-routing-contract.test.mjs tests/ts/i18n-surface.test.mjs tests/ts/skill-script-ownership.test.mjs` PASS，17/17。
 - **最终验证:** `npm run preflight -- --write-index` PASS；`git diff --check` PASS；`validate-spec`、`validate-technicals --strict` 和 `validate-tdd-evidence --strict --artifact-mode tracked` 均通过。
+
+## 任务 6：修复 review findings
+
+### TDD 证据
+
+- **规格/缺陷/验收:** REQ-003 和 review finding；边界检查失败输出必须包含文件路径、规则类别和建议处理方式，`commit-guard` 默认 staged diff 必须按文件粒度检测敏感文件。
+- **测试类型:** `contract`
+- **RED 测试:** `tests/ts/productization-cli.test.mjs` 中 `commit-guard detects sensitive files from the staged git diff by default`
+- **RED 命令:** `node --test --test-name-pattern "commit-guard detects sensitive files from the staged git diff by default" tests/ts/productization-cli.test.mjs`
+- **RED 失败:** 旧实现返回 exit 0，断言 `0 !== 1`，证明 staged `.env` 没有触发 `sensitive-file-staged`。
+- **GREEN 变更:** `commit-guard` CLI 的 changed files 解析同时支持逗号和换行分隔；`skill-guard-boundary` finding 输出增加 recommendation，并新增断言覆盖 path、category 和 recommendation；同步 README、inventory、TODO 和 VED 状态。
+- **GREEN 命令:** `node --test --test-name-pattern "commit-guard detects sensitive files from the staged git diff by default" tests/ts/productization-cli.test.mjs` PASS；`node --test tests/ts/skill-guard-boundary.test.mjs` PASS，4/4。
+- **REFACTOR 命令:** `npm run build` PASS，用于同步 `dist` runtime。
+- **最终验证:** `node --test tests/ts/productization-cli.test.mjs` PASS，55/55；`node --test tests/ts/skill-guard-boundary.test.mjs` PASS，4/4；`validate-tdd-evidence --strict --artifact-mode tracked` PASS；`npm run preflight -- --write-index` PASS。
+
+## 任务 7：收口剩余 skill migration actions
+
+### TDD 证据
+
+- **规格/缺陷/验收:** REQ-001, REQ-002；Skills 专项优化剩余工作要求 inventory 不再保留 `candidate`、`first-batch`、`future` 或“后续分批”这类未收口迁移动作。
+- **测试类型:** `source-scan`
+- **RED 测试:** `tests/ts/skill-guard-boundary.test.mjs` 中 `REQ-002 inventory has no unresolved migration actions`
+- **RED 命令:** `node --test --test-name-pattern "REQ-002 inventory has no unresolved migration actions" tests/ts/skill-guard-boundary.test.mjs`
+- **RED 失败:** 断言输出 12 个 unresolved migration action，包括 `test-driven-development`、`verification-before-completion` 和 `writing-plans` 的 `First-batch candidate`，证明 inventory 仍停留在分批待处理状态。
+- **GREEN 变更:** 将全部 skill 的 `migration_action` 收口为 `Reviewed` 或明确的职责边界结论；复核 `test-driven-development`、`verification-before-completion` 和 `writing-plans` 只保留 evidence、verification 或 `source_hash` 命令入口，机器判定细节委托给 validator、workflow-state 和 workflow-guard；同步 README 和 TODO 状态。
+- **GREEN 命令:** `node --test --test-name-pattern "REQ-002 inventory has no unresolved migration actions" tests/ts/skill-guard-boundary.test.mjs` PASS。
+- **REFACTOR 命令:** `node --test tests/ts/skill-guard-boundary.test.mjs`
+- **最终验证:** `node --test tests/ts/skill-guard-boundary.test.mjs` PASS，5/5；focused regression PASS，69/69；`validate-tdd-evidence --strict --artifact-mode tracked` PASS；`git diff --check` PASS；`npm run preflight -- --write-index` PASS。

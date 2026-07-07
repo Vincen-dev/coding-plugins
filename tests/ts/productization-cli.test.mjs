@@ -668,6 +668,45 @@ test("commit-guard blocks missing language confirmation, sensitive files, and mi
   }
 });
 
+test("commit-guard detects sensitive files from the staged git diff by default", () => {
+  const root = mkdtempSync(join(tmpdir(), "coding-plugins-commit-guard-staged-"));
+  try {
+    assert.equal(spawnSync("git", ["init"], { cwd: root, encoding: "utf8" }).status, 0);
+    assert.equal(spawnSync("git", ["config", "user.name", "Vincen"], { cwd: root, encoding: "utf8" }).status, 0);
+    assert.equal(spawnSync("git", ["config", "user.email", "hx001007@gmail.com"], { cwd: root, encoding: "utf8" }).status, 0);
+    mkdirSync(join(root, "src"), { recursive: true });
+    writeFileSync(join(root, "src/index.ts"), "export const ok = true;\n", "utf8");
+    writeFileSync(join(root, ".env"), "TOKEN=redacted\n", "utf8");
+    assert.equal(spawnSync("git", ["add", "src/index.ts", ".env"], { cwd: root, encoding: "utf8" }).status, 0);
+    json(["dp", "approve", "--root", root, "--feature", "alpha", "--doc-id", "alpha-login", "--id", "DP-6", "--reason", "Verified", "--json"]);
+    json(["dp", "approve", "--root", root, "--feature", "alpha", "--doc-id", "alpha-login", "--id", "DP-7", "--reason", "Commit approved", "--json"]);
+
+    const result = run([
+      "commit-guard",
+      "--root",
+      root,
+      "--feature",
+      "alpha",
+      "--doc-id",
+      "alpha-login",
+      "--language",
+      "zh",
+      "--author-name",
+      "Vincen",
+      "--author-email",
+      "hx001007@gmail.com",
+      "--json",
+    ]);
+
+    assert.equal(result.status, 1);
+    const payload = JSON.parse(result.stdout);
+    assert.deepEqual(payload.changed_files, [".env", "src/index.ts"]);
+    assert.ok(payload.violations.some((violation) => violation.id === "sensitive-file-staged"));
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test("commit-guard passes after language and DP-7 are explicitly approved", () => {
   const root = mkdtempSync(join(tmpdir(), "coding-plugins-commit-guard-pass-"));
   try {
