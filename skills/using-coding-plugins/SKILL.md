@@ -93,14 +93,7 @@ Read only the documents and sections listed by the brief unless a rewind trigger
 
 ## Decision Points
 
-- DP-0: Enter formal chain.
-- DP-1: PRD approval.
-- DP-2: TSD approval.
-- DP-3: TVD approval.
-- DP-4: TED execution-plan approval.
-- DP-5: TDD exception or debug escalation.
-- DP-6: Completion verification approval.
-- DP-7: Commit and branch finishing approval.
+Use the CLI as the authoritative DP catalog and approval record. Skills may name the next required DP, but the DP list and current approval state come from `decision-points`, `dp status`, `dp approve`, and `dp audit`.
 
 Use:
 

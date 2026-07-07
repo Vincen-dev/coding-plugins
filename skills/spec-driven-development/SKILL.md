@@ -43,14 +43,7 @@ Do not use it when:
 
 ## Decision Points
 
-- DP-0: User confirms formal SDD entry.
-- DP-1: PRD approval before TSD.
-- DP-2: TSD approval before TVD.
-- DP-3: TVD approval before TED.
-- DP-4: TED approval before execution.
-- DP-5: TDD exception or debug escalation.
-- DP-6: Completion verification approval.
-- DP-7: Commit and branch finishing approval.
+Use `decision-points`, `dp status`, `dp approve`, and `dp audit` for the authoritative DP catalog and approval state.
 
 Do not cross a decision point without user confirmation.
 

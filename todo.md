@@ -3,8 +3,10 @@
 ## Skills 专项优化
 
 - [ ] 拆分 skill 本体说明和门禁规则：`skills/*/SKILL.md` 只保留技能目标、触发条件、执行步骤和必要参考；工作流门禁、DP 检查、发布/提交约束等规则沉到共享 guard、CLI 或专门文档中。
-- [ ] 建立 skill 与 guard 的边界检查：新增文档或脚本检查，避免同一条约束同时写在 skill 正文和门禁规则中，减少重复、冲突和维护漂移。
-- [ ] 梳理现有 skills 的职责粒度：确认哪些内容属于 agent 操作指导，哪些属于机器可检查规则，形成迁移清单。
+- [x] 建立 skill 与 guard 的边界检查：新增文档或脚本检查，避免同一条约束同时写在 skill 正文和门禁规则中，减少重复、冲突和维护漂移。
+- [x] 梳理现有 skills 的职责粒度：确认哪些内容属于 agent 操作指导，哪些属于机器可检查规则，形成迁移清单。
+
+状态说明：已创建 `skills-optimization` 正式文档链，PRD、TSD、TVD 和 TED 已批准；已落地 `skill-boundary-inventory.md` 和 `tests/ts/skill-guard-boundary.test.mjs`，并完成第一批 high-risk skill 文案收敛。剩余工作是继续分批处理非 high-risk skill 文案，并在完整 preflight 解除已知 doctor 失败后做最终收口。
 
 ## 国际化优化
 

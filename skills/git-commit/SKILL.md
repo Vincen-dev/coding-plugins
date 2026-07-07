@@ -42,7 +42,7 @@ Do not hard-code Chinese or English as a universal rule.
 
 ## Author Rules
 
-Use the user's configured git identity. Reject AI authors, AI co-authors, and AI-generated statements.
+Use the user's configured git identity. `commit-guard` is the authority for unsafe author metadata and AI-attribution rejection.
 
 Required footer:
 
@@ -82,7 +82,7 @@ Stop and ask before committing when:
 - Verification failed and the user did not explicitly accept the risk.
 - Commit language cannot be determined.
 - The commit would include generated release artifacts, version bumps, or publish-related files that were not requested.
-- DP-7 is required by the active formal workflow and not approved.
+- The active formal workflow requires DP-7 and `commit-guard` does not pass.
 
 ## Message Shape
 

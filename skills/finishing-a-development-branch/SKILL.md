@@ -27,11 +27,9 @@ If there are uncommitted changes, ask whether to create a commit before integrat
 
 The commit flow must:
 
-- Analyze the diff.
-- Stage logical groups.
-- Use the language the user chooses.
-- Add an `Authored-by` footer from the user's git identity.
-- Reject AI authors, AI co-authors, and AI-generated statements.
+- Follow the `git-commit` skill.
+- Run the commit guard for author, language, sensitive-file, and DP-7 checks.
+- Keep unrelated or unsafe changes out of the finishing commit.
 
 If the user declines commit, continue only with options that honestly state uncommitted changes remain.
 

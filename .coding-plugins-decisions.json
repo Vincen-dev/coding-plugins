@@ -27,6 +27,33 @@
       "reason": "用户回复“好的，继续”，批准按建议的中文 Conventional Commit 提交当前 skill 国际化优化变更，包括 DP 状态记录",
       "requested_at": "2026-07-06T18:24:44.441Z",
       "approved_at": "2026-07-06T18:29:50.518Z"
+    },
+    {
+      "feature": "skills-optimization",
+      "doc_id": "skills-optimization",
+      "id": "DP-4",
+      "status": "approved",
+      "reason": "用户确认继续执行 Skills 专项优化 TED",
+      "requested_at": "2026-07-07T07:24:24.073Z",
+      "approved_at": "2026-07-07T07:24:24.073Z"
+    },
+    {
+      "feature": "skills-optimization",
+      "doc_id": "skills-optimization",
+      "id": "DP-6",
+      "status": "approved",
+      "reason": "用户确认 Skills 专项优化完成验证",
+      "requested_at": "2026-07-07T08:31:16.788Z",
+      "approved_at": "2026-07-07T08:31:16.788Z"
+    },
+    {
+      "feature": "skills-optimization",
+      "doc_id": "skills-optimization",
+      "id": "DP-7",
+      "status": "approved",
+      "reason": "用户确认提交 Skills 专项优化变更",
+      "requested_at": "2026-07-07T08:34:46.387Z",
+      "approved_at": "2026-07-07T08:34:46.387Z"
     }
   ]
 }
