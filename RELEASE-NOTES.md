@@ -1,5 +1,12 @@
 # Release Notes
 
+## 1.1.1 - 2026-07-08
+
+- 补强 PRD、TSD、TVD 和 TED 模板章节，增加成功指标、假设依赖、开放问题、备选方案、非功能设计、上线回滚、风险映射、测试环境、通过标准、自动化状态、任务依赖和中止条件。
+- 将新增模板章节同步到 feature scaffold、fixture scaffold 和 formal-feature-chain 示例，并刷新 TED `source_hash`。
+- 将完整 PRD/TSD/TVD/TED/VED schema 校验纳入 preflight，缺少新结构章节时 `validate` 会明确报错。
+- 提升插件、npm package、lockfile 和版本提升配置到 `1.1.1`。
+
 ## 1.1.0 - 2026-07-07
 
 - 将 agent-facing skill 执行面系统性英文化，并保留中文优先的用户交互和工作流说明。
