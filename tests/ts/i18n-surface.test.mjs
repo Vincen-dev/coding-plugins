@@ -6,6 +6,7 @@ import test from "node:test";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const cjkPattern = /\p{Script=Han}/u;
+const legacyProductNamePattern = /\b(?:Superpowers|using-superpowers)\b/i;
 const ignoredDirectories = new Set([".git", "node_modules"]);
 const distributionSurfaceFiles = [
   ".codex-plugin/plugin.json",
@@ -16,6 +17,27 @@ const distributionSurfaceFiles = [
   "GEMINI.md",
   "hooks/session-start-codex",
 ];
+const packagedBrandSurfaceFiles = [
+  ...distributionSurfaceFiles,
+  "assets/coding-plugins.svg",
+];
+const localizedSkillSupportFiles = new Set([
+  "skills/systematic-debugging/concept-check.md",
+  "skills/systematic-debugging/condition-based-waiting.md",
+  "skills/systematic-debugging/defense-in-depth.md",
+  "skills/systematic-debugging/pressure-scenario-flaky-ci.md",
+  "skills/systematic-debugging/pressure-scenario-repeated-patches.md",
+  "skills/systematic-debugging/pressure-scenario-signing-chain.md",
+  "skills/systematic-debugging/root-cause-tracing.md",
+  "skills/systematic-debugging/skill-creation-log.md",
+  "skills/test-driven-development/test-pressure-bugfix-urgent.md",
+  "skills/test-driven-development/test-pressure-refactor-no-behavior-change.md",
+  "skills/test-driven-development/test-pressure-simple-change.md",
+  "skills/test-driven-development/testing-anti-patterns.md",
+  "skills/writing-skills/anthropic-best-practices.md",
+  "skills/writing-skills/persuasion-principles.md",
+  "skills/writing-skills/testing-skills-with-subagents.md",
+]);
 
 function walk(relativePath) {
   const fullPath = join(repoRoot, relativePath);
@@ -46,6 +68,16 @@ function isAgentFacingSkillSurface(path) {
     /^skills\/[^/]+\/SKILL\.md$/.test(path) ||
     /^skills\/[^/]+\/agents\/openai\.yaml$/.test(path) ||
     /^skills\/.+\/[^/]+-prompt\.md$/.test(path)
+  );
+}
+
+function isLocalizedSkillSupportSurface(path) {
+  return (
+    /^skills\/[^/]+\/templates\/.+\.md$/.test(path) ||
+    /^skills\/[^/]+\/examples\/.+\.md$/.test(path) ||
+    /^skills\/[^/]+\/references\/.+\.md$/.test(path) ||
+    /^skills\/[^/]+\/scripts\/fixtures\/.+\.md$/.test(path) ||
+    localizedSkillSupportFiles.has(path)
   );
 }
 
@@ -87,12 +119,41 @@ function summarizeOffenders(offenders) {
   ].join("\n");
 }
 
+function collectLegacyProductNames(files) {
+  const offenders = [];
+  for (const file of files) {
+    const lines = readFileSync(join(repoRoot, file), "utf8").split(/\r?\n/);
+    lines.forEach((line, index) => {
+      if (legacyProductNamePattern.test(line)) {
+        offenders.push(`${file}:${index + 1}: ${line.trim()}`);
+      }
+    });
+  }
+  return offenders;
+}
+
 test("REQ-002 agent-facing skill surface defaults to English", () => {
   const files = walk("skills").filter(isAgentFacingSkillSurface);
   assert.ok(files.length > 0, "expected agent-facing skill files to be scanned");
 
   const offenders = collectUnapprovedChinese(files);
   assert.equal(offenders.length, 0, summarizeOffenders(offenders));
+});
+
+test("REQ-005 Chinese skill support docs are explicit localized allowlist", () => {
+  const chineseSkillSupportFiles = walk("skills").filter((file) => {
+    if (isAgentFacingSkillSurface(file) || !file.endsWith(".md")) {
+      return false;
+    }
+    return cjkPattern.test(readFileSync(join(repoRoot, file), "utf8"));
+  });
+  const unexpected = chineseSkillSupportFiles.filter((file) => !isLocalizedSkillSupportSurface(file));
+
+  assert.deepEqual(unexpected, []);
+  assert.ok(
+    chineseSkillSupportFiles.some((file) => /^skills\/[^/]+\/templates\//.test(file)),
+    "expected localized Chinese document templates to stay in the explicit allowlist",
+  );
 });
 
 test("REQ-001 Chinese user entrypoints remain localized", () => {
@@ -114,4 +175,14 @@ test("REQ-003 distribution copy is English and consistent across platforms", () 
     assert.match(text, /Chinese-first/i, `${file} should state the Chinese-first user positioning`);
     assert.match(text, /English agent-facing/i, `${file} should state the English agent-facing skill surface`);
   }
+});
+
+test("REQ-003 packaged agent docs use Coding Plugins naming", () => {
+  const files = [
+    ...packagedBrandSurfaceFiles,
+    ...walk("skills").filter((file) => file.endsWith(".md") || file.endsWith(".yaml")),
+  ];
+  const offenders = collectLegacyProductNames(files);
+
+  assert.equal(offenders.length, 0, offenders.slice(0, 20).join("\n"));
 });

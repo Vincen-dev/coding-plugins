@@ -11,4 +11,4 @@
 | 浏览器验证 | 使用浏览器控制或 Playwright，检查截图、像素和交互。 |
 | 网络或越权写入 | 按 Codex escalation 流程请求授权。 |
 
-如果 Superpowers 文档提到 Claude Code、Copilot 或 Gemini 工具名，按上表转换为当前 Codex 环境中可用能力。
+如果 Coding Plugins 文档提到 Claude Code、Copilot 或 Gemini 工具名，按上表转换为当前 Codex 环境中可用能力。

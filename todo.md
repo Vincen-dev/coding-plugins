@@ -13,7 +13,7 @@
 - [x] 统一 skill metadata、触发说明、模板和 prompt 的语言策略：面向模型执行的核心内容优先英文，面向中文用户的入口、示例和使用说明保留中文。
 - [x] 增加语言一致性检查，防止英文 skill 中混入未翻译的中文门禁、提示词或错误信息。
 
-状态说明：已通过 `skill-internationalization` 文档链、`tests/ts/i18n-surface.test.mjs` 和 `npm run preflight -- --write-index` 落地。`skills/*/SKILL.md`、`skills/**/*-prompt.md`、`skills/*/agents/openai.yaml` 以及跨平台分发入口默认英文；README/INSTALL、中文文档模板、fixtures、validator 字段和中文 routing 作为中文用户兼容区保留。
+状态说明：已通过 `skill-internationalization` 文档链、`tests/ts/i18n-surface.test.mjs` 和 `npm run preflight -- --write-index` 落地。`skills/*/SKILL.md`、`skills/**/*-prompt.md`、`skills/*/agents/openai.yaml` 以及跨平台分发入口默认英文；README/INSTALL、中文文档模板、中文参考与示例、fixtures、validator 字段和中文 routing 作为显式中文用户兼容区保留。
 
 ## 正式发布优化
 
