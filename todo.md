@@ -8,10 +8,12 @@
 
 ## 国际化优化
 
-- [ ] 明确中文用户为主的产品定位：默认交互、README/INSTALL 和中文工作流说明继续优先服务中文用户，英文化只针对 agent-facing skill 执行面和跨平台分发面。
-- [ ] 将对外分发的 skill 内容改为英文，保留中文工作流说明作为本地化文档或单独语言包，避免用户安装后只能阅读中文 skill。
-- [ ] 统一 skill metadata、触发说明、模板和 prompt 的语言策略：面向模型执行的核心内容优先英文，面向中文用户的入口、示例和使用说明保留中文。
-- [ ] 增加语言一致性检查，防止英文 skill 中混入未翻译的中文门禁、提示词或错误信息。
+- [x] 明确中文用户为主的产品定位：默认交互、README/INSTALL 和中文工作流说明继续优先服务中文用户，英文化只针对 agent-facing skill 执行面和跨平台分发面。
+- [x] 将对外分发的 skill 内容改为英文，保留中文工作流说明作为本地化文档或单独语言包，避免用户安装后只能阅读中文 skill。
+- [x] 统一 skill metadata、触发说明、模板和 prompt 的语言策略：面向模型执行的核心内容优先英文，面向中文用户的入口、示例和使用说明保留中文。
+- [x] 增加语言一致性检查，防止英文 skill 中混入未翻译的中文门禁、提示词或错误信息。
+
+状态说明：已通过 `skill-internationalization` 文档链、`tests/ts/i18n-surface.test.mjs` 和 `npm run preflight -- --write-index` 落地。`skills/*/SKILL.md`、`skills/**/*-prompt.md`、`skills/*/agents/openai.yaml` 以及跨平台分发入口默认英文；README/INSTALL、中文文档模板、fixtures、validator 字段和中文 routing 作为中文用户兼容区保留。
 
 ## 正式发布优化
 
