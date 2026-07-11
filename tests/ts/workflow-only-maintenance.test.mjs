@@ -8,6 +8,7 @@ const repoRoot = resolve(fileURLToPath(new URL("../..", import.meta.url)));
 const expectedTests = [
   "change-capsule-contract.test.mjs",
   "change-capsule-state.test.mjs",
+  "release-workflow.test.mjs",
   "workflow-chinese-documents.test.mjs",
   "workflow-only-approval.test.mjs",
   "workflow-only-distribution.test.mjs",

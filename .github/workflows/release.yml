@@ -27,12 +27,15 @@ jobs:
         run: npm test
 
       - name: Verify tag matches manifest version
-        run: test "${{ github.ref_name }}" = "v$(node -p \"require('./package.json').version\")"
+        run: |
+          VERSION="$(node -p 'require("./package.json").version')"
+          test "${{ github.ref_name }}" = "v${VERSION}"
 
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          VERSION="$(node -p 'require("./package.json").version')"
           gh release create "${{ github.ref_name }}" \
-            --title "coding-plugins $(node -p \"require('./package.json').version\")" \
+            --title "coding-plugins ${VERSION}" \
             --generate-notes
