@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "coding-plugins",
   "displayName": "Coding Plugins",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "Chinese-first coding workflow plugin with English agent-facing skills for brainstorming, SDD, TDD, debugging, review, commits, and branch finishing.",
   "author": {
     "name": "Vincen",

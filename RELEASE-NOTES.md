@@ -1,5 +1,14 @@
 # Release Notes
 
+## 1.2.0 - 2026-07-11
+
+- 将用户可见工作流收敛为 Inspect、Change 和 Governed Change，并新增确定性的意图、风险、范围与正式文档链路由。
+- 引入 Active Change、Standard Change、v2 task contract、稳定诊断码和 v1 兼容投影，支持长会话恢复与结构化下一步动作。
+- 增加 Governed v2 决策记录、TSD/TVD 联合技术批准、Policy/Skill resolver、Policy coverage 和批准 bundle stale 检测。
+- 完成 implementation、verification、workflow、commit、publish 独立状态与正式 VED 证据资格门禁。
+- 同步 SessionStart、CLI、文档模板、迁移指南、发布产物和 workflow-runtime 回归测试。
+- 提升插件、npm package、lockfile 和版本提升配置到 `1.2.0`。
+
 ## 1.1.1 - 2026-07-08
 
 - 补强 PRD、TSD、TVD 和 TED 模板章节，增加成功指标、假设依赖、开放问题、备选方案、非功能设计、上线回滚、风险映射、测试环境、通过标准、自动化状态、任务依赖和中止条件。
