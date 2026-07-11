@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
-import { join } from "node:path";
 
 import { checkWorkflowGuard, VALID_TARGETS } from "./workflow-guard.ts";
+import { artifactPath } from "./workflow-state.ts";
 
 export { VALID_TARGETS };
 
@@ -26,6 +26,8 @@ export interface WorkflowBriefPayload {
   may_skip: string[];
   focus_sections: string[];
   task_headings: string[];
+  required_policy_ids: string[];
+  required_skills: string[];
   execution_source: string;
   new_plan_policy: string;
 }
@@ -39,6 +41,21 @@ export function extractTaskHeadings(text: string): string[] {
     }
   }
   return headings;
+}
+
+export function extractTaskPolicyContext(text: string, taskId: string): { policyIds: string[]; skills: string[] } {
+  const lines = text.split(/\r?\n/);
+  const start = lines.findIndex((line) => line.trim().startsWith("## ") && line.includes(taskId));
+  if (start === -1) {
+    return { policyIds: [], skills: [] };
+  }
+  const endOffset = lines.slice(start + 1).findIndex((line) => line.trim().startsWith("## "));
+  const end = endOffset === -1 ? lines.length : start + 1 + endOffset;
+  const section = lines.slice(start, end);
+  const contextLine = section.find((line) => /Required Policy\s*\/\s*Skill/i.test(line)) ?? "";
+  const policyIds = [...new Set(contextLine.match(/\bPOL-[A-Z0-9-]+\b/g) ?? [])].sort();
+  const skills = [...new Set([...contextLine.matchAll(/`([a-z0-9][a-z0-9-]+)`/gi)].map((match) => match[1]))].sort();
+  return { policyIds, skills };
 }
 
 export function buildBrief(root: string, options: BriefOptions): WorkflowBriefPayload {
@@ -56,15 +73,17 @@ export function buildBrief(root: string, options: BriefOptions): WorkflowBriefPa
   const mustRead = nextContext.must_read;
 
   let taskHeadings: string[] = [];
-  if (mustRead.length > 0) {
-    const planPath = join(root, mustRead[0]);
-    if (existsSync(planPath)) {
-      taskHeadings = extractTaskHeadings(readFileSync(planPath, "utf8"));
-    }
+  let planText = "";
+  const planPath = artifactPath(root, { feature: options.feature, docId: options.docId, suffix: "TED" });
+  if (existsSync(planPath)) {
+    planText = readFileSync(planPath, "utf8");
+    taskHeadings = extractTaskHeadings(planText);
   }
 
   const failures = [...guard.failures];
   const focusSections = [...nextContext.focus_sections];
+  let requiredPolicyIds: string[] = [];
+  let requiredSkills: string[] = [];
   if (options.task) {
     taskHeadings = taskHeadings.filter((heading) => heading.includes(options.task ?? ""));
     if (taskHeadings.length > 0) {
@@ -72,6 +91,9 @@ export function buildBrief(root: string, options: BriefOptions): WorkflowBriefPa
     } else {
       failures.push(`requested task ${options.task} was not found`);
     }
+    const context = extractTaskPolicyContext(planText, options.task);
+    requiredPolicyIds = context.policyIds;
+    requiredSkills = context.skills;
   }
 
   return {
@@ -88,6 +110,8 @@ export function buildBrief(root: string, options: BriefOptions): WorkflowBriefPa
     may_skip: nextContext.may_skip,
     focus_sections: focusSections,
     task_headings: taskHeadings,
+    required_policy_ids: requiredPolicyIds,
+    required_skills: requiredSkills,
     execution_source: nextContext.execution_source,
     new_plan_policy: "create-new-ted",
   };
@@ -107,6 +131,12 @@ export function formatPlain(payload: WorkflowBriefPayload): string {
   if (payload.task_headings.length > 0) {
     lines.push("Task chapters:");
     lines.push(...payload.task_headings.map((heading) => `- ${heading}`));
+  }
+  if (payload.required_policy_ids.length > 0) {
+    lines.push(`Required policies: ${payload.required_policy_ids.join(", ")}`);
+  }
+  if (payload.required_skills.length > 0) {
+    lines.push(`Required skills: ${payload.required_skills.join(", ")}`);
   }
   if (payload.failures.length > 0) {
     lines.push("Failures:");

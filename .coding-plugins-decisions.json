@@ -117,6 +117,60 @@
       "reason": "用户确认提交正式发布优化变更",
       "requested_at": "2026-07-07T12:58:50.464Z",
       "approved_at": "2026-07-07T13:00:30.950Z"
+    },
+    {
+      "feature": "workflow-runtime",
+      "doc_id": "workflow-simplification",
+      "id": "DP-1",
+      "status": "approved",
+      "reason": "用户确认 PRD 范围，继续技术方案设计",
+      "requested_at": "2026-07-11T03:49:33.202Z",
+      "approved_at": "2026-07-11T03:49:33.202Z"
+    },
+    {
+      "feature": "workflow-runtime",
+      "doc_id": "workflow-simplification",
+      "id": "DP-2",
+      "status": "approved",
+      "reason": "用户确认 TSD 技术方案，继续测试设计",
+      "requested_at": "2026-07-11T03:58:08.679Z",
+      "approved_at": "2026-07-11T03:58:56.880Z"
+    },
+    {
+      "feature": "workflow-runtime",
+      "doc_id": "workflow-simplification",
+      "id": "DP-3",
+      "status": "approved",
+      "reason": "用户确认 TVD 测试设计，继续执行计划设计",
+      "requested_at": "2026-07-11T04:02:49.825Z",
+      "approved_at": "2026-07-11T04:04:09.387Z"
+    },
+    {
+      "feature": "workflow-runtime",
+      "doc_id": "workflow-simplification",
+      "id": "DP-4",
+      "status": "approved",
+      "reason": "用户批准执行计划并要求持续完成后通知",
+      "requested_at": "2026-07-11T04:08:39.328Z",
+      "approved_at": "2026-07-11T04:12:06.266Z"
+    },
+    {
+      "feature": "workflow-runtime",
+      "doc_id": "workflow-simplification",
+      "id": "DP-6",
+      "status": "approved",
+      "reason": "用户要求持续执行并在全部新鲜验证通过后通知；npm test/preflight、strict docs、VED formal eligibility、source hash 与 targeted workflow tests 均已通过",
+      "requested_at": "2026-07-11T05:23:56.638Z",
+      "approved_at": "2026-07-11T05:23:56.638Z"
+    },
+    {
+      "feature": "workflow-runtime",
+      "doc_id": "workflow-simplification",
+      "id": "DP-7",
+      "status": "approved",
+      "reason": "用户明确要求进行 commit 并发布；批准中文 Conventional Commit、推送、合并到 main、创建并推送 v1.2.0 tag，触发 GitHub Release；不执行 npm publish。",
+      "requested_at": "2026-07-11T06:10:42.338Z",
+      "approved_at": "2026-07-11T06:10:42.338Z"
     }
   ]
 }

@@ -5,9 +5,14 @@ import { buildBrief } from "./workflow-brief.ts";
 import type { WorkflowBriefPayload } from "./workflow-brief.ts";
 import { checkWorkflowGuard } from "./workflow-guard.ts";
 import type { WorkflowGuardResult } from "./workflow-guard.ts";
-import { inferMode } from "./workflow-mode.ts";
+import { evaluateWorkflowRuntime } from "./workflow-runtime.ts";
+import type { LegacyWorkflowProjection } from "./workflow-runtime.ts";
+import type { RouteDecisionV2 } from "./route-decision.ts";
 import { inspectDocumentChain } from "./workflow-state.ts";
 import type { WorkflowStateResult } from "./workflow-state.ts";
+import { restoreActiveChange } from "./active-change.ts";
+import type { ActiveChangeRecord } from "./active-change.ts";
+import { projectRouteDecisionV1 } from "./workflow-runtime.ts";
 
 export type TaskAction = "start" | "continue" | "status" | "brief";
 
@@ -17,6 +22,10 @@ export interface TaskStatusOptions {
   intent: string;
   feature?: string;
   docId?: string;
+  changeId?: string;
+  plannedFiles?: string[];
+  taskCount?: number;
+  featureCount?: number;
 }
 
 export interface TaskStatusPayload {
@@ -24,7 +33,9 @@ export interface TaskStatusPayload {
   action: TaskAction;
   conversation_judgment_allowed: false;
   reason: string;
-  mode: ReturnType<typeof inferMode>;
+  mode: LegacyWorkflowProjection;
+  route_decision: RouteDecisionV2;
+  active_change: ActiveChangeRecord | null;
   project_state: ReturnType<typeof checkState> | null;
   workflow_state: WorkflowStateResult | null;
   guard: WorkflowGuardResult | null;
@@ -62,6 +73,18 @@ export interface TaskBriefPayload {
   context_policy: string[];
 }
 
+export interface TaskStatusV2Payload extends RouteDecisionV2 {
+  context: {
+    feature: string | null;
+    docId: string | null;
+    decisionPoint: string | null;
+    currentTask: string | null;
+  };
+  activeChange: ActiveChangeRecord | null;
+  blockers: string[];
+  warnings: string[];
+}
+
 function targetForState(state: string, intent: string): "plan" | "execute" {
   void intent;
   if (state === "ready-for-execution") {
@@ -86,10 +109,19 @@ function decisionPointForState(state: string): string | null {
   if (state === "ready-for-test-cases" || state === "test-cases-draft") {
     return "DP-3";
   }
+  if (state === "complete") {
+    return "DP-6";
+  }
   return "DP-4";
 }
 
 function actionsForState(state: string): Pick<TaskStatusPayload, "allowed_actions" | "blocked_actions"> {
+  if (state === "complete") {
+    return {
+      allowed_actions: ["verify-completion", "request-commit-decision"],
+      blocked_actions: [],
+    };
+  }
   if (state === "ready-for-execution") {
     return {
       allowed_actions: ["workflow-guard:execute", "workflow-brief", "execute-ted"],
@@ -142,7 +174,7 @@ function nextForState(
   root: string,
   intent: string,
   state: WorkflowStateResult | null,
-  mode: ReturnType<typeof inferMode>,
+  mode: LegacyWorkflowProjection,
 ): Pick<TaskStatusPayload, "next_command" | "next_args"> {
   if (state) {
     const target = targetForState(state.state, intent);
@@ -212,11 +244,20 @@ function buildTaskBrief(payload: Omit<TaskStatusPayload, "task_brief">): TaskBri
 }
 
 export function buildTaskStatus(options: TaskStatusOptions): TaskStatusPayload {
+  const activeChangeResult = restoreActiveChange(options.root, { changeId: options.changeId });
   const projectState = options.feature && options.docId ? null : checkState(options.root);
-  const feature = options.feature ?? (projectState?.valid && projectState.feature ? projectState.feature : undefined);
-  const docId = options.docId ?? (projectState?.valid && projectState.doc_id ? projectState.doc_id : undefined);
-  const mode = inferMode(options.intent, { taskCount: feature ? 3 : 0 });
+  const feature = options.feature ?? activeChangeResult.record?.feature ?? (projectState?.valid && projectState.feature ? projectState.feature : undefined);
+  const docId = options.docId ?? activeChangeResult.record?.docId ?? (projectState?.valid && projectState.doc_id ? projectState.doc_id : undefined);
+  const runtime = evaluateWorkflowRuntime(options.intent, {
+    plannedFiles: options.plannedFiles,
+    taskCount: options.taskCount ?? (feature ? 3 : undefined),
+    featureCount: options.featureCount,
+  });
   const workflowState = feature && docId ? inspectDocumentChain(options.root, { feature, docId }) : null;
+  const formalRoute = Boolean(workflowState && runtime.decision.flow !== "inspect");
+  const mode = formalRoute
+    ? projectRouteDecisionV1({ ...runtime.decision, flow: "governed-change" })
+    : runtime.v1;
   const stateName = workflowState?.state ?? (mode.mode === "analysis-only" ? "analysis-only" : "unknown");
   const stateMismatch = Boolean(
     projectState?.valid
@@ -231,7 +272,7 @@ export function buildTaskStatus(options: TaskStatusOptions): TaskStatusPayload {
     ]
     : [];
   const target = workflowState ? targetForState(workflowState.state, options.intent) : "plan";
-  const guard = workflowState
+  const guard = workflowState && stateName !== "complete"
     ? checkWorkflowGuard(options.root, { feature: workflowState.feature, docId: workflowState.doc_id, target })
     : null;
   const decisionStatus = workflowState && target === "execute"
@@ -268,6 +309,40 @@ export function buildTaskStatus(options: TaskStatusOptions): TaskStatusPayload {
     ...(stateMismatch ? [...actions.blocked_actions, "continue-with-stale-project-state"] : actions.blocked_actions),
     ...(decisionBlocked ? ["workflow-guard:execute", "workflow-brief", "execute-ted"] : []),
   ];
+  const routeDecision: RouteDecisionV2 = formalRoute
+    ? {
+      ...runtime.decision,
+      flow: "governed-change",
+      state: stateName,
+      scope: {
+        ...runtime.decision.scope,
+        relation: activeChangeResult.record ? "within-scope" : runtime.decision.scope.relation,
+      },
+      next: stateName === "complete"
+        ? { action: "report-completion", skill: "verification-before-completion" }
+        : {
+          action: decisionBlocked ? "request-approval" : stateName === "ready-for-execution" ? "execute-approved-plan" : "continue-governed-change",
+          skill: workflowState?.next_skill,
+          command: {
+            name: "task",
+            args: [
+              "continue",
+              "--root",
+              options.root,
+              "--feature",
+              workflowState?.feature ?? feature ?? "",
+              "--doc-id",
+              workflowState?.doc_id ?? docId ?? "",
+              "--contract-version",
+              "2",
+              "--json",
+            ],
+          },
+        },
+      allowedActions,
+      blockedActions: [...new Set(blockedActions)],
+    }
+    : runtime.decision;
 
   const payload: Omit<TaskStatusPayload, "task_brief"> = {
     entrypoint: `coding-plugins task ${options.action}`,
@@ -275,6 +350,8 @@ export function buildTaskStatus(options: TaskStatusOptions): TaskStatusPayload {
     conversation_judgment_allowed: false,
     reason: "routing must be derived from unified CLI state/schema checks before selecting skills",
     mode,
+    route_decision: routeDecision,
+    active_change: activeChangeResult.record,
     project_state: projectState,
     workflow_state: workflowState,
     guard,
@@ -294,5 +371,24 @@ export function buildTaskStatus(options: TaskStatusOptions): TaskStatusPayload {
   return {
     ...payload,
     task_brief: buildTaskBrief(payload),
+  };
+}
+
+export function buildTaskStatusV2(payload: TaskStatusPayload): TaskStatusV2Payload {
+  const blockers = [
+    ...payload.task_brief.blockers,
+    ...(payload.guard?.failures ?? []),
+  ];
+  return {
+    ...payload.route_decision,
+    context: {
+      feature: payload.feature,
+      docId: payload.doc_id,
+      decisionPoint: payload.decision_point,
+      currentTask: payload.brief?.current_task ?? null,
+    },
+    activeChange: payload.active_change,
+    blockers: [...new Set(blockers)],
+    warnings: [...payload.warnings],
   };
 }

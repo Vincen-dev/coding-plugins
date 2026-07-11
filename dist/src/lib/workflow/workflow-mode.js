@@ -5,6 +5,17 @@ export const VALID_MODES = new Set([
     "full-chain",
     "maintenance-chain",
 ]);
+export * from "./diagnostics.js";
+export * from "./intent-classifier.js";
+export * from "./route-decision.js";
+export * from "./workflow-runtime.js";
+export * from "./active-change.js";
+export * from "./scope-drift.js";
+export * from "../documents/change-document.js";
+export * from "./policy-resolver.js";
+export * from "./technical-approval.js";
+export * from "./policy-coverage.js";
+export * from "./completion-state.js";
 const DOC_CONFIG_EXTENSIONS = new Set([
     ".md",
     ".markdown",

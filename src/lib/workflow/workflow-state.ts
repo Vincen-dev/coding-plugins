@@ -157,6 +157,14 @@ export function inspectDocumentChain(root: string, options: { feature: string; d
     });
   }
 
+  if (artifacts.VED.status === "complete") {
+    return update(result, {
+      state: "complete",
+      next_skill: "verification-before-completion",
+      reason: "VED is complete and the approved upstream chain is current",
+    });
+  }
+
   return update(result, {
     state: "ready-for-execution",
     next_skill: "using-git-worktrees",

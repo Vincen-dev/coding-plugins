@@ -43,7 +43,7 @@ export const COMMAND_REGISTRY = [
         script: "skills/subagent-driven-development/scripts/subagent-prompt-builder.ts",
         usage: "subagent-prompt-builder --feature <name> --doc-id <id> --task <task> [--kind <kind>] --expected-source-hash <sha256> [--root <path>]",
     },
-    { name: "task", script: "src/cli/task.ts", usage: "task <start|continue|status|brief> --intent <text> [--feature <name>] [--doc-id <id>] [--root <path>] [--json]" },
+    { name: "task", script: "src/cli/task.ts", usage: "task <start|continue|status|brief> --intent <text> [--feature <name>] [--doc-id <id>] [--change-id <id>] [--contract-version 1|2] [--planned-file <path>] [--task-count <n>] [--feature-count <n>] [--root <path>] [--json]" },
     { name: "validate", script: "src/cli/validate.ts", usage: "validate [--root <path>] [--format text|json] [--include-sections] [--allow-evidence-only|--strict-chain]" },
     { name: "validate-spec", script: "skills/spec-driven-development/scripts/validate-spec.ts", usage: "validate-spec [--format text|json] [--strict] <spec-files...>" },
     { name: "validate-technicals", script: "skills/writing-technicals/scripts/validate-technicals.ts", usage: "validate-technicals [--root <path>] [--format text|json] [--strict] [technical-files...]" },

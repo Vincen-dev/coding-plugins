@@ -140,15 +140,29 @@ export function validateText(text, input) {
 export function buildResult(path, input) {
     const options = normalizeOptions(input);
     if (!existsSync(path)) {
-        return { path, ok: false, errors: [`File does not exist: ${path}`], warnings: [] };
+        return { path, ok: false, content_valid: false, valid_for: [], formal_completion_allowed: false, errors: [`File does not exist: ${path}`], warnings: [] };
     }
     if (!statSync(path).isFile()) {
-        return { path, ok: false, errors: [`Path is not a file: ${path}`], warnings: [] };
+        return { path, ok: false, content_valid: false, valid_for: [], formal_completion_allowed: false, errors: [`Path is not a file: ${path}`], warnings: [] };
     }
     const text = readFileSync(path, "utf8");
-    const [errors, warnings] = validateText(text, options);
-    errors.push(...validateEvidenceContext(path, text, options));
-    return { path, ok: errors.length === 0, errors, warnings };
+    const [contentErrors, warnings] = validateText(text, options);
+    const contextErrors = validateEvidenceContext(path, text, options);
+    const errors = [...contentErrors, ...contextErrors];
+    const contentValid = contentErrors.length === 0;
+    const ignored = options.root ? isPathIgnoredByGitignore(resolve(options.root), resolve(path)) : false;
+    const formalCompletionAllowed = contentValid && contextErrors.length === 0 && options.artifactMode !== "local" && !ignored;
+    return {
+        path,
+        ok: errors.length === 0,
+        content_valid: contentValid,
+        valid_for: contentValid
+            ? formalCompletionAllowed ? ["local-review", "task-completion", "formal-completion"] : ["local-review"]
+            : [],
+        formal_completion_allowed: formalCompletionAllowed,
+        errors,
+        warnings,
+    };
 }
 export function buildPayload(paths, input) {
     const options = normalizeOptions(input);

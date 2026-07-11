@@ -48,6 +48,14 @@ related_docs:
 - **REFACTOR 命令:** `<node --test tests/path/example.test.ts -v>`
 - **最终验证:** <最终相关测试、构建或校验命令和结果>
 
+### Requirement Evidence
+
+- <列出本任务覆盖的 Spec/Test ID 与可复现结果。>
+
+### Policy Evidence
+
+- <列出本任务覆盖的 Policy ID、验证门禁、命令与结果。>
+
 ## 任务 <N>：<无法自动测试的任务名称>
 
 ### TDD 例外记录

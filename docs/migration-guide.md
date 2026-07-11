@@ -15,6 +15,9 @@
 - 新需求、接口契约、schema、状态机、验收标准还不清楚。
 - 需要 PRD、TSD、TVD、TED、VED 追踪 Spec ID 到测试和证据。
 - 用户说“继续”时，先运行 `coding-plugins task status --root . --intent "继续" --json`，按唯一下一步执行。
+- Agent 新接入优先运行 `${CP_CLI} task status --root . --intent "继续" --contract-version 2 --json`。v2 返回 Inspect、Change、Governed Change 三类 flow、唯一 `next`、结构化 `{name: "task", args: [...]}`、稳定 diagnostics 和当前 context。
+- 1.x 兼容期内不带 `--contract-version` 仍返回 v1 payload；现有 `start`、`workflow-state`、`workflow-guard`、`workflow-brief` 和 `dp` 保留为兼容/debug 入口，但不再是普通 Agent 需要手工串联的主入口。
+- 不要在业务仓库构造 `node ./bin/coding-plugins.js`。应使用 SessionStart 提供的 `${CP_CLI}`，以避免业务仓库不存在该文件时的 `MODULE_NOT_FOUND`。
 
 使用 maintenance-chain 的场景：
 

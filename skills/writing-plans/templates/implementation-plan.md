@@ -92,6 +92,7 @@ source_hash: sha256:<由 src/cli/workflow-state.ts hash --feature <feature-name>
 - 已确认需求：<PRD 中的相关需求点。>
 - 已确认设计：<TSD 中的相关决策或实现点。>
 - 已确认测试：<TVD 中的相关测试用例。>
+- Required Policy / Skill：<POL-001；`required-skill`。只列当前 task 需要的集合。>
 
 ### 修改范围
 
@@ -133,6 +134,7 @@ source_hash: sha256:<由 src/cli/workflow-state.ts hash --feature <feature-name>
 - 证据文件：同一 `doc_id` 的 VED 证据文档。
 - 证据章节：`## 任务 1：<任务标题>`
 - 无法自动测试时：必须写 `### TDD 例外记录`，包含原因、用户批准、替代验证和风险。
+- Policy Evidence：记录当前 task 的 Policy ID、验证门禁、命令和结果；不得用其他 task 的 Skill/Policy 代替。
 
 ## 中止条件
 

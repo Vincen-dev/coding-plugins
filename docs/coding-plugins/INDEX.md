@@ -4,6 +4,7 @@
 
 | Feature | Doc ID | 功能根目录 | 需求文档 | 技术方案 | 测试用例 | 任务执行 | 证据 | 标签 | 更新日期 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| workflow-runtime | workflow-simplification | `docs/coding-plugins/features/workflow-runtime` | `docs/coding-plugins/features/workflow-runtime/requirements/workflow-simplification-PRD.md` | `docs/coding-plugins/features/workflow-runtime/technicals/workflow-simplification-TSD.md` | `docs/coding-plugins/features/workflow-runtime/test-cases/workflow-simplification-TVD.md` | `docs/coding-plugins/features/workflow-runtime/plans/workflow-simplification-TED.md` | `docs/coding-plugins/features/workflow-runtime/evidences/workflow-simplification-VED.md` | workflow, routing, decision-points, engineering-policy, skills | 2026-07-11 |
 
 规则:
 

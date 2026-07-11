@@ -6,6 +6,18 @@ export const VALID_MODES = new Set([
   "maintenance-chain",
 ]);
 
+export * from "./diagnostics.ts";
+export * from "./intent-classifier.ts";
+export * from "./route-decision.ts";
+export * from "./workflow-runtime.ts";
+export * from "./active-change.ts";
+export * from "./scope-drift.ts";
+export * from "../documents/change-document.ts";
+export * from "./policy-resolver.ts";
+export * from "./technical-approval.ts";
+export * from "./policy-coverage.ts";
+export * from "./completion-state.ts";
+
 const DOC_CONFIG_EXTENSIONS = new Set([
   ".md",
   ".markdown",

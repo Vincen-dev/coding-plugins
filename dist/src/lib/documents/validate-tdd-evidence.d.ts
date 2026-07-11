@@ -2,6 +2,9 @@ import type { ArtifactModeValue } from "./artifact-mode.ts";
 export interface ValidationResult {
     path: string;
     ok: boolean;
+    content_valid: boolean;
+    valid_for: Array<"local-review" | "task-completion" | "formal-completion">;
+    formal_completion_allowed: boolean;
     errors: string[];
     warnings: string[];
 }

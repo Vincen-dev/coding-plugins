@@ -4,6 +4,7 @@ status: draft
 lifecycle_status: draft
 feature: "<feature-name>"
 doc_id: "<doc-id>"
+workflow_schema: governed-v2
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 implemented_commits: []
@@ -95,6 +96,33 @@ related_docs:
 ## 接口和契约
 
 <内部接口、外部 API、schema、状态机如何落地。新增必须、禁止、MUST、SHOULD 类约束时，引用对应 Spec ID；如果只是实现内部限制，标注“设计约束”。>
+
+## Engineering Profile
+
+- Profile ID：<仓库工程 profile，例如 typescript-cli-plugin 或 flutter-app。>
+- Resolver inputs：<仓库类型、planned files、risk signals 和显式 Skills。>
+- Required Policy hash：<resolved required Policy bundle hash。>
+
+## Policy-to-Design Mapping
+
+- POL-001 / required：
+  - 可复现来源：<repo-relative 或 versioned-plugin ref>。
+  - 设计响应：<本设计如何响应约束>。
+  - 影响组件：`<path>`。
+  - Waiver：none。
+
+## Skill Usage Plan
+
+- <skill-name>：source/version=<project 或 plugin@version>；applies=POL-001；required=yes；portable=yes。
+
+## Policy Verification Gates
+
+- POL-001：TVD Test ID=TC-POL-001；verification=<test / command / review>；evidence=VED Policy Evidence。
+
+## Policy Conflicts and Waivers
+
+- Conflicts：<无，或列出 resolver 返回的 required Policy 冲突。>
+- Waivers：<无，或列出 Policy ID、原因、批准状态和替代验证。>
 
 ## 非功能设计
 

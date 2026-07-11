@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { resolve } from "node:path";
-import { buildTaskStatus } from "../../lib/workflow/task-status.js";
+import { buildTaskStatus, buildTaskStatusV2 } from "../../lib/workflow/task-status.js";
 function requireValue(argv, index, arg) {
     const value = argv[index + 1];
     if (!value) {
@@ -13,7 +13,7 @@ function parseArgs(argv) {
     if (action !== "start" && action !== "continue" && action !== "status" && action !== "brief") {
         throw new Error("command must be start, continue, status, or brief.");
     }
-    const options = { action, root: ".", intent: "", json: false };
+    const options = { action, root: ".", intent: "", plannedFiles: [], contractVersion: "1", json: false };
     for (let index = 0; index < rest.length; index += 1) {
         const arg = rest[index];
         if (arg === "--root") {
@@ -32,6 +32,30 @@ function parseArgs(argv) {
             options.docId = requireValue(rest, index, arg);
             index += 1;
         }
+        else if (arg === "--change-id") {
+            options.changeId = requireValue(rest, index, arg);
+            index += 1;
+        }
+        else if (arg === "--planned-file") {
+            options.plannedFiles.push(requireValue(rest, index, arg));
+            index += 1;
+        }
+        else if (arg === "--task-count") {
+            options.taskCount = Number(requireValue(rest, index, arg));
+            index += 1;
+        }
+        else if (arg === "--feature-count") {
+            options.featureCount = Number(requireValue(rest, index, arg));
+            index += 1;
+        }
+        else if (arg === "--contract-version") {
+            const value = requireValue(rest, index, arg);
+            if (value !== "1" && value !== "2") {
+                throw new Error("--contract-version must be 1 or 2.");
+            }
+            options.contractVersion = value;
+            index += 1;
+        }
         else if (arg === "--json") {
             options.json = true;
         }
@@ -44,9 +68,16 @@ function parseArgs(argv) {
 }
 try {
     const options = parseArgs(process.argv.slice(2));
-    const payload = buildTaskStatus(options);
+    const payload = buildTaskStatus({
+        ...options,
+        plannedFiles: options.plannedFiles.length > 0 ? options.plannedFiles : undefined,
+    });
+    const output = options.contractVersion === "2" ? buildTaskStatusV2(payload) : payload;
     if (options.json) {
-        console.log(JSON.stringify(payload, null, 2));
+        console.log(JSON.stringify(output, null, 2));
+    }
+    else if (options.contractVersion === "2") {
+        console.log(JSON.stringify(output, null, 2));
     }
     else {
         console.log(`entrypoint: ${payload.entrypoint}`);

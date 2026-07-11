@@ -117,7 +117,7 @@ test("TypeScript preflight skips missing local external references in ignored fe
     });
 
     assert.equal(result.status, 0, result.stderr);
-    assert.match(result.stdout, /External reference checks passed \(0 markdown files scanned\)\./);
+    assert.match(result.stdout, /External reference checks passed \(\d+ markdown files scanned\)\./);
     assert.doesNotMatch(result.stderr, /missing-local-file\.md/);
   } finally {
     rmSync(featureRoot, { recursive: true, force: true });

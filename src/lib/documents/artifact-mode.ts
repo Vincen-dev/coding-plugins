@@ -43,10 +43,19 @@ function gitignorePatterns(root: string): string[] {
 function gitignorePatternMatches(pattern: string, relativePath: string): boolean {
   const negated = pattern.startsWith("!");
   const cleaned = normalizeRelativePath(negated ? pattern.slice(1) : pattern);
-  if (!cleaned || cleaned.includes("*")) {
+  if (!cleaned) {
     return false;
   }
   const normalizedPath = normalizeRelativePath(relativePath);
+  if (cleaned.endsWith("/**")) {
+    const prefix = cleaned.slice(0, -3);
+    return normalizedPath === prefix || normalizedPath.startsWith(`${prefix}/`);
+  }
+  if (cleaned.includes("*")) {
+    const escaped = cleaned.replace(/[.+?^${}()|[\]\\]/g, "\\$&");
+    const expression = escaped.replaceAll("**", "\u0000").replaceAll("*", "[^/]*").replaceAll("\u0000", ".*");
+    return new RegExp(`^${expression}(?:/.*)?$`).test(normalizedPath);
+  }
   return normalizedPath === cleaned || normalizedPath.startsWith(`${cleaned}/`);
 }
 

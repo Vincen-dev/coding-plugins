@@ -3,6 +3,7 @@ title: <功能名称>测试用例
 status: draft
 feature: <feature-name>
 doc_id: <doc-id>
+workflow_schema: governed-v2
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 related_docs:
@@ -102,6 +103,16 @@ related_docs:
 - 自动化覆盖：<列出已计划自动化的 TC ID 和命令来源。>
 - 人工验收：<列出必须人工确认的 TC ID、步骤和证据目标。>
 - 暂不覆盖：<列出暂不覆盖项、原因、替代验证和补齐条件。>
+
+## Engineering Policy 测试
+
+- TC-POL-001 / POL-001：
+  - 设计响应：<对应 TSD Policy-to-Design Mapping>。
+  - 验证类型：test / command / review。
+  - 命令或审查：<可复现门禁>。
+  - VED Evidence：Policy Evidence。
+
+每个 required Policy 使用稳定的 `TC-POL-*` 标识，并在 TED task 与 VED Policy Evidence 中继续引用。
 
 ## 不需要测试用例的规格
 

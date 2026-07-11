@@ -5,7 +5,7 @@ import type { ArtifactModeValue } from "../../../src/lib/documents/artifact-mode
 interface Options {
   format: "text" | "json";
   strict: boolean;
-  root?: string;
+  root: string;
   artifactMode?: ArtifactModeValue;
   evidenceFiles: string[];
 }
@@ -22,6 +22,7 @@ function parseArgs(argv: string[]): Options {
   const options: Options = {
     format: "text",
     strict: false,
+    root: process.cwd(),
     evidenceFiles: [],
   };
 

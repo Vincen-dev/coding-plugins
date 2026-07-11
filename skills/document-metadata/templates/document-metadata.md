@@ -12,6 +12,7 @@ title: <文档标题>
 status: draft
 feature: <feature-name>
 doc_id: <doc-id>
+workflow_schema: governed-v2
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 tags:

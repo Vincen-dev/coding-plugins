@@ -2,8 +2,10 @@ import { checkState } from "./project-state.ts";
 import type { DecisionAuditResult } from "./decision-state.ts";
 import type { WorkflowBriefPayload } from "./workflow-brief.ts";
 import type { WorkflowGuardResult } from "./workflow-guard.ts";
-import { inferMode } from "./workflow-mode.ts";
+import type { LegacyWorkflowProjection } from "./workflow-runtime.ts";
+import type { RouteDecisionV2 } from "./route-decision.ts";
 import type { WorkflowStateResult } from "./workflow-state.ts";
+import type { ActiveChangeRecord } from "./active-change.ts";
 export type TaskAction = "start" | "continue" | "status" | "brief";
 export interface TaskStatusOptions {
     action: TaskAction;
@@ -11,13 +13,19 @@ export interface TaskStatusOptions {
     intent: string;
     feature?: string;
     docId?: string;
+    changeId?: string;
+    plannedFiles?: string[];
+    taskCount?: number;
+    featureCount?: number;
 }
 export interface TaskStatusPayload {
     entrypoint: string;
     action: TaskAction;
     conversation_judgment_allowed: false;
     reason: string;
-    mode: ReturnType<typeof inferMode>;
+    mode: LegacyWorkflowProjection;
+    route_decision: RouteDecisionV2;
+    active_change: ActiveChangeRecord | null;
     project_state: ReturnType<typeof checkState> | null;
     workflow_state: WorkflowStateResult | null;
     guard: WorkflowGuardResult | null;
@@ -53,4 +61,16 @@ export interface TaskBriefPayload {
     verification_requirements: string[];
     context_policy: string[];
 }
+export interface TaskStatusV2Payload extends RouteDecisionV2 {
+    context: {
+        feature: string | null;
+        docId: string | null;
+        decisionPoint: string | null;
+        currentTask: string | null;
+    };
+    activeChange: ActiveChangeRecord | null;
+    blockers: string[];
+    warnings: string[];
+}
 export declare function buildTaskStatus(options: TaskStatusOptions): TaskStatusPayload;
+export declare function buildTaskStatusV2(payload: TaskStatusPayload): TaskStatusV2Payload;

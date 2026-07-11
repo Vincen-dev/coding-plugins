@@ -11,6 +11,7 @@ function parseArgs(argv) {
     const options = {
         format: "text",
         strict: false,
+        root: process.cwd(),
         evidenceFiles: [],
     };
     for (let index = 0; index < argv.length; index += 1) {

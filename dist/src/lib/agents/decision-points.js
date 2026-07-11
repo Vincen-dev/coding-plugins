@@ -64,13 +64,46 @@ export const DECISION_POINTS = [
         skills: ["using-git-commit", "finishing-a-development-branch"],
     },
 ];
-export function allDecisionPoints() {
-    return DECISION_POINTS.map((point) => ({ ...point, skills: [...point.skills] }));
+export const GOVERNED_V2_DECISION_POINTS = [
+    {
+        id: "DP-1",
+        name: "范围批准",
+        trigger: "PRD 的问题、目标、非目标、requirements、acceptance 和兼容边界达到 review-ready。",
+        required_input: "PRD 范围包与兼容边界。",
+        expected_output: "批准范围包，或回到 requirements 修订。",
+        skills: ["writing-requirements", "spec-driven-development"],
+    },
+    {
+        id: "DP-2",
+        name: "技术批准",
+        trigger: "TSD、TVD、resolved Policies、required Skills 和 waiver 达到 review-ready。",
+        required_input: "联合技术批准包及其 required bundle hash。",
+        expected_output: "共同批准 TSD/TVD 技术包，或回到设计/测试设计修订。",
+        skills: ["writing-technicals", "writing-test-cases"],
+    },
+    {
+        id: "DP-3",
+        name: "执行批准",
+        trigger: "TED、任务顺序、执行环境、回滚操作和验证门禁达到 review-ready。",
+        required_input: "执行包及其 bundle hash。",
+        expected_output: "批准执行，或回到 writing-plans 修订。",
+        skills: ["writing-plans", "using-git-worktrees"],
+    },
+];
+const DECISION_CATALOGS = {
+    "governed-v1": DECISION_POINTS,
+    "governed-v2": GOVERNED_V2_DECISION_POINTS,
+};
+export function getDecisionCatalog(version = "governed-v1") {
+    return DECISION_CATALOGS[version].map((point) => ({ ...point, skills: [...point.skills] }));
 }
-export function getDecisionPoint(pointId) {
-    const point = DECISION_POINTS.find((candidate) => candidate.id === pointId);
+export function allDecisionPoints() {
+    return getDecisionCatalog("governed-v1");
+}
+export function getDecisionPoint(pointId, version = "governed-v1") {
+    const point = DECISION_CATALOGS[version].find((candidate) => candidate.id === pointId);
     if (!point) {
-        throw new Error(pointId);
+        throw new Error(`${version}:${pointId}`);
     }
     return { ...point, skills: [...point.skills] };
 }

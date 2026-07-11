@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "profiles": [
+    {
+      "id": "typescript-cli-plugin",
+      "repositoryKinds": ["typescript"]
+    }
+  ],
+  "policies": [
+    {
+      "id": "POL-ARCH-001",
+      "version": "1",
+      "level": "required",
+      "source": { "kind": "repository", "ref": "tests/ts/src-architecture.test.mjs" },
+      "appliesWhen": { "repositoryKinds": ["typescript"] },
+      "verification": [{ "kind": "test", "ref": "node --test tests/ts/src-architecture.test.mjs" }]
+    },
+    {
+      "id": "POL-COMPAT-001",
+      "version": "1",
+      "level": "required",
+      "source": { "kind": "repository", "ref": "tests/ts/productization-cli.test.mjs" },
+      "appliesWhen": { "repositoryKinds": ["typescript"] },
+      "verification": [{ "kind": "test", "ref": "node --test tests/ts/productization-cli.test.mjs" }]
+    },
+    {
+      "id": "POL-TDD-001",
+      "version": "1.1.1",
+      "level": "required",
+      "source": { "kind": "repository", "ref": "skills/test-driven-development/SKILL.md" },
+      "appliesWhen": { "repositoryKinds": ["typescript"] },
+      "verification": [{ "kind": "command", "ref": "coding-plugins validate-tdd-evidence" }]
+    },
+    {
+      "id": "POL-VERIFY-001",
+      "version": "1.1.1",
+      "level": "required",
+      "source": { "kind": "repository", "ref": "skills/verification-before-completion/SKILL.md" },
+      "appliesWhen": { "repositoryKinds": ["typescript"] },
+      "verification": [{ "kind": "command", "ref": "npm test" }]
+    },
+    {
+      "id": "POL-DOC-001",
+      "version": "1.1.1",
+      "level": "required",
+      "source": { "kind": "repository", "ref": "skills/document-metadata/SKILL.md" },
+      "appliesWhen": { "repositoryKinds": ["typescript"] },
+      "verification": [{ "kind": "command", "ref": "npm run preflight" }]
+    }
+  ],
+  "skillBindings": [
+    {
+      "name": "test-driven-development",
+      "source": "versioned-plugin",
+      "version": "1.1.1",
+      "appliesPolicyIds": ["POL-TDD-001"]
+    },
+    {
+      "name": "verification-before-completion",
+      "source": "versioned-plugin",
+      "version": "1.1.1",
+      "appliesPolicyIds": ["POL-VERIFY-001"]
+    },
+    {
+      "name": "document-metadata",
+      "source": "versioned-plugin",
+      "version": "1.1.1",
+      "appliesPolicyIds": ["POL-DOC-001"]
+    }
+  ]
+}

@@ -22,16 +22,10 @@ Formal PRD/TSD/TVD/TED/VED work must run the Coding Plugins CLI before selecting
 Prefer the session-provided fallback:
 
 ```bash
-${CP_CLI} task status --root . --intent "<user intent>" --json
+${CP_CLI} task status --root . --intent "<user intent>" --contract-version 2 --json
 ```
 
-If unavailable, use the repository entrypoint:
-
-```bash
-node ./bin/coding-plugins.js task status --root . --intent "<user intent>" --json
-```
-
-If commands are unavailable, first use the SessionStart `${CP_CLI} <command> ...` fallback. Do not assume the CLI is missing just because `coding-plugins` is not on `PATH`. Do not hard-code stale cache versions.
+If commands are unavailable, first use the SessionStart `${CP_CLI} <command> ...` fallback. Do not construct a business-repository-local `node ./bin/coding-plugins.js` fallback, and do not assume the CLI is missing merely because `coding-plugins` is not on `PATH`.
 
 ## Workflow Modes
 
