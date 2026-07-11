@@ -28,7 +28,7 @@ If there are uncommitted changes, ask whether to create a commit before integrat
 The commit flow must:
 
 - Follow the `using-git-commit` skill.
-- Run the commit guard for author, language, sensitive-file, and DP-7 checks.
+- Run the commit guard for author, language, sensitive-file, integration-policy, and workflow checks. Governed-v1 requires DP-7; governed-v2 requires a passing Completion Audit.
 - Keep unrelated or unsafe changes out of the finishing commit.
 
 If the user declines commit, continue only with options that honestly state uncommitted changes remain.
@@ -41,10 +41,13 @@ Determine:
 - Whether this is a linked worktree or normal checkout.
 - Base branch, usually `main` unless evidence says otherwise.
 - Whether remote push is available if PR is desired.
+- The repository `integrationPolicy`, including `strategy`, `baseBranch`, `allowDirectCommit`, `allowFeatureBranches`, and `allowPullRequests`.
 
 ## Step 4: Present Options
 
-For a normal named branch or linked worktree, present:
+When `integrationPolicy.strategy` is `main-only`, do not offer branch creation, merge, or PR choices. Verify the base-branch diff, use `using-git-commit` if the user authorized commit, and push the configured base branch only when authorized.
+
+For a normal named branch or linked worktree under `branch-first`, present:
 
 1. Merge locally into the base branch.
 2. Push and open a PR.
@@ -68,3 +71,4 @@ For detached or externally managed workspaces, omit destructive cleanup choices 
 - Cleaning up after PR creation.
 - Deleting a branch or worktree without explicit discard confirmation.
 - Reverting user changes.
+- Offering or creating a PR when `integrationPolicy.allowPullRequests` is false.

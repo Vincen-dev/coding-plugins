@@ -20,11 +20,11 @@ const context = [
   "",
   "Default main workflow:",
   "1. For new requirements, unclear contracts, schemas, state machines, or unclear acceptance criteria, use SDD through `spec-driven-development`.",
-  "2. When approved specs need landing, write `writing-technicals`, then `writing-test-cases`, then `writing-plans`, and keep Spec ID -> Test -> Task -> Evidence traceability.",
+  "2. For governed-v2, use DP-1 for scope, jointly approve review-ready TSD + TVD + Policies + Skills at DP-2, and approve TED + rollback + verification gates at DP-3. Use `${CP_CLI} task approve` rather than mixing v1 DP meanings.",
   "3. For behavior changes, use TDD: RED, then GREEN, then REFACTOR, and record evidence in `docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-VED.md`.",
   "4. Before claiming completion, fixed status, or passing status, run `verification-before-completion` and provide command evidence.",
   "5. When the user asks to commit or chooses commit during finishing, use `using-git-commit`. Commit-message language follows the user's choice; ask if unspecified. Use an `Authored-by` footer and do not add AI authors.",
-  "6. When a branch or task is complete, use `finishing-a-development-branch` for commit prompting, PR/merge/keep/cleanup choices.",
+  "6. Use `finishing-a-development-branch` for delivery cleanup, and read repository `integrationPolicy` before creating branches or PRs. `main-only` repositories finish directly on the approved base branch; `branch-first` repositories may offer PR/merge/keep/cleanup choices.",
   "",
   "If the user only asks to query, explain, read, or report status, do not force the development workflow; answer the query directly.",
 ].join("\n");

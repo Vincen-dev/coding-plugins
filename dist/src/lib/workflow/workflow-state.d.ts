@@ -1,3 +1,4 @@
+import type { CompletionSummary } from "./completion-state.ts";
 declare const ARTIFACTS: string[];
 type ArtifactSuffix = (typeof ARTIFACTS)[number];
 interface ArtifactData {
@@ -17,6 +18,7 @@ export interface WorkflowStateResult {
     state: string;
     next_skill: string;
     reason: string;
+    completion: CompletionSummary | null;
 }
 export declare function artifactPath(root: string, options: {
     feature: string;
@@ -35,5 +37,7 @@ export declare function artifactSummary(root: string, options: {
 export declare function inspectDocumentChain(root: string, options: {
     feature: string;
     docId: string;
+}, evaluation?: {
+    completion?: CompletionSummary;
 }): WorkflowStateResult;
 export {};

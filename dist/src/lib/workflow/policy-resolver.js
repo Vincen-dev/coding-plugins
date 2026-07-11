@@ -1,6 +1,15 @@
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { isAbsolute, join, relative, resolve } from "node:path";
+const DEFAULT_INTEGRATION_POLICY = {
+    strategy: "branch-first",
+    baseBranch: "main",
+    allowDirectCommit: false,
+    allowFeatureBranches: true,
+    allowPullRequests: true,
+    requireVersionChangePerCommit: false,
+    versionFiles: [],
+};
 function sha256(text) {
     return `sha256:${createHash("sha256").update(text, "utf8").digest("hex")}`;
 }
@@ -79,6 +88,13 @@ export function loadPolicyRegistry(root) {
         throw new Error("coding-plugins.policies.yaml must contain a schemaVersion=1 policy registry");
     }
     return parsed;
+}
+export function resolveIntegrationPolicy(root) {
+    if (!existsSync(join(root, "coding-plugins.policies.yaml"))) {
+        return { ...DEFAULT_INTEGRATION_POLICY };
+    }
+    const configured = loadPolicyRegistry(root).integrationPolicy;
+    return configured ? { ...DEFAULT_INTEGRATION_POLICY, ...configured } : { ...DEFAULT_INTEGRATION_POLICY };
 }
 export function resolvePolicyBundle(options) {
     const selected = options.registry.policies.filter((policy) => applies(policy, options)).map((policy) => resolvePolicySource(options.root, policy));

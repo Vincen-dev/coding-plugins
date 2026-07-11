@@ -1,10 +1,11 @@
 import assert from "node:assert/strict";
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
 
 import * as workflow from "../../src/lib/workflow-mode.ts";
+import { checkCommitGuard } from "../../src/lib/git/commit-guard.ts";
 
 function registry(recommendedVersion = "1") {
   return {
@@ -129,4 +130,90 @@ test("REQ-006 required policy hash ignores recommended and advisory changes", ()
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
+});
+
+test("REQ-006 repository integration policy supports an explicit main-only delivery model", () => {
+  const root = mkdtempSync(join(tmpdir(), "policy-main-only-"));
+  try {
+    writeFileSync(join(root, "coding-plugins.policies.yaml"), JSON.stringify({
+      schemaVersion: 1,
+      integrationPolicy: {
+        strategy: "main-only",
+        baseBranch: "main",
+        allowDirectCommit: true,
+        allowFeatureBranches: false,
+        allowPullRequests: false,
+        requireVersionChangePerCommit: true,
+        versionFiles: ["package.json", ".version-bump.json"],
+      },
+      policies: [],
+    }, null, 2), "utf8");
+
+    assert.deepEqual(workflow.resolveIntegrationPolicy(root), {
+      strategy: "main-only",
+      baseBranch: "main",
+      allowDirectCommit: true,
+      allowFeatureBranches: false,
+      allowPullRequests: false,
+      requireVersionChangePerCommit: true,
+      versionFiles: ["package.json", ".version-bump.json"],
+    });
+
+    const guard = checkCommitGuard({
+      root,
+      language: "zh",
+      authorName: "Vincen",
+      authorEmail: "hx001007@gmail.com",
+      branch: "main",
+      changedFiles: ["src/example.ts", "package.json", ".version-bump.json"],
+    });
+    assert.equal(guard.ok, true);
+    assert.equal(guard.violations.some((item) => item.id === "main-branch-direct-commit"), false);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("REQ-006 commit guard blocks commits that omit required version files", () => {
+  const root = mkdtempSync(join(tmpdir(), "policy-version-per-commit-"));
+  try {
+    writeFileSync(join(root, "coding-plugins.policies.yaml"), JSON.stringify({
+      schemaVersion: 1,
+      integrationPolicy: {
+        strategy: "main-only",
+        baseBranch: "main",
+        allowDirectCommit: true,
+        allowFeatureBranches: false,
+        allowPullRequests: false,
+        requireVersionChangePerCommit: true,
+        versionFiles: ["package.json", ".version-bump.json"],
+      },
+      policies: [],
+    }), "utf8");
+
+    const blocked = checkCommitGuard({
+      root,
+      language: "zh",
+      authorName: "Vincen",
+      authorEmail: "hx001007@gmail.com",
+      branch: "main",
+      changedFiles: ["src/example.ts"],
+    });
+    assert.equal(blocked.ok, false);
+    assert.deepEqual(blocked.violations.find((item) => item.id === "version-change-missing")?.missing_files, [
+      ".version-bump.json",
+      "package.json",
+    ]);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("REQ-006 skill guidance delegates branch and PR behavior to integrationPolicy", () => {
+  const worktreeSkill = readFileSync(join(process.cwd(), "skills/using-git-worktrees/SKILL.md"), "utf8");
+  const finishingSkill = readFileSync(join(process.cwd(), "skills/finishing-a-development-branch/SKILL.md"), "utf8");
+  assert.match(worktreeSkill, /integrationPolicy/);
+  assert.match(worktreeSkill, /main-only/);
+  assert.match(finishingSkill, /integrationPolicy/);
+  assert.match(finishingSkill, /allowPullRequests/);
 });

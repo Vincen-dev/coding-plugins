@@ -45,9 +45,10 @@ When scope expands, run `scope-check` and reroute if required.
 - Feature document metadata, frontmatter, README/INDEX, or `related_docs` work: `document-metadata`.
 - Two or more independent tasks that the user authorized for parallel delegation: `dispatching-parallel-agents`.
 - New formal requirement: `spec-driven-development`, then `writing-requirements`.
-- Approved PRD: `writing-technicals`.
-- Approved PRD and TSD: `writing-test-cases`.
-- Approved PRD, TSD, and TVD: `writing-plans`.
+- Governed-v2 DP-1 approved: write TSD with `writing-technicals`, then TVD with `writing-test-cases`; both remain `review-ready` until the joint DP-2 technical approval.
+- Governed-v2 DP-2 approved: create TED with `writing-plans`.
+- Governed-v2 DP-3 approved: execute the current TED after guard success.
+- Governed-v1 documents without `workflow_schema`: preserve the legacy PRD -> approved TSD -> approved TVD -> TED sequence.
 - Approved TED to execute: `using-git-worktrees`, then `subagent-driven-development` if authorized or `executing-plans`.
 - Small implementation: `test-driven-development`.
 - Bug or failing test: `systematic-debugging`, then `test-driven-development`.
@@ -87,15 +88,18 @@ Read only the documents and sections listed by the brief unless a rewind trigger
 
 ## Decision Points
 
-Use the CLI as the authoritative DP catalog and approval record. Skills may name the next required DP, but the DP list and current approval state come from `decision-points`, `dp status`, `dp approve`, and `dp audit`.
+Use the CLI as the authoritative DP catalog and approval record. Read `workflow_schema` before interpreting a DP ID. New governed-v2 chains use the `task` facade; legacy governed-v1 chains may continue to use the fine-grained `dp` commands.
 
 Use:
 
 ```bash
-${CP_CLI} dp status --feature <feature> --doc-id <doc-id> --id DP-4 --json
-${CP_CLI} dp approve --feature <feature> --doc-id <doc-id> --id DP-4 --reason "<summary>" --json
-${CP_CLI} dp audit --feature <feature> --doc-id <doc-id> --target execute --json
+${CP_CLI} task approve --feature <feature> --doc-id <doc-id> --id DP-1 --reason "<scope approval>" --contract-version 2 --json
+${CP_CLI} task approve --feature <feature> --doc-id <doc-id> --id DP-2 --reason "<technical approval>" --contract-version 2 --json
+${CP_CLI} task approve --feature <feature> --doc-id <doc-id> --id DP-3 --reason "<execution approval>" --contract-version 2 --json
+${CP_CLI} task complete --feature <feature> --doc-id <doc-id> --contract-version 2 --json
 ```
+
+For governed-v1 compatibility diagnostics, use `dp status`, `dp approve`, and `dp audit`; never reuse a v1 approval record as a v2 approval.
 
 Do not cross a decision point without user confirmation.
 

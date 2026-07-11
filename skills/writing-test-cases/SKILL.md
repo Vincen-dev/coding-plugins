@@ -22,7 +22,7 @@ docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TVD.md
 Use this skill when:
 
 - PRD requirements are approved.
-- A TSD exists and the test strategy needs to be made executable.
+- A TSD exists and is `review-ready` under governed-v2 or approved under governed-v1, and the test strategy needs to be made executable.
 - Each MUST requirement needs a test type, assertion, data, and evidence target.
 
 Do not use it when:
@@ -60,4 +60,4 @@ TVD should not include:
 
 ## Approval Gate
 
-After writing TVD, stop at DP-3. Do not write or execute TED until the user approves the test design.
+For governed-v2, mark the TVD `review-ready` and stop at the joint DP-2 technical approval. Do not write TED until `task approve --id DP-2` succeeds and transitions both TSD and TVD to approved. For governed-v1, stop at the legacy DP-3 test-case approval.

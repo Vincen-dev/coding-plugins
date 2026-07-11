@@ -76,7 +76,8 @@ Use repository fallback when `coding-plugins` is not on `PATH`.
 Use:
 
 - `lifecycle_status: draft` while writing.
-- `lifecycle_status: approved` after DP-2 approval.
+- Governed-v2: `lifecycle_status: review-ready` after TSD validation; transition to `approved` only when the joint DP-2 technical approval also accepts the TVD and Policy/Skill bundle.
+- Governed-v1: `lifecycle_status: approved` after the legacy DP-2 approval.
 - `lifecycle_status: implemented` only after implementation and VED closure.
 - `implemented_commits` only for landed commits.
 - `validated_by` for real commands or planned validation notes.
@@ -93,4 +94,4 @@ Use:
 
 ## Handoff
 
-After TSD is written, stop at DP-2. Once approved, hand off to `writing-test-cases`.
+For governed-v2, validate the TSD, mark it `review-ready`, and hand off to `writing-test-cases`; stop for the joint DP-2 only after the TVD is also review-ready. For governed-v1, stop at the legacy DP-2 and hand off to `writing-test-cases` after approval.

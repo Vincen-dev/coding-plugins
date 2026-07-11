@@ -57,9 +57,10 @@ If `user.name` or `user.email` is missing, ask or set repo-local config only wit
 1. Run `git status --short`.
 2. Inspect `git diff` and `git diff --cached`.
 3. Identify logical commit groups. If the change set contains unrelated work, split commits.
-4. Stage files intentionally with `git add <paths>`.
-5. Recheck `git diff --cached`.
-6. Generate a Conventional Commit:
+4. If `integrationPolicy.requireVersionChangePerCommit` is true, run the repository version-bump workflow first and include every path in `integrationPolicy.versionFiles` in this commit.
+5. Stage files intentionally with `git add <paths>`.
+6. Recheck `git diff --cached`.
+7. Generate a Conventional Commit:
    - `feat:`
    - `fix:`
    - `docs:`
@@ -68,10 +69,10 @@ If `user.name` or `user.email` is missing, ask or set repo-local config only wit
    - `chore:`
    - `build:`
    - `ci:`
-7. Include a concise body when needed.
-8. Add the `Authored-by` footer.
-9. Run `git commit`.
-10. Report commit SHA, subject, and any verification caveats.
+8. Include a concise body when needed.
+9. Add the `Authored-by` footer.
+10. Run `git commit`.
+11. Report commit SHA, subject, and any verification caveats.
 
 ## Safety Checkpoints
 
@@ -82,7 +83,8 @@ Stop and ask before committing when:
 - Verification failed and the user did not explicitly accept the risk.
 - Commit language cannot be determined.
 - The commit would include generated release artifacts, version bumps, or publish-related files that were not requested.
-- The active formal workflow requires DP-7 and `commit-guard` does not pass.
+- The active formal workflow gate does not pass: governed-v1 requires DP-7, while governed-v2 requires a passing Completion Audit.
+- The repository requires a version change per commit and any configured version file is missing from the staged change.
 
 ## Message Shape
 

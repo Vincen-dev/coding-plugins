@@ -30,10 +30,31 @@ export interface PolicyProfile {
 
 export interface PolicyRegistry {
   schemaVersion: 1;
+  integrationPolicy?: IntegrationPolicy;
   profiles?: PolicyProfile[];
   policies: PolicyDefinition[];
   skillBindings?: PolicySkillDefinition[];
 }
+
+export interface IntegrationPolicy {
+  strategy: "branch-first" | "main-only";
+  baseBranch: string;
+  allowDirectCommit: boolean;
+  allowFeatureBranches: boolean;
+  allowPullRequests: boolean;
+  requireVersionChangePerCommit: boolean;
+  versionFiles: string[];
+}
+
+const DEFAULT_INTEGRATION_POLICY: IntegrationPolicy = {
+  strategy: "branch-first",
+  baseBranch: "main",
+  allowDirectCommit: false,
+  allowFeatureBranches: true,
+  allowPullRequests: true,
+  requireVersionChangePerCommit: false,
+  versionFiles: [],
+};
 
 export interface ExplicitSkillInput {
   name: string;
@@ -159,6 +180,14 @@ export function loadPolicyRegistry(root: string): PolicyRegistry {
     throw new Error("coding-plugins.policies.yaml must contain a schemaVersion=1 policy registry");
   }
   return parsed as PolicyRegistry;
+}
+
+export function resolveIntegrationPolicy(root: string): IntegrationPolicy {
+  if (!existsSync(join(root, "coding-plugins.policies.yaml"))) {
+    return { ...DEFAULT_INTEGRATION_POLICY };
+  }
+  const configured = loadPolicyRegistry(root).integrationPolicy;
+  return configured ? { ...DEFAULT_INTEGRATION_POLICY, ...configured } : { ...DEFAULT_INTEGRATION_POLICY };
 }
 
 export function resolvePolicyBundle(options: ResolvePolicyOptions): ResolvedPolicyBundle {

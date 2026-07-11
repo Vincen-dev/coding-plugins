@@ -3,6 +3,7 @@ export * from "./diagnostics.ts";
 export * from "./intent-classifier.ts";
 export * from "./route-decision.ts";
 export * from "./workflow-runtime.ts";
+export * from "./governed-orchestrator.ts";
 export * from "./active-change.ts";
 export * from "./scope-drift.ts";
 export * from "../documents/change-document.ts";

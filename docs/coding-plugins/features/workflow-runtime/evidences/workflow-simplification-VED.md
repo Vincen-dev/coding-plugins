@@ -16,7 +16,7 @@ related_docs:
 
 ## 阅读摘要
 
-- **本文结论:** TASK-001 至 TASK-009 已按 TDD 完成；新增 workflow tests、全部既有 tests、typecheck、package/build、文档 strict validators、formal evidence eligibility 和 SessionStart hook 均通过。
+- **本文结论:** TASK-001 至 TASK-009 已按 TDD 完成；2026-07-11 的闭环缺陷修复进一步把 v2 approval、Active/Standard Change、Completion Audit 和 integrationPolicy 接入生产 facade，不再停留于独立 library API。
 - **当前状态:** complete；DP-6 已确认完成验证，DP-7 已批准 commit、push 与 GitHub Release，交付证据将在发布流程中生成。
 - **先读重点:** 按 TASK-001 至 TASK-009 查看 Requirement Evidence、Policy Evidence，再看最终验证与明确保留的兼容边界。
 - **上游来源:** 证据必须追溯到同一 `doc_id` 的 PRD、TSD、TVD 和 TED，并匹配 TED `source_hash`。
@@ -56,6 +56,7 @@ related_docs:
 | TASK-007 | REQ-008 | POL-ARCH-001、POL-TDD-001 | RED/GREEN/REFACTOR 已记录 | complete |
 | TASK-008 | REQ-009 | POL-TDD-001、POL-VERIFY-001 | RED/GREEN/REFACTOR 已记录 | complete |
 | TASK-009 | REQ-010、MIG-001、OBS-001 | 全部 required Policies | RED/GREEN/REFACTOR 已记录 | complete |
+| 闭环缺陷修复 | REQ-002、REQ-003、REQ-004、REQ-005、REQ-006、REQ-007、REQ-009、REQ-010 | 全部 required Policies | RED/GREEN/REFACTOR 已记录 | complete |
 
 ## Requirement Evidence
 
@@ -245,6 +246,35 @@ related_docs:
 - POL-TDD-001：先观察 3 个 facade RED，再完成 GREEN；dist 并行竞态改为仓库真实串行验证方式。
 - POL-VERIFY-001：targeted、hook、typecheck 和 v1 suite 均使用本轮新鲜输出。
 - POL-DOC-001：migration guide、using skill、command registry 与 SessionStart guidance 同步。
+
+## 闭环缺陷修复：将已有能力接入生产链路
+
+### TDD 证据
+
+- **规格/缺陷/验收:** REQ-002、REQ-003、REQ-004、REQ-005、REQ-006、REQ-007、REQ-009、REQ-010；此前 `task` 只接受 start/continue/status/brief，v2 approval、technical audit、Active Change persistence 和 Completion Audit 均未成为生产状态转换权威，且 feature context 会虚构 scope knowledge。
+- **测试类型:** behavior
+- **RED 测试:** `tests/ts/workflow-runtime-orchestration.test.mjs`、`tests/ts/workflow-runtime-completion.test.mjs`、`tests/ts/workflow-runtime-cli.test.mjs`、`tests/ts/workflow-runtime-policy-resolver.test.mjs`
+- **RED 命令:** `node --test tests/ts/workflow-runtime-completion.test.mjs tests/ts/workflow-runtime-orchestration.test.mjs tests/ts/workflow-runtime-cli.test.mjs tests/ts/workflow-runtime-policy-resolver.test.mjs`
+- **RED 失败:** 端到端测试稳定复现四类缺口：`task approve/complete` 被 CLI 拒绝、仅凭 VED frontmatter 进入 complete、v2 执行回退要求 DP-4、Standard Change 未持久化且 main-only 未被 commit/finishing skills 识别。
+- **GREEN 变更:** 新增 governed orchestrator；`task approve` 联合执行 DP-2 technical bundle 并驱动 DP-1→DP-2→DP-3；`task complete` 和 workflow-state 统一调用 Completion Audit；task start/continue 持久化 Active/Standard Change 并检测 scope expansion；`integrationPolicy` 驱动 commit/worktree/finishing/release；移除 feature 存在即默认 taskCount=3 的虚构 scope。
+- **GREEN 命令:** `node --test tests/ts/workflow-runtime-completion.test.mjs tests/ts/workflow-runtime-orchestration.test.mjs tests/ts/workflow-runtime-cli.test.mjs tests/ts/workflow-runtime-policy-resolver.test.mjs` PASS，21/21。
+- **REFACTOR 命令:** `node --test tests/ts/workflow-runtime-*.test.mjs tests/ts/productization-cli.test.mjs tests/ts/workflow-state.test.mjs tests/ts/src-architecture.test.mjs tests/ts/scenario-routing-contract.test.mjs tests/ts/using-git-commit-skill.test.mjs` PASS，111/111；`npm run typecheck` PASS。
+- **最终验证:** 源码 `task complete` 返回 `formalCompletionAllowed=true`；源码 `workflow-state inspect` 返回经 Completion Audit 证明的 `state=complete`；最终全仓 preflight 与发行产物回放记录在下方最终验证章节。
+
+### Requirement Evidence
+
+- REQ-003/004：显式 change id 的多轮 Change 生成唯一 `change.md` 和 runtime cache；新增 public API 时进入 `needs-rescope`，不污染原 scope。
+- REQ-005/007：governed-v2 DP-2 同时校验并批准 TSD、TVD、required Policies 和 Skills；DP-3 后 `task status` 不出现 v1 DP-4。
+- REQ-009：VED `status: complete` 只代表请求审计；evidence、Policy、scope、hash、decision 或 test 任一失败均返回 `completion-blocked`。
+- REQ-010：普通用户使用 `task status/approve/complete`；细粒度 `dp` 只保留 governed-v1 兼容和诊断。
+
+### Policy Evidence
+
+- POL-ARCH-001：审批、完成和 Active Change 编排集中在 `src/lib/workflow`，CLI 仅解析与渲染。
+- POL-COMPAT-001：governed-v1 DP-4/6/7 继续通过 55 项 productization 兼容测试；v2 commit gate 不再错误要求 DP-7。
+- POL-TDD-001：每一批生产接线均先观察端到端 RED，再做最小 GREEN。
+- POL-VERIFY-001：complete 状态必须由新鲜 Completion Audit 计算，不能由 frontmatter 单独决定。
+- POL-DOC-001：SessionStart、README、workflow-chain 和相关 Skills 已同步三批准点与 integrationPolicy。
 
 ## Policy Evidence
 

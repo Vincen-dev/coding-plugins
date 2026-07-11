@@ -76,6 +76,15 @@ test("REQ-010 task CLI accepts contract version 2 without a business-repository 
   assert.equal(payload.next.action, "answer-directly");
 });
 
+test("REQ-010 task CLI exposes approve and complete as first-class facade actions", () => {
+  const source = readFileSync(join(repoRoot, "src/cli/workflow/task.ts"), "utf8");
+  const registry = readFileSync(join(repoRoot, "src/lib/runtime/command-registry.ts"), "utf8");
+
+  assert.match(source, /action !== "approve"/);
+  assert.match(source, /action !== "complete"/);
+  assert.match(registry, /task <start\|continue\|status\|brief\|approve\|complete>/);
+});
+
 test("REQ-010 SessionStart recommends the v2 task facade through CP_CLI", () => {
   const hook = readFileSync(join(repoRoot, "hooks/session-start-codex"), "utf8");
   const skill = readFileSync(join(repoRoot, "skills/using-coding-plugins/SKILL.md"), "utf8");
@@ -101,4 +110,19 @@ test("REQ-009 complete workflow reports completion without a plan or execution b
   assert.equal(payload.next.command, undefined);
   assert.equal(payload.context.decisionPoint, "DP-6");
   assert.deepEqual(payload.blockers, []);
+  assert.equal(payload.scope.knowledge, "unknown", "feature context must not invent task/file scope knowledge");
+});
+
+test("MIG-001 legacy start facade evaluates completion instead of exposing completion-pending", () => {
+  const result = spawnSync("node", [
+    join(repoRoot, "src/cli/start.ts"),
+    "--root", repoRoot,
+    "--feature", "workflow-runtime",
+    "--doc-id", "workflow-simplification",
+    "--intent", "继续",
+    "--json",
+  ], { cwd: repoRoot, encoding: "utf8" });
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(JSON.parse(result.stdout).state.state, "complete");
 });

@@ -1,4 +1,6 @@
 import { auditDecisions } from "../workflow/decision-state.js";
+import { resolveIntegrationPolicy } from "../workflow/policy-resolver.js";
+import { auditFormalCompletion, workflowSchema } from "../workflow/governed-orchestrator.js";
 const AI_IDENTITY_RE = /\b(ai|codex|claude|chatgpt|openai|assistant|bot)\b/i;
 const SENSITIVE_FILE_RE = /(^|\/)(\.env(?:\.|$)|credentials\.json$|.*\.(?:pem|key)$)|(?:token|password|secret|private[-_]?key)/i;
 function validAuthor(name, email) {
@@ -16,6 +18,7 @@ function violation(id, message, blockedActions = ["commit"]) {
 export function checkCommitGuard(options) {
     const changedFiles = options.changedFiles ?? [];
     const violations = [];
+    const integrationPolicy = resolveIntegrationPolicy(options.root);
     if (!options.language) {
         violations.push(violation("commit-language-unconfirmed", "commit language must be explicit or confirmed by project policy before committing."));
     }
@@ -26,14 +29,35 @@ export function checkCommitGuard(options) {
     if (sensitive.length > 0) {
         violations.push(violation("sensitive-file-staged", `sensitive file(s) require explicit handling before commit: ${sensitive.join(", ")}.`));
     }
-    if (options.branch === "main" && options.allowMain !== true) {
-        violations.push(violation("main-branch-direct-commit", "main branch direct commit should route through a branch, worktree, or PR unless explicitly allowed.", ["commit", "push"]));
+    if (integrationPolicy.requireVersionChangePerCommit) {
+        const changed = new Set(changedFiles);
+        const missingVersionFiles = integrationPolicy.versionFiles.filter((file) => !changed.has(file)).sort();
+        if (missingVersionFiles.length > 0) {
+            violations.push({
+                ...violation("version-change-missing", `every commit must include the configured version files: ${missingVersionFiles.join(", ")}.`),
+                missing_files: missingVersionFiles,
+            });
+        }
     }
-    const decisionStatus = options.feature && options.docId
+    if (options.branch === integrationPolicy.baseBranch
+        && options.allowMain !== true
+        && !(integrationPolicy.strategy === "main-only" && integrationPolicy.allowDirectCommit)) {
+        violations.push(violation("main-branch-direct-commit", `${integrationPolicy.baseBranch} direct commit is blocked by integrationPolicy unless explicitly allowed.`, ["commit", "push"]));
+    }
+    const governedSchema = options.feature && options.docId
+        ? workflowSchema(options.root, { feature: options.feature, docId: options.docId })
+        : null;
+    const decisionStatus = options.feature && options.docId && governedSchema === "governed-v1"
         ? auditDecisions(options.root, { feature: options.feature, docId: options.docId, target: "commit" })
         : null;
     if (decisionStatus && decisionStatus.missing_decisions.includes("DP-7")) {
         violations.push(violation("dp7-not-approved", "DP-7 must be approved before commit, tag, release, or branch cleanup."));
+    }
+    if (options.feature && options.docId && governedSchema === "governed-v2") {
+        const completion = auditFormalCompletion(options.root, { feature: options.feature, docId: options.docId });
+        if (!completion.formalCompletionAllowed) {
+            violations.push(violation("completion-not-approved", `governed-v2 completion audit must pass before commit: ${completion.blockers.join(", ")}.`));
+        }
     }
     const blockedActions = [...new Set(violations.flatMap((item) => item.blocked_actions))];
     return {

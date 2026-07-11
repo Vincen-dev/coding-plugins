@@ -286,7 +286,7 @@ npm run agent-pressure-ingest:ts -- --input raw-agent-pressure.json --output tes
 
 ### 团队发布 checklist
 
-发布默认从 release branch 或 PR 开始；只有紧急修复或仓库维护者明确确认时，才直接在 `main` 上完成提交和 tag。每次发布都按下面顺序记录证据，避免只依赖本地记忆：
+发布路径由 `coding-plugins.policies.yaml` 的 `integrationPolicy` 决定。`branch-first` 默认从 release branch 或 PR 开始；`main-only` 禁止创建 feature/release branch 和 PR，在维护者明确批准后直接在配置的 base branch 完成提交和 tag。当前仓库使用 `main-only`。每次发布都按下面顺序记录证据，避免只依赖本地记忆：
 
 1. 确认版本号和 release notes：
 
@@ -294,7 +294,7 @@ npm run agent-pressure-ingest:ts -- --input raw-agent-pressure.json --output tes
    npm run bump-version:ts -- <version>
    ```
 
-2. 在 release branch 或 PR 上完成预检和严格发布审计：
+2. 在 `integrationPolicy` 允许的交付分支上完成预检和严格发布审计；当前仓库直接使用 `main`：
 
    ```bash
    npm run preflight -- --write-index
@@ -330,7 +330,7 @@ npm run agent-pressure-ingest:ts -- --input raw-agent-pressure.json --output tes
 npm run bump-version:ts -- <version>
 ```
 
-版本同步目标由 [.version-bump.json](.version-bump.json) 维护。提升版本后更新 [RELEASE-NOTES.md](RELEASE-NOTES.md) 中对应版本的变更记录。
+版本同步目标由 [.version-bump.json](.version-bump.json) 维护。提升版本后更新 [RELEASE-NOTES.md](RELEASE-NOTES.md) 中对应版本的变更记录。当前仓库启用 `integrationPolicy.requireVersionChangePerCommit=true`，因此每个 commit 都必须先提升版本，并把配置的全部 `versionFiles`（包括 `package-lock.json`）纳入同一提交；`commit-guard` 会阻止遗漏。
 
 提交、push 或分发前运行：
 

@@ -100,7 +100,7 @@ test("REQ-009 completion audit reports dimensions and blocks every formal depend
   ]);
 });
 
-test("REQ-009 document workflow reaches complete when VED is complete", () => {
+test("REQ-009 VED frontmatter alone cannot bypass the completion audit", () => {
   const root = mkdtempSync(join(tmpdir(), "workflow-state-complete-"));
   try {
     const context = { feature: "alpha", docId: "alpha-change" };
@@ -117,7 +117,35 @@ test("REQ-009 document workflow reaches complete when VED is complete", () => {
     mkdirSync(dirname(ved), { recursive: true });
     writeFileSync(ved, "---\ntitle: VED\nstatus: complete\nfeature: alpha\ndoc_id: alpha-change\n---\n# VED\n", "utf8");
 
-    const result = inspectDocumentChain(root, context);
+    const pending = inspectDocumentChain(root, context);
+    assert.equal(pending.state, "completion-pending");
+    assert.equal(pending.next_skill, "verification-before-completion");
+
+    const blocked = inspectDocumentChain(root, context, {
+      completion: workflow.auditCompletion({
+        tasksComplete: true,
+        testsPassed: false,
+        policyCoverageComplete: true,
+        scopeRelation: "within-scope",
+        sourceHashMatches: true,
+        decisionsApproved: true,
+        evidenceFormal: true,
+      }),
+    });
+    assert.equal(blocked.state, "completion-blocked");
+    assert.deepEqual(blocked.completion.blockers, ["TESTS_FAILED"]);
+
+    const result = inspectDocumentChain(root, context, {
+      completion: workflow.auditCompletion({
+        tasksComplete: true,
+        testsPassed: true,
+        policyCoverageComplete: true,
+        scopeRelation: "within-scope",
+        sourceHashMatches: true,
+        decisionsApproved: true,
+        evidenceFormal: true,
+      }),
+    });
     assert.equal(result.state, "complete");
     assert.equal(result.next_skill, "verification-before-completion");
   } finally {

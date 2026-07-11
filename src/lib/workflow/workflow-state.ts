@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { join, relative } from "node:path";
 
 import { DOCUMENT_ARTIFACTS, artifactFile, parseFrontmatter as parseDocumentFrontmatter } from "../documents/document-metadata.ts";
+import type { CompletionSummary } from "./completion-state.ts";
 
 const REQUIRED_ARTIFACTS = ["PRD", "TSD", "TVD", "TED", "VED"] as const;
 const UPSTREAM_ARTIFACTS = ["PRD", "TSD", "TVD"] as const;
@@ -28,6 +29,7 @@ export interface WorkflowStateResult {
   state: string;
   next_skill: string;
   reason: string;
+  completion: CompletionSummary | null;
 }
 
 function toPosix(path: string): string {
@@ -93,7 +95,11 @@ function update(
   return Object.assign(result, patch);
 }
 
-export function inspectDocumentChain(root: string, options: { feature: string; docId: string }): WorkflowStateResult {
+export function inspectDocumentChain(
+  root: string,
+  options: { feature: string; docId: string },
+  evaluation: { completion?: CompletionSummary } = {},
+): WorkflowStateResult {
   const artifacts = artifactSummary(root, options);
   const missing = REQUIRED_ARTIFACTS.filter((suffix) => !artifacts[suffix].exists);
   const chainHash = computeUpstreamHash(root, options);
@@ -110,6 +116,7 @@ export function inspectDocumentChain(root: string, options: { feature: string; d
     state: "unknown",
     next_skill: "using-coding-plugins",
     reason: "",
+    completion: evaluation.completion ?? null,
   };
 
   const allMissing = [...REQUIRED_ARTIFACTS];
@@ -158,6 +165,20 @@ export function inspectDocumentChain(root: string, options: { feature: string; d
   }
 
   if (artifacts.VED.status === "complete") {
+    if (!evaluation.completion) {
+      return update(result, {
+        state: "completion-pending",
+        next_skill: "verification-before-completion",
+        reason: "VED requests completion but the completion audit has not run",
+      });
+    }
+    if (!evaluation.completion.formalCompletionAllowed) {
+      return update(result, {
+        state: "completion-blocked",
+        next_skill: "verification-before-completion",
+        reason: `completion audit blocked: ${evaluation.completion.blockers.join(", ")}`,
+      });
+    }
     return update(result, {
       state: "complete",
       next_skill: "verification-before-completion",

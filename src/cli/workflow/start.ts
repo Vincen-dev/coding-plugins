@@ -2,6 +2,7 @@
 import { resolve } from "node:path";
 
 import { checkState } from "../../lib/workflow/project-state.ts";
+import { auditFormalCompletion } from "../../lib/workflow/governed-orchestrator.ts";
 import { inferMode } from "../../lib/workflow/workflow-mode.ts";
 import { inspectDocumentChain } from "../../lib/workflow/workflow-state.ts";
 
@@ -61,6 +62,13 @@ function targetForState(state: string, intent: string): "plan" | "execute" {
 
 function buildNextCommand(options: Options, mode: ReturnType<typeof inferMode>, state: ReturnType<typeof inspectDocumentChain> | null): StartCommand {
   if (state) {
+    if (state.state === "complete") {
+      return { nextArgs: [], nextCommand: null };
+    }
+    if (state.state === "completion-blocked") {
+      const nextArgs = ["task", "complete", "--root", options.root, "--feature", state.feature, "--doc-id", state.doc_id, "--contract-version", "2", "--json"];
+      return { nextArgs, nextCommand: `coding-plugins ${nextArgs.join(" ")}` };
+    }
     const target = targetForState(state.state, options.intent);
     const nextArgs = [
       "workflow-guard",
@@ -87,11 +95,15 @@ function buildNextCommand(options: Options, mode: ReturnType<typeof inferMode>, 
 
 try {
   const options = parseArgs(process.argv.slice(2));
-  const mode = inferMode(options.intent, { taskCount: options.feature ? 3 : 0 });
+  const mode = inferMode(options.intent);
   const activeState = options.feature && options.docId ? null : checkState(options.root);
   const feature = options.feature ?? (activeState?.valid && activeState.feature ? activeState.feature : undefined);
   const docId = options.docId ?? (activeState?.valid && activeState.doc_id ? activeState.doc_id : undefined);
-  const state = feature && docId ? inspectDocumentChain(options.root, { feature, docId }) : null;
+  let state = feature && docId ? inspectDocumentChain(options.root, { feature, docId }) : null;
+  if (state?.state === "completion-pending") {
+    const completion = auditFormalCompletion(options.root, { feature: state.feature, docId: state.doc_id });
+    state = inspectDocumentChain(options.root, { feature: state.feature, docId: state.doc_id }, { completion });
+  }
   const stateMismatch = Boolean(
     activeState?.valid
       && state

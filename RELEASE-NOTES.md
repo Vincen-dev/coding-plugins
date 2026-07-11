@@ -1,5 +1,13 @@
 # Release Notes
 
+## 1.3.0 - 2026-07-11
+
+- 将 governed-v2 的 `task approve`、DP-2 technical bundle、DP-3 execution approval 和 `task complete` 接入生产 CLI 主链。
+- 让 Active/Standard Change、scope expansion、Completion Audit 和 legacy `start` 使用一致的状态语义，并阻止 VED frontmatter 或非映射章节中的 Policy ID 绕过门禁。
+- 新增仓库 `integrationPolicy`，当前仓库采用 main-only，不创建 feature/release branch 或 PR。
+- 新增 `requireVersionChangePerCommit` 提交策略；每个 commit 必须包含全部配置版本文件，否则 `commit-guard` 返回 `version-change-missing`。
+- 同步 SessionStart、核心 Skills、README、INSTALL、workflow-chain、VED、dist 和回归测试，并提升版本到 `1.3.0`。
+
 ## 1.2.1 - 2026-07-11
 
 - 移除 `coding-plugins@personal` 安装与升级路径，统一使用 Git marketplace 的 `coding-plugins@coding-plugins`。

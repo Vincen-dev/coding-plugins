@@ -1,3 +1,4 @@
+import type { ActiveChangeRecord } from "./active-change.ts";
 import { checkState } from "./project-state.ts";
 import type { DecisionAuditResult } from "./decision-state.ts";
 import type { WorkflowBriefPayload } from "./workflow-brief.ts";
@@ -5,7 +6,6 @@ import type { WorkflowGuardResult } from "./workflow-guard.ts";
 import type { LegacyWorkflowProjection } from "./workflow-runtime.ts";
 import type { RouteDecisionV2 } from "./route-decision.ts";
 import type { WorkflowStateResult } from "./workflow-state.ts";
-import type { ActiveChangeRecord } from "./active-change.ts";
 export type TaskAction = "start" | "continue" | "status" | "brief";
 export interface TaskStatusOptions {
     action: TaskAction;

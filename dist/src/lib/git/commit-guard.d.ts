@@ -12,9 +12,10 @@ export interface CommitGuardOptions {
     allowMain?: boolean;
 }
 export interface CommitGuardViolation {
-    id: "commit-language-unconfirmed" | "invalid-author-identity" | "sensitive-file-staged" | "main-branch-direct-commit" | "dp7-not-approved";
+    id: "commit-language-unconfirmed" | "invalid-author-identity" | "sensitive-file-staged" | "main-branch-direct-commit" | "dp7-not-approved" | "completion-not-approved" | "version-change-missing";
     message: string;
     blocked_actions: string[];
+    missing_files?: string[];
 }
 export interface CommitGuardResult {
     ok: boolean;

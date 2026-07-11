@@ -2,6 +2,7 @@
 import { resolve } from "node:path";
 
 import { computeUpstreamHash, inspectDocumentChain } from "../../lib/workflow/workflow-state.ts";
+import { auditFormalCompletion } from "../../lib/workflow/governed-orchestrator.ts";
 
 interface Options {
   command?: "inspect" | "hash";
@@ -70,7 +71,11 @@ try {
   if (options.command === "hash") {
     console.log(computeUpstreamHash(options.root, { feature, docId }) ?? "null");
   } else {
-    const result = inspectDocumentChain(options.root, { feature, docId });
+    let result = inspectDocumentChain(options.root, { feature, docId });
+    if (result.state === "completion-pending") {
+      const completion = auditFormalCompletion(options.root, { feature, docId });
+      result = inspectDocumentChain(options.root, { feature, docId }, { completion });
+    }
     if (options.json) {
       console.log(JSON.stringify(result, null, 2));
     } else {

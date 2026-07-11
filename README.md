@@ -119,6 +119,10 @@ ${CP_CLI} doctor --root . --codex-home ~/.codex --format json
 ```bash
 ${CP_CLI} task status --root . --feature <feature> --doc-id <doc-id> --intent "开始执行"
 ${CP_CLI} task brief --root . --feature <feature> --doc-id <doc-id> --intent "继续" --json
+${CP_CLI} task approve --root . --feature <feature> --doc-id <doc-id> --id DP-1 --reason "<范围批准>" --contract-version 2 --json
+${CP_CLI} task approve --root . --feature <feature> --doc-id <doc-id> --id DP-2 --reason "<技术批准>" --contract-version 2 --json
+${CP_CLI} task approve --root . --feature <feature> --doc-id <doc-id> --id DP-3 --reason "<执行批准>" --contract-version 2 --json
+${CP_CLI} task complete --root . --feature <feature> --doc-id <doc-id> --contract-version 2 --json
 ```
 
 `using-coding-plugins` 仍是 skill 层入口，但不再替代用户级 CLI 判断。正式 PRD/TSD/TVD/TED/VED 工作必须先让 `task status`、`state`、`validate`、`workflow-guard` 或 `execution-contract` 给出状态和下一命令，再进入对应 skill。
@@ -141,8 +145,8 @@ spec-driven-development
   编排 README / PRD / TSD / TVD / TED / VED
         |
         v
-writing-requirements -> writing-technicals -> writing-test-cases -> writing-plans
-  需求、技术设计、测试用例和 TED 任务执行文档落盘
+writing-requirements -> DP-1 -> writing-technicals + writing-test-cases -> DP-2 -> writing-plans -> DP-3
+  范围批准、技术与测试联合批准、执行批准
         |
         v
 state + validate + workflow-guard + execution-contract
@@ -165,8 +169,8 @@ verification-before-completion
   新鲜验证通过后才声明完成
         |
         v
-using-git-commit -> finishing-a-development-branch
-  用户选择语言、Authored-by footer、分支收尾
+task complete -> using-git-commit -> finishing-a-development-branch
+  Completion Audit、用户选择语言、Authored-by footer、按 integrationPolicy 收尾
 ```
 
 关键约束：
@@ -184,6 +188,7 @@ using-git-commit -> finishing-a-development-branch
 | 能力 | 对应文件或脚本 |
 | --- | --- |
 | 统一入口和用户级状态 | `src/cli/workflow/task.ts`, `src/lib/workflow/task-status.ts`, `src/cli/workflow/start.ts` |
+| v2 批准与完成门面 | `coding-plugins task approve --id DP-1\|DP-2\|DP-3`, `coding-plugins task complete` |
 | 本轮任务简报 | `coding-plugins task brief --root <repo> --intent <text> --json`，输出必要 skill、当前状态、唯一下一命令、阻塞点和验证要求 |
 | 工作流状态和 stale detection | `src/cli/workflow/workflow-state.ts`, `src/lib/workflow/workflow-state.ts` |
 | 执行门禁 | `src/cli/workflow/workflow-guard.ts`, `src/lib/workflow/workflow-guard.ts` |
@@ -399,7 +404,7 @@ ${CP_CLI} commit-guard \
   --json
 ```
 
-`commit-guard` 会阻止未确认提交语言、AI-like 作者身份、敏感文件、main 分支直接提交，以及缺少 DP-7 批准的正式链路提交。
+`commit-guard` 会阻止未确认提交语言、AI-like 作者身份、敏感文件、不符合 `integrationPolicy` 的分支提交，以及缺少 DP-7 批准的 governed-v1 正式链路提交。仓库显式配置 `main-only` 且允许直接提交时，不再要求使用 feature branch 或 PR；当前仓库还启用了 `requireVersionChangePerCommit`，每个 commit 必须同时包含 `integrationPolicy.versionFiles` 中的全部版本文件。
 
 ## 版本历史
 

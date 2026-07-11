@@ -58,7 +58,7 @@ function approved(summary, suffix) {
 function update(result, patch) {
     return Object.assign(result, patch);
 }
-export function inspectDocumentChain(root, options) {
+export function inspectDocumentChain(root, options, evaluation = {}) {
     const artifacts = artifactSummary(root, options);
     const missing = REQUIRED_ARTIFACTS.filter((suffix) => !artifacts[suffix].exists);
     const chainHash = computeUpstreamHash(root, options);
@@ -74,6 +74,7 @@ export function inspectDocumentChain(root, options) {
         state: "unknown",
         next_skill: "using-coding-plugins",
         reason: "",
+        completion: evaluation.completion ?? null,
     };
     const allMissing = [...REQUIRED_ARTIFACTS];
     if (JSON.stringify(missing) === JSON.stringify(allMissing)) {
@@ -119,6 +120,20 @@ export function inspectDocumentChain(root, options) {
         });
     }
     if (artifacts.VED.status === "complete") {
+        if (!evaluation.completion) {
+            return update(result, {
+                state: "completion-pending",
+                next_skill: "verification-before-completion",
+                reason: "VED requests completion but the completion audit has not run",
+            });
+        }
+        if (!evaluation.completion.formalCompletionAllowed) {
+            return update(result, {
+                state: "completion-blocked",
+                next_skill: "verification-before-completion",
+                reason: `completion audit blocked: ${evaluation.completion.blockers.join(", ")}`,
+            });
+        }
         return update(result, {
             state: "complete",
             next_skill: "verification-before-completion",

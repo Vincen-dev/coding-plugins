@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { resolve } from "node:path";
 import { computeUpstreamHash, inspectDocumentChain } from "../../lib/workflow/workflow-state.js";
+import { auditFormalCompletion } from "../../lib/workflow/governed-orchestrator.js";
 function parseArgs(argv) {
     const [command, ...rest] = argv;
     if (command !== "inspect" && command !== "hash") {
@@ -59,7 +60,11 @@ try {
         console.log(computeUpstreamHash(options.root, { feature, docId }) ?? "null");
     }
     else {
-        const result = inspectDocumentChain(options.root, { feature, docId });
+        let result = inspectDocumentChain(options.root, { feature, docId });
+        if (result.state === "completion-pending") {
+            const completion = auditFormalCompletion(options.root, { feature, docId });
+            result = inspectDocumentChain(options.root, { feature, docId }, { completion });
+        }
         if (options.json) {
             console.log(JSON.stringify(result, null, 2));
         }

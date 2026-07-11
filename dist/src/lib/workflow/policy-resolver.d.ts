@@ -32,9 +32,19 @@ export interface PolicyProfile {
 }
 export interface PolicyRegistry {
     schemaVersion: 1;
+    integrationPolicy?: IntegrationPolicy;
     profiles?: PolicyProfile[];
     policies: PolicyDefinition[];
     skillBindings?: PolicySkillDefinition[];
+}
+export interface IntegrationPolicy {
+    strategy: "branch-first" | "main-only";
+    baseBranch: string;
+    allowDirectCommit: boolean;
+    allowFeatureBranches: boolean;
+    allowPullRequests: boolean;
+    requireVersionChangePerCommit: boolean;
+    versionFiles: string[];
 }
 export interface ExplicitSkillInput {
     name: string;
@@ -71,4 +81,5 @@ export interface ResolvePolicyOptions {
     profile?: string;
 }
 export declare function loadPolicyRegistry(root: string): PolicyRegistry;
+export declare function resolveIntegrationPolicy(root: string): IntegrationPolicy;
 export declare function resolvePolicyBundle(options: ResolvePolicyOptions): ResolvedPolicyBundle;

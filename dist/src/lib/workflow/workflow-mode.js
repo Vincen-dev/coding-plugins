@@ -9,6 +9,7 @@ export * from "./diagnostics.js";
 export * from "./intent-classifier.js";
 export * from "./route-decision.js";
 export * from "./workflow-runtime.js";
+export * from "./governed-orchestrator.js";
 export * from "./active-change.js";
 export * from "./scope-drift.js";
 export * from "../documents/change-document.js";

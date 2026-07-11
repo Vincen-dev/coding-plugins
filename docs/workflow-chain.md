@@ -10,17 +10,17 @@
 2. 方案、方向或是否值得做尚未收敛时，先进入 `brainstorming`，不创建正式 SDD 产物。
 3. 新需求确认进入落地后进入 SDD，确定需要沉淀哪些落地文档。
 4. 用 `writing-requirements` 编写可追踪、可测试、可评审的需求文档。
-5. 已批准需求文档再写 TSD 技术方案文档；TSD 同时承载工程方案、关键决策、技术落点、模块级实现拆解、接口签名、数据结构、迁移步骤和实现顺序约束。
-6. 基于需求文档和 TSD 技术方案文档补充测试用例文档。
-7. 基于测试用例和 TSD 技术方案文档编写 TED 任务执行文档，并建立 Spec ID -> TASK -> 验证 -> VED 的执行落点。
+5. DP-1 批准 PRD 的问题、目标、非目标、requirements、acceptance 和兼容边界。
+6. 编写 review-ready TSD 与 TVD；DP-2 联合批准技术设计、测试设计、resolved Policies、required Skills、waivers 和测试覆盖，并把 TSD/TVD 一起转为 approved。
+7. 基于已批准技术包编写 TED；DP-3 批准任务顺序、执行环境、回滚操作、验证门禁和 commit 边界。
 8. 读取文档时先用 `document-metadata` 读取 frontmatter metadata，再读正文；关系源、索引边界和 README 规则见 `docs/coding-plugins/document-contract.md`。
 9. 按 TED 任务执行文档隔离执行。
 10. 实现阶段遵守 TDD，测试必须来自需求文档、测试用例、bug 复现或明确验收标准，并留下 TDD 证据。
 11. 每个任务通过规格符合性和代码质量评审。
-12. 完成前必须验证规格覆盖和测试证据。
-13. 每次完成验证后必须进入 `using-git-commit`，按逻辑分批提交。
+12. `task complete` 必须验证任务、测试、Policy coverage、scope、source hash、DP 和 formal evidence；VED frontmatter 不能单独宣告完成。
+13. 每次完成验证后必须进入 `using-git-commit`；当 `integrationPolicy.requireVersionChangePerCommit=true` 时，先提升版本并把全部 `versionFiles` 纳入同一 commit。
 14. 提交必须按用户选择使用中文或英文 Conventional Commit；用户未指定语言时先询问，在 footer 添加本人 `Authored-by` 署名，且禁止 AI 作者。
-15. 提交完成后做分支收尾和集成选择。
+15. 提交完成后按 `integrationPolicy` 收尾：`main-only` 直接使用批准的 base branch，`branch-first` 才提供 merge/PR/保留/清理选择。
 
 ## 阶段划分
 
@@ -34,18 +34,18 @@
 | 3 | 构思收敛 | `brainstorming` | 问题定义、方案对比、推荐路径和是否进入 SDD；不创建正式文档 |
 | 4 | SDD 文档编排 | `spec-driven-development` | 确认 README、需求文档、技术方案、测试用例、TED 任务执行、证据和 INDEX 的落地链路；新 feature 可创建文档骨架 |
 | 5 | 需求文档 | `writing-requirements` | `docs/coding-plugins/features/<feature-name>/requirements/<doc-id>-PRD.md`, Spec ID, Traceability Matrix |
-| 6 | 技术文档 | `writing-technicals` | `docs/coding-plugins/features/<feature-name>/technicals/<doc-id>-TSD.md`, 规格到方案映射, 模块级实现和测试策略 |
-| 7 | 测试用例 | `writing-test-cases` | `docs/coding-plugins/features/<feature-name>/test-cases/<doc-id>-TVD.md`, Spec ID -> 测试用例 |
-| 8 | TED 任务执行文档 | `writing-plans` | `docs/coding-plugins/features/<feature-name>/plans/<doc-id>-TED.md`, 任务总览, TASK ID, 执行步骤, 验证方式, VED 记录要求 |
+| 6 | 技术批准包 | `writing-technicals`, `writing-test-cases`, `task approve DP-2` | review-ready TSD + TVD、Policy/Skill binding、waiver、联合批准 |
+| 7 | 执行批准包 | `writing-plans`, `task approve DP-3` | TED、任务顺序、回滚、验证门禁、commit 边界 |
+| 8 | TED 任务执行 | `task status`, `workflow-guard`, `workflow-brief` | 唯一下一动作、当前任务和执行门禁 |
 | 9 | 文档契约 | `document-metadata`, `docs/coding-plugins/document-contract.md`, `src/cli/preflight.ts` | metadata-first 读取顺序、README 边界、`related_docs`、生成式索引 |
 | 10 | 隔离工作区 | `using-git-worktrees` | 独立 worktree 或确认在当前工作区执行 |
 | 11 | 执行调度 | `subagent-driven-development`, `executing-plans`, `dispatching-parallel-agents` | 子任务执行、批次执行或并行任务结果 |
 | 12 | TDD 实现 | `test-driven-development` | RED -> GREEN -> REFACTOR，`docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-VED.md` |
 | 13 | 系统化调试 | `systematic-debugging` | 复现路径、根因、可测试修复入口 |
 | 14 | 评审门禁 | `spec-reviewer`, `code-quality-reviewer`, `requesting-code-review`, `receiving-code-review` | 规格符合性评审、代码质量评审、反馈处理 |
-| 15 | 完成前验证 | `verification-before-completion` | 测试、构建、规格覆盖或人工验收证据 |
+| 15 | 完成审计 | `task complete`, `verification-before-completion` | 任务、测试、Policy、scope、hash、DP、formal evidence 联合审计 |
 | 16 | 提交 | `using-git-commit` | 完成后必经提交，用户选择语言的 Conventional Commit，`Authored-by` footer，无 AI 作者 |
-| 17 | 分支收尾 | `finishing-a-development-branch` | merge、PR、保留或丢弃选择，必要时清理 worktree |
+| 17 | 集成收尾 | `finishing-a-development-branch`, `integrationPolicy` | main-only 直接 base branch；branch-first 才提供 merge、PR、保留或丢弃选择 |
 | 18 | 插件维护 | `writing-skills` | skill、prompt、脚本、manifest 或文档更新，并通过插件校验 |
 
 ## 主链路（完整总览）
@@ -100,14 +100,18 @@ flowchart TD
   CONTRACT --> REQ["writing-requirements: 写需求文档并运行 validate-spec.ts"]
   REQ --> SPEC_OK{"用户确认需求文档？"}
   SPEC_OK -->|需要修改| REQ
-  SPEC_OK -->|确认| TECH
+  SPEC_OK -->|DP-1 范围批准| TECH
 
   TECH --> TECH_DOC["写 technicals/<doc-id>-TSD.md、维护总索引"]
   TECH_DOC --> TEST_CASES
   TEST_CASES --> TEST_DOC["写 test-cases/<doc-id>-TVD.md"]
-  TEST_DOC --> PLAN
+  TEST_DOC --> DP2{"DP-2 技术批准通过？"}
+  DP2 -->|否| TECH
+  DP2 -->|是| PLAN
   PLAN --> PLAN_DOC["写 plans/<doc-id>-TED.md、拆分任务执行步骤"]
-  PLAN_DOC --> WORKTREE
+  PLAN_DOC --> DP3{"DP-3 执行批准通过？"}
+  DP3 -->|否| PLAN
+  DP3 -->|是| WORKTREE
 
   WORKTREE --> WT_DEC{"仅创建 worktree？"}
   WT_DEC -->|是| END
@@ -135,7 +139,9 @@ flowchart TD
   FINAL_REVIEW --> VERIFY
 
   VERIFY --> VERIFY_RUN["运行测试/构建/规格覆盖验证"]
-  VERIFY_RUN --> COMMIT
+  VERIFY_RUN --> COMPLETE_AUDIT["task complete: Completion Audit"]
+  COMPLETE_AUDIT -->|阻断| TDD
+  COMPLETE_AUDIT -->|通过| COMMIT
   COMMIT_VERIFY --> NEED_FINISH{"需要分支收尾？"}
   NEED_FINISH -->|是| FINISH
   NEED_FINISH -->|否| END
@@ -146,7 +152,9 @@ flowchart TD
 
   FINISH --> FINISH_TEST["验证测试"]
   FINISH_TEST --> FINISH_ENV["检测分支/worktree/base"]
-  FINISH_ENV --> INTEGRATE{"用户选择集成方式"}
+  FINISH_ENV --> POLICY{"integrationPolicy"}
+  POLICY -->|main-only| MAIN["验证并推送批准的 base branch"]
+  POLICY -->|branch-first| INTEGRATE{"用户选择集成方式"}
   INTEGRATE -->|本地 merge| MERGE["merge 后重跑验证"]
   INTEGRATE -->|Push + PR| PR["推送并创建 PR"]
   INTEGRATE -->|保留| KEEP["保留分支和工作区"]
@@ -155,6 +163,7 @@ flowchart TD
   PR --> END
   KEEP --> END
   DISCARD --> END
+  MAIN --> END
 ```
 
 ## 入口路由

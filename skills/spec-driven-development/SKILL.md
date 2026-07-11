@@ -15,7 +15,7 @@ Chain:
 PRD -> TSD -> TVD -> TED -> VED
 ```
 
-Core principle: requirements are approved before design, design before test cases, test cases before execution tasks, and execution before evidence closure.
+Core principle: requirements are approved before technical work; technical design and test design are jointly approved before execution planning; execution is approved before implementation and evidence closure.
 
 ## When to Use
 
@@ -43,7 +43,12 @@ Do not use it when:
 
 ## Decision Points
 
-Use `decision-points`, `dp status`, `dp approve`, and `dp audit` for the authoritative DP catalog and approval state.
+Read `workflow_schema` before interpreting decision IDs.
+
+- Governed-v2: DP-1 approves PRD scope; DP-2 jointly approves review-ready TSD, review-ready TVD, Policies, Skills, waivers, and test coverage; DP-3 approves TED, rollback, verification gates, and commit boundaries.
+- Governed-v1 compatibility: keep the existing DP-1 through DP-7 meanings and fine-grained `dp` commands.
+
+Use `task approve` for governed-v2. Use `dp status`, `dp approve`, and `dp audit` only for governed-v1 compatibility or diagnostics.
 
 Do not cross a decision point without user confirmation.
 
@@ -66,7 +71,6 @@ Do not cross a decision point without user confirmation.
 
 ## Handoff
 
-After PRD is approved, hand off to `writing-technicals`.
-After TSD is approved, hand off to `writing-test-cases`.
-After TVD is approved, hand off to `writing-plans`.
-After TED is approved and guard passes, hand off to `using-git-worktrees` and execution.
+For governed-v2, after DP-1 hand off to `writing-technicals`, then `writing-test-cases`; after joint DP-2 hand off to `writing-plans`; after DP-3 and guard success hand off to `using-git-worktrees` and execution.
+
+For governed-v1, preserve the legacy PRD -> TSD -> TVD -> TED handoff sequence.

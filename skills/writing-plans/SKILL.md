@@ -28,8 +28,7 @@ docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-VED.md
 ## Prerequisites
 
 - PRD is approved.
-- TSD exists and is approved.
-- TVD exists and is approved.
+- TSD and TVD are approved by governed-v2 DP-2, or by their legacy governed-v1 approval points.
 - Use `document-metadata` for frontmatter and related docs.
 - Feature and doc id match PRD, TSD, TVD, and VED.
 
@@ -135,4 +134,4 @@ If state is `plan-draft`, `plan-unlocked`, or `plan-stale`, do not execute.
 
 ## Handoff
 
-After TED is saved, stop at DP-4 and ask for execution-plan approval. Do not implement before approval and workflow guard success.
+For governed-v2, after TED is saved and validated, stop at DP-3 and use `task approve --id DP-3` for execution approval. For governed-v1, stop at legacy DP-4. Do not implement before the applicable approval and workflow guard success.
