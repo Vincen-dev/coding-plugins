@@ -1,5 +1,12 @@
 # Release Notes
 
+## 1.2.1 - 2026-07-11
+
+- 移除 `coding-plugins@personal` 安装与升级路径，统一使用 Git marketplace 的 `coding-plugins@coding-plugins`。
+- 修复 doctor 的 Codex cache 路径和 installed/enabled 识别逻辑，改为校验 `plugins/cache/coding-plugins/coding-plugins/<version>`。
+- 同步 INSTALL、plugin-cache 正式 fixture、dist 和产品化回归测试，防止 personal 安装方式回流。
+- 提升插件、npm package、lockfile 和版本提升配置到 `1.2.1`。
+
 ## 1.2.0 - 2026-07-11
 
 - 将用户可见工作流收敛为 Inspect、Change 和 Governed Change，并新增确定性的意图、风险、范围与正式文档链路由。
