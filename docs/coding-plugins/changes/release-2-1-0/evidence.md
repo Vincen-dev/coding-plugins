@@ -17,10 +17,11 @@ updated: 2026-07-11
 
 ## 最终验证
 
-- 命令或检查：`npm test`、聚焦发布与迁移测试、版本同步 Node 检查、Skill YAML、清单 JSON、`git diff --check`；远端检查待发布后记录。
-- 结果：本地版本同步通过，聚焦测试 4/4、全量 31/31、差异检查通过；远端结果待记录。
+- 命令或检查：`npm test`、聚焦发布与迁移测试、版本同步 Node 检查、Skill YAML、清单 JSON、`git diff --check`、GitHub API 的分支、Actions、标签对象与 Release 检查。
+- 结果：本地版本同步通过，聚焦测试 4/4、全量 31/31、差异检查通过；远端 `main` CI run `29155372774` 成功；release run `29155399313` 成功；annotated `v2.1.0` 解析到 `805352d`；Release `352527138` 已公开。
 - 覆盖范围：本地发布提交、远端 `main`、标签、Actions 与 `GitHub Release`。
 
 ## 剩余风险
 
-- `main` 推送、GitHub 持续集成、标签、发布工作流和 `GitHub Release` 尚未执行。
+- 本机 `gh` token 已失效，因此远端验证改用公开 GitHub API；Git push、Actions token 和 Release 创建均实际成功。
+- annotated tag 未签名；仓库当前没有 signed tag 强制要求，旧发布也沿用相同边界。

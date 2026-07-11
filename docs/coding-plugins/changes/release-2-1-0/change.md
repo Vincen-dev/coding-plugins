@@ -2,10 +2,10 @@
 title: 发布 2.1.0
 change_id: release-2-1-0
 profile: governed
-phase: verifying
+phase: complete
 risk: medium
-current_task: 创建发布提交并执行远端 main、tag 与 Release 验证
-completion_status: incomplete
+current_task: complete
+completion_status: complete
 updated: 2026-07-11
 ---
 
@@ -51,11 +51,11 @@ updated: 2026-07-11
   - 结果：发布提交在本地完整测试与发布工作流契约下通过。
   - 边界：只声明本仓库静态工作流包验证结果。
   - 验证：`npm test`、Skill YAML、清单 JSON、`git diff --check`。
-- [ ] VC-004
+- [x] VC-004
   - 结果：`main` 快进到发布提交并成功推送远端。
   - 边界：不创建合并提交，不删除功能分支。
   - 验证：本地和 `origin/main` SHA 一致，GitHub CI 成功。
-- [ ] VC-005
+- [x] VC-005
   - 结果：带说明的标签 `v2.1.0` 指向发布提交，发布工作流成功且 `GitHub Release` 可见。
   - 边界：不执行 `npm publish`。
   - 验证：远端标签 SHA、GitHub Actions 运行结果与 `gh release view v2.1.0`。
@@ -73,7 +73,7 @@ updated: 2026-07-11
 
 ## 当前任务
 
-创建发布提交，快进并推送 `main`，等待持续集成后发布标签。
+已完成。`main`、CI、tag、release workflow 和 GitHub Release 均已验证。
 
 ## 决策
 
@@ -83,7 +83,7 @@ updated: 2026-07-11
 
 ## 完成情况
 
-- 已实现：发布 Capsule、2.1.0 版本元数据、发布说明和未来版本兼容测试。
-- 已验证：版本同步、focused 4/4、全量 31/31 与差异检查通过；`origin/main` 无漂移且标签不存在。
+- 已实现：发布 Capsule、2.1.0 版本元数据、发布说明、未来版本兼容测试、`main` 推送、tag 与 GitHub Release。
+- 已验证：版本同步、focused 4/4、全量 31/31、`main` CI、release workflow、远端 annotated tag 和公开 Release 全部通过。
 - 延后项：无。
-- 剩余风险：GitHub 认证、持续集成和 Release 可见性将在外部执行阶段验证。
+- 剩余风险：本机 `gh` token 失效但未影响 Git push 或 Actions 发布；tag 未签名且仓库无 signed tag 强制要求。
