@@ -10,6 +10,7 @@ const expectedTests = [
   "change-capsule-state.test.mjs",
   "release-workflow.test.mjs",
   "workflow-chinese-documents.test.mjs",
+  "workflow-governance-hardening.test.mjs",
   "workflow-only-approval.test.mjs",
   "workflow-only-distribution.test.mjs",
   "workflow-only-maintenance.test.mjs",

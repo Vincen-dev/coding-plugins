@@ -26,6 +26,13 @@
 
 工作从 `using-coding-plugins` 开始。它选择最小安全 profile，并交给 `brainstorming`、`change-capsule`、`test-driven-development`、`systematic-debugging` 或其他对应 Skill。
 
+## 执行前硬门禁
+
+- 同一个 checkout 同一时间只允许一个写任务；并发写任务使用独立 worktree 或等待。
+- Governed/Critical 缺少必需 Skill、产物或批准时停止，不得降级为 Quick Change 继续。
+- 会改变范围、公共行为、schema、migration、兼容、回滚或验证的条件性假设必须转成明确 Decision Point，未解决前不得实现。
+- 公共 API、schema、migration、兼容、安全和发布类变更默认运行完整相关测试套件；无法运行时必须收窄完成声明并记录剩余风险。
+
 ## 为什么改成纯工作流
 
 早期版本同时维护命令入口、状态文件、批准记录、文档层级和 Skills，产生了重复事实来源。2.0.0 删除这些运行时层，把复杂度收敛到三条原则：

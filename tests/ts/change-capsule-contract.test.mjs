@@ -23,7 +23,7 @@ test("VC-004 change-capsule exposes 0/0/1/3/optional artifact profiles", () => {
 
 test("VC-001/004 change-capsule templates have the minimal contract sections", () => {
   const expected = {
-    "templates/change.md": ["意图", "风险", "范围", "可验证契约", "产物", "批准记录", "当前任务", "决策", "完成情况"],
+    "templates/change.md": ["意图", "风险", "范围", "假设与待决事项", "可验证契约", "产物", "批准记录", "当前任务", "决策", "完成情况"],
     "templates/plan.md": ["设计", "测试策略", "任务", "回滚", "验证"],
     "templates/evidence.md": ["测试驱动证据", "最终验证", "剩余风险"],
     "templates/design.md": ["上下文", "决策", "接口", "风险"],

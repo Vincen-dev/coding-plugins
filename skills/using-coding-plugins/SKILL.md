@@ -27,6 +27,16 @@ Every active workflow obeys these rules before profile-specific guidance:
 
 These are invariants, not optional recommendations. If a change cannot establish a test or reproducible check first, improve its testability or stop before production implementation.
 
+## Pre-Implementation Hard Gates
+
+Apply these gates after selecting the risk profile and before the first production change:
+
+1. **Shared checkout:** a shared checkout permits one active write task. Inspect the current Git state before editing. If unrelated or overlapping changes belong to another task, use a separate worktree or stop until the checkout has a single writer. Do not rely on partial staging or later commit repair as the concurrency strategy.
+2. **Required workflow capability:** if a required Skill, artifact, or approval is unavailable, stop before implementation. You must not downgrade Governed or Critical work to a Quick Change, an ephemeral conversation contract, or a smaller artifact set merely to keep moving.
+3. **Resolved material decisions:** convert each conditional assumption that can change scope, behavior, schema, migration, compatibility, rollback, or verification into an explicit Assumption or Decision Point. If it affects schema, migration, or compatibility, an unresolved material Decision Point blocks implementation.
+
+These gates do not reintroduce a workflow runtime. They use visible Git state, the selected Skills, user instructions, and `change.md` as the only durable decision record.
+
 ## Risk Profiles
 
 | Profile | Fit | Required artifacts | Approval model | Next skill |
@@ -57,6 +67,7 @@ Do not upgrade merely because a task uses several tools. Upgrade when the produc
 - Clear implementation or refactor: `test-driven-development`.
 - Bug, failing test, build failure, or unclear root cause: `systematic-debugging`, then `test-driven-development`.
 - Existing approved plan: `using-git-worktrees` when isolation is needed, then `executing-plans`.
+- Shared checkout with another write task or unrelated overlapping changes: `using-git-worktrees` before implementation.
 - Explicitly authorized independent tasks: `dispatching-parallel-agents` or `subagent-driven-development`.
 - Code review: `requesting-code-review`; review feedback: `receiving-code-review`.
 - Completion claim: `verification-before-completion`.
@@ -88,6 +99,8 @@ Use `change-capsule` to create one `change.md`. It is the sole source for intent
 
 Use `change-capsule` to create `change.md`, `plan.md`, and `evidence.md`. Obtain Scope/Plan approval before execution and Execution approval immediately before implementation.
 
+All three artifacts, both approvals, and every blocking Decision Point must be present and resolved before implementation. A missing required capability is a blocker, not permission to use a lower profile.
+
 ### Critical Change
 
 Start with the Governed artifacts. Add `design.md`, `tests.md`, or external compliance references only when the risk requires them. Obtain Scope, Technical, and Execution approvals separately.
@@ -102,6 +115,7 @@ Reconfirm the relevant approval when:
 - risk rises to a higher profile;
 - Verifiable Contract behavior changes;
 - an approved plan changes materially;
+- a material Assumption proves false or a Decision Point changes the approved behavior;
 - rollback or verification becomes weaker.
 
 Do not maintain a second active-change cache or duplicate phase and approval state in attachment files.

@@ -51,6 +51,7 @@ Do not create a hidden active-change cache. Do not encode state in comments or d
 
 - Move from framing to planned only after the Verifiable Contract contains complete Outcome, Boundary, and Verification fields and the required artifact set exists.
 - Move from planned to approved only after the Profile's required approvals are recorded from actual user instructions.
+- An unresolved material Decision Point blocks the move to executing. Resolve it with an actual user decision or narrow the approved contract so it is no longer material.
 - Move from approved to executing immediately before the first production change.
 - Move from executing to verifying only after all planned tasks and focused checks are complete.
 - A verification failure returns the change to executing with the failing observation as the Current Task.
@@ -64,8 +65,23 @@ Do not create a hidden active-change cache. Do not encode state in comments or d
 2. Choose a stable kebab-case change id.
 3. Copy only the templates required by that profile.
 4. Fill intent, risk, scope, numbered Verifiable Contract items, artifacts, and current task in `change.md`.
-5. For Governed or Critical work, write an executable `plan.md` before requesting execution approval.
-6. Record actual implementation and verification evidence in `evidence.md`.
+5. Record material Assumptions and Decision Points in `change.md`; mark which unresolved items block execution.
+6. For Governed or Critical work, write an executable `plan.md` before requesting execution approval.
+7. Record actual implementation and verification evidence in `evidence.md`.
+
+## Required Capability Hard Gate
+
+A missing required Skill, artifact, or approval is a hard gate for Governed and Critical work. Stop before production implementation and report the missing capability.
+
+Do not replace a Governed or Critical workflow with a Quick Change, an ephemeral conversation contract, or fewer artifacts because `change-capsule` is not discoverable or convenient. Restore the required capability or create the required artifacts directly from the documented templates before continuing.
+
+## Assumptions and Decision Points
+
+Record a conditional statement as an Assumption when the current plan relies on it. Promote it to a Decision Point when its answer can change scope, public behavior, schema, migration, compatibility, security, rollback, or verification strength.
+
+Each material Decision Point records the question, current status, decision source, impact, and whether it blocks execution. An unresolved material Decision Point blocks executing; do not infer approval from a conditional recommendation such as "if already released" or "if compatibility is required."
+
+When a resolved assumption proves false or a decision changes materially, return the change to planned, update the Verifiable Contract and plan, and invalidate affected downstream approval.
 
 ## Approval Rules
 
@@ -94,6 +110,7 @@ Upgrade the profile before implementation when:
 - public behavior or compatibility appears;
 - schema, data migration, security, release, payment, identity, or compliance enters scope;
 - rollback becomes uncertain;
+- a conditional assumption becomes a material unresolved Decision Point;
 - the task splits into independent product changes;
 - the approved plan changes materially.
 

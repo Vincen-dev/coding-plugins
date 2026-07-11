@@ -11,9 +11,17 @@ Ensure implementation happens in an isolated workspace when appropriate. Prefer 
 
 Start by saying: "I am using the using-git-worktrees skill to set up an isolated workspace."
 
+## Single-Writer Rule
+
+A shared checkout follows a single-writer rule: one active write task at a time. Multiple read-only tasks may inspect the same checkout, but a second write task must use a separate worktree or wait.
+
+Treat unrelated or overlapping changes from another task as evidence that the checkout already has a writer. Partial staging, temporary indexes, stash choreography, and branch-ref manipulation are not a substitute for isolation. They may be used only to recover or finish an already-entangled state after the exact diff and recovery path are understood.
+
 ## Step 0: Detect Existing Isolation
 
 Read repository contribution instructions and current Git state. Use a feature branch or linked worktree by default. Work directly on the base branch only when repository rules and explicit user approval require it.
+
+Also inspect `git status --short --branch`. Classify every existing change as current-task, known user-owned, or unknown/other-task. If any write overlaps or ownership is unclear, do not edit in this checkout; create a separate worktree or stop and ask for direction when isolation would change the user's requested workspace.
 
 Before creating anything, inspect:
 
@@ -100,3 +108,5 @@ Ready to implement <feature-name>
 - Skipping baseline verification before claiming readiness.
 - Continuing on `main` or `master` without explicit user approval.
 - Creating a feature or release branch when repository contribution rules forbid it.
+- Starting a second write task in a shared checkout.
+- Treating selective staging as the normal solution for concurrent task isolation.
