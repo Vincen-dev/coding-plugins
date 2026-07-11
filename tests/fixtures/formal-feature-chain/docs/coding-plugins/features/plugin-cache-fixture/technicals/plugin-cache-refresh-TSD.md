@@ -47,14 +47,14 @@ validated_by:
 
 ## 备选方案
 
-- 方案 A：使用现有正式链路 fixture 结构维护 刷新并验证 personal 插件缓存。
+- 方案 A：使用现有正式链路 fixture 结构维护刷新并验证 Git marketplace 插件缓存。
 - 方案 B：新增专用 fixture；当前需求只需验证链路闭包，额外 fixture 会增加维护成本。
 
 ## 规格到设计映射
 
 | 规格 ID | 规格摘要 | 技术落点 | 关键决策 ID | 影响文件/符号 | 验证命令 | 证据 |
 | --- | --- | --- | --- | --- | --- | --- |
-| REQ-001 | 刷新并验证 personal 插件缓存 | `.codex-plugin/plugin.json` 和 personal cache manifest | TD-001 | `.codex-plugin/plugin.json` | `npm run preflight` | 同一 `doc_id` 的 VED |
+| REQ-001 | 刷新并验证 Git marketplace 插件缓存 | `.codex-plugin/plugin.json` 和 marketplace cache manifest | TD-001 | `.codex-plugin/plugin.json` | `npm run preflight` | 同一 `doc_id` 的 VED |
 
 ## 无需技术设计的规格
 

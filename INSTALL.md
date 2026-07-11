@@ -316,10 +316,11 @@ npm run agent-pressure-ingest:ts -- --input raw-agent-pressure.json --output tes
    npm run remote-audit:ts -- --owner Vincen-dev --repo coding-plugins --tag v<version> --expected-pusher Vincen-dev
    ```
 
-5. 刷新本机 Codex personal 插件缓存，并确认 active 版本：
+5. 刷新本机 Codex Git marketplace snapshot，重新安装插件并确认 active 版本：
 
    ```bash
-   codex plugin add coding-plugins@personal
+   codex plugin marketplace upgrade coding-plugins
+   codex plugin add coding-plugins@coding-plugins
    coding-plugins doctor --root . --codex-home ~/.codex --format json
    ```
 
@@ -336,7 +337,8 @@ npm run bump-version:ts -- <version>
 ```bash
 npm run preflight -- --write-index
 npm run preflight
-codex plugin add coding-plugins@personal
+codex plugin marketplace upgrade coding-plugins
+codex plugin add coding-plugins@coding-plugins
 claude plugin validate /absolute/path/to/coding-plugins --strict
 ```
 

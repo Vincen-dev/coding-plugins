@@ -193,11 +193,13 @@ test("published docs include a team release checklist instead of local-only rele
     "npm run preflight -- --write-index",
     "git tag -a v<version>",
     "npm run remote-audit:ts -- --owner Vincen-dev --repo coding-plugins --tag v<version> --expected-pusher Vincen-dev",
-    "codex plugin add coding-plugins@personal",
+    "codex plugin marketplace upgrade coding-plugins",
+    "codex plugin add coding-plugins@coding-plugins",
     "coding-plugins doctor --root . --codex-home ~/.codex --format json",
   ]) {
     assert.ok(install.includes(expected), `INSTALL.md release checklist must include: ${expected}`);
   }
+  assert.ok(!install.includes("coding-plugins@personal"), "INSTALL.md must not document the unsupported personal install path");
 });
 
 test("agent pressure fixture includes long-session, stale TED, and platform-unavailable command evidence", () => {

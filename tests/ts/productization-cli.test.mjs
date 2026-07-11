@@ -1051,7 +1051,7 @@ test("doctor audits plugin repository wiring and detects stale Codex cache versi
     const pathCheck = repositoryDoctor.checks.find((check) => check.name === "path");
     assert.ok(pathCheck.message.includes("PATH="));
 
-    const staleManifest = join(codexHome, "plugins/cache/personal/coding-plugins/1.0.12/.codex-plugin");
+    const staleManifest = join(codexHome, "plugins/cache/coding-plugins/coding-plugins/1.0.12/.codex-plugin");
     mkdirSync(staleManifest, { recursive: true });
     writeFileSync(join(staleManifest, "plugin.json"), JSON.stringify({ name: "coding-plugins", version: "1.0.12" }, null, 2), "utf8");
 
@@ -1071,7 +1071,7 @@ test("doctor audits plugin repository wiring and detects stale Codex cache versi
     assert.ok(cacheCheck.message.includes(`repository=${packageVersion}`));
     assert.ok(cacheCheck.message.includes("cache=1.0.12"));
 
-    const currentManifest = join(codexHome, `plugins/cache/personal/coding-plugins/${packageVersion}/.codex-plugin`);
+    const currentManifest = join(codexHome, `plugins/cache/coding-plugins/coding-plugins/${packageVersion}/.codex-plugin`);
     mkdirSync(currentManifest, { recursive: true });
     writeFileSync(join(currentManifest, "plugin.json"), JSON.stringify({ name: "coding-plugins", version: packageVersion }, null, 2), "utf8");
     const mixed = run(["doctor", "--root", repoRoot, "--codex-home", codexHome, "--format", "json"]);
@@ -1334,7 +1334,7 @@ test("doctor checks active Codex plugin enablement from codex plugin list json",
   const codexHome = mkdtempSync(join(tmpdir(), "coding-plugins-codex-enabled-"));
   const fakeBin = mkdtempSync(join(tmpdir(), "coding-plugins-fake-bin-"));
   try {
-    const manifest = join(codexHome, `plugins/cache/personal/coding-plugins/${packageVersion}/.codex-plugin`);
+    const manifest = join(codexHome, `plugins/cache/coding-plugins/coding-plugins/${packageVersion}/.codex-plugin`);
     mkdirSync(manifest, { recursive: true });
     writeFileSync(join(manifest, "plugin.json"), JSON.stringify({ name: "coding-plugins", version: packageVersion }, null, 2), "utf8");
     const codex = join(fakeBin, "codex");
@@ -1343,7 +1343,7 @@ test("doctor checks active Codex plugin enablement from codex plugin list json",
       [
         "#!/bin/sh",
         "if [ \"$1\" = \"plugin\" ] && [ \"$2\" = \"list\" ] && [ \"$3\" = \"--json\" ]; then",
-        `  printf '%s\\n' '[{"pluginId":"coding-plugins@personal","version":"${packageVersion}","installed":true,"enabled":true}]'`,
+        `  printf '%s\\n' '[{"pluginId":"coding-plugins@coding-plugins","version":"${packageVersion}","installed":true,"enabled":true}]'`,
         "  exit 0",
         "fi",
         "exit 1",
@@ -1369,10 +1369,10 @@ test("doctor times out Codex plugin list and falls back to config enabled state"
   const codexHome = mkdtempSync(join(tmpdir(), "coding-plugins-codex-timeout-"));
   const fakeBin = mkdtempSync(join(tmpdir(), "coding-plugins-fake-bin-timeout-"));
   try {
-    const manifest = join(codexHome, `plugins/cache/personal/coding-plugins/${packageVersion}/.codex-plugin`);
+    const manifest = join(codexHome, `plugins/cache/coding-plugins/coding-plugins/${packageVersion}/.codex-plugin`);
     mkdirSync(manifest, { recursive: true });
     writeFileSync(join(manifest, "plugin.json"), JSON.stringify({ name: "coding-plugins", version: packageVersion }, null, 2), "utf8");
-    writeFileSync(join(codexHome, "config.toml"), "[plugins.\"coding-plugins@personal\"]\nenabled = true\n", "utf8");
+    writeFileSync(join(codexHome, "config.toml"), "[plugins.\"coding-plugins@coding-plugins\"]\nenabled = true\n", "utf8");
     const codex = join(fakeBin, "codex");
     writeFileSync(codex, "#!/bin/sh\nsleep 5\n", "utf8");
     chmodSync(codex, 0o755);

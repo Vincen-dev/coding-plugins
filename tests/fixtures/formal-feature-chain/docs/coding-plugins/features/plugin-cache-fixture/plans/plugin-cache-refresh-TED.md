@@ -3,7 +3,7 @@ title: Plugin Cache Refresh Task Execution Document
 status: approved
 feature: plugin-cache-fixture
 doc_id: plugin-cache-refresh
-source_hash: sha256:229076ad1355e5629b43f375ac17229b526a2f1e74093f3cb622700b1ea591a7
+source_hash: sha256:e258a65c0d49952acd91e7b11d0739885aa4ddb909cdd46a6ada27e90ef78e22
 created: 2026-07-02
 updated: 2026-07-02
 related_docs:
@@ -54,14 +54,14 @@ related_docs:
 
 | 任务 | 标题 | 覆盖规格 | 验证方式 | VED 记录 |
 | --- | --- | --- | --- | --- |
-| TASK-001 | 验证 personal cache 版本 | REQ-001 | config fixture 校验 | 同一 `doc_id` 的 VED |
+| TASK-001 | 验证 Git marketplace cache 版本 | REQ-001 | config fixture 校验 | 同一 `doc_id` 的 VED |
 
 ## 任务依赖与并行性
 
 - TASK-001：无前置任务；必须串行确认 source_hash 和 schema 后完成。
 - 并行性：本 fixture 只有单任务，不拆分并行执行。
 
-## 验证 personal cache 版本（TASK-001 / REQ-001）
+## 验证 Git marketplace cache 版本（TASK-001 / REQ-001）
 
 ### 任务目标
 

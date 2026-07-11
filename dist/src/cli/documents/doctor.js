@@ -335,7 +335,7 @@ function buildPlatformSummary(root, checks) {
     };
 }
 function checkCodexCacheVersion(codexHome, repositoryVersion) {
-    const cacheRoot = join(codexHome, "plugins/cache/personal/coding-plugins");
+    const cacheRoot = join(codexHome, "plugins/cache/coding-plugins/coding-plugins");
     if (!existsSync(cacheRoot)) {
         return { name: "codex-cache-version", ok: false, message: `cache missing: ${cacheRoot}` };
     }
@@ -382,10 +382,12 @@ function checkCodexPluginEnabled(codexHome, repositoryVersion) {
                         : [];
             const plugin = plugins.find((entry) => {
                 const item = entry;
-                return [item.pluginId, item.id, item.name].some((value) => value === "coding-plugins@personal" || value === "coding-plugins");
+                return item.pluginId === "coding-plugins@coding-plugins"
+                    || item.id === "coding-plugins@coding-plugins"
+                    || (item.name === "coding-plugins" && item.marketplaceName === "coding-plugins");
             });
             if (!plugin) {
-                return { name: "codex-plugin-enabled", ok: false, message: "coding-plugins@personal not listed by codex plugin list --json" };
+                return { name: "codex-plugin-enabled", ok: false, message: "coding-plugins@coding-plugins not listed by codex plugin list --json" };
             }
             const installed = plugin.installed !== false;
             const enabled = plugin.enabled === true;
@@ -415,7 +417,7 @@ function configTomlCodexPluginFallback(codexHome, repositoryVersion, reason) {
         return { name: "codex-plugin-enabled", ok: false, message: `${reason}; config fallback missing: ${configPath}` };
     }
     const text = readFileSync(configPath, "utf8");
-    const section = /\[plugins\."coding-plugins@personal"\]([\s\S]*?)(?:\n\[|$)/.exec(text)?.[1] ?? "";
+    const section = /\[plugins\."coding-plugins@coding-plugins"\]([\s\S]*?)(?:\n\[|$)/.exec(text)?.[1] ?? "";
     const enabled = /^\s*enabled\s*=\s*true\s*$/m.test(section);
     return {
         name: "codex-plugin-enabled",

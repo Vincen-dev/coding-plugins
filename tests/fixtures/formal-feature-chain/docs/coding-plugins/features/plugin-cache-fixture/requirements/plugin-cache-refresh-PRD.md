@@ -21,7 +21,7 @@ related_code:
 
 ## 阅读摘要
 
-- **本文结论:** 发布后必须验证仓库版本、release notes 和本机 Codex personal 缓存版本一致。
+- **本文结论:** 发布后必须验证仓库版本、release notes 和本机 Codex Git marketplace 缓存版本一致。
 - **当前状态:** approved。
 - **先读重点:** 先看需求总览和缓存刷新需求点。
 
@@ -48,7 +48,7 @@ related_code:
 
 ## 背景
 
-- 当前行为：本地仓库更新后，Codex 可能仍读取旧 personal cache。
+- 当前行为：Git marketplace snapshot 未刷新时，Codex 可能仍读取旧插件缓存。
 - 目标用户或调用方：插件维护者。
 - 约束：缓存版本必须能被命令验证。
 
@@ -64,15 +64,15 @@ related_code:
 
 ## 开放问题
 
-- 无：fixture 只沉淀 刷新并验证 personal 插件缓存 的链路校验，不扩展真实业务实现。
+- 无：fixture 只沉淀刷新并验证 Git marketplace 插件缓存的链路校验，不扩展真实业务实现。
 
 ## 需求总览
 
 | 需求点 | 标题 | 优先级 | 类型 | 验证方式 |
 | --- | --- | --- | --- | --- |
-| REQ-001 | 刷新并验证 personal 插件缓存 | 必须 | maintenance | config 测试 |
+| REQ-001 | 刷新并验证 Git marketplace 插件缓存 | 必须 | maintenance | config 测试 |
 
-## 刷新并验证 personal 插件缓存（REQ-001）
+## 刷新并验证 Git marketplace 插件缓存（REQ-001）
 
 ### 用户或系统价值
 
@@ -86,7 +86,7 @@ related_code:
 
 - 仓库 `.codex-plugin/plugin.json`、`.claude-plugin/plugin.json` 和 `.version-bump.json` 版本一致。
 - `RELEASE-NOTES.md` 包含当前版本。
-- personal cache 安装目录存在对应版本。
+- Git marketplace cache 安装目录存在对应版本。
 
 ### 输入与输出
 
@@ -97,7 +97,7 @@ related_code:
 
 ### 关联契约
 
-- API / SDK / CLI：`codex plugin add coding-plugins@personal`。
+- API / SDK / CLI：`codex plugin marketplace upgrade coding-plugins` 后运行 `codex plugin add coding-plugins@coding-plugins`。
 - Schema / 数据：manifest `version` 字段。
 - 状态机 / 生命周期：不涉及。
 - 维护 / 迁移 / 回归：发布前运行 preflight。
@@ -112,7 +112,7 @@ related_code:
 
 | 编号 | 场景 | 前置条件 | 操作 | 期望结果 |
 | --- | --- | --- | --- | --- |
-| AC-001 | 缓存刷新 | 仓库版本已提升 | 安装 personal 插件 | 缓存 manifest 版本一致 |
+| AC-001 | 缓存刷新 | 仓库版本已提升 | 刷新 marketplace 并安装 `coding-plugins@coding-plugins` | 缓存 manifest 版本一致 |
 
 ### 验证方式
 

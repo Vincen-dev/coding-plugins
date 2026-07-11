@@ -55,17 +55,17 @@ related_docs:
 
 ### 测试目标
 
-确认仓库版本提升后，personal cache 中的插件 manifest 同步到相同版本。
+确认仓库版本提升后，Git marketplace cache 中的插件 manifest 同步到相同版本。
 
 ### 前置条件
 
 - 仓库 manifest 已提升版本。
-- personal cache 已刷新。
+- Git marketplace snapshot 和插件 cache 已刷新。
 
 ### 测试步骤
 
 1. 读取仓库 `.codex-plugin/plugin.json`。
-2. 读取 personal cache `.codex-plugin/plugin.json`。
+2. 读取 Git marketplace cache `.codex-plugin/plugin.json`。
 3. 比较 `version` 字段。
 
 ### 断言
