@@ -1,6 +1,6 @@
 {
   "name": "coding-plugins",
   "description": "Chinese-first workflow-only coding plugin with English agent-facing skills and Change Capsules.",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "contextFileName": "GEMINI.md"
 }

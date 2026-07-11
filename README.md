@@ -1,4 +1,4 @@
-# Coding Plugins 2.0.0
+# Coding Plugins 2.1.0
 
 面向 Codex、Claude Code、Gemini CLI 和本地 Skills 客户端的纯工作流插件。
 

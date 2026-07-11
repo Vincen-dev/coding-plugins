@@ -1,6 +1,6 @@
 {
   "name": "@vincen-dev/coding-plugins",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Chinese-first workflow-only plugin with English agent-facing skills and Change Capsules.",
   "private": true,
   "type": "module",

@@ -1,5 +1,13 @@
 # Release Notes
 
+## 2.1.0 - 2026-07-11
+
+- Enforce one active writer per shared checkout and route concurrent write tasks to separate worktrees or a safe stop.
+- Make missing Governed/Critical Skills, artifacts, approvals, and unresolved material Decision Points hard blockers instead of allowing workflow downgrade.
+- Add Assumption and Decision Point records to Change Capsules for conditional scope, schema, migration, compatibility, rollback, and verification choices.
+- Require public API, schema, migration, compatibility, security, and release changes to run the full relevant suite by default or narrow completion claims with explicit residual risks.
+- Add workflow-governance contract tests and make the 2.0 migration test validate current release metadata without permanently pinning future releases to 2.0.0.
+
 ## 2.0.0 - 2026-07-11
 
 - Breaking: remove the Coding Plugins CLI, runtime library, executable hooks, project state files, decision catalog, and fixed five-document default chain.

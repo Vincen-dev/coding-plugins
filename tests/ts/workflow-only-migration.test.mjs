@@ -8,19 +8,22 @@ const repoRoot = resolve(fileURLToPath(new URL("../..", import.meta.url)));
 const read = (path) => readFileSync(join(repoRoot, path), "utf8");
 const json = (path) => JSON.parse(read(path));
 
-test("VC-004 workflow-only migration is an explicit 2.0.0 breaking change", () => {
+test("VC-001/004 current release metadata stays synchronized after the 2.0.0 migration", () => {
+  const currentVersion = json("package.json").version;
+  assert.match(currentVersion, /^\d+\.\d+\.\d+$/);
+  assert.ok(Number(currentVersion.split(".")[0]) >= 2, "workflow-only releases must remain on major version 2 or later");
+
   for (const path of [
     ".codex-plugin/plugin.json",
     ".claude-plugin/plugin.json",
     "plugin.json",
     "gemini-extension.json",
-    "package.json",
     ".version-bump.json",
-  ]) assert.equal(json(path).version, "2.0.0", `${path} version mismatch`);
+  ]) assert.equal(json(path).version, currentVersion, `${path} version mismatch`);
 
   const lock = json("package-lock.json");
-  assert.equal(lock.version, "2.0.0");
-  assert.equal(lock.packages[""].version, "2.0.0");
+  assert.equal(lock.version, currentVersion);
+  assert.equal(lock.packages[""].version, currentVersion);
   assert.equal(Object.hasOwn(lock.packages[""], "bin"), false);
   assert.equal(Object.hasOwn(lock.packages[""], "devDependencies"), false);
 });
