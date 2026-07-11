@@ -22,12 +22,12 @@ Treat review feedback as a hypothesis to validate, not an order to apply blindly
 
 Push back when:
 
-- The feedback contradicts the existing contract or approved spec.
+- The feedback contradicts the approved Verifiable Contract.
 - The proposed fix widens scope or introduces a worse tradeoff.
 - The comment is based on a misunderstanding of the code.
 - The issue is real but belongs in a separate task.
 
-When pushing back, be factual: cite files, behavior, tests, or specs. Avoid defensive language.
+When pushing back, be factual: cite files, `VC-*` items, behavior, or tests. Avoid defensive language.
 
 ## Output
 

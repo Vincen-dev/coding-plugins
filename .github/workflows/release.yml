@@ -23,24 +23,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run preflight checks
-        run: npm run preflight
-
-      - name: Prepare release notes
-        id: release
-        run: |
-          npm run prepare-release:ts -- \
-            --skip-git-checks \
-            --notes-out release-notes.md \
-            --github-output "$GITHUB_OUTPUT"
+      - name: Run workflow contract tests
+        run: npm test
 
       - name: Verify tag matches manifest version
-        run: test "${{ github.ref_name }}" = "${{ steps.release.outputs.tag }}"
+        run: test "${{ github.ref_name }}" = "v$(node -p \"require('./package.json').version\")"
 
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create "${{ github.ref_name }}" \
-            --title "coding-plugins ${{ steps.release.outputs.version }}" \
-            --notes-file release-notes.md
+            --title "coding-plugins $(node -p \"require('./package.json').version\")" \
+            --generate-notes

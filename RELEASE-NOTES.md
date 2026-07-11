@@ -1,10 +1,23 @@
 # Release Notes
 
+## 2.0.0 - 2026-07-11
+
+- Breaking: remove the Coding Plugins CLI, runtime library, executable hooks, project state files, decision catalog, and fixed five-document default chain.
+- Add the workflow-only `change-capsule` skill with Inspect, Quick, Standard, Governed, and Critical profiles.
+- Standard changes use `change.md`; Governed changes use `change.md`, `plan.md`, and `evidence.md`; Critical changes may add design or test attachments.
+- Keep TDD, debugging, review, fresh verification, commit safety, worktree, subagent, and branch-finishing skills without runtime dependencies.
+- Stop public npm runtime distribution; Git and marketplace manifests discover Skills directly.
+- Define five universal invariants: Test First, Verifiable Contract, Systematic Execution, Simplicity, and Evidence Before Claims.
+- Replace active legacy document terminology with numbered `VC-*` items using Outcome, Boundary, and Verification.
+- Add deterministic Capsule phase gates, scope-drift rewind rules, and a required Quick Change evidence report.
+- Remove retired workflow documents from the active repository surface; migration archaeology remains available through Git history.
+- Require all generated Change Capsule documents and evidence blocks to use Simplified Chinese while preserving stable machine keys, identifiers, paths, commands, and API names.
+
 ## 1.3.0 - 2026-07-11
 
 - 将 governed-v2 的 `task approve`、DP-2 technical bundle、DP-3 execution approval 和 `task complete` 接入生产 CLI 主链。
 - 让 Active/Standard Change、scope expansion、Completion Audit 和 legacy `start` 使用一致的状态语义，并阻止 VED frontmatter 或非映射章节中的 Policy ID 绕过门禁。
-- 新增仓库 `integrationPolicy`，当前仓库采用 main-only，不创建 feature/release branch 或 PR。
+- 新增仓库 `integrationPolicy`；当前仓库采用 branch-first，与 GitHub protected `main` 对齐，通过 feature/release branch 和 PR 集成。
 - 新增 `requireVersionChangePerCommit` 提交策略；每个 commit 必须包含全部配置版本文件，否则 `commit-guard` 返回 `version-change-missing`。
 - 同步 SessionStart、核心 Skills、README、INSTALL、workflow-chain、VED、dist 和回归测试，并提升版本到 `1.3.0`。
 

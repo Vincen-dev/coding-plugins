@@ -1,6 +1,6 @@
 ---
 name: using-git-worktrees
-description: Use before feature work that needs isolation, or before executing a TED task execution document; prefer native platform worktree tools and fall back to git worktree only when needed.
+description: Use before risky feature work or execution of an approved Change Capsule plan when workspace isolation is needed.
 ---
 
 # Using Git Worktrees
@@ -13,10 +13,7 @@ Start by saying: "I am using the using-git-worktrees skill to set up an isolated
 
 ## Step 0: Detect Existing Isolation
 
-Before choosing a branch or worktree strategy, read `integrationPolicy` from the repository's `coding-plugins.policies.yaml` when present. The repository policy overrides the branch-first default:
-
-- `branch-first`: use a feature branch or linked worktree before implementation.
-- `main-only`: do not create feature or release branches. Continue on the configured base branch only after explicit user approval. If filesystem isolation is required, use a detached worktree based on the base branch and integrate the verified commit back to the base branch without creating a named branch.
+Read repository contribution instructions and current Git state. Use a feature branch or linked worktree by default. Work directly on the base branch only when repository rules and explicit user approval require it.
 
 Before creating anything, inspect:
 
@@ -29,7 +26,7 @@ git rev-parse --show-superproject-working-tree
 
 If `GIT_DIR != GIT_COMMON` and this is not a submodule, you are already in a linked worktree. Do not create another one.
 
-If this is a normal checkout on `main` or `master`, do not start implementation there without explicit user approval. When `integrationPolicy.strategy` is `branch-first`, create or switch to an appropriate feature branch or worktree. When it is `main-only`, follow the approved base-branch path and do not create a named branch.
+If this is a normal checkout on `main` or `master`, do not start implementation there without explicit user approval. Create or switch to an appropriate feature branch or worktree unless the repository explicitly requires direct base-branch work.
 
 ## Step 1: Prefer Native Worktree Support
 
@@ -60,7 +57,7 @@ Create:
 git worktree add <path> -b <branch-name>
 ```
 
-For `main-only` detached isolation:
+For detached filesystem isolation without a named branch:
 
 ```bash
 git worktree add --detach <path> <base-branch>
@@ -102,4 +99,4 @@ Ready to implement <feature-name>
 - Skipping ignore checks for project-local worktree directories.
 - Skipping baseline verification before claiming readiness.
 - Continuing on `main` or `master` without explicit user approval.
-- Creating a feature or release branch when `integrationPolicy.allowFeatureBranches` is false.
+- Creating a feature or release branch when repository contribution rules forbid it.

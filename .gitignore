@@ -10,10 +10,3 @@ node_modules/
 coverage/
 .nyc_output/
 artifacts/
-docs/coding-plugins/features/*
-!docs/coding-plugins/features/workflow-runtime/
-!docs/coding-plugins/features/workflow-runtime/**
-**/.coding-plugins/session-lock.json
-**/.coding-plugins/runtime-state.json
-dist/*
-!dist/**

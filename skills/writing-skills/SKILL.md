@@ -9,7 +9,7 @@ description: Use when creating a new skill, editing an existing skill, or valida
 
 Create and maintain Coding Plugins skills as executable agent instructions. A skill should tell the agent when to use it, what constraints apply, what steps to follow, and how to verify the work.
 
-Core principle: skill text is agent-facing execution guidance. Durable machine-checkable gates should live in CLI guards, tests, or shared rule modules rather than being duplicated across many skills.
+Core principle: skill text is agent-facing execution guidance. Durable machine-checkable invariants should live in focused static contract tests rather than being duplicated across many skills.
 
 ## When to Use
 
@@ -19,7 +19,7 @@ Use this skill when:
 - Editing an existing skill.
 - Adding supporting prompts, references, scripts, or templates.
 - Validating skill behavior before release.
-- Separating skill guidance from guard rules.
+- Separating owning-skill guidance from shared invariants.
 
 ## Skill Structure
 
@@ -39,11 +39,11 @@ Keep machine keys and agent-facing execution text in English. User-facing Chines
 ## Process
 
 1. Read the existing skill and any directly referenced files.
-2. Identify whether the change is instruction text, guard logic, metadata, prompt, script, or template.
+2. Identify whether the change is instruction text, metadata, prompt, reference, or template.
 3. Keep the edit scoped to the requested skill surface.
-4. Avoid duplicating CLI-enforced rules inside multiple skills; refer to the guard instead.
+4. Keep universal invariants in `using-coding-plugins`; other skills state only their owned process and handoffs.
 5. Add or update tests when the skill contract can be checked.
-6. Run targeted checks and then repository preflight when release-facing.
+6. Run targeted checks and then `npm test` when release-facing.
 
 ## Testing Skills
 
@@ -53,12 +53,12 @@ Use TDD when changing behavior that can be checked:
 - Confirm it fails for the old behavior.
 - Update the skill or helper.
 - Confirm it passes.
-- Record VED evidence when the work is part of a formal chain.
+- Record Capsule evidence when durable change artifacts exist.
 
 ## Common Mistakes
 
 - Writing broad philosophy instead of actionable instructions.
-- Mixing skill guidance with machine guard policy.
+- Duplicating universal invariants across unrelated Skills.
 - Adding references that are not needed for the task.
 - Translating user-facing docs while leaving agent-facing prompts inconsistent.
 - Weakening gates during translation.

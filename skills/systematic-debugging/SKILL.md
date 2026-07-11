@@ -65,7 +65,7 @@ Escalate when:
 
 - You cannot reproduce the issue.
 - Multiple plausible root causes remain after focused experiments.
-- The fix would require changing a contract or approved spec.
+- The fix would require changing the approved Verifiable Contract.
 - The investigation reveals a larger architecture problem.
 
 Report what was tried, what was observed, and what information is still missing.

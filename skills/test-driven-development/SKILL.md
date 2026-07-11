@@ -7,12 +7,12 @@ description: Use before implementing any feature, bugfix, refactor, or behavior 
 
 ## Overview
 
-Start from a spec, bug reproduction, or explicit acceptance criterion. Write the test first, watch it fail for the right reason, then write the smallest code that makes it pass.
+Start from a Verifiable Contract or bug reproduction. Establish the test first, watch the behavior change fail for the right reason, then write the smallest code that makes it pass.
 
 Core rule:
 
 ```text
-No failing test first, no production implementation.
+No test-first evidence, no production implementation.
 ```
 
 If production code was written first, remove it and restart from the test.
@@ -27,13 +27,13 @@ Use this skill for:
 - Behavior changes.
 - Config, architecture, or source-scan contracts that can be tested.
 
-Exceptions require user approval and a VED exception record.
+For a behavior change, write and observe a failing test or reproducible failing check before any production change. For a refactor, run the relevant characterization tests before editing; if the baseline is insufficient, write characterization tests first. Work that cannot establish test-first evidence stops until its testability is improved.
 
 ## RED / GREEN / REFACTOR
 
 ### RED
 
-Write a minimal test from a Spec ID, bug reproduction, or acceptance criterion. The test name or body should trace to IDs such as `REQ-001`.
+Write a minimal test from a numbered Verifiable Contract item or bug reproduction. The test name or body should trace to IDs such as `VC-001`.
 
 Run the focused test and confirm:
 
@@ -53,9 +53,9 @@ Only refactor after green. Keep behavior unchanged and rerun tests.
 
 ## Test Level Selection
 
-Choose the test layer from the requirement:
+Choose the test layer from the Verifiable Contract:
 
-| Source | Preferred Test |
+| Contract signal | Preferred Test |
 | --- | --- |
 | Business rule or function logic | Unit test |
 | API, SDK, schema, or protocol | Contract or integration test |
@@ -69,54 +69,35 @@ Source-scan tests are acceptable for text surfaces, manifests, and agent-facing 
 
 ## Evidence Location
 
-For formal Coding Plugins work, record evidence in:
+For Governed or Critical work, record evidence in:
 
 ```text
-docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-VED.md
+docs/coding-plugins/changes/<change-id>/evidence.md
 ```
 
-Read or create VED metadata with `document-metadata` before writing evidence.
-
-When validating evidence, prefer the SessionStart CLI fallback if `coding-plugins` is not on `PATH`:
-
-```bash
-${CP_CLI} validate-tdd-evidence docs/coding-plugins/features/<feature-name>/evidences/<doc-id>-VED.md
-```
+For Standard work, keep the concise evidence summary in `change.md`. Quick work may report evidence in the final response when no durable artifact is needed.
 
 ## TDD Evidence Block
 
 Each behavior-changing task needs an evidence block:
 
 ```markdown
-## Task N: <title>
+## 任务 N：<标题>
 
-### TDD Evidence
+### 测试驱动证据
 
-- **Spec / Defect / Acceptance:** REQ-001 or bug reproduction
-- **Test Type:** `behavior`, `contract`, `architecture`, `source-scan`, or `config`
-- **RED Test:** `tests/path/example.test.ts`
-- **RED Command:** `node --test tests/path/example.test.ts`
-- **RED Failure:** specific failure signal proving the missing behavior
-- **GREEN Change:** minimal behavior change
-- **GREEN Command:** focused passing command
-- **REFACTOR Command:** command rerun after cleanup
-- **Final Verification:** final relevant command and result
+- **契约/缺陷：** VC-001 或 bug reproduction
+- **测试类型：** `behavior`、`contract`、`architecture`、`source-scan` 或 `config`
+- **RED 测试：** `tests/path/example.test.ts`
+- **RED 命令：** `node --test tests/path/example.test.ts`
+- **RED 失败：** 能够证明缺失行为的具体失败信号
+- **GREEN 变更：** 最小行为变更
+- **GREEN 命令：** focused passing command
+- **REFACTOR 命令：** 清理后重新运行的命令
+- **最终验证：** 最终相关命令和实际结果
 ```
 
-`RED Failure` must be specific. `GREEN Change` must explain behavior, not just list files. `Final Verification` must name commands actually run.
-
-## TDD Exception Record
-
-Use only when TDD is truly impossible and the user approved it:
-
-```markdown
-## TDD Exception Record
-
-- **Reason:** why failing test first is impossible
-- **User Approval:** user approval text or summary
-- **Replacement Verification:** commands, logs, screenshots, or manual steps
-- **Risk:** remaining risk and follow-up test plan
-```
+`RED 失败` must be specific. `GREEN 变更` must explain behavior, not just list files. `最终验证` must name commands actually run.
 
 ## Common Mistakes
 
@@ -125,4 +106,4 @@ Use only when TDD is truly impossible and the user approved it:
 - Testing mocks instead of behavior.
 - Combining many behaviors into one test.
 - Weakening assertions to pass.
-- Claiming manual testing as a substitute for repeatable verification without an approved exception.
+- Starting production work when no reproducible test or check exists.

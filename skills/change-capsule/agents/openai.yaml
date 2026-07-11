@@ -1,0 +1,4 @@
+interface:
+  display_name: "Change Capsule"
+  short_description: "Create the smallest durable artifact set for a coding change."
+  default_prompt: "Use the selected risk profile to create or resume a Change Capsule, then identify the single next step."

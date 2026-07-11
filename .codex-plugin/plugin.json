@@ -1,7 +1,7 @@
 {
   "name": "coding-plugins",
-  "version": "1.3.0",
-  "description": "Chinese-first coding workflow plugin with English agent-facing skills for Codex and Claude Code.",
+  "version": "2.0.0",
+  "description": "Chinese-first workflow-only plugin with English agent-facing skills and Change Capsules.",
   "author": {
     "name": "Vincen"
   },
@@ -24,11 +24,10 @@
     "codex"
   ],
   "skills": "./skills/",
-  "hooks": "./hooks/hooks-codex.json",
   "interface": {
     "displayName": "Coding Plugins",
-    "shortDescription": "Chinese-first coding workflow with English agent-facing skills for planning, TDD, debugging, review, and finishing.",
-    "longDescription": "Coding Plugins is a Chinese-first local workflow plugin for Codex and Claude Code. It provides English agent-facing skills for brainstorming, SDD, planning, TDD, systematic debugging, parallel agent coordination, code review, Git commits with Authored-by footers, skill authoring, and branch finishing.",
+    "shortDescription": "Workflow-only coding guidance with risk-scaled Change Capsules.",
+    "longDescription": "Coding Plugins 2.0 is a workflow-only skill collection. It routes work by risk, uses Change Capsules only when durable context is needed, and keeps TDD, debugging, review, verification, commit, and branch-finishing discipline without a plugin runtime.",
     "developerName": "Vincen",
     "category": "Developer Tools",
     "capabilities": [
@@ -38,7 +37,7 @@
     ],
     "defaultPrompt": [
       "I have an idea; help me compare options before deciding whether to build it.",
-      "I want to implement a feature; help me write the specification first.",
+      "I want to implement a feature; choose the smallest safe workflow profile.",
       "Help me fix this with a test-driven workflow.",
       "Check whether this change is ready to finish."
     ],

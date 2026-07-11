@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  preflight:
+  test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -23,16 +23,5 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run preflight checks
-        run: npm run preflight
-
-      - name: Generate agent pressure harness artifact
-        run: npm run agent-pressure-harness:ts -- --output artifacts/agent-pressure-harness.json
-
-      - name: Upload agent pressure harness artifact
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: agent-pressure-harness
-          path: artifacts/agent-pressure-harness.json
-          if-no-files-found: error
+      - name: Run workflow contract tests
+        run: npm test

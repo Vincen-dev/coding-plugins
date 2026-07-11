@@ -48,11 +48,9 @@ This project does not provide long-term support for older releases. Users should
 
 Coding Plugins runs locally and gives AI agents workflow instructions. Important security boundaries include:
 
-- **SessionStart hooks:** Codex hook scripts run with the user's shell privileges. Changes under `hooks/` must be reviewed carefully.
 - **Skill instructions:** files under `skills/` can influence agent behavior. Malicious or overly broad instructions can cause unsafe command usage or data exposure.
-- **Local scripts:** files under `scripts/` read and write local repository files. They must avoid destructive defaults and must not exfiltrate data.
-- **Git workflow:** `using-git-commit` intentionally checks author identity and sensitive files before committing. Bypassing those checks can leak secrets.
-- **Subagent prompts:** generated prompts must avoid leaking unrelated project context, stale plan content, secrets, or unrelated user conversation.
+- **Workflow guidance:** approval, TDD, review, and verification instructions must not silently expand the user's authorized scope.
+- **Git workflow:** `using-git-commit` requires deliberate staging and sensitive-file review before committing.
 - **Platform manifests:** `.codex-plugin/`, `.claude-plugin/`, root `plugin.json`, `gemini-extension.json`, `.agents/skills`, and related install metadata must point only to intended local resources.
 
 ## Out of Scope
@@ -80,8 +78,7 @@ If a secret was accidentally committed:
 Before publishing or merging security-sensitive changes, run:
 
 ```bash
-npm run preflight
-bash tests/hooks/test-session-start.sh
+npm test
 git diff --check
 ```
 
@@ -89,5 +86,5 @@ For manifest or platform-support changes, also confirm:
 
 - `.codex-plugin/plugin.json`, `.claude-plugin/plugin.json`, root `plugin.json`, and `gemini-extension.json` use the same version.
 - `.agents/skills` resolves to the intended `skills/` directory.
-- Hook scripts do not execute unexpected commands.
+- The package exposes no executable runtime or lifecycle hooks.
 - Documentation does not ask users to paste secrets into prompts or generated reports.

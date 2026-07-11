@@ -1,7 +1,7 @@
 {
   "name": "coding-plugins",
-  "description": "Chinese-first coding workflow plugin with English agent-facing skills for brainstorming, SDD, TDD, debugging, review, commit, and branch finishing.",
-  "version": "1.3.0",
+  "description": "Chinese-first workflow-only plugin with English agent-facing skills and risk-scaled Change Capsules.",
+  "version": "2.0.0",
   "author": {
     "name": "Vincen",
     "email": "hx001007@gmail.com",

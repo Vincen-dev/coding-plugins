@@ -1,108 +1,121 @@
 ---
 name: using-coding-plugins
-description: Use at the start of any task to select the correct Coding Plugins workflow, skill, and gate.
+description: Use at the start of any task to choose the smallest safe Coding Plugins workflow and its next skill.
 ---
 
 <SUBAGENT-STOP>
-If you are a delegated subagent and the parent task already specifies the working method, you may skip this skill.
+If a parent task already fixes the workflow and scope, follow that contract without rerouting it.
 </SUBAGENT-STOP>
 
 # Using Coding Plugins
 
-## Core Rule
+## Purpose
 
-If the task may match a Coding Plugins skill, read and use that skill first. The skill defines how to work; the user defines what to do. Explicit user instructions override skill defaults unless they would violate safety or required gates.
+Coding Plugins is a workflow-only skill set. Select one risk profile, state the current boundary and next skill, then continue without requiring a separate executable or project state service.
 
-## CLI First for Formal Chains
+The user defines what to do. Skills define how to do it safely. Explicit user instructions control scope unless they conflict with safety or a previously approved boundary.
 
-Formal PRD/TSD/TVD/TED/VED work must run the Coding Plugins CLI before selecting the next skill or crossing an execution boundary.
+## Universal Invariants
 
-`using-coding-plugins` cannot replace `task status`; it only interprets and follows the state returned by the CLI.
+Every active workflow obeys these rules before profile-specific guidance:
 
-Prefer the session-provided fallback:
+1. **Test First:** establish the test before production changes. Behavior changes must observe a focused failing test or reproducible failing check; refactors must run a sufficient characterization baseline before editing.
+2. **Verifiable Contract:** state `Outcome`, `Boundary`, and `Verification` before implementation. Quick work may state it in the conversation; durable work records numbered `VC-*` items in `change.md`.
+3. **Systematic Execution:** proceed through contract -> failing evidence -> implementation -> fresh verification. Stop and investigate instead of guessing when any link is missing.
+4. **Simplicity:** choose the lowest honest risk profile, create only its artifact budget, and keep one whole-change state source.
+5. **Evidence Before Claims:** run and read fresh verification before saying work is fixed, complete, clean, passing, or ready.
 
-```bash
-${CP_CLI} task status --root . --intent "<user intent>" --contract-version 2 --json
-```
+These are invariants, not optional recommendations. If a change cannot establish a test or reproducible check first, improve its testability or stop before production implementation.
 
-If commands are unavailable, first use the SessionStart `${CP_CLI} <command> ...` fallback. Do not construct a business-repository-local `node ./bin/coding-plugins.js` fallback, and do not assume the CLI is missing merely because `coding-plugins` is not on `PATH`.
+## Risk Profiles
 
-## Workflow Modes
+| Profile | Fit | Required artifacts | Approval model | Next skill |
+| --- | --- | --- | --- | --- |
+| Inspect | Read, explain, analyze, review, or report status | no artifact | 0 approvals | answer directly or use the matching review skill |
+| Quick Change | Clear one-step fix or small refactor with a stated Verifiable Contract | no artifact | 0 approvals; the implementation request is authorization | `test-driven-development` |
+| Standard Change | Multi-turn or multi-file work with bounded risk | `change.md` | scope expansion only | `change-capsule`, then `test-driven-development` or `executing-plans` |
+| Governed Change | Public contract, migration, release, security, compatibility, or material architectural work | `change.md`, `plan.md`, `evidence.md` | 2 approvals: Scope/Plan and Execution | `change-capsule`, then `executing-plans` |
+| Critical Change | Payment, identity, destructive data migration, compliance, secrets, or irreversible external effects | Governed artifacts plus optional `design.md` and `tests.md` | 3 approvals: Scope, Technical, and Execution | `change-capsule`, then isolated execution |
 
-| Mode | Meaning | Default Handling |
-| --- | --- | --- |
-| `analysis-only` | Read, explain, review, or query status | No formal docs |
-| `docs-only` | Lightweight docs, index, or config edits | Edit and validate docs/config |
-| `tdd-only` | Small clear behavior change in limited files | Use `test-driven-development` |
-| `full-chain` | New feature or unclear contract | PRD -> TSD -> TVD -> TED -> VED |
-| `maintenance-chain` | Migration, upgrade, release, security, performance, or compatibility work | Maintenance PRD then full chain |
+## Selection Rules
 
-When scope expands, run `scope-check` and reroute if required.
+Choose the lowest profile that honestly covers the risk.
 
-## Skill Routing
+- Inspect never creates implementation artifacts.
+- Quick Change requires a clear Verifiable Contract and test-first evidence.
+- Standard Change is the default when useful state must survive multiple turns.
+- Governed Change is required for public behavior, schema, compatibility, release, security, or broad maintenance changes.
+- Critical Change is required for irreversible or regulated effects.
+- When scope or risk is uncertain, choose the higher-risk profile and narrow it later with evidence.
 
-- Brainstorming or unclear product direction: `brainstorming`.
-- Feature document metadata, frontmatter, README/INDEX, or `related_docs` work: `document-metadata`.
-- Two or more independent tasks that the user authorized for parallel delegation: `dispatching-parallel-agents`.
-- New formal requirement: `spec-driven-development`, then `writing-requirements`.
-- Governed-v2 DP-1 approved: write TSD with `writing-technicals`, then TVD with `writing-test-cases`; both remain `review-ready` until the joint DP-2 technical approval.
-- Governed-v2 DP-2 approved: create TED with `writing-plans`.
-- Governed-v2 DP-3 approved: execute the current TED after guard success.
-- Governed-v1 documents without `workflow_schema`: preserve the legacy PRD -> approved TSD -> approved TVD -> TED sequence.
-- Approved TED to execute: `using-git-worktrees`, then `subagent-driven-development` if authorized or `executing-plans`.
-- Small implementation: `test-driven-development`.
-- Bug or failing test: `systematic-debugging`, then `test-driven-development`.
-- Code review requested: `requesting-code-review`.
-- Review feedback received: `receiving-code-review`.
+Do not upgrade merely because a task uses several tools. Upgrade when the product, compatibility, recovery, review, or coordination risk increases.
+
+## Direct Skill Routing
+
+- Product direction or option comparison: `brainstorming`.
+- Standard, Governed, or Critical artifact work: `change-capsule`.
+- Clear implementation or refactor: `test-driven-development`.
+- Bug, failing test, build failure, or unclear root cause: `systematic-debugging`, then `test-driven-development`.
+- Existing approved plan: `using-git-worktrees` when isolation is needed, then `executing-plans`.
+- Explicitly authorized independent tasks: `dispatching-parallel-agents` or `subagent-driven-development`.
+- Code review: `requesting-code-review`; review feedback: `receiving-code-review`.
 - Completion claim: `verification-before-completion`.
-- Commit requested: `using-git-commit`.
-- Creating or editing skills: `writing-skills`.
-- Branch finishing: `finishing-a-development-branch`.
+- Commit: `using-git-commit`; branch integration or cleanup: `finishing-a-development-branch`.
+- Skill creation or maintenance: `writing-skills`.
 
-## Resume or Continue Rule
+## Workflow Handoffs
 
-When the user says continue, resume, start implementation, or execute TED:
+### Inspect
 
-1. Run `task status` with `--feature` and `--doc-id` when known.
-2. Report mode, feature, doc id, state, allowed actions, blocked actions, next skill, and decision point.
-3. If feature/doc id is unknown, use the index or README frontmatter to locate it.
-4. Follow the CLI's `next_skill` and blocked actions.
+Read the real source, answer directly, and do not create a Change Capsule unless the user moves from analysis to implementation.
 
-## Execution Gate
+### Quick Change
 
-Before executing a TED:
+State Outcome, Boundary, and Verification, then use `test-driven-development`. If the task becomes multi-turn, broader, or higher risk, upgrade to Standard or Governed before continuing.
 
-```bash
-${CP_CLI} workflow-guard check --feature <feature> --doc-id <doc-id> --target execute --json
-```
+A Quick Change completion report must include:
 
-If it does not pass, do not implement. Route to the returned next skill.
+- **可验证契约：** 实现前使用的结果、边界和验证方式。
+- **测试先行证据：** 实际观察到的 RED，或重构前运行的特征测试基线。
+- **最终验证：** 最新命令或可复现检查及其实际结果。
+- **剩余风险：** 未验证、延后或运行风险；只有验证范围确实支持时才能写“未发现”。
 
-After guard passes, generate a brief:
+### Standard Change
 
-```bash
-${CP_CLI} workflow-brief --feature <feature> --doc-id <doc-id> --target execute --task TASK-001 --json
-```
+Use `change-capsule` to create one `change.md`. It is the sole source for intent, scope, numbered Verifiable Contract items, current task, decisions, evidence summary, and completion.
 
-Read only the documents and sections listed by the brief unless a rewind trigger occurs.
+### Governed Change
 
-## Decision Points
+Use `change-capsule` to create `change.md`, `plan.md`, and `evidence.md`. Obtain Scope/Plan approval before execution and Execution approval immediately before implementation.
 
-Use the CLI as the authoritative DP catalog and approval record. Read `workflow_schema` before interpreting a DP ID. New governed-v2 chains use the `task` facade; legacy governed-v1 chains may continue to use the fine-grained `dp` commands.
+### Critical Change
 
-Use:
+Start with the Governed artifacts. Add `design.md`, `tests.md`, or external compliance references only when the risk requires them. Obtain Scope, Technical, and Execution approvals separately.
 
-```bash
-${CP_CLI} task approve --feature <feature> --doc-id <doc-id> --id DP-1 --reason "<scope approval>" --contract-version 2 --json
-${CP_CLI} task approve --feature <feature> --doc-id <doc-id> --id DP-2 --reason "<technical approval>" --contract-version 2 --json
-${CP_CLI} task approve --feature <feature> --doc-id <doc-id> --id DP-3 --reason "<execution approval>" --contract-version 2 --json
-${CP_CLI} task complete --feature <feature> --doc-id <doc-id> --contract-version 2 --json
-```
+## Resume and Scope Drift
 
-For governed-v1 compatibility diagnostics, use `dp status`, `dp approve`, and `dp audit`; never reuse a v1 approval record as a v2 approval.
+To resume, inspect incomplete `docs/coding-plugins/changes/*/change.md` files or the repository's documented external artifact location. If more than one change matches, list the candidates and ask which one to continue.
 
-Do not cross a decision point without user confirmation.
+Reconfirm the relevant approval when:
+
+- scope expands beyond the approved intent;
+- risk rises to a higher profile;
+- Verifiable Contract behavior changes;
+- an approved plan changes materially;
+- rollback or verification becomes weaker.
+
+Do not maintain a second active-change cache or duplicate phase and approval state in attachment files.
+
+## Completion Boundary
+
+Before claiming completion:
+
+1. Confirm the implementation matches every current Verifiable Contract item.
+2. Run fresh relevant verification and read the result.
+3. Update Capsule evidence when a Capsule exists.
+4. Report unverified or residual risks explicitly.
+5. Use the commit and finishing skills only when the user requests those actions.
 
 ## Output Principles
 
-Prefer Chinese replies when the user is working in Chinese, while preserving English technical names and API terms. Keep conclusions concrete, evidence-backed, and actionable.
+Use the user's language for collaboration while preserving stable technical names. Lead with the current profile, material blocker, or outcome. Keep the next step singular and concrete.

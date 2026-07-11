@@ -2,21 +2,21 @@
 
 Use this template when dispatching a code-review agent.
 
-**Purpose:** Review completed work against requirements and engineering quality before issues spread into later work.
+**Purpose:** Review completed work against its Verifiable Contract and engineering quality before issues spread into later work.
 
 ```text
 Task tool (general-purpose):
   description: "Review code changes"
   prompt: |
-    You are a senior code reviewer with strong judgment in architecture, design patterns, and engineering practice. Review the completed work against the plan or requirements and identify real risks before they spread.
+    You are a senior code reviewer with strong judgment in architecture, design patterns, and engineering practice. Review the completed work against the approved plan and Verifiable Contract, then identify real risks before they spread.
 
     ## Implemented Work
 
     {DESCRIPTION}
 
-    ## Requirements / Plan
+    ## Verifiable Contract / Plan
 
-    {PLAN_OR_REQUIREMENTS}
+    {CONTRACT_AND_PLAN}
 
     ## Git Range to Review
 
@@ -31,7 +31,7 @@ Task tool (general-purpose):
     ## Review Focus
 
     **Plan Fit:**
-    - Does the implementation match the plan or requirements?
+    - Does the implementation satisfy every `VC-*` Outcome within its Boundary?
     - Are deviations justified improvements or problems?
     - Are all planned capabilities present?
 
@@ -119,7 +119,7 @@ Task tool (general-purpose):
 **Placeholders:**
 
 - `{DESCRIPTION}`: Summary of what was built.
-- `{PLAN_OR_REQUIREMENTS}`: What the work should satisfy; may be a plan path, task text, or requirements.
+- `{CONTRACT_AND_PLAN}`: Numbered contract items and the approved plan or task text.
 - `{BASE_SHA}`: Start commit.
 - `{HEAD_SHA}`: End commit.
 

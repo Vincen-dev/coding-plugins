@@ -19,7 +19,7 @@ Task tool (general-purpose):
     ## Before You Start
 
     If you have questions about:
-    - Requirements or acceptance criteria
+    - Verifiable Contract items
     - Technical approach or implementation strategy
     - Dependencies or assumptions
     - Anything unclear in the task description
@@ -28,9 +28,9 @@ Task tool (general-purpose):
 
     ## Your Task
 
-    After requirements are clear:
+    After the Verifiable Contract is clear:
     1. Implement exactly what the task specifies.
-    2. For any feature, bugfix, refactor, or behavior change, use TDD by default: write a failing test from a Spec ID, bug reproduction, or acceptance criterion; confirm RED; then write the smallest implementation.
+    2. Establish tests before production changes. For behavior changes, write a failing test from a `VC-*` item or bug reproduction and confirm RED. For refactors, run a sufficient characterization baseline before editing.
     3. Verify the implementation.
     4. If the task requires a commit, use `using-git-commit` rules: commit-message language is chosen by the user; AI authors, AI co-authors, and AI-generated statements are forbidden.
     5. Self-review.
@@ -64,8 +64,8 @@ Task tool (general-purpose):
     ## Self-Review Before Reporting
 
     **Completeness:**
-    - Did you implement the full spec?
-    - Did you miss any requirement?
+    - Did you implement every Verifiable Contract item?
+    - Did you stay within each item boundary?
     - Did you miss edge cases?
 
     **Quality:**
@@ -81,7 +81,7 @@ Task tool (general-purpose):
     **Testing:**
     - Do tests verify real behavior?
     - Is there TDD evidence proving RED before GREEN?
-    - If TDD evidence is absent, is there a user-approved TDD exception and replacement verification?
+    - Does test-first evidence exist for every production change?
     - Are tests sufficient?
 
     Fix issues before reporting.
@@ -91,7 +91,6 @@ Task tool (general-purpose):
     - **Status:** DONE | DONE_WITH_CONCERNS | BLOCKED | NEEDS_CONTEXT
     - What was implemented, or what was attempted if blocked
     - TDD evidence for features, bugfixes, refactors, or behavior changes
-    - TDD exception record only if the user approved skipping TDD
     - Tests and results
     - Files changed
     - Commit SHA if this task created a commit

@@ -1,5 +1,5 @@
 {
-  "version": "1.3.0",
+  "version": "2.0.0",
   "files": [
     {
       "path": ".codex-plugin/plugin.json",
@@ -26,7 +26,5 @@
       "field": "version"
     }
   ],
-  "releaseNotes": "RELEASE-NOTES.md",
-  "releasePrepare": "npm run prepare-release:ts -- --notes-out /tmp/coding-plugins-release-notes.md",
-  "preflight": "npm run preflight"
+  "releaseNotes": "RELEASE-NOTES.md"
 }

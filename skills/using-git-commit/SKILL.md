@@ -42,7 +42,7 @@ Do not hard-code Chinese or English as a universal rule.
 
 ## Author Rules
 
-Use the user's configured git identity. `commit-guard` is the authority for unsafe author metadata and AI-attribution rejection.
+Use the user's configured git identity. Reject missing identities, AI-like author names, and unapproved attribution before committing.
 
 Required footer:
 
@@ -57,7 +57,7 @@ If `user.name` or `user.email` is missing, ask or set repo-local config only wit
 1. Run `git status --short`.
 2. Inspect `git diff` and `git diff --cached`.
 3. Identify logical commit groups. If the change set contains unrelated work, split commits.
-4. If `integrationPolicy.requireVersionChangePerCommit` is true, run the repository version-bump workflow first and include every path in `integrationPolicy.versionFiles` in this commit.
+4. Read repository contribution and release conventions; when they require a version change, include every required version file in the same commit.
 5. Stage files intentionally with `git add <paths>`.
 6. Recheck `git diff --cached`.
 7. Generate a Conventional Commit:
@@ -83,7 +83,7 @@ Stop and ask before committing when:
 - Verification failed and the user did not explicitly accept the risk.
 - Commit language cannot be determined.
 - The commit would include generated release artifacts, version bumps, or publish-related files that were not requested.
-- The active formal workflow gate does not pass: governed-v1 requires DP-7, while governed-v2 requires a passing Completion Audit.
+- The active Capsule is not complete or fresh verification does not support the commit.
 - The repository requires a version change per commit and any configured version file is missing from the staged change.
 
 ## Message Shape

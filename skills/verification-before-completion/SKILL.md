@@ -29,7 +29,7 @@ If verification fails, report the failure and do not claim completion.
 | Lint is clean | Lint output with zero errors. |
 | Build succeeds | Build command exit code 0. |
 | Bug is fixed | The reproduction or regression test now passes. |
-| Requirement is satisfied | Spec traceability plus relevant tests or contract checks. |
+| Contract item is satisfied | `VC-*` traceability plus its declared test or reproducible check. |
 | Subagent work is complete | Main-thread diff inspection plus independent verification. |
 
 ## Red Flags

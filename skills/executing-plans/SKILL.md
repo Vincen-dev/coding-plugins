@@ -1,6 +1,6 @@
 ---
 name: executing-plans
-description: Use when a written TED task execution document exists and should be executed in the current session by checkpoint.
+description: Use when an approved Change Capsule plan exists and should be executed in the current session by checkpoint.
 ---
 
 # Executing Plans
@@ -15,8 +15,8 @@ If subagents are available and the user has explicitly authorized subagent work,
 
 ## Step 1: Load and Review the Plan
 
-1. Read the TED.
-2. Review it critically for missing prerequisites, unclear instructions, stale source hash, unsafe scope, or impossible verification.
+1. Read `change.md` and the listed `plan.md`.
+2. Review the Verifiable Contract and plan for missing prerequisites, unclear instructions, unsafe scope, rollback gaps, or impossible verification.
 3. If there is a serious issue, stop and tell the user before implementation.
 4. If the plan is sound, create a task checklist and continue.
 
@@ -26,9 +26,9 @@ For each task:
 
 1. Mark the task as in progress.
 2. Follow the task steps exactly.
-3. Use TDD whenever behavior, contract, config, or source-scan behavior changes.
+3. Establish test-first evidence before every production change.
 4. Run the task's specified verification.
-5. Record VED evidence.
+5. Record actual RED/GREEN/REFACTOR and verification evidence in the Capsule.
 6. Mark the task complete only after verification supports it.
 
 ## Step 3: Finish Development
