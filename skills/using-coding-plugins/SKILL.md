@@ -31,7 +31,7 @@ These are invariants, not optional recommendations. If a change cannot establish
 
 Apply these gates after selecting the risk profile and before the first production change:
 
-1. **Shared checkout:** a shared checkout permits one active write task. Inspect the current Git state before editing. If unrelated or overlapping changes belong to another task, use a separate worktree or stop until the checkout has a single writer. Do not rely on partial staging or later commit repair as the concurrency strategy.
+1. **Shared checkout:** a shared checkout permits one active write task. Inspect the current Git state before editing. The current checkout is the default workspace; do not invoke `using-git-worktrees` or create or switch to a linked worktree without explicit user approval. If unrelated or overlapping changes belong to another task, stop and ask whether the user approves a separate worktree or wants to wait until the checkout has a single writer. Do not rely on partial staging or later commit repair as the concurrency strategy.
 2. **Required workflow capability:** if a required Skill, artifact, or approval is unavailable, stop before implementation. You must not downgrade Governed or Critical work to a Quick Change, an ephemeral conversation contract, or a smaller artifact set merely to keep moving.
 3. **Resolved material decisions:** convert each conditional assumption that can change scope, behavior, schema, migration, compatibility, rollback, or verification into an explicit Assumption or Decision Point. If it affects schema, migration, or compatibility, an unresolved material Decision Point blocks implementation.
 
@@ -57,6 +57,7 @@ Choose the lowest profile that honestly covers the risk.
 - Governed Change is required for public behavior, schema, compatibility, release, security, or broad maintenance changes.
 - Critical Change is required for irreversible or regulated effects.
 - When scope or risk is uncertain, choose the higher-risk profile and narrow it later with evidence.
+- Worktree isolation is opt-in regardless of profile. A plan, risk classification, dirty checkout, or isolation recommendation is not user approval.
 
 Do not upgrade merely because a task uses several tools. Upgrade when the product, compatibility, recovery, review, or coordination risk increases.
 
@@ -66,8 +67,8 @@ Do not upgrade merely because a task uses several tools. Upgrade when the produc
 - Standard, Governed, or Critical artifact work: `change-capsule`.
 - Clear implementation or refactor: `test-driven-development`.
 - Bug, failing test, build failure, or unclear root cause: `systematic-debugging`, then `test-driven-development`.
-- Existing approved plan: `using-git-worktrees` when isolation is needed, then `executing-plans`.
-- Shared checkout with another write task or unrelated overlapping changes: `using-git-worktrees` before implementation.
+- Existing approved plan: continue in the current checkout by default, then use `executing-plans`; if isolation is needed, obtain explicit user approval before `using-git-worktrees`.
+- Shared checkout with another write task or unrelated overlapping changes: stop and ask whether the user approves `using-git-worktrees` or wants to wait for a single-writer checkout.
 - Explicitly authorized independent tasks: `dispatching-parallel-agents` or `subagent-driven-development`.
 - Code review: `requesting-code-review`; review feedback: `receiving-code-review`.
 - Completion claim: `verification-before-completion`.

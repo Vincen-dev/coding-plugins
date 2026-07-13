@@ -28,7 +28,7 @@
 
 ## 执行前硬门禁
 
-- 同一个 checkout 同一时间只允许一个写任务；并发写任务使用独立 worktree 或等待。
+- 同一个 checkout 同一时间只允许一个写任务；默认继续使用当前 checkout，不主动调用 `using-git-worktrees`。需要独立 worktree 时必须先获得用户明确同意；发生并发或变更冲突时先停止并询问用户选择 worktree 还是等待。
 - Governed/Critical 缺少必需 Skill、产物或批准时停止，不得降级为 Quick Change 继续。
 - 会改变范围、公共行为、schema、migration、兼容、回滚或验证的条件性假设必须转成明确 Decision Point，未解决前不得实现。
 - 公共 API、schema、migration、兼容、安全和发布类变更默认运行完整相关测试套件；无法运行时必须收窄完成声明并记录剩余风险。

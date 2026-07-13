@@ -17,6 +17,17 @@ test("VC-001 shared checkouts enforce one active writer and isolate overlap", ()
   assert.match(worktrees, /partial staging[\s\S]*not[\s\S]*substitute[\s\S]*isolation/i);
 });
 
+test("VC-005 worktrees are opt-in and require explicit user approval", () => {
+  const entry = read("skills/using-coding-plugins/SKILL.md");
+  const worktrees = read("skills/using-git-worktrees/SKILL.md");
+
+  assert.match(entry, /current checkout[\s\S]*default/i);
+  assert.match(entry, /do not invoke `using-git-worktrees`[\s\S]*explicit user approval/i);
+  assert.match(entry, /overlap[\s\S]*stop[\s\S]*ask[\s\S]*worktree/i);
+  assert.match(worktrees, /explicit user approval[\s\S]*precondition/i);
+  assert.match(worktrees, /do not create[\s\S]*linked worktree[\s\S]*approval/i);
+});
+
 test("VC-002 required Governed and Critical capabilities cannot be downgraded", () => {
   const entry = read("skills/using-coding-plugins/SKILL.md");
   const capsule = read("skills/change-capsule/SKILL.md");

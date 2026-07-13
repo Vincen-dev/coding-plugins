@@ -132,7 +132,7 @@ Mark complete only after `verification-before-completion` has read fresh results
 
 ## Handoff
 
-- Approved plan: `using-git-worktrees` when isolation is needed, then `executing-plans`.
+- Approved plan: use `executing-plans` in the current checkout by default. If isolation is needed, obtain explicit user approval before handing off to `using-git-worktrees`.
 - Implementation behavior: `test-driven-development`.
 - Unclear failure: `systematic-debugging`.
 - Completion: `verification-before-completion`.
