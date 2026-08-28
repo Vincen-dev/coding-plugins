@@ -23,15 +23,24 @@ test("VC-004 change-capsule exposes 0/0/1/3/optional artifact profiles", () => {
 
 test("VC-001/004 change-capsule templates have the minimal contract sections", () => {
   const expected = {
-    "templates/change.md": ["意图", "风险", "范围", "假设与待决事项", "可验证契约", "产物", "批准记录", "当前任务", "决策", "完成情况"],
+    "templates/change.md": ["意图", "风险", "范围", "假设与待决事项", "可验证契约", "文档影响", "产物", "批准记录", "当前任务", "决策", "完成情况"],
     "templates/plan.md": ["设计", "测试策略", "任务", "回滚", "验证"],
     "templates/evidence.md": ["测试驱动证据", "最终验证", "剩余风险"],
     "templates/design.md": ["上下文", "决策", "接口", "风险"],
     "templates/tests.md": ["测试矩阵", "测试数据", "断言", "人工检查"],
+    "templates/module-doc.md": ["目标与非目标", "模块边界与所有权", "入口与目录结构", "核心流程", "数据与状态", "外部契约", "生命周期与错误恢复", "验证", "已知限制"],
   };
   for (const [path, sections] of Object.entries(expected)) {
     const text = read(path);
     for (const section of sections) assert.match(text, new RegExp(`^## ${section}$`, "m"), `${path} missing ${section}`);
     assert.doesNotMatch(text, /\bPRD\b|\bTSD\b|\bTVD\b|\bTED\b|\bVED\b|CP_CLI|coding-plugins\s+task/i);
   }
+});
+
+test("VC-CAL-005 completed capsules compact process history without losing durable evidence", () => {
+  const skill = read("SKILL.md");
+  assert.match(skill, /completion compaction/i);
+  assert.match(skill, /final decisions[\s\S]*Verifiable Contract[\s\S]*final verification[\s\S]*Residual Risks/i);
+  assert.match(skill, /remove|collapse/i);
+  assert.match(skill, /duplicat(?:e|ion)[\s\S]*(?:change\.md|plan\.md|evidence\.md)/i);
 });

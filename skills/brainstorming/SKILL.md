@@ -43,7 +43,7 @@ Do not use this skill when:
 2. Identify the problem type: product direction, user workflow, technical approach, maintenance risk, migration, debugging, or explanation.
 3. Clarify the key gap: ask at most one question that changes goals, boundaries, solution choice, or acceptance; otherwise state a reasonable assumption.
 4. Split the problem when the scope is too large, and recommend the first landable slice.
-5. Present two or three viable options with fit, cost, risk, and non-fit.
+5. Present two or three genuinely viable options with fit, cost, risk, and non-fit when they exist. If there is only one viable option, recommend it and explain why the relevant rejected directions do not fit; do not invent a fake alternative to fill a quota.
 6. Recommend one option with concrete reasoning and list remaining open questions.
 7. Decide the next step: only after user confirmation, hand off to `change-capsule` or `test-driven-development`; otherwise stay in analysis and option comparison.
 
@@ -82,6 +82,6 @@ The idea has been framed as <option name>. If you confirm implementation, the ne
 - Creating a Change Capsule when the user only asked for options.
 - Treating brainstorming as a mandatory artifact phase.
 - Entering implementation before user confirmation.
-- Giving only one option without comparing alternatives.
+- Inventing weak alternatives when only one viable option remains after applying the constraints.
 - Discussing implementation without defining goals, non-goals, and success criteria.
 - Turning the recommendation into a task checklist that bypasses SDD.

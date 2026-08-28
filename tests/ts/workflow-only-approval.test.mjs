@@ -13,4 +13,6 @@ test("VC-004 approvals scale with risk instead of document count", () => {
   assert.match(entry, /Governed Change[^\n]*2 approvals[^\n]*Scope\/Plan[^\n]*Execution/i);
   assert.match(entry, /Critical Change[^\n]*3 approvals[^\n]*Scope[^\n]*Technical[^\n]*Execution/i);
   assert.doesNotMatch(entry, /\bDP-\d+\b|task approve/i);
+  assert.match(entry, /one unambiguous post-plan instruction[\s\S]*Scope\/Plan[\s\S]*Execution/i);
+  assert.match(entry, /Critical Change[\s\S]*separate[\s\S]*Scope[\s\S]*Technical[\s\S]*Execution/i);
 });

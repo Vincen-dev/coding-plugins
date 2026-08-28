@@ -17,16 +17,19 @@ Do not spawn subagents unless the user explicitly asked for subagents, delegatio
 - `change.md` identifies one current task and the relevant artifact references.
 - Work happens in a safe branch or isolated workspace.
 - Each delegated task has a disjoint write set.
+- Delegated tasks have disjoint shared mutable resources; codegen, localization generation, dependency resolution, native build directories, the Git index, devices, and caches count as shared state.
 
 ## Dispatch Flow
 
-1. Assemble an implementer prompt from the current Capsule task. Include the task text, scope fence, `VC-*` items, required tests, and evidence expectations.
+1. Assemble an implementer prompt from the current Capsule task. Include the task text, scope fence, `VC-*` items, Documentation Impact classification and target, required tests, and evidence expectations.
 2. Assign file ownership and state that other agents or the main thread may be editing other files.
-3. Require TDD for behavior, contract, config, architecture, or source-scan changes.
-4. Require a final report with files changed, commands, results, and concerns.
-5. Review returned changes in the main thread.
-6. Run contract review and code quality review when appropriate.
-7. Integrate only after verification.
+3. Assign shared-resource ownership. Serialize codegen, native build, Git index, dependency, localization, and device operations even when source files are disjoint.
+4. Require TDD for behavior, contract, config, architecture, or source-scan changes.
+5. For non-`none` Documentation Impact, assign ownership of the module documentation task and keep it disjoint from Capsule state.
+6. Require a final report with files changed, module documentation delivered when required, commands, results, and concerns.
+7. Review returned changes in the main thread.
+8. Run contract review and code quality review when appropriate.
+9. Integrate only after verification.
 
 ## Review Flow
 

@@ -16,6 +16,9 @@ Task tool (general-purpose):
 
     [Explain where this task sits in the overall work, dependencies, and architecture background]
 
+    Documentation Impact: [none | update-existing | create-module-doc | external-doc]
+    Module documentation target: [path, external reference, or not applicable]
+
     ## Before You Start
 
     If you have questions about:
@@ -30,11 +33,12 @@ Task tool (general-purpose):
 
     After the Verifiable Contract is clear:
     1. Implement exactly what the task specifies.
-    2. Establish tests before production changes. For behavior changes, write a failing test from a `VC-*` item or bug reproduction and confirm RED. For refactors, run a sufficient characterization baseline before editing.
+    2. Establish the appropriate evidence before production changes. For behavior changes, write a failing test from a `VC-*` item or bug reproduction and confirm RED. For refactors, run a sufficient characterization baseline before editing. For static contracts, use a focused failing contract check. For device, backend, signing, or performance outcomes, name the external verification gate.
     3. Verify the implementation.
-    4. If the task requires a commit, use `using-git-commit` rules: commit-message language is chosen by the user; AI authors, AI co-authors, and AI-generated statements are forbidden.
-    5. Self-review.
-    6. Report results.
+    4. When Documentation Impact is not `none`, create or update the assigned module documentation and keep Capsule phase, approval, and command history out of it.
+    5. If the task requires a commit, use `using-git-commit` rules: commit-message language is chosen by the user; AI authors, AI co-authors, and AI-generated statements are forbidden.
+    6. Self-review.
+    7. Report results.
 
     Working directory: [directory]
 
@@ -81,7 +85,7 @@ Task tool (general-purpose):
     **Testing:**
     - Do tests verify real behavior?
     - Is there TDD evidence proving RED before GREEN?
-    - Does test-first evidence exist for every production change?
+    - Does appropriate pre-change evidence exist for every behavior or contract slice?
     - Are tests sufficient?
 
     Fix issues before reporting.

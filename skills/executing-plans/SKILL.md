@@ -17,27 +17,29 @@ If subagents are available and the user has explicitly authorized subagent work,
 
 1. Read `change.md` and the listed `plan.md`.
 2. Review the Verifiable Contract and plan for missing prerequisites, unclear instructions, unsafe scope, rollback gaps, or impossible verification.
-3. If there is a serious issue, stop and tell the user before implementation.
-4. If the plan is sound, create a task checklist and continue.
+3. Read the Documentation Impact classification. For every non-`none` impact, confirm that the plan has an explicit task to create or update the maintained module documentation and verify its target.
+4. If there is a serious issue, stop and tell the user before implementation.
+5. If the plan is sound, create a task checklist and continue.
 
 ## Step 2: Execute Tasks
 
 For each task:
 
 1. Mark the task as in progress.
-2. Follow the task steps exactly.
-3. Establish test-first evidence before every production change.
+2. Follow the task outcome, boundaries, and required verification. Minor implementation details may adapt to verified source facts when they do not change the contract; record the deviation. Material plan changes return to planning and approval.
+3. Establish the evidence mode required by each behavior or contract slice before its production change.
 4. Run the task's specified verification.
-5. Record actual RED/GREEN/REFACTOR and verification evidence in the Capsule.
-6. Mark the task complete only after verification supports it.
+5. When Documentation Impact is non-`none`, create or update module documentation in the approved maintained location; keep Capsule state and command history out of it.
+6. Record actual RED/GREEN/REFACTOR and verification evidence in the Capsule.
+7. Mark the task complete only after verification supports it.
 
-## Step 3: Finish Development
+## Step 3: Complete Execution
 
 After all tasks are complete and verified:
 
-- Say: "I am using the finishing-a-development-branch skill to finish this work."
-- Use `finishing-a-development-branch`.
-- Verify tests, then present the allowed integration choices.
+- Update Capsule evidence and report the verified implementation, remaining risk, branch, and worktree status.
+- Do not invoke `finishing-a-development-branch` unless the user requests commit, merge, PR, branch integration, or cleanup.
+- Implementation approval does not authorize commit, pull, push, merge, PR creation, or branch/worktree cleanup.
 
 ## Stop Conditions
 

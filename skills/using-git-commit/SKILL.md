@@ -44,13 +44,15 @@ Do not hard-code Chinese or English as a universal rule.
 
 Use the user's configured git identity. Reject missing identities, AI-like author names, and unapproved attribution before committing.
 
-Required footer:
+`Authored-by` is optional and follows explicit user preference or established repository convention. Do not add it as a universal plugin requirement. When required, use:
 
 ```text
 Authored-by: <user.name> <user.email>
 ```
 
 If `user.name` or `user.email` is missing, ask or set repo-local config only with user approval.
+
+An explicitly requested checkpoint or partial commit may be created before the whole Capsule is complete. Its staged scope, incomplete contract items, and verification limits must be clear; do not present it as final delivery.
 
 ## Process
 
@@ -70,9 +72,11 @@ If `user.name` or `user.email` is missing, ask or set repo-local config only wit
    - `build:`
    - `ci:`
 8. Include a concise body when needed.
-9. Add the `Authored-by` footer.
+9. Add the `Authored-by` footer only when required by the user or repository convention.
 10. Run `git commit`.
 11. Report commit SHA, subject, and any verification caveats.
+
+A commit does not authorize push, pull, merge, rebase, PR creation, release, or cleanup.
 
 ## Safety Checkpoints
 
@@ -83,7 +87,7 @@ Stop and ask before committing when:
 - Verification failed and the user did not explicitly accept the risk.
 - Commit language cannot be determined.
 - The commit would include generated release artifacts, version bumps, or publish-related files that were not requested.
-- The active Capsule is not complete or fresh verification does not support the commit.
+- The active Capsule is not complete and the user did not explicitly request a checkpoint or partial commit, or the available verification does not support the stated commit boundary.
 - The repository requires a version change per commit and any configured version file is missing from the staged change.
 
 ## Message Shape
@@ -93,7 +97,7 @@ type(scope): concise summary
 
 Optional body explaining why, not just what.
 
-Authored-by: Name <email@example.com>
+[Optional when required] Authored-by: Name <email@example.com>
 ```
 
 ## Common Mistakes

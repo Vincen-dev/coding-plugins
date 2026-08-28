@@ -9,7 +9,7 @@ description: Use when creating a new skill, editing an existing skill, or valida
 
 Create and maintain Coding Plugins skills as executable agent instructions. A skill should tell the agent when to use it, what constraints apply, what steps to follow, and how to verify the work.
 
-Core principle: skill text is agent-facing execution guidance. Durable machine-checkable invariants should live in focused static contract tests rather than being duplicated across many skills.
+Core principle: skill text is agent-facing execution guidance. Durable machine-checkable invariants should live in focused static contract tests rather than being duplicated across many skills. Static contract tests do not prove agent behavior; use realistic scenario or independent forward-testing when decision quality matters.
 
 ## When to Use
 
@@ -43,7 +43,8 @@ Keep machine keys and agent-facing execution text in English. User-facing Chines
 3. Keep the edit scoped to the requested skill surface.
 4. Keep universal invariants in `using-coding-plugins`; other skills state only their owned process and handoffs.
 5. Add or update tests when the skill contract can be checked.
-6. Run targeted checks and then `npm test` when release-facing.
+6. Check changed owning Skills and handoffs for contradiction, stale prompts, and duplicated universal rules.
+7. Run targeted checks and then `npm test` when release-facing.
 
 ## Testing Skills
 
@@ -55,6 +56,8 @@ Use TDD when changing behavior that can be checked:
 - Confirm it passes.
 - Record Capsule evidence when durable change artifacts exist.
 
+For routing, authorization, risk classification, or multi-Skill handoffs, add realistic scenario fixtures or independent forward-testing when feasible. Report static source checks as contract maintenance, not as proof that a model will behave correctly for every natural-language request.
+
 ## Common Mistakes
 
 - Writing broad philosophy instead of actionable instructions.
@@ -63,3 +66,5 @@ Use TDD when changing behavior that can be checked:
 - Translating user-facing docs while leaving agent-facing prompts inconsistent.
 - Weakening gates during translation.
 - Claiming the skill works without running a validation command.
+- Claiming static regex or source-scan coverage proves real agent behavior.
+- Updating one Skill while leaving a contradictory handoff or prompt unchanged.

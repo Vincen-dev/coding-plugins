@@ -18,15 +18,13 @@ Task tool (general-purpose):
 
     {CONTRACT_AND_PLAN}
 
-    ## Git Range to Review
+    ## Review Target
 
-    **Base:** {BASE_SHA}
-    **Head:** {HEAD_SHA}
+    {REVIEW_TARGET}
 
-    ```bash
-    git diff --stat {BASE_SHA}..{HEAD_SHA}
-    git diff {BASE_SHA}..{HEAD_SHA}
-    ```
+    Use the exact provided target: commit range, staged diff, unstaged diff, or PR diff. Do not silently substitute another revision or ignore relevant untracked files.
+
+    {DIFF_COMMANDS_OR_CONTENT}
 
     ## Review Focus
 
@@ -63,15 +61,12 @@ Task tool (general-purpose):
     ## Calibration
 
     Classify findings by real severity. Not every issue is Critical.
-    Mention concrete strengths before listing issues; specific positive feedback helps the implementer trust the later criticism.
+    Return findings first, ordered by real severity. Mention concrete strengths after the findings; specific positive feedback is useful but must not hide actionable issues.
 
     If the implementation clearly deviates from the plan, state that directly and ask whether the deviation was intentional.
     If the problem comes from the plan rather than the implementation, say so.
 
     ## Output Format
-
-    ### Strengths
-    [Specific strengths]
 
     ### Issues
 
@@ -89,6 +84,9 @@ Task tool (general-purpose):
     - What is wrong
     - Why it matters
     - How to fix it, if not obvious
+
+    ### Strengths
+    [Specific strengths]
 
     ### Recommendations
     [Code quality, architecture, or process suggestions]
@@ -120,7 +118,7 @@ Task tool (general-purpose):
 
 - `{DESCRIPTION}`: Summary of what was built.
 - `{CONTRACT_AND_PLAN}`: Numbered contract items and the approved plan or task text.
-- `{BASE_SHA}`: Start commit.
-- `{HEAD_SHA}`: End commit.
+- `{REVIEW_TARGET}`: Commit range, staged diff, unstaged diff, or PR diff with its revision identity.
+- `{DIFF_COMMANDS_OR_CONTENT}`: Commands or platform-provided diff needed to inspect that exact target.
 
-**Expected review output:** Strengths, Issues grouped by Critical / Important / Minor, Recommendations, and Assessment.
+**Expected review output:** Issues grouped by Critical / Important / Minor, Strengths, Recommendations, and Assessment.

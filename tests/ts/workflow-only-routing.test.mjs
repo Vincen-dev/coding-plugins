@@ -25,9 +25,16 @@ test("VC-003/004 workflow entry defines five risk profiles and one next skill", 
   assert.match(entry, /Standard Change[\s\S]*change\.md/i);
   assert.match(entry, /Governed Change[\s\S]*change\.md[\s\S]*plan\.md[\s\S]*evidence\.md/i);
   assert.match(entry, /Critical Change[\s\S]*design\.md[\s\S]*tests\.md/i);
-  assert.match(entry, /uncertain[\s\S]*higher-risk profile/i);
+  assert.match(entry, /uncertain[\s\S]*Inspect[\s\S]*(?:facts|evidence)/i);
+  assert.match(entry, /ordinary user-visible behavior[\s\S]*does not[\s\S]*Governed/i);
+  assert.match(entry, /identity-adjacent UI[\s\S]*does not[\s\S]*Critical/i);
   assert.match(entry, /Quick Change[\s\S]*test-driven-development/i);
   assert.match(entry, /Standard Change[\s\S]*change-capsule/i);
+});
+
+test("VC-CAL-001 diagnosis-only requests stop before implementation", () => {
+  assert.match(entry, /diagnosis-only[\s\S]*systematic-debugging/i);
+  assert.match(entry, /do not[\s\S]*(?:fix|implementation)[\s\S]*user authorizes/i);
 });
 
 test("VC-004 workflow entry has no runtime routing dependency", () => {

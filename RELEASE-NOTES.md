@@ -1,5 +1,16 @@
 # Release Notes
 
+## Unreleased
+
+- Calibrate risk routing so ordinary user-visible behavior and identity-adjacent UI do not automatically become Governed or Critical changes.
+- Distinguish Behavior RED, characterization baseline, static contract checks, and external verification gates while protecting user-owned and unknown-origin code.
+- Classify shared checkouts by ownership, overlap, active writers, and shared mutable resources instead of treating every unrelated dirty file as concurrency.
+- Bind completion claims to checkout, dependency, generated-state, artifact, device, and external-environment provenance.
+- Compact completed Change Capsules and make plan finishing, Git integration, review ordering, attribution, and parallel execution follow explicit user and repository intent.
+- Allow one unambiguous post-plan Governed instruction to record both plan acceptance and immediate execution without weakening separate Critical approvals.
+- Clarify that static Skill contract tests maintain written invariants but do not prove real agent behavior.
+- Add a four-state Documentation Impact Check and optional maintained module-documentation template without expanding the fixed Change Capsule artifact budget.
+
 ## 2.1.0 - 2026-07-11
 
 - Enforce one active writer per shared checkout and route concurrent write tasks to separate worktrees or a safe stop.

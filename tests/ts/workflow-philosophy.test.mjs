@@ -47,6 +47,10 @@ test("VC-002 every implementation path establishes tests before production chang
   const implementer = read("skills/subagent-driven-development/implementer-prompt.md");
   assert.match(tdd, /behavior change[\s\S]*failing test[\s\S]*before[\s\S]*production/i);
   assert.match(tdd, /refactor[\s\S]*characterization[\s\S]*before/i);
+  assert.match(tdd, /static contract check/i);
+  assert.match(tdd, /external verification gate/i);
+  assert.match(tdd, /user-owned|unknown-origin/i);
+  assert.match(tdd, /(?:do not|never) (?:remove|delete|revert)/i);
   assert.doesNotMatch(`${tdd}\n${implementer}`, /TDD Exception|approved exception|user-approved TDD exception|skip(?:ping)? TDD/i);
 });
 
@@ -59,6 +63,8 @@ test("VC-001/004 Capsule templates use one Verifiable Contract model", () => {
   assert.match(plan, /编号契约项/);
   const evidence = read("skills/change-capsule/templates/evidence.md");
   assert.match(evidence, /契约来源/);
+  assert.match(evidence, /证据模式[\s\S]*变更前证据[\s\S]*证据观察/);
+  assert.match(plan, /行为 RED[\s\S]*特征基线[\s\S]*静态契约检查[\s\S]*外部验证门禁/);
 });
 
 test("VC-004 active workflow surfaces contain no retired contract", () => {

@@ -17,7 +17,14 @@ After confirming approval, start by saying: "I am using the using-git-worktrees 
 
 A shared checkout follows a single-writer rule: one active write task at a time. Multiple read-only tasks may inspect the same checkout, but a second write task requires either a user-approved separate worktree or waiting until the checkout has one writer.
 
-Treat unrelated or overlapping changes from another task as evidence that the checkout already has a writer. Partial staging, temporary indexes, stash choreography, and branch-ref manipulation are not a substitute for isolation. They may be used only to recover or finish an already-entangled state after the exact diff and recovery path are understood.
+Classify the checkout before deciding that it already has another writer:
+
+- `clean`: no existing changes; continue after the worktree approval and setup checks.
+- `known-unrelated`: inactive, user-owned changes are not proof of an active writer. Confirm that target files and shared mutable resources are disjoint before choosing isolation.
+- `overlapping-or-unknown`: overlapping files or unclear ownership block editing until resolved.
+- `active-writer`: another task or process is actively writing; isolate with the approved worktree or wait.
+
+Check shared mutable resources as well as file paths. Codegen, localization generation, dependency resolution, native build directories, the Git index, devices, and package caches can conflict even when source files are disjoint. Partial staging, temporary indexes, stash choreography, and branch-ref manipulation are not a substitute for isolation when overlap or an active writer exists.
 
 ## Step 0: Detect Existing Isolation
 
@@ -59,7 +66,7 @@ git check-ignore -q .worktrees
 git check-ignore -q worktrees
 ```
 
-If not ignored, update `.gitignore` and treat that as a separate setup change.
+If neither directory is ignored, do not automatically edit `.gitignore`. Use an already approved external/user-provided path, or ask whether the user wants a separate repository setup change before modifying ignore rules.
 
 Create:
 
@@ -77,7 +84,11 @@ If sandbox permissions block worktree creation, report that and continue only af
 
 ## Step 3: Project Setup
 
-Run the relevant setup command when needed:
+Dependency setup is not an automatic consequence of creating a worktree. Run it only when required by the repository instructions or by baseline verification.
+
+Before setup, inspect the package manager and lockfile. Prefer frozen or locked installation modes that do not rewrite dependency state. If setup would change a lockfile, generated dependency metadata, or another tracked file outside the approved scope, stop and ask. If it requires a network download or credentials, follow the environment's approval boundary and report the external dependency.
+
+Examples, only when the repository actually requires them:
 
 ```bash
 npm install
@@ -108,6 +119,8 @@ Ready to implement <feature-name>
 - Creating a second worktree when already isolated.
 - Hand-writing `git worktree add` when native tooling is available.
 - Skipping ignore checks for project-local worktree directories.
+- Automatically editing `.gitignore` because a preferred worktree directory is not ignored.
+- Running dependency setup or network downloads when baseline verification does not require them.
 - Skipping baseline verification before claiming readiness.
 - Continuing on `main` or `master` without explicit user approval.
 - Creating a feature or release branch when repository contribution rules forbid it.

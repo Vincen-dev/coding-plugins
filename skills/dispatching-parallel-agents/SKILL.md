@@ -15,17 +15,19 @@ Core principle: assign each independent domain to one agent so investigation or 
 
 Use this skill when:
 
-- Three or more test files fail for unrelated root causes.
+- Two or more independent tasks or test groups have unrelated root causes.
 - Multiple subsystems are independently broken.
 - Each problem can be understood without the context of the others.
 - The investigations do not share mutable state.
 - The tasks have disjoint write sets.
+- The tasks do not share mutable resources such as codegen outputs, localization generation, dependency resolution, native build directories, the Git index, devices, or package caches.
 
 Do not use it when:
 
 - Failures are related and one fix may resolve several.
 - The full system state must be understood before changing anything.
 - Agents would edit the same files or interfere with shared resources.
+- Source files are disjoint but codegen, native build, the Git index, or another shared mutable resource would still collide.
 - The user has not authorized subagent or parallel-agent work on the current platform.
 
 ## Pattern

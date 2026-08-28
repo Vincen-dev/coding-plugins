@@ -17,18 +17,19 @@ function walk(path) {
 }
 
 const expectedHeadings = {
-  "skills/change-capsule/templates/change.md": ["意图", "风险", "范围", "假设与待决事项", "可验证契约", "产物", "批准记录", "当前任务", "决策", "完成情况"],
+  "skills/change-capsule/templates/change.md": ["意图", "风险", "范围", "假设与待决事项", "可验证契约", "文档影响", "产物", "批准记录", "当前任务", "决策", "完成情况"],
   "skills/change-capsule/templates/plan.md": ["设计", "测试策略", "任务", "回滚", "验证"],
   "skills/change-capsule/templates/evidence.md": ["测试驱动证据", "最终验证", "剩余风险"],
   "skills/change-capsule/templates/design.md": ["上下文", "决策", "接口", "风险"],
   "skills/change-capsule/templates/tests.md": ["测试矩阵", "测试数据", "断言", "人工检查"],
+  "skills/change-capsule/templates/module-doc.md": ["目标与非目标", "模块边界与所有权", "入口与目录结构", "核心流程", "数据与状态", "外部契约", "生命周期与错误恢复", "验证", "已知限制"],
 };
 
-test("VC-001 五个生成模板使用简体中文", () => {
+test("VC-001 六个生成模板使用简体中文", () => {
   const actualTemplates = walk("skills")
     .filter((path) => path.includes("/templates/") && path.endsWith(".md"))
     .sort();
-  assert.deepEqual(actualTemplates, Object.keys(expectedHeadings).sort(), "生成模板必须只有 Change Capsule 的五个中文模板");
+  assert.deepEqual(actualTemplates, Object.keys(expectedHeadings).sort(), "生成模板必须只有五个 Change Capsule 模板和一个可选模块文档模板");
   for (const [path, headings] of Object.entries(expectedHeadings)) {
     const text = read(path);
     for (const heading of headings) assert.match(text, new RegExp(`^## ${heading}$`, "m"), `${path} 缺少 ${heading}`);

@@ -31,7 +31,7 @@ Use this skill for:
 5. Form a concrete root-cause hypothesis.
 6. Validate the hypothesis with a minimal experiment.
 7. Write or identify the failing test that captures the behavior.
-8. Move to `test-driven-development` for the fix.
+8. If the user authorized a fix, move to `test-driven-development`. For diagnosis-only work, stop after reporting the root cause, evidence, confidence, and missing runtime validation.
 
 ## Root Cause Standard
 
@@ -69,3 +69,7 @@ Escalate when:
 - The investigation reveals a larger architecture problem.
 
 Report what was tried, what was observed, and what information is still missing.
+
+## Authorization Boundary
+
+A request to diagnose, analyze, or explain a failure does not authorize production changes. Do not start a fix until the user authorizes implementation. Environment permissions, the actual checkout, entrypoint, generated state, build artifact, device, and backend are possible root-cause dimensions rather than generic reasons to blame the environment.

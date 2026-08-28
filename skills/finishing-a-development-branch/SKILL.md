@@ -7,7 +7,7 @@ description: Use when implementation is complete, tests pass, and the user needs
 
 ## Overview
 
-Finish development work with clear options. Verify first, then handle commit needs, inspect the environment, present choices, execute the user's choice, and clean up only when appropriate.
+Finish development work with clear options only when the user requests integration or cleanup. Verify first, then handle the specifically authorized commit, merge, PR, keep, or cleanup action.
 
 Start by saying: "I am using the finishing-a-development-branch skill to finish this work."
 
@@ -47,21 +47,21 @@ Determine:
 
 When repository rules require direct base-branch work, do not offer unsupported branch or PR choices. Verify the base-branch diff, use `using-git-commit` if authorized, and push only when the user requested it.
 
-For a normal named branch or linked worktree where branches are allowed, present:
+For a normal named branch or linked worktree where branches are allowed, present only choices relevant to the user's requested outcome:
 
 1. Merge locally into the base branch.
 2. Push and open a PR.
 3. Keep the branch/worktree for later.
-4. Discard the branch/worktree.
+4. Discard the branch/worktree, only when the user requests cleanup or asks for destructive options.
 
 For detached or externally managed workspaces, omit destructive cleanup choices that are unsafe.
 
 ## Step 5: Execute the User's Choice
 
-- Local merge: switch to base, pull if appropriate, merge, rerun verification, then clean up only after success.
+- Local merge: switch to the verified base and merge only within the user's authorization. Do not pull unless the user explicitly requests remote synchronization. Rerun verification, then clean up only when separately requested or already included in the user's instruction.
 - Push/PR: push branch and create PR; do not clean up the worktree.
 - Keep: leave branch and worktree in place and report where they are.
-- Discard: require explicit confirmation such as `discard`; then remove only worktrees created by this flow and delete the branch.
+- Discard: only after the user explicitly requests destructive cleanup and confirms the exact target, remove only worktrees created by this flow and delete the branch.
 
 ## Prohibited
 

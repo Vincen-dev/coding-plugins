@@ -7,14 +7,19 @@ import test from "node:test";
 const repoRoot = resolve(fileURLToPath(new URL("../..", import.meta.url)));
 const read = (path) => readFileSync(join(repoRoot, path), "utf8");
 
-test("VC-001 shared checkouts enforce one active writer and isolate overlap", () => {
+test("VC-001 shared checkouts classify ownership and isolate real overlap", () => {
   const entry = read("skills/using-coding-plugins/SKILL.md");
   const worktrees = read("skills/using-git-worktrees/SKILL.md");
 
   assert.match(entry, /shared checkout[\s\S]*one active write task/i);
-  assert.match(entry, /unrelated or overlapping changes[\s\S]*(?:separate worktree|stop)/i);
+  for (const state of ["clean", "known-unrelated", "overlapping-or-unknown", "active-writer"]) {
+    assert.match(`${entry}\n${worktrees}`, new RegExp(`\\b${state}\\b`, "i"));
+  }
+  assert.match(entry, /known-unrelated[\s\S]*current checkout/i);
+  assert.match(entry, /overlapping-or-unknown[\s\S]*stop/i);
   assert.match(worktrees, /single-writer[\s\S]*shared checkout/i);
   assert.match(worktrees, /partial staging[\s\S]*not[\s\S]*substitute[\s\S]*isolation/i);
+  assert.match(`${entry}\n${worktrees}`, /codegen[\s\S]*native build[\s\S]*(?:Git index|shared resource)/i);
 });
 
 test("VC-005 worktrees are opt-in and require explicit user approval", () => {
@@ -59,4 +64,15 @@ test("VC-004 high-risk completion defaults to the full relevant suite", () => {
   );
   assert.match(verification, /cannot run[\s\S]*narrow[\s\S]*claim[\s\S]*unverified[\s\S]*Residual Risks/i);
   assert.match(verification, /focused checks[\s\S]*do not[\s\S]*support[\s\S]*broad completion/i);
+  for (const provenance of [
+    "repository root",
+    "branch/HEAD",
+    "diff fingerprint",
+    "entrypoint/flavor",
+    "resolved dependencies",
+    "generated outputs",
+    "artifact/device",
+  ]) assert.match(verification, new RegExp(provenance, "i"));
+  assert.match(verification, /known baseline[\s\S]*(?:separate|classify)/i);
+  assert.match(verification, /fresh[\s\S]*final relevant change[\s\S]*verified context/i);
 });

@@ -11,7 +11,7 @@ Treat review feedback as a hypothesis to validate, not an order to apply blindly
 
 ## Process
 
-1. Read the review comment and the referenced code.
+1. Read the review comment, identify the revision or SHA it reviewed, and compare it with the current code. Mark a comment stale when its referenced behavior or lines no longer exist.
 2. Classify the feedback as bug, regression risk, missing test, style, architecture, product question, or unclear.
 3. Verify the claim with code reading, tests, or a minimal reproduction.
 4. If valid, plan the smallest fix and use TDD for behavior changes.
