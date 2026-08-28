@@ -19,7 +19,7 @@ updated: 2026-08-28
 - VC-003：运行 focused 发布测试、全量 `npm test`、Skill YAML、manifest JSON 和 `git diff --check`。
 - VC-004：比较本地/远端 SHA，并从 GitHub Actions API 确认发布提交的 `main` CI 成功。
 - VC-005：检查远端 annotated tag object 与 peeled commit，确认 release workflow 和公开 GitHub Release。
-- VC-006：使用 `codex plugin marketplace upgrade coding-plugins` 与 `codex plugin add coding-plugins@coding-plugins`，再读取 CLI JSON、cache manifest 与 revision。
+- VC-006：使用 `codex plugin marketplace upgrade coding-plugins` 刷新 marketplace；若已安装插件没有自动协调才运行 `plugin add`，最后读取 CLI JSON、cache manifest 与 revision。
 
 ## 任务
 
@@ -29,7 +29,7 @@ updated: 2026-08-28
 4. 推送 `main`，确认远端 SHA 和对应 CI 成功。
 5. 创建并推送 annotated `v2.2.0`，确认 release workflow 与 GitHub Release 成功。
 6. 更新 Capsule 为完成状态，创建并推送 `docs(release)` 证据提交，验证主线 CI。
-7. 刷新本地 Codex marketplace 与插件安装，确认版本、缓存 revision 与关键 Skill 内容。
+7. 刷新本地 Codex marketplace 与插件安装，确认版本、缓存 revision 与关键 Skill 内容；本次 upgrade 已自动完成安装协调，无需重复 add。
 
 ## 停止条件
 
@@ -41,7 +41,7 @@ updated: 2026-08-28
 
 ## 回滚
 
-发布提交推送前可停止并保留本地提交。`main` 推送后不重写远端历史；如果 tag 尚未推送，用后续修复提交处理。tag 与 Release 推送后不删除公开记录，问题通过新版本修复。本地刷新保留旧版本缓存，不主动删除可回退副本。
+发布提交推送前可停止并保留本地提交。`main` 推送后不重写远端历史；如果 tag 尚未推送，用后续修复提交处理。tag 与 Release 推送后不删除公开记录，问题通过新版本修复。本地不手工删除缓存；官方 CLI 可能回收被替换版本，旧版仍可从公开 tag 重新安装。
 
 ## 验证
 

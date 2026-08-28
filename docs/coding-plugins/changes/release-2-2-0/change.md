@@ -2,10 +2,10 @@
 title: 发布 2.2.0
 change_id: release-2-2-0
 profile: governed
-phase: verifying
+phase: complete
 risk: medium
-current_task: 创建并推送发布提交，验证 main CI
-completion_status: incomplete
+current_task: complete
+completion_status: complete
 updated: 2026-08-28
 ---
 
@@ -35,8 +35,8 @@ updated: 2026-08-28
 - `Decision Point`：发布目标是 GitHub tag 与 GitHub Release，不执行 `npm publish`。
   - 决定来源：`package.json` 为私有包，release workflow 只创建 GitHub Release。
   - 阻止执行：否。
-- `Decision Point`：本地同步使用 Codex CLI 的 marketplace refresh 与插件安装命令，不直接手工改写缓存。
-  - 决定来源：当前 Codex CLI 提供 `plugin marketplace upgrade` 与 `plugin add`，且配置已启用 `coding-plugins@coding-plugins`。
+- `Decision Point`：本地同步使用 Codex CLI 的 marketplace refresh，不直接手工改写缓存。
+  - 决定来源：`plugin marketplace upgrade coding-plugins` 会刷新 marketplace 并自动协调已安装插件；本次执行后已直接生成 `2.2.0` 缓存，不需要重复运行 `plugin add`。
   - 阻止执行：否。
 
 ## 可验证契约
@@ -53,17 +53,17 @@ updated: 2026-08-28
   - 结果：发布提交通过仓库完整测试和发布 workflow 契约。
   - 边界：只声明本仓库工作流插件的静态验证结果。
   - 验证：focused Node tests、`npm test`、Skill YAML、manifest JSON 和 `git diff --check`。
-- [ ] VC-004
+- [x] VC-004
   - 结果：远端 `main` 到达发布提交，并且对应 GitHub CI 成功。
   - 边界：不重写远端历史，不删除分支。
   - 验证：本地/远端 SHA 与 GitHub Actions API。
-- [ ] VC-005
+- [x] VC-005
   - 结果：annotated `v2.2.0` 指向发布提交，release workflow 成功且公开 GitHub Release 可见。
   - 边界：不执行 `npm publish`，不删除或覆盖既有标签。
   - 验证：远端 tag object/peeled SHA、GitHub Actions API 与 Releases API。
-- [ ] VC-006
+- [x] VC-006
   - 结果：本机已安装的 `coding-plugins@coding-plugins` 显示 `2.2.0`，缓存 revision 与已发布代码一致。
-  - 边界：保留旧版本缓存，不手工伪造安装状态。
+  - 边界：不手工伪造安装状态；旧版本可从公开 tag 恢复，缓存保留策略由官方 Codex CLI 决定。
   - 验证：Codex CLI JSON 列表、cache manifest、安装元数据与关键 Skill 内容检查。
 
 ## 文档影响
@@ -86,17 +86,18 @@ updated: 2026-08-28
 
 ## 当前任务
 
-创建并推送 `2.2.0` 发布提交，然后验证远端 `main` 与对应 CI。
+已完成。`main`、CI、annotated tag、release workflow、GitHub Release 和本机 Codex 插件同步均已验证。
 
 ## 决策
 
 - 使用 `2.2.0`，因为新增能力向后兼容且属于 feature release。
 - 先推送 `main` 并验证 CI，再创建 annotated tag，避免给未通过主线验证的提交打公开版本。
 - 远端发布成功后再通过 Codex CLI 刷新 marketplace 与安装缓存。
+- 本地 marketplace upgrade 已自动更新启用中的插件，因此不重复执行 `plugin add`。
 
 ## 完成情况
 
-- 已实现：发布范围、版本、顺序、本地同步机制、`2.2.0` 元数据与发布说明已准备。
-- 已验证：版本同步 GREEN、发布 focused 4/4、完整测试 47/47、18 个 YAML frontmatter、7 份 JSON 清单与差异检查均通过。
-- 延后项：发布提交、push、CI、tag、Release、本地安装刷新和最终证据。
-- 剩余风险：本机 `gh` token 无效，远端验证将使用 Git push 与公开 GitHub API；发布仍依赖 GitHub Actions 可用。
+- 已实现：`2.2.0` 元数据、发布说明、发布提交、远端 `main`、annotated tag、GitHub Release 与本机 Codex 插件同步。
+- 已验证：本地全量 47/47；远端 main CI run `33157346532` 和 release run `33157377786` 成功；Release `378364309` 已公开；本机插件版本、启用状态、缓存 revision 与关键 Skill 内容均匹配发布提交 `5ee5952`。
+- 延后项：无。
+- 剩余风险：本机 `gh` token 无效，远端验证使用公开 GitHub API；tag 未签名且仓库没有 signed tag 强制要求。官方 marketplace upgrade 回收了旧 `2.1.0` 缓存，但旧版本仍可从公开 tag 恢复。已运行任务不会热加载新 Skill，后续新任务或重载后使用 `2.2.0`。
