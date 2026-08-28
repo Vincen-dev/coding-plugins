@@ -1,4 +1,4 @@
-# Coding Plugins 2.1.0
+# Coding Plugins 2.2.0
 
 Coding Plugins is a workflow-only skill collection. Start with `using-coding-plugins`, select the smallest safe risk profile, and use `change-capsule` only when durable multi-turn state is valuable.
 

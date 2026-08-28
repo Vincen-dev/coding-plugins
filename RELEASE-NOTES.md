@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 2.2.0 - 2026-08-28
+
 - Calibrate risk routing so ordinary user-visible behavior and identity-adjacent UI do not automatically become Governed or Critical changes.
 - Distinguish Behavior RED, characterization baseline, static contract checks, and external verification gates while protecting user-owned and unknown-origin code.
 - Classify shared checkouts by ownership, overlap, active writers, and shared mutable resources instead of treating every unrelated dirty file as concurrency.
